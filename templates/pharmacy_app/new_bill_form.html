@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style type="text/css">
+		.hidden {
+			display: none
+		}
+	</style>
+</head>
+<body>
+		<form  action="" method="POST">
+			{% csrf_token %}
+			{{bill_form.as_p}}
+			
+			{% if small_bill_formset %}
+			<h3>Additional Sales</h3>
+			
+			{{small_bill_formset.management_form}}
+			<div id='additional-form-list'>
+				{% for form in small_bill_formset%}
+					<div class="additional-form">
+						{{form.as_p}}
+					</div>
+				{% endfor %}
+			</div>
+			
+			<div id="empty-form" class="hidden">
+			{{small_bill_formset.empty_form.as_p}}
+			</div>
+			<button id="add-more" type="button">Add More</button>
+			{% endif %}
+
+			
+			<button>Submit</button>
+		</form>
+</body>
+ <script src="https://unpkg.com/htmx.org@1.6.1"></script> 
+ <script>
+
+ 	const addMoreBtn = document.getElementById('add-more')
+ 	const totalNewForms = document.getElementById('id_form-TOTAL_FORMS')
+ 	
+ 	addMoreBtn.addEventListener('click', add_new_form)
+
+ 	function add_new_form(event){
+ 		if (event){
+ 			event.preventDefault()
+ 		}
+ 		const currentAdditionalForms = document.getElementsByClassName('additional-form')
+
+ 		const currentFormCount = currentAdditionalForms.length 
+ 		console.log(currentFormCount)
+ 		
+ 		const formCopyTarget = document.getElementById('additional-form-list')
+ 		const emptyFormEl = document.getElementById('empty-form').cloneNode(true)
+ 		emptyFormEl.setAttribute('class','additional-form') 
+ 		emptyFormEl.setAttribute('id', currentFormCount) 
+ 		const regex = new RegExp('__prefix__', 'g')
+ 		emptyFormEl.innerHTML = emptyFormEl.innerHTML.replace(regex, currentFormCount)
+		totalNewForms.setAttribute('value', currentFormCount + 1)
+
+		formCopyTarget.append(emptyFormEl) 		
+
+
+ 	}
+ </script> 
+</html>

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+    <link href="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"/>
+{% endblock %}
+{% block title %} Inpatient Stay Duration {% endblock %}
+
+{% block page_content %}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>{{stay_duration.bed}}  Stay Durations </header>
+                    <div class="tools">
+                        <a class="fa fa-repeat btn-color box-refresh" href="javascript:;"></a>
+                        <a class="t-collapse btn-color fa fa-chevron-down" href="javascript:;"></a>
+                        <a class="t-close btn-color fa fa-times" href="javascript:;"></a>
+                    </div>
+                </div>
+                <div class="card-body ">
+                    <table id="example1" class="display table-bordered table-striped table-hover" style="width:100%;">
+                        <thead>
+                            <tr class="gradeX odd">
+                                <th>Bill</th>
+                                <th>Patient</th>
+                                <th>From</th>
+                                <th>To</th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for duration in stay_duration %}
+                                <tr>
+                                    <td>{{duration.bill}}</td>                                    
+                                    <td>{{duration.patient}}</td>
+                                    <td>{{duration.admission_date}}</td>
+                                    <td> {{ duration.leave_date}}</td>
+                                        <td><li><a href="{% url 'duration_medication' duration.id %}">Duration Detail</a>
+                                        </li></td>                                    
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <!-- data tables -->
+    <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}" ></script>
+    <script src="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.js' %}" ></script>
+    <script src="{% static 'js/pages/table/table_data.js' %}"></script>
+{% endblock %}

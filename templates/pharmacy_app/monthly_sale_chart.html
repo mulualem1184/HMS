@@ -1,0 +1,120 @@
+
+	{% extends "base.html" %}
+{% load static %}
+{% block title %} {% endblock %}
+
+{% block page_content %} 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<div class="card"><div class="card-head"><header> Sales This Month</header></div></div>
+	<div class="col-md-10">	<canvas id="myChart"  ></canvas></div>
+<!--<div class="col-md-10">	<canvas id="myChart2"  ></canvas></div>-->
+
+{% endblock %}
+
+
+{% block scripts %} 
+
+		
+
+<script >
+	var endpoint = '/api/monthly_sale_chart/data'
+	var defaultData = []
+	var labels = []
+	$.ajax(
+	{
+		method: "GET",
+		url: endpoint,
+		success: function(data){
+			labels = data.labels
+			defaultData = data.numbers
+			console.log('rr')
+			console.log(data)
+			setChart()
+		},
+
+		error: function(error_data){
+			console.log("charrrrrrrrrrrrrrrrrerror")
+			console.log(error_data)
+		}
+	}
+		)
+	
+function setChart(){
+		const ctx = document.getElementById('myChart');
+			const myChart = new Chart(ctx, {
+			    type: 'bar',
+			    data: {
+			        labels: labels,
+			        datasets: [{
+			            label: 'Monthly Drug Sale By Quantity',
+			            data: defaultData,
+			            backgroundColor: [
+			                'rgba(255, 99, 132, 0.2)',
+			                'rgba(54, 162, 235, 0.2)',
+			                'rgba(255, 206, 86, 0.2)',
+			                'rgba(75, 192, 192, 0.2)',
+			                'rgba(153, 102, 255, 0.2)',
+			                'rgba(255, 159, 64, 0.2)',
+			                'rgba(50, 50, 50, 0.2)',
+			                'rgba(70, 70, 70, 0.2)',
+			                'rgba(90, 90, 90, 0.2)',
+
+			            ],
+			            borderColor: [
+			                'rgba(255, 99, 132, 1)',
+			                'rgba(54, 162, 235, 1)',
+			                'rgba(255, 206, 86, 1)',
+			                'rgba(75, 192, 192, 1)',
+			                'rgba(153, 102, 255, 1)',
+			                'rgba(255, 159, 64, 1)',
+			                'rgba(50, 50, 50, 1)',
+			                'rgba(70, 70, 70, 1)',
+			                'rgba(90, 90, 90, 1)',
+
+            ]
+		},
+		]
+    }})
+		const ctx2 = document.getElementById('myChart2');
+			const myChart2 = new Chart(ctx2, {
+			    type: 'pie',
+			    data: {
+			        labels: labels,
+			        datasets: [{
+			            label: 'Monthly Drug Sale By Quantity',
+			            data: defaultData,
+			            backgroundColor: [
+			                'rgba(255, 99, 132, 0.2)',
+			                'rgba(54, 162, 235, 0.2)',
+			                'rgba(255, 206, 86, 0.2)',
+			                'rgba(75, 192, 192, 0.2)',
+			                'rgba(153, 102, 255, 0.2)',
+			                'rgba(255, 159, 64, 0.2)'
+			            ],
+			            borderColor: [
+			                'rgba(255, 99, 132, 1)',
+			                'rgba(54, 162, 235, 1)',
+			                'rgba(255, 206, 86, 1)',
+			                'rgba(75, 192, 192, 1)',
+			                'rgba(153, 102, 255, 1)',
+			                'rgba(255, 159, 64, 1)'
+            ]
+		},
+		
+		]
+    }})
+
+}
+
+
+
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.2/chart.min.js">	
+</script>
+    <script src="{% static 'plugins/chart-js/Chart.bundle.js' %}" ></script>
+    <script src=" {% static 'plugins/chart-js/utils.js' %}" ></script>
+    <script src="{% static 'js/pages/chart/chartjs/chartjs-data.js' %} " ></script>
+
+{% endblock %}

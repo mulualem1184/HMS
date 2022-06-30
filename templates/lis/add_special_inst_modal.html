@@ -1,0 +1,26 @@
+<div class="modal fade" id="specialInst_{{test_type.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel">Special Instruction</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <div class="col-sm-10">
+                        <label for="special_inst_for_{{test_type.id}}" class="control-label"> Special Instruction: </label>
+                        <textarea name="special_inst_for_{{test_type.id}}" id="special_inst_for_{{test_type.id}}" cols="50" rows="5"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="$('#special_inst_for_{{test_type.id}}')[0].value=''; $('#specialInst_{{test_type.id}}').modal('hide')">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="$('#specialInst_{{test_type.id}}').modal('hide')">
+                    <i class="fa fa-plus"></i> Add
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

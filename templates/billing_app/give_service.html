@@ -1,0 +1,105 @@
+
+ {% extends "base.html" %}
+{% load static %}
+{% block title %} Create Visiting Card {% endblock %}
+{% load crispy_forms_tags %}
+{% block style %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+{% endblock%}
+{% block page_content %}
+    
+    <div class="" style="width: 100%;">
+        <div class="card card-box">
+            <div class="card-head">
+                <header>
+            
+                </header>
+                <button id = "panel-button2" 
+                       class = "mdl-button mdl-js-button mdl-button--icon pull-right" 
+                       data-upgraded = ",MaterialButton">
+                       <i class = "material-icons">more_vert</i>
+                    </button>
+                    <ul class = "mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+                       data-mdl-for = "panel-button2">
+                       <li class = "mdl-menu__item"><i class="material-icons">assistant_photo</i>Action</li>
+                       <li class = "mdl-menu__item"><i class="material-icons">print</i>Another action</li>
+                       <li class = "mdl-menu__item"><i class="material-icons">favorite</i>Something else here</li>
+                    </ul>
+            </div>
+            <div class="card-body " id="bar-parent1">
+              
+        
+    <form action="" method="POST">
+                {% csrf_token %}
+              {% if service_bill_formset %}
+          {{service_bill_formset.management_form}}
+          <div id='additional-form-list'>
+            {% for form in service_bill_formset %}
+              <div class="additional-form">
+                {{form.as_p}}
+              </div>
+            {% endfor %}
+          <div id="empty-form" class="" style="width: 33%">
+          {{service_bill_formset.empty_form.as_p}}
+          </div>
+
+          {% endif %}
+
+               
+                </div>
+
+        <div class="form-group"  style="width: 33%; ">
+                
+         
+            <button id="add-more" class="btn btn-circle btn-primary"  type="button"><i class="fa fa-plus">  Add </i></button>
+            <input type="submit" class="btn btn-primary btn-circle" name="Submit" style="">
+
+</div>            
+    </form>
+
+    {% block scripts %}
+ <script src="https://unpkg.com/htmx.org@1.6.1"></script>        
+<script>
+
+  const addMoreBtn = document.getElementById('add-more')
+  const totalNewForms = document.getElementById('id_form-TOTAL_FORMS')
+  
+  addMoreBtn.addEventListener('click', add_new_form)
+
+  function add_new_form(event){
+    if (event){
+      event.preventDefault()
+    }
+    const currentAdditionalForms = document.getElementsByClassName('additional-form')
+
+    const currentFormCount = currentAdditionalForms.length 
+    console.log(currentFormCount)
+    
+    const formCopyTarget = document.getElementById('additional-form-list')
+    const emptyFormEl = document.getElementById('empty-form').cloneNode(true)
+    emptyFormEl.setAttribute('class','additional-form') 
+    emptyFormEl.setAttribute('id', currentFormCount) 
+    const regex = new RegExp('__prefix__', 'g')
+    emptyFormEl.innerHTML = emptyFormEl.innerHTML.replace(regex, currentFormCount)
+    totalNewForms.setAttribute('value', currentFormCount + 1)
+
+    formCopyTarget.append(emptyFormEl)    
+
+
+  }
+ </script> 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>        
+<script >
+  $(document).ready(function() {
+    $('#id_drug').select2();
+    $('#id_slot_no').select2();
+});
+  </script>
+
+    {% endblock %}
+
+{% endblock %}
+
+ 

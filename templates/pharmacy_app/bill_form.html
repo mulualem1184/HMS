@@ -1,0 +1,149 @@
+
+
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %} Fill Bill Form {% endblock %}
+{% block style %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+
+  <style type="text/css">
+    .hidden {
+      display: none
+    }
+  </style>
+
+{% endblock %}
+
+{% block page_content %}
+  
+    <div class="" style="width: 100%;">
+        <div class="card card-box">
+            <div class="card-head">
+                <header>Bill Form</header>
+                <button id = "panel-button2" 
+                       class = "mdl-button mdl-js-button mdl-button--icon pull-right" 
+                       data-upgraded = ",MaterialButton">
+                       <i class = "material-icons">more_vert</i>
+                    </button>
+                    <ul class = "mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+                       data-mdl-for = "panel-button2">
+                       <li class = "mdl-menu__item"><i class="material-icons">assistant_photo</i>Action</li>
+                       <li class = "mdl-menu__item"><i class="material-icons">print</i>Another action</li>
+                       <li class = "mdl-menu__item"><i class="material-icons">favorite</i>Something else here</li>
+                    </ul>
+            </div>
+            <div class="card-body " id="bar-parent1">
+       
+    <h4 class=" card-body"><b>   </b></h4>
+        
+        <form action="" method="POST">
+        
+        <div class="form-group" style="width: 33%">
+        {% csrf_token %}
+        {{bill_form.as_p}}
+
+        </div>
+        <div class="form-group" style="width: 33%">
+        
+        {{dispension_form}}
+        
+        </div>
+	    
+    <div class="form-row" >
+
+      <div class="form-group col-sm-2 mb-0">
+        {{payment_type_form.payment_type|as_crispy_field }}
+      </div>
+
+      <div class="form-group col-sm-2 mb-0">
+        {{ discount_form.discount|as_crispy_field }}
+      </div>
+      
+</div>    {% if small_bill_formset %}
+          
+
+          {{small_bill_formset.management_form}}
+          <h4>Additional Drugs</h4>
+          <div id='additional-form-list'>
+            {% for form in small_bill_formset %}
+              <div class="additional-form">
+                {{form.as_p}}
+              </div>
+            {% endfor %}
+            {% for form in dispension_formset %}
+              <div class="additional-form">
+                {{form.as_p}}
+              </div>
+            {% endfor %}
+            
+
+          </div>
+      
+          <div id="empty-form" class="hidden" style="width: 33%">
+          {{small_bill_formset.empty_form.as_p}}
+          {{dispension_formset.empty_form.as_p}}
+          </div>
+          {% endif %}
+
+        <div class="form-group"  style="width: 33%; ">
+                
+         
+           <!-- <button type="" class="btn btn-info" style=""><a href="{% url 'bill_detail' bill.bill_no %}" style="color: white;"> Finish </a></button>-->
+            <button id="add-more" class="btn btn-circle btn-primary"  type="button"><i class="fa fa-plus">  Add </i></button>
+            <input type="submit" class="btn btn-primary btn-circle" name="Submit" style="">
+
+</div>
+            </form>
+        {% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
+    {% endfor %}
+</ul>
+{% endif %}    
+    {% block scripts %}
+ <script src="https://unpkg.com/htmx.org@1.6.1"></script>        
+<script>
+
+  const addMoreBtn = document.getElementById('add-more')
+  const totalNewForms = document.getElementById('id_form-TOTAL_FORMS')
+  
+  addMoreBtn.addEventListener('click', add_new_form)
+
+  function add_new_form(event){
+    if (event){
+      event.preventDefault()
+    }
+    const currentAdditionalForms = document.getElementsByClassName('additional-form')
+
+    const currentFormCount = currentAdditionalForms.length 
+    console.log(currentFormCount)
+    
+    const formCopyTarget = document.getElementById('additional-form-list')
+    const emptyFormEl = document.getElementById('empty-form').cloneNode(true)
+    emptyFormEl.setAttribute('class','additional-form') 
+    emptyFormEl.setAttribute('id', currentFormCount) 
+    const regex = new RegExp('__prefix__', 'g')
+    emptyFormEl.innerHTML = emptyFormEl.innerHTML.replace(regex, currentFormCount)
+    totalNewForms.setAttribute('value', currentFormCount + 1)
+
+    formCopyTarget.append(emptyFormEl)    
+
+
+  }
+ </script> 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>        
+<script >
+  $(document).ready(function() {
+    $('#id_drug').select2();
+    $('#id_slot_no').select2();
+});
+  </script>
+
+    {% endblock %}
+
+{% endblock %}
+

@@ -1,0 +1,72 @@
+{% if employee_documents %}
+    <table class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded">
+        <thead>
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric">Name</th>
+                <th class="mdl-data-table__cell--non-numeric">File</th>
+                <th class="mdl-data-table__cell--non-numeric">Approved?</th>
+                <th class="mdl-data-table__cell--non-numeric">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for doc in employee_documents %}
+                <tr>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ doc.document_name }} </td>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ doc.document }} </td>
+                    <td class="mdl-data-table__cell--non-numeric"> 
+                        {% if doc.approved %}
+                            <i class="fa fa-check green"></i>
+                        {% else %}
+                            <i class="fa fa-times red"></i>
+                        {% endif %}
+                    </td>
+                    <td class="mdl-data-table__cell--non-numeric">
+                        <div>
+                            <div class="col-sm-"> 
+                                <a href="/media/{{doc.document}}">
+                                    <button type="button" class="btn btn-dark btn-rounded btn-icon"> <i class="fa fa-download"></i> </button>
+                                </a>
+                                {% if doc.approved and doc.approved_by == user %}
+                                    <a href="{% url 'staff:approve_document' doc.id %}">
+                                        <button type="button" class="btn btn-danger btn-rounded btn-icon"> <i class="fa fa-times"></i> </button>
+                                    </a>
+                                {% else %}
+                                    <a href="{% url 'staff:approve_document' doc.id %}">
+                                        <button type="button" class="btn btn-success btn-rounded btn-icon"> <i class="fa fa-check"></i> </button>
+                                    </a>
+                                {% endif %}
+                                <a href="{% url 'staff:remove_document' doc.id %}">
+                                    <button type="button" class="btn btn-danger btn-rounded btn-icon"> <i class="fa fa-trash"></i> </button> 
+                                </a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <h4><b>No Documents provided</b></h4>
+{% endif %}
+<br><br><br>
+
+{% if user.is_staff and user != employee.user_profile %}
+    <div>
+        <h2>Add Document</h2>
+        <form method="POST" action="{% url 'staff:add_employee_document' employee.id %}" id="form_sample_1" class="form-horizontal" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% for field in document_form %}
+                <label for=""> {{ field.label }} </label>
+                {{ field }}
+            {% endfor %}
+            <div class="form-actions">
+                <div class="row">
+                    <div class="offset-md-3 col-md-9">
+                        <button type="submit" class="btn btn-info">Add</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <br>
+{% endif %}

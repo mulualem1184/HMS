@@ -1,0 +1,35 @@
+
+{% load static %}
+
+<div class="modal fade" id="allergy-info-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel">Patient Allergies</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                    
+                {% for allergy in patient_allergy %}
+                        
+                       <span> <h4 class="font-bold">Allergy: </h4> <h4>{{allergy.allergy}}</h4></span>
+                        <h5 class="font-bold">Allergy Reaction</h5>
+                        
+                        <p class="">{{allergy.reaction}}</p> 
+
+                    <br>
+                    <hr>
+
+                {% endfor %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+                       

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} View Request {% endblock %}
+{% block page_content %}
+    <div class='row'>
+        <div class="col-md-12">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>
+                        Leave Request
+                    </header>
+                </div>
+                <div class="card-body ">
+                    Employee: <b> {{ lr.employee.full_name }} </b> <br>
+                    Request type: <b> {{ lr.type_of_leave }} </b> <br>
+                    From date: <b> {{ lr.from_date }} </b> <br>
+                    End date: <b> {{ lr.to_date }} </b> <br>
+                    Status: <b> {{ lr.status }} </b> <br>
+                    Reason: <textarea class="form-control" id="" disabled cols="30" rows="8">{{ lr.description }}</textarea> <br>
+                    <a href="{% url 'staff:approve_leave' lr.id %}">
+                        <button type="button" class="btn btn-success btn-rounded btn-icon">Approve<i class="fa fa-check"></i> </button>
+                    </a>
+                    <a href="{% url 'staff:deny_leave' lr.id %}">
+                        <button type="button" class="btn btn-danger btn-rounded btn-icon">Deny<i class="fa fa-times"></i> </button> 
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

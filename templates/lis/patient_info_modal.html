@@ -1,0 +1,25 @@
+{% load static %}
+<div class="modal fade" id="patientInfoModal" tabindex="-1" role="dialog" aria-labelledby="viewSpecimenModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="viewSpecimenLabel">Patient Info</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Id: <b> {{ patient.id }} </b> <br>
+                Full name: <b>{{ patient.full_name }}</b><br>
+                Sex : <b> {{ patient.sex }} </b> <br>
+                Age: <b> {{ patient.age }}</b> <br>
+                Registered: {{ test.sample_volume }} <br>
+                Known cases: {{ test.container_type }}<br>
+                IPD/OPD: {{ test.accession_number }} <br>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+    <link href="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"/>
+{% endblock %}
+{% block title %} Prescriptions {% endblock %}
+
+{% block page_content %}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>Patient Lists</header>
+                    <div class="tools">
+                        <a class="fa fa-repeat btn-color box-refresh" href="javascript:;"></a>
+                        <a class="t-collapse btn-color fa fa-chevron-down" href="javascript:;"></a>
+                        <a class="t-close btn-color fa fa-times" href="javascript:;"></a>
+                    </div>
+                </div>
+                <div class="card-body ">
+                    <table id="example1" class="display table-bordered table-striped table-hover" style="width:100%;">
+                        <thead>
+                            <tr class="gradeX odd">
+                                <th>Name</th>
+                                <th>Gender</th>
+                                <th>Age</th>
+                                <th>Adress</th>                                
+                                <th>Phone Number</th>
+                                <th>Bed</th>
+                                
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ward in ward_team_bed %}
+                                <tr>
+                            <td>{{ward.bed.patient.first_name}} {{ward.bed.patient.last_name}}</td>
+                                    <td> {{ ward.bed.patient.sex }}</td>
+                                    <td> {{ ward.bed.patient.age }} </td>
+                                    
+                                    <td> {{ ward.bed.patient.address }} </td>
+                                    <td> {{ ward.bed.patient.phone_number }} </td>
+                                    <td> {{ ward.bed }} </td>
+                                   <td> <a href="{% url 'doctor_chart_view' ward.bed.patient.id %}">View Patient Chart</a></td>
+                               
+                                </tr>
+                            {% endfor %}
+
+
+                        </tbody>
+
+                            <tr class="gradeX odd">
+                                <td>Name</td>
+                                <td>Gender</td>
+                                <td>#Age</td>
+                                <td>#Adress</td>                                
+                                <td>#Phone Number</td>
+                                <td>Allocate</td>
+                            
+                            </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <!-- data tables -->
+    <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}" ></script>
+    <script src="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.js' %}" ></script>
+    <script src="{% static 'js/pages/table/table_data.js' %}"></script>
+{% endblock %}

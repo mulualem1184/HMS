@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Patient Profile {% endblock %}
+{% block page_content %}
+    <div class="row">
+        <div class="col-md-12">
+            <!-- BEGIN PROFILE SIDEBAR -->
+            <div class="profile-sidebar">
+                <div class="card ">
+                    <div class="card-body no-padding height-9">
+                        <div class="row">
+                            <div class="profile-userpic">
+                                <img src="/media/{{employee.user_profile.profile_image}}" class="img-responsive" alt=""> </div>
+                        </div>
+                        <div class="profile-usertitle">
+                            <div class="profile-usertitle-name">{{ patient.full_name }} </div>
+                            
+                        </div>
+                        <ul class="list-group list-group-unbordered">
+                            
+                            <li class="list-group-item">
+                                <b>First Name </b>
+                                <div class="profile-desc-item pull-right"> {{ patient.first_name }}</div>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Last Name </b>
+                                <div class="profile-desc-item pull-right"> {{ patient.last_name }}</div>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Gender </b>
+                                <div class="profile-desc-item pull-right"> {{ patient.sex }}</div>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Age</b>
+                                <div class="profile-desc-item pull-right"> {{ patient.age }}</div>
+                            </li>
+                        </ul>
+                        <!-- END SIDEBAR USER TITLE -->
+                        <!-- SIDEBAR BUTTONS -->
+                       
+                        <!-- END SIDEBAR BUTTONS -->
+                    </div>
+                </div>
+            </div>
+            <!-- END BEGIN PROFILE SIDEBAR -->
+            <!-- BEGIN PROFILE CONTENT -->
+          
+            <div class="profile-content">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="profile-tab-box">
+                            <div class="p-l-20">
+                                <ul class="nav ">
+                                    <li class="nav-item tab-all"><a
+                                        class="nav-link active show" href="#doctab" data-toggle="tab">Medication History</a></li>
+                                    <li class="nav-item tab-all p-l-20"><a class="nav-link"
+                                        href="#settingtab" data-toggle="tab">Surgery History</a></li>
+                                    <li class="nav-item tab-all p-l-20"><a class="nav-link"
+                                        href="#allergytab" data-toggle="tab">Allergies</a></li>
+                                    <li class="nav-item tab-all p-l-20"><a class="nav-link"
+                                        href="#chronictab" data-toggle="tab">Chronic Illnesses</a></li>
+
+
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="white-box">
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+                                <div class="tab-pane active fontawesome-demo" id="doctab">
+                                    <table id="example1" class="display table-bordered table-striped table-hover" style="width: 100%;">
+                                        <thead>
+                                            <tr class="gradeX odd">
+                                                <th>Drug</th>
+                                                <th>Diagnosis</th>
+                                                <th>Date</th>
+                                                <th>Prescriber</th>
+                                                <th>Active</th>
+                                                
+                                                
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for medication in patient_medication %}
+                                                <tr>
+                                           
+                                                    <td> {{ medication.drug_prescription.drug }}</td>
+                                                    <td> {{ medication.drug_prescription.diagnosis }} </td>
+                                                    <td> {{ medication.registered_on }} </td>
+                                                    <td> {{ medication.drug_prescription.prescriber }} </td>
+                                                    <td> No </td>
+                                                
+                                                </tr>
+                                            {% endfor %}
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="tab-pane" id="settingtab">
+                                     <table id="example1" class="display table-bordered table-striped table-hover" style="width: 100%;">
+                                        <thead>
+                                            <tr class="gradeX odd">
+                                                <th>Surgery Type</th>
+                                                <th>Diagnosis</th>
+                                                <th>Date</th>
+                                                
+                                                
+                                                
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for surgery in patient_surgery %}
+                                                <tr>
+                                           
+                                                    <td> {{ surgery.surgery }}</td>
+                                                    <td> {{ surgery.diagnosis }} </td>
+                                                    <td> {{ surgery.registered_on }} </td>    
+                                                
+                                                </tr>
+                                            {% endfor %}
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="tab-pane" id="allergytab">
+                                    <table id="example1" class="display table-bordered table-striped table-hover" style="width: 100%;">
+                                        <thead>
+                                            <tr class="gradeX odd">
+                                                <th>Allergy</th>
+                                                
+                                                
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for allergy in patient_allergy %}
+                                                <tr>
+                                           
+                                                    <td> {{ allergy.allergy }}</td>
+                                                </tr>
+                                            {% endfor %}
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="tab-pane" id="chronictab">
+                                    <table id="example1" class="display table-bordered table-striped table-hover" style="width: 100%;">
+                                        <thead>
+                                            <tr class="gradeX odd">
+                                                <th>Medical Condition</th>
+                                                
+                                                
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for condition in medical_condition %}
+                                                <tr>
+                                           
+                                                    <td> {{ condition.medical_condition }}</td>
+                                                </tr>
+                                            {% endfor %}
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

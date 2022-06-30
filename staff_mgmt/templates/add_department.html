@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} Add Department {% endblock %}
+{% block page_content %}
+    <div class="col-md-12 col-sm-10">
+        <div class="card card-box">
+            <div class="card-head">
+                <header>Create Department</header>
+            </div>
+            <div class="card-body " id="bar-parent1">
+                <form class="form-horizontal" method="POST" id="department_form" >
+                    {% csrf_token %}
+                    {% for field in department_form %}
+                        <div class="form-group row col-md-8 col-sm-10">
+                            <label for="{{ field.id_for_label }}" class="col-sm-2 control-label"> {{ field.label }} </label>
+                            <div class="col-sm-10">
+                                {{ field }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class="form-group">
+                        <div class="offset-md-3 col-md-9">
+                            <button type="submit" class="btn btn-info"> Create </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

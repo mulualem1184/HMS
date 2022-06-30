@@ -1,0 +1,78 @@
+
+
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Drug Price Form {% endblock %}
+{% block style 	%}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+{% endblock %}
+{% load crispy_forms_tags %}
+{% block page_content %}
+  {% include "pharmacy_app/drug_price_modal.html" %}
+    <div class="" style="width: 100%;">
+        <div class="card card-box">
+            <div class="card-head">
+                <header>Drug Price Form</header>
+                <button id = "panel-button2" 
+                       class = "mdl-button mdl-js-button mdl-button--icon pull-right" 
+                       data-upgraded = ",MaterialButton">
+                       <i class = "material-icons">more_vert</i>
+                    </button>
+                    <ul class = "mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+                       data-mdl-for = "panel-button2">
+                       <li class = "mdl-menu__item"><i class="material-icons">assistant_photo</i>Action</li>
+                       <li class = "mdl-menu__item"><i class="material-icons">print</i>Another action</li>
+                       <li class = "mdl-menu__item"><i class="material-icons">favorite</i>Something else here</li>
+                    </ul>
+            </div>
+
+                    {%block content1%}
+                    <table id="example1" class="display table-bordered table-striped table-hover" style="width:100%;">
+                        <thead>
+                            <tr class="gradeX odd">
+                                <th style=" ">Drug</th>
+                                <th style=" ">Price</th>
+                                <th>Discounted Price</th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for drug_price in drug_price_list %}
+                           <tr> 
+                           	<td style="">{{drug_price.drug}}</td>
+                    		    <td style="">{{drug_price.selling_price}}</td>
+            			           <td>{{drug_price.discounted_price}}</td>
+                           </tr>                                           
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% endblock %}
+            <div class="card-body " id="bar-parent1">
+       
+    
+        <div class="form-group row" style="padding-left: 50px;">
+            <div class="offset-sm-2 col-sm-10"><
+                <button type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect btn-circle btn-primary"
+                                data-toggle="modal" data-target="#addTestModalCenter">
+                                Add Drug Prices <i class="fa fa-plus"></i>
+                </button>
+            </div>
+        </div>
+
+    {% block scripts %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+	<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>        
+<script >
+	$(document).ready(function() {
+    $('#id_drug').select2();
+    $('#id_slot_no').select2();
+});
+	</script>
+
+  <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}" ></script>
+    <script src="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.js' %}" ></script>
+    <script src="{% static 'js/pages/table/table_data.js' %}"></script>
+    {% endblock %}
+
+{% endblock %}
+

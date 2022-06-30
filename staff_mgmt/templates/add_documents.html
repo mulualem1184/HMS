@@ -1,0 +1,5 @@
+<form action="{% url 'add-documents' employee.id %}" >
+    {% for field in document_form %}
+        {{ field }}
+    {% endfor  %}
+</form>

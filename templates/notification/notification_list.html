@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %} Notifications {% endblock %}
+
+{% block page_content %}
+    <div class="content-body">
+        <!-- account setting page start -->
+        <section id="page-account-settings">
+            <br>
+            {% if n %}
+                <a href="#heading_{{n.id}}"  type="hidden" id = "scroller_tag" ></a>
+            {% endif %}
+                
+            <div class="row">
+                  <!-- left menu section -->
+                <div class="col-md-2 mb-2 mb-md-0 pt-1 round" style="background-color: white;">
+                    <h5>Notification Filtering </h5>
+                    <ul class="nav nav-pills flex-column mt-md-0 mt-1">
+                        <li class="nav-item ">
+                                <a aria-expanded="false"  class="btn btn-success mt-1 py-1 nav-link d-flex" href="#" >
+                                    <i class="fa fa-list"></i>
+                                    All
+                                </a>
+                             
+                        </li>
+                        <li>
+                            
+                                            </li>
+                        <li class="nav-item ">
+                            <a aria-expanded="false"  class="btn mt-1 nav-link d-flex" href="#" style="background-color: #ede8e8;" >
+                                <i class="fa fa-envelope-open"></i>
+                                Read Only
+                            </a>
+                            
+                        </li>
+                        <li class="nav-item ">
+                            <a aria-expanded="false"  class="btn btn-light mt-1 nav-link d-flex" href="#" >
+                                <i class="fa fa-envelope"></i>
+                                Unread Only
+                            </a>
+                        </li>
+                                                             
+                    </ul>
+                    <br>
+                    <hr></hr>
+                   
+                </div>
+                  <!-- right content section -->
+                <div class="col-md-10 round">
+                    <div class="card px-2 py-3">
+                      
+                        {% if status == "unread"  %}
+                            <div class="right">
+                                    <div id="buttons_div" class="col-md-6 " style="float: right;">
+                                        {% if notis|length > 0 %}
+                                            <button  onclick="markallread()"  type="button " style ="float:right; "
+                                                class=" btn btn-success ">Mark All As Read</button>
+                                        {% else %}
+                                            <button disabled  type="button" title="You have no unread messages!" style ="float:right; "
+                                                class=" btn btn-light ">Mark All As Read</button>
+                                        {% endif %}
+                                    </div>
+                            </div>
+                        {% endif %}
+    
+                       
+                        <div role="tabpanel" class="tab-pane " id="ver_{{cur_ver}}_panel" aria-labelledby="ver_{{cur_ver}}_pill" aria-expanded="true">
+                            <div class="card-body" id = "card_body">
+                                <div class="form-body" >
+                                    <div >
+                                        <div class="col-lg-12 col-xl-12">
+                                            <div class="mb-2 mt-2">
+                                                <h5 class="mb-0 text-uppercase">Your latest <strong>'{{status}}'</strong> notifications</h5>
+                                            </div>
+                                            <div id="accordionWrap" role="tablist" aria-multiselectable="true">
+                                                <div class="card accordion ">
+                                                    {% for n in notis %}
+                                                            {% if n.read %}
+                                                                <div class="box-shadow-1 border-grey border-lighten-2 mt-1 px-1 pt-1" style="background-color: #ede8e8 ;" >
+                                                                    <div  id="heading_{{n.id}}" class="card-header primary p-0  px-1"  data-toggle="collapse" href="#desc_{{n.id}}"
+                                                                            aria-expanded="true"  style="background-color: #ede8e8 ;" >
+                                                                        <i class="fa fa-envelope-open green"></i>
+                                                                        
+                                                                        <a class="card-title lead mb-0 py-0 px-1 "  style="color: rgb(61, 60, 60);">
+                                                                            {{n.noti.noti}} <span class="blue"> <small> Read More</small></span>
+
+                                                                        </a>
+                                                                        <div class="media-body" style="background-color: #ede8e8 ;" {%>
+                                                                                <span class="list-group-item-text  px-2 badge badge-{{n.noti.tag}}">
+                                                                                    {{n.noti.tag}} 
+                                                                                </span>
+                                                                                <i class="fa fa-clock-o ml-2"></i>
+                                                                                <span class="text-muted mb-1">{{n.noti.created_date}} ({{n.noti.timesince}})</span>
+                                                                                <p style="color: rgb(141, 138, 138);">{{n.noti.desc|truncatechars_html:40}}</p>
+                                                                                
+                                                                                <!-- <span class="float-right mb-1 ">Read More>> </span> -->
+                                                                                
+                                                                        </div>
+                                                                    </div>
+                                                                
+                                                                    <div id="desc_{{n.id}}" role="tabpanel" style="background-color: rgb(233, 231, 231); border-radius: 3px;" data-parent="#accordionWrap"
+                                                                        aria-labelledby="heading11" class="collapse box-shadow-1 border-grey border-lighten-2 mb-1 mt-1">
+                                                                        <div class="card-content">
+                                                                            <div class="card-body">
+                                                                                <p>{{n.noti.desc}}</p>
+                                                                                {% if n.noti.link != '' %}
+                                                                                    <p style ="float:right"><a class="btn btn-info" href="{{n.noti.link}}">Redirect</a></p>
+                                                                                {% endif %}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            {% else %}
+                                                                <div id="noti_div_{{n.id}}" class="box-shadow-1 border-grey border-lighten-2 mt-1 px-1 pt-1  ">
+                                                                    <div  id="heading_{{n.id}}" class="card-header primary p-0  px-1" onclick="mark_as_read('{{n.id}}')" data-toggle="collapse" href="#desc_{{n.id}}" aria-expanded="true" >
+                                                                        <i id="env_{{n.id}}" class="fa fa-envelope black"></i>
+                                                                        <a class="card-title lead mb-0 py-0 px-1 "  style="color: rgb(61, 60, 60);"> 
+                                                                            {{n.noti.noti}} <span class="blue"><small> Read More</small></span>
+                                                                        </a>
+                                                                        <div class="media-body " >
+                                                                                <span class="list-group-item-text  px-2 badge badge-{{n.noti.tag}}">
+                                                                                    {{n.noti.tag}} 
+                                                                                </span>
+                                                                                <i class="fa fa-clock-o ml-2"></i>
+                                                                                <span class="text-muted mb-1">{{n.noti.created_date}} ({{n.noti.timesince}})</span>
+                                                                                <p style="color: rgb(141, 138, 138);">{{n.noti.desc|truncatechars_html:40}}</p>
+                                                                                <!-- <span class="float-right mb-1 ">Read More>> </span> -->   
+                                                                        </div>
+                                                                    </div>
+                                                                    <div id="desc_{{n.id}}" role="tabpanel" style="background-color: rgb(233, 231, 231); border-radius: 3px;" data-parent="#accordionWrap"
+                                                                        aria-labelledby="heading11" class="collapse box-shadow-1 border-grey border-lighten-2 mb-1 mt-1">
+                                                                        <div class="card-content">
+                                                                            <div class="card-body">
+                                                                                <p>{{n.noti.desc}}</p>
+                                                                                
+                                                                                {% if n.noti.link != '' %}
+                                                                                    <p style ="float:right"><a class="btn btn-info" href="{{n.noti.link}}">Redirect</a></p>
+                                                                                {% endif %}
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            {% endif %}      
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- account setting page end -->
+    </div>
+{% endblock %}

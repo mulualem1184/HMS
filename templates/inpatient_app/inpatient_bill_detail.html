@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} {% endblock %}
+
+{% block page_content %}
+        
+
+    <div class="" style="width: 100%;">
+        <div class="card card-box">
+            
+            <div class="card-body " id="bar-parent1">
+              
+        
+                    {%block content1%}
+                     <div class="row">
+                      <div class="col-md-12">
+                          <div class="white-box">
+                              <h3><b>Bill</b> <span class="pull-right">#{{room_bill.bill_no}}</span></h3>
+                              <hr>
+                              <div class="row">
+                                  <div class="col-md-12">
+                    <div class="pull-left">
+                      <address>
+                        
+                        <p class="text-muted m-l-5">
+                          location this <br> location that, <br>
+                          this road, <br> this post - 380015
+                        </p>
+                      </address>
+                    </div>
+                    <div class="pull-right text-right">
+                      <address>
+                        <p class="addr-font-h3">To,</p>
+                       
+                        <p class="font-bold addr-font-h4">{{room_bill.patient}}</p>
+                       
+                        <p class="text-muted m-l-30">
+                          patient_address <br> more patient address <br>
+                          patient Road, <br> patient post - 380057
+                        </p>
+                        <p class="m-t-30">
+                          <b>Date :</b> <i class="fa fa-calendar"></i> {{time}}
+                        </p>
+                        
+                      </address>
+                    </div>
+                  </div>
+                                  <div class="col-md-12">
+                                      <div class="table-responsive m-t-40">
+                                          <table class="table table-hover">
+                                              <thead>
+                                                  <tr>
+                                                      <th class="text-center">#</th>
+                                                      <th>Item Name</th>
+                                                      <th >Quantity</th>
+                                                      <th></th>
+                                                      <th></th>
+                                                      <th >Unit Price</th>
+                                                      <th></th>
+                                                      <th>Charges</th>
+                                                      <th></th>
+                                                      <th></th>
+                                                       
+                                                  </tr>
+                                              </thead>
+                                              <tbody>
+                                                {% for bill in drug_bill %}
+                                                  <tr>
+                                                      <td class="text-center"></td>
+                                                      <td>{{bill.drug}}</td>
+                                                      <td >{{bill.quantity}}</td>
+                                                      <td></td>
+                                                      <td></td>
+                                                      <td >$ {% widthratio bill.drug_price bill.quantity 1 %}</td>
+                                                      <td></td>
+                                                      <td>${{bill.drug_price}}</td>
+                                                      <td></td>
+                                                      <td></td>
+                                                  
+                                                  </tr>
+                                                  {% endfor %}
+                                              {% for bill in service_bill %}
+                                                  <tr>
+                                                      <td class="text-center"></td>
+                                                      <td>{{bill.service}}</td>
+                                                      <td ></td>
+                                                      <td></td>
+                                                      <td></td>
+                                                      <td >${{bill.service_price}}</td>
+                                                      <td></td>
+                                                      <td>${{bill.service_price}}</td>
+                                                      <td></td>
+                                                      <td></td>
+                                                  
+                                                  </tr>
+                                                  {% endfor %}
+                                                  <tr>
+                                                      <td class="text-center"></td>
+                                                      <td>Room Stay</td>
+                                                      <td >{{stay_duration}} days</td>
+                                                      <td></td>
+                                                      <td></td>
+                                                      <td >${{room_price}}</td>
+                                                      <td></td>
+                                                      <td>${{room_bill.room_price}}</td>
+                                                      <td></td>
+                                                      <td></td>
+                                                  
+                                                  </tr>
+                                                 <!-- <tr>
+                                                      <td class="text-center">#</td>
+                                                      <td>Item Name</td>
+                                                      <td >Quantity</td>
+                                                      <td></td>
+                                                      <td></td>
+                                                      <th >Unit Price</th>
+                                                      <td></td>
+                                                      <td>Charges</td>
+                                                      <td></td>
+                                                      <td></td>
+                                                       
+                                                  </tr>-->
+                                              </tbody>
+                                          </table>
+                                      </div>
+                                  </div>
+                                  <div class="col-md-12">
+                                      <div class="pull-right m-t-30 text-right">
+                                          <p>Sub - Total amount: ${{total_price}}</p>
+                                          <p>Discount : $ </p>
+                                          <p>vat (10%) : $ </p>
+                                          <hr>
+                                          <h3><b>Total :</b> ${{total_price}}</h3> </div>
+                                      <div class="clearfix"></div>
+                                      <hr>
+                                      <div class="text-right">
+                                          <button class="btn btn-success" type="submit"> <a href="{% url 'really_discharge_inpatient' room_bill.patient.id %}" style="color: white;"> Done</a> </button>
+                                          <button onclick="javascript:window.print();" class="btn btn-default btn-outline" type="button"> <span><i class="fa fa-print"></i> Print </span>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+{% endblock %}
+                     
+    {% block scripts %}
+               
+    <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}" ></script>
+    <script src="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.js' %}" ></script>
+    <script src="{% static 'js/pages/table/table_data.js' %}"></script>
+            {% endblock %}
+
+{% endblock %}
+

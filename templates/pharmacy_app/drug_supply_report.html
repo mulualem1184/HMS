@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	{% block style %}
+	{% endblock %}
+</head>
+<body>
+
+<!-- Navigation -->
+{% block page_content %}
+
+
+<div class="row">
+	<div class="col-md-2"></div>
+	<div class="col-md-7">
+		<h5>Latest Users</h5>
+		<hr>
+		<div class="card card-body">
+			<a class="btn btn-primary btn-sm btn-block" href=""> Register/ed Land Owners</a>
+			<table border="solid" class="table table-sm">
+				<tr>
+					
+					<th></th>
+					<th>Description Item</th>
+					<th>Unit</th>
+					<th>Beginning Balance</th>
+					<th>Quantity Recieved</th>
+					<th>Loss/Adjustment</th>
+					<th>Ending Balance</th>				
+				</tr>
+				
+				{% block content1 %}
+				{% for i in land_owners %}
+					<tr>
+						<td>{{i.name}}</td>
+						<td>{{i.email}}</td>
+						<td><a class="btn btn-outline-info  btn-sm btn-block" href="{% url 'archive_owner_info' i.id %}">More Info</a></td>
+					</tr>	
+
+				{% endfor %}
+				{% endblock content1 %}
+			</table> 
+		</div>
+	</div>
+</div>
+
+<!-- Search Div -->
+{% endblock %}
+
+</body>
+</html>
+
+</h1>
+</body>
+</html>
+{% endblock %}

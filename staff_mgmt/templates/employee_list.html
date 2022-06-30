@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+    <link href="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"/>
+{% endblock %}
+{% block title %} Employee List {% endblock %}
+{% block page_content %}
+    <div class='row'>
+        <div class="col-md-12">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>
+                        List of Employees
+                    </header>
+                    <div class="tools"> </div>
+                </div>
+                <div class="card-body ">
+                    <table id="example1" class="display table-bordered table-striped table-hover" style="width:100%;">
+                        <thead>
+                            <tr class="gradeX odd">
+                                <th>Id</th>
+                                <th>First name</th>
+                                <th>Last name</th>
+                                <th>Email</th>
+                                <th>Department</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for e in employee_list %}
+                                <tr>
+                                    <td> {{ e.employee_id | upper }} </td>
+                                    <td> {{ e.first_name }} </td>
+                                    <td> {{ e.last_name }} </td>
+                                    <td> {{ e.email }} </td>
+                                    <td> {{ e.department }}</td>
+                                    <td>
+                                        <div class="btn-group btn-group-circle">
+                                            <button type="button" class="btn btn-primary">Actions</button>
+                                            <button type="button" class="btn btn-circle-right btn-primary dropdown-toggle m-r-20" data-toggle="dropdown" aria-expanded="false">
+                                                <i class="fa fa-angle-down"></i>
+                                            </button>
+                                            <ul class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(79px, 34px, 0px); top: 0px; left: 0px; will-change: transform;">
+                                                <li> <a href="{% url 'staff:view_employee' e.id %}">View</a> </li>
+                                                <li> <a href="{% url 'staff:employee_attendance' e.employee_id %}">Attendance</a> </li>
+                                                <li> <a href="#">Remove</a> </li>
+                                                <li class="divider"></li>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    <!-- data tables -->
+    <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}" ></script>
+    <script src="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.js' %}" ></script>
+    <script src="{% static 'js/pages/table/table_data.js' %}"></script>
+{% endblock %}

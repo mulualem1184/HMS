@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+    <link href="{% static '/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css' %}" rel="stylesheet" media="screen">
+{% endblock %}
+{% block title %} Add workshift {% endblock %}
+{% block page_content %}
+<div class="row">
+    <div class="col-md-12 col-sm-12">
+        <div class="card card-box">
+            <div class="card-head">
+                <header>Create Work shift</header>
+            </div>
+            <div class="card-body" id="bar-parent">
+                <form method="POST" id="form_sample_1" class="form-horizontal">
+                    {% csrf_token %}
+                    <div class="form-body">
+                        {% for field in shift_form %}
+                            {% if field.id_for_label == 'id_start_time' %}
+                                <div class="form-group row">
+                                    <label class="control-label col-md-3" for="{{ field.id_for_label }}" >
+                                        {{ field.label }}<span class="required"> * </span>
+                                    </label>
+                                    <div class="input-group date form_time col-md-5" data-date="" data-date-format="hh:ii" data-link-field="dtp_input3" data-link-format="hh:ii">
+                                        {{ field }}
+                                        <span class="input-group-addon"><span class="fa fa-remove"></span></span>
+                                        <span class="input-group-addon"><span class="fa fa-clock-o"></span></span>
+                                    </div>
+                                    <input type="hidden" id="dtp_input3" value="" />
+                                    <br>
+                                </div>
+                            {% elif field.id_for_label == 'id_end_time' %}
+                                <div class="form-group row">
+                                    <label class="control-label col-md-3" for="{{ field.id_for_label }}" >
+                                        {{ field.label }}<span class="required"> * </span>
+                                    </label>
+                                    <div class="input-group date form_time col-md-5" data-date="" data-date-format="hh:ii" data-link-field="dtp_input3" data-link-format="hh:ii">
+                                        {{ field }}
+                                        <span class="input-group-addon"><span class="fa fa-remove"></span></span>
+                                        <span class="input-group-addon"><span class="fa fa-clock-o"></span></span>
+                                    </div>
+                                    <input type="hidden" id="dtp_input3" value="" />
+                                    <br>
+                                </div>
+                            {% else %}
+                                <div class="form-group row">
+                                    <label class="control-label col-md-3" for="{{ field.id_for_label }}" >
+                                        {{ field.label }}<span class="required"> * </span>
+                                    </label>
+                                    <div class="col-md-5">
+                                        {{ field }}
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                        <div class="form-actions">
+                            <div class="row">
+                                <div class="offset-md-3 col-md-9">
+                                    <button type="submit" class="btn btn-info">Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static '/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js' %}"></script>
+    <script src="{% static '/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker-init.js' %}"></script>
+{% endblock %}

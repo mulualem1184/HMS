@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+    <link href="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"/>
+{% endblock %}
+{% block title %} Intervention List {% endblock %}
+
+{% block page_content %}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>Patient List </header>
+                    <div class="tools">
+                        <a class="fa fa-repeat btn-color box-refresh" href="javascript:;"></a>
+                        <a class="t-collapse btn-color fa fa-chevron-down" href="javascript:;"></a>
+                        <a class="t-close btn-color fa fa-times" href="javascript:;"></a>
+                    </div>
+                </div>
+                <div class="card-body ">
+                    <table id="example1" class="display table-bordered table-striped table-hover" style="width:100%;">
+                        <thead>
+                            <tr class="gradeX odd">
+                                <th>Patient</th>
+                                
+
+                                <th>Administration Detail</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for medication, patient in medication_zip %}
+                                <tr>
+                                    <td>{{patient}}</td>
+                                    
+                                    <td> <a href="{% url 'medical_administration_detail' medication.patient.id%}">View Administration Detail</a></td>
+                                    <td>
+                                    <div class="btn-group btn-group-circle">
+                                    <button type="button" class="btn btn-primary">Actions</button>
+                                    <button type="button" class="btn btn-circle-right btn-primary dropdown-toggle m-r-20" data-toggle="dropdown" aria-expanded="false">
+                                        <i class="fa fa-angle-down"></i>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(79px, 34px, 0px); top: 0px; left: 0px; will-change: transform;">
+                                        <li><a href="{% url 'mark_drug_as_administered' medication.drug_prescription.id %}">Administer Drug</a>
+                                        </li>
+
+                                        
+                                    </ul>
+                                    </div>    
+                                    </td>
+                                                                          
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <!-- data tables -->
+    <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}" ></script>
+    <script src="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.js' %}" ></script>
+    <script src="{% static 'js/pages/table/table_data.js' %}"></script>
+{% endblock %}

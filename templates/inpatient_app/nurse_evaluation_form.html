@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} {% endblock %}
+{% load crispy_forms_tags %}
+{% block style %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+{% endblock%}
+{% block page_content %}
+       
+    <div class="" style="width: 100%;">
+        <div class="card card-box">
+              <div class="card-body " id="bar-parent1">
+              
+                    <header class="panel-heading panel-heading-blue">
+                        Intervention 
+                    </header>
+                    <div class="panel-body">{{intervention.intervention}}</div>
+        
+
+<!--                <h4 class="font-bold">Intervention</h4>
+                    
+                    <p class="m-t-30 col-md-9">{{intervention.intervention}}</p>
+               
+                </div>
+    -->                                
+
+                <hr>
+                <div class="card-body">
+				<form action="" method="POST">
+			        		{% csrf_token %}
+			            <div class="form-group col-md-9">  
+			                    {{evaluation_form.evaluation|as_crispy_field}}
+			                </div>
+			            
+			                <button class="form-group btn btn-primary" type="submit" > Submit</button>
+                            <button class="form-group btn " ><a href="{% url 'nurse_chart_view' intervention.doctor_instruction.patient.id %}"> Skip</a></button>
+
+			            	</div>
+				            
+				    </form>
+
+                </div>
+
+            
+    {% block scripts %}
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>        
+<script >
+  $(document).ready(function() {
+    $('#service_room').select2();
+    $('#patient').select2();
+});
+  </script>
+
+      
+    {% endblock %}
+
+{% endblock %}
+
+ 

@@ -1,0 +1,51 @@
+{% load static %}
+{% load crispy_forms_tags %}
+ <style type="text/css">
+    .hidden {
+      display: none
+    }
+  </style>
+
+    <form action="{% url 'drug_image_form' 6 %}" class="form-control dropzone" enctype="multipart/form-data" id="dropzone" method="POST">
+                 
+<div class="modal fade" id="activeImageForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel">Add Image</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body hidden" >
+                
+                {% csrf_token %}
+                {{ active_image_form}}
+                            
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                
+                <input type="submit" name="Add" class="btn btn-primary">
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+
+
+<!--
+
+                <div class="col-lg-12 p-t-20">
+     <label class="control-label col-md-3">
+           </label>
+           <div class="col-md-12">
+               <div id="id_dropzone" class="dropzone">
+                 <div class="fallback">
+                    <input required name="images" multiple class="form-control-file" type="file"  />
+                  </div>
+                
+                </div>
+           </div>
+                </div>
+                -->

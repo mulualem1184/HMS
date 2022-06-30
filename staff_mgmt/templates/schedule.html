@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+    <link href="{% static 'fullcalendar/main.css' %}" rel="stylesheet" type="text/css" />
+{% endblock %}
+{% block title %}
+    Schedule
+{% endblock %}
+{% block page_content %}
+    <form action="">
+        {{ filter_form }}
+        <br>
+        <button class="btn btn-primary">Filter</button>
+    </form>
+    <div id="calendar"></div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'fullcalendar/main.js' %}" ></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+          initialDate: '{{ initial_date | safe }}',
+          eventOrder: 'color,start',
+          events: {{ events | safe }},
+          eventClick: function(info) {
+            if(info.event.url) {
+                console.log('redirecting to view employee page')
+            }
+          },
+        });
+        calendar.render();
+      });
+    </script>
+{% endblock %}

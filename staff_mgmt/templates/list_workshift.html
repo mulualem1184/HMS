@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Workshift list {% endblock %}
+{% block page_content %}
+    <table class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded">
+        <thead>
+        <tr>
+            <th class="mdl-data-table__cell--non-numeric">#</th>
+            <th class="mdl-data-table__cell--non-numeric">Day</th>
+            <th class="mdl-data-table__cell--non-numeric">Shift type</th>
+            <th class="mdl-data-table__cell--non-numeric">Start time</th>
+            <th class="mdl-data-table__cell--non-numeric">End time</th>
+            <th class="mdl-data-table__cell--non-numeric">No of employees</th>
+            <th class="mdl-data-table__cell--non-numeric">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for ws in ws_list %}
+                <tr>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ forloop.counter }} </td>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ ws.get_day_display }} </td>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ ws.shift_type }} </td>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ ws.start_time }} </td>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ ws.end_time }} </td>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ ws.employee_set.count }} </td>
+                    <td class="mdl-data-table__cell--non-numeric">
+                        <div>
+                            <div class="col-sm-"> 
+                                <a href="{% url 'staff:assign_shift' ws.id %}">
+                                    <button type="button" class="btn btn-success btn-rounded btn-icon"> <i class="fa fa-plus"></i> </button>
+                                </a>
+                                <a href="{% url 'staff:edit_workshift' ws.id %}">
+                                    <button type="button" class="btn btn-info btn-rounded btn-icon"> <i class="fa fa-edit"></i> </button> 
+                                </a>
+                                <a href="{% url 'staff:remove_workshift' ws.id %}">
+                                    <button type="button" class="btn btn-danger btn-rounded btn-icon"> <i class="fa fa-times"></i> </button> 
+                                </a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+    <a href="{% url 'staff:add_workshift' %}">
+        <button type="button" class="btn btn-info btn-rounded btn-icon"> <i class="fa fa-plus"></i> Create New shift </button> 
+    </a>
+
+{% endblock %}

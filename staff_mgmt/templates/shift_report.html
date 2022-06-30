@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+    <link href="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"/>
+{% endblock %}
+{% block title %} {% endblock %}
+{% block page_content %}
+    <div class='row'>
+        <div class="col-md-12">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>
+                        Report
+                    </header>
+                    <div class="tools">
+                        <!--  -->
+                    </div>
+                </div>
+                <div class="card-body ">
+                    <table class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded">
+                        <thead>
+                            <tr class="gradeX odd">
+                                <th>Shift</th>
+                                <th>Department</th>
+                                <th>No of Employees</th>
+                                <th>Expected Work hours</th>
+                                <th>Actual Worked hours</th>
+                                <th>Total overtime</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rep in report_list %}
+                                <tr>
+                                    <td> {{ rep.shift }} </td>
+                                    <td> {{ rep.shift.department }} </td>
+                                    <td> {{ rep.total_employees }} </td>
+                                    <td> {{ rep.total_work_hours }} </td>
+                                    <td> {{ rep.actual_work_hours }} </td>
+                                    <td> - </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <!-- data tables -->
+    <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}" ></script>
+    <script src="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.js' %}" ></script>
+    <script src="{% static 'js/pages/table/table_data.js' %}"></script>
+{% endblock %}

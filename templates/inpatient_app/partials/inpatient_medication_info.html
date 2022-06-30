@@ -1,0 +1,37 @@
+{% load mathfilters %}
+{% load static %}
+
+<div class="modal fade" id="room-queue-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel">Current Patient Medication</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                    
+                {% for medication, gap, range in try_zip1 %}
+                        <h4 class="font-bold">{{medication.drug_prescription.drug}} </h4>
+                        
+                        <h5 class="font-bold">Administration Times</h5>
+                        <span class="">{{gap.first_time}}</br> 
+
+                    {% for i in range %}
+                        {{gap.first_time.hour|add:gap.time_gap|mul:i}} a.m. </br>
+                    {% endfor %}
+                    </span>
+                    <br>
+
+                {% endfor %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+                       

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load static %}
+{% block page_content %}
+<div class="row">
+    <div class="col-md-12 col-sm-12">
+        <div class="card card-box">
+            <div class="card-head">
+                <header>Make Leave Request</header>
+            </div>
+            <div class="card-body" id="bar-parent">
+                <form method="POST" id="form_sample_1" class="form-horizontal">
+                    {% csrf_token %}
+                    <div class="form-body">
+                        {% for field in leave_form %}
+                            <div class="form-group row">
+                                <label class="control-label col-md-3" for="{{ field.id_for_label }}" >
+                                    {{ field.label }}<span class="required"> * </span>
+                                </label>
+                                <div class="col-md-5">
+                                    {{ field }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <div class="form-actions">
+                            <div class="row">
+                                <div class="offset-md-3 col-md-9">
+                                    <button type="submit" class="btn btn-info">Submit</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

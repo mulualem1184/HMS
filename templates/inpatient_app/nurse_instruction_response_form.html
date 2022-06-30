@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} {% endblock %}
+{% load crispy_forms_tags %}
+{% block style %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+{% endblock%}
+{% block page_content %}
+<!--
+<div class="btn-group btn-group-circle" style="padding-bottom: 20px;">
+    <button type="button" class="btn btn-primary">Actions</button>
+    <button type="button" class="btn btn-circle-right btn-primary dropdown-toggle m-r-20" data-toggle="dropdown" aria-expanded="false">
+        <i class="fa fa-angle-down"></i>
+    </button>
+    <ul class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(79px, 34px, 0px); top: 0px; left: 0px; will-change: transform;">
+        
+        <li><a href="{% url 'mark_instruction_as_done' instruction.id %}">Mark Instruction As Done</a></li>
+    </ul>
+    </div>-->
+    <div class="" style="width: 100%;">
+        <div class="card card-box">
+              <div class="card-body " id="bar-parent1">
+                                <!--
+                                  <div class="pull-right">
+                                                <li class="nav-item dropdown">
+                                                    <a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown"> More
+                                                            <i class="fa fa-angle-down"></i>
+                                                        </a>
+                                                    <ul class="dropdown-menu" role="menu">
+                                                        <li class="nav-item">
+                                                            <a href="{% url 'mark_instruction_as_done' instruction.id %}">Mark Instruction As Done</a>
+                                                        </li>
+                                                    </ul>
+                                                </li>
+                                            </div>  -->      
+       f          
+                    <header class="panel-heading panel-heading-green">
+                        Instruction 
+                    </header>
+                    <div class="panel-body">{{instruction.instruction}}</div>
+                <!--                                   
+                <h4 class="font-bold">Instruction </h4>
+                    
+                    <p class="m-t-30 col-md-12">{{instruction.instruction}}</p>
+                    -->
+                    <header class="font-bold">
+                        Expected Outcome 
+                    </header>
+                    <div class="panel-body">{{instruction.expected_outcome}}</div>
+                    <!--
+                    <h4 class="font-bold">Expected Outcome</h4>
+
+                    
+                    <p class="m-t-30 col-md-12">{{instruction.expected_outcome}}</p>
+                 -->
+                <h5 class="font-bold">Ordered By: </h5>
+                
+                <p class="m-t-30">{{instruction.doctor}}</p>
+                
+                <h5 class="font-bold">Result Expected In</h5>
+                    
+                <p class="m-t-30">{{instruction.instruction_time}}</p>
+
+                <hr>
+
+
+                    {% for intervention, evaluation_count in intervention_zip %}
+                    <header class="panel-heading panel-heading-blue">
+                        Interventions
+                    </header>
+                    <div class="panel-body">{{intervention.intervention}}</div>
+                    <!--
+                <h4 class="font-bold">Previous Intervention</h4>
+                    <p class="m-t-30 col-md-12">{{intervention.intervention}}</p>
+                    -->
+                <h4 class="font-bold">Intervention Time: </h4>
+                
+                    <span>                    
+                    <p class="m-t-30">{{intervention.registered_on}}</p>
+
+                        <a href="{% url 'intervention_detail' intervention.id %}" class="pull-right">{{evaluation_count}} Evaluations</a>
+                    </span>
+
+                <h4 class="font-bold">Intervening Nurse: </h4>
+                    <p class="m-t-30">{{intervention.nurse}}</p>
+                
+
+                <hr>
+                    {% endfor %}
+
+                </div>
+                                    
+
+                <hr>
+                <div class="card-body">
+				<form action="" method="POST">
+			        		{% csrf_token %}
+			            <div class="form-group col-md-9">  
+			                    {{response_form.intervention|as_crispy_field}}
+			                </div>
+			            
+			                <button class="form-group btn btn-primary" type="submit" > Submit</button>
+
+			            	</div>
+				            
+				    </form>
+
+                </div>
+
+            
+    {% block scripts %}
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>        
+<script >
+  $(document).ready(function() {
+    $('#service_room').select2();
+    $('#patient').select2();
+});
+  </script>
+
+      
+    {% endblock %}
+
+{% endblock %}
+
+ 

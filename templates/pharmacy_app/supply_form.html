@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Fill Supply Form {% endblock %}
+
+{% block page_content %}
+        
+
+<ul class="nav nav-tabs">
+  <li ><a href="{% url 'supply_form' %}" style="color: black;">Shelf Supply</a></li>
+  <li><a href="{% url 'stock_supply_form' %}" style="color: grey;">Stock Supply</a></li>
+  
+</ul>
+  
+    <div class="" style="width: 100%;">
+        <div class="card card-box">
+            <div class="card-head">
+                <header>Supply Form</header>
+                <button id = "panel-button2" 
+                       class = "mdl-button mdl-js-button mdl-button--icon pull-right" 
+                       data-upgraded = ",MaterialButton">
+                       <i class = "material-icons">more_vert</i>
+                    </button>
+                    <ul class = "mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+                       data-mdl-for = "panel-button2">
+                       <li class = "mdl-menu__item"><i class="material-icons">assistant_photo</i>Action</li>
+                       <li class = "mdl-menu__item"><i class="material-icons">print</i>Another action</li>
+                       <li class = "mdl-menu__item"><i class="material-icons">favorite</i>Something else here</li>
+                    </ul>
+            </div>
+            <div class="card-body " id="bar-parent1">
+              
+        
+    <form action="" method="POST">
+        
+        <h4 class="" style="">Enter Batch Info</h4>
+            
+            
+        <div class="">
+                    
+            <div class="form-group row">
+                <div class="col-sm-10">
+                    {% csrf_token %}
+                    {{batch_form.as_p}}
+                </div>
+            </div>
+
+            <h4 class="">Enter supply Info</h4>        
+                    
+                   
+                   <div class="form-group row">
+                        <div class="col-sm-10">
+                            {% csrf_token %}
+                            {{supply_form.as_p}}
+                        </div>
+                    </div>              
+
+            <h4 class="">Enter expiration Info</h4>
+                    <div class="form-group row">
+                        <div class="col-sm-10">
+                            {% csrf_token %}
+                            {{drug_expiration_form.as_p}}
+                        </div>
+                    </div>              
+                    
+<!--               
+            <div class="form-group row">
+                <label  class="col-md-2 control-label"> Manufacturing Date  </label>
+                <div class="col-sm-10">
+                    {{drug_expiration_form.manufacturing_date}}
+                </div>
+            </div>
+            <div class="form-group row">
+                <label  class="col-sm-2 control-label"> Expiration Date </label>
+                <div class="col-sm-10">
+                    {{drug_expiration_form.expiration_date}}
+                </div>
+            </div>
+-->    
+        </div>    
+            <input type="submit" name="Submit"> 
+    </form>
+
+    {% block scripts %}
+        
+    {% endblock %}
+
+{% endblock %}
+
+ 

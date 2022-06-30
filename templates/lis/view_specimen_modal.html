@@ -1,0 +1,31 @@
+{% load static %}
+<div class="modal fade" id="viewSpecimenModal" tabindex="-1" role="dialog" aria-labelledby="viewSpecimenModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="viewSpecimenLabel">Specimen Info</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Collected by: {{ test.specimen.collected_by }}<br>
+                Collected at: {{ test.specimen.collected_at }} <br>
+                Sample Type: <b> {{ test.specimen.sample_type }}</b> <br>
+                Sample Volume: {{ test.specimen.sample_volume }} <br>
+                Container type: {{ test.specimen.container_type }}<br>
+                Accession number: {{ test.specimen.accession_number }} <br>
+                {% if test.specimen %}
+                    Barcode image: 
+                    <div class='row' style="width: 50px;height: 50px;">
+                        <img src="/media/{{test.specimen.barcode_image}}" width="300px" height="150px" alt="Barcode"><br> <br>
+                    </div> <br> <br><br>
+                    <a href="{% url 'view-specimen-image' test.specimen.id %}" target="_blank"> <button class="btn btn-primary">Print</button> </a>
+                {% endif %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

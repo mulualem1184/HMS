@@ -1,0 +1,307 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+    Patient Info
+{% endblock %}
+{% block style %}
+    <style>
+        .patientimage {
+            width: 150px;
+            height: 180px;
+            border-radius: 5px;
+            display: flow-root;
+            padding-left: 20px;
+            margin: 5px;
+        }
+        .vitalCard {
+            width: 210px;
+            height: 70px;
+            background-color: rgb(36, 36, 126);
+            border-radius: 6px;
+            padding-right: 5px;
+            margin: 5px;
+        }
+        .vitaltext {
+            color: rgb(198, 235, 31);
+            padding-top: 8px;
+            padding-left: 8px;
+            font-size: 14;
+            font-weight: bolder;
+        }
+        .vitaltextinfo {
+            color: rgb(199, 191, 191);
+            padding-left: 3px;
+            padding-bottom: 5px;
+        }
+    </style>
+{% endblock %}
+{% block page_content %}
+{% include "inpatient_app/partials/inpatient_medication_info.html" %}
+{% include "inpatient_app/partials/admission_info.html" %}
+{% include "inpatient_app/partials/care_plan_info.html" %}
+{% include "inpatient_app/partials/vital_sign_modal.html" %}
+{% include "inpatient_app/partials/allergy_info_modal.html" %}
+{% include "inpatient_app/partials/habit_info_modal.html" %}
+{% include "inpatient_app/partials/doctor_progress_note_form_modal.html" %}
+
+    <div class="row">
+        <div class="col-lg-9 col-md-12 col-sm-12 col-12">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>Patient Info</header>
+                </div>
+                <div class="card-body" id="bar-parent">
+                    <div class="row">
+                        <img src="/media/{{user.profile_image}}" alt="User Image" class="patientimage" />
+                        <div style="padding-left: 5px; padding-top: 5px; font-weight: bolder;">
+                            <p style="font-weight: bolder;">{{ patient.full_name }} </p>
+                            Male - 35 years old
+                            <br> IPD - Room 34
+                            <br> Blood type O+
+                        </div>
+                        <div style="padding-left: 70px; padding-top: 5px; font-weight: bolder;">
+                            <p style="font-weight: bolder;">Info </p>
+<!--                                <li><a href="" data-toggle='modal' data-target="#room-queue-modal">Patient Medication </a></li>
+                                <li><a href="" data-toggle='modal' data-target="#admission-info-id">Admission Info </a></li>
+                                <li><a href="" data-toggle='modal' data-target="#care-plan-info-id">Care Plan </a></li>
+                                <li><a href="" data-toggle='modal' data-target="#vital-sign-modal">Check Vital Sign </a></li>
+                                <li><a href="" data-toggle='modal' data-target="#allergy-info-modal">Patient Allergies </a></li>
+                                <li><a href="" data-toggle='modal' data-target="#habit-info-modal">Patient Habits </a></li>
+-->
+                            <a href="" data-toggle='modal' data-target="#room-queue-modal">Patient Medication </a>
+                            <br> <a href="" data-toggle='modal' data-target="#admission-info-id">Admission Info </a>
+                            <br> <a href="" data-toggle='modal' data-target="#care-plan-info-id">Care Plan </a>
+                            <br><a href="" data-toggle='modal' data-target="#vital-sign-modal">Check Vital Sign </a>
+                        </div>
+                       
+                    </div>
+                    <!-- VitalSign info -->
+                    <br>
+                    <div class="card-head">
+                        <header> Vitals</header>
+                        <a href="#">See all</a>
+                    </div>
+                    <div class="row" style="padding: 20px;">
+                        <br><br>
+                        <div class="vitalCard">
+                            <p class="vitaltext">
+                                {{vital_sign.blood_pressure}}
+                            </p>
+                            <p class="vitaltextinfo">
+                                Blood Pressure
+                            </p> 
+                        </div>
+                        <div class="vitalCard">
+                            <p class="vitaltext">
+                                {{vital_sign.pulse_rate}}
+                            </p>
+                            <p class="vitaltextinfo">
+                                Pulse Rate
+                            </p> 
+                        </div>
+                        <div class="vitalCard">
+                            <p class="vitaltext">
+                                {{vital_sign.temperature}} {{vital_sign.temperature_unit}}
+                            </p>
+                            <p class="vitaltextinfo">
+                                Tempreature
+                            </p> 
+                        </div>
+                        <br>
+                        <div class="vitalCard">
+                            <p class="vitaltext">
+                                20 bpm
+                            </p>
+                            <p class="vitaltextinfo">
+                                Respiratory
+                            </p> 
+                        </div>
+                        <div class="vitalCard">
+                            <p class="vitaltext">
+                                6.4 mi/cmm
+                            </p>
+                            <p class="vitaltextinfo">
+                                RBC
+                            </p> 
+                        </div>
+                        <div class="vitalCard">
+                            <p class="vitaltext">
+                                166mg/dl
+                            </p>
+                            <p class="vitaltextinfo">
+                                Cholesterol
+                            </p> 
+                        </div>
+                    </div>
+                    <!-- End vitalsign info -->
+                    <div class="panel tab-border card-box">
+                        <header class="panel-heading panel-heading-gray custom-tab ">
+                            <ul class="nav nav-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active show" href="#charttab" data-toggle="tab">Nurse Progress Note</a></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#instructiontab" data-toggle="tab">Instructions</a></li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#interventiontab" data-toggle="tab">Independent Interventions </a></li>
+
+
+                            </ul>
+                        </header>
+                        <div class="panel-body">
+                            <div class="tab-content">
+                                <div class="tab-pane active fontawesome-demo" id="charttab">
+                                        
+                                        <h4 class="font-bold">Latest Observation </h4>
+                                            {% for chart in progress_note_list %}
+                                            <hr>
+                                            <p class="m-t-30">{{chart.observation}}</p>
+
+                                            <h4 class="font-bold">Latest Patient Appearance</h4>
+
+                                            <hr>
+                                            <p class="m-t-30">{{chart.appearance}}</p>
+                                            <br>
+
+                                            {% endfor %}
+                                        <a href="{% url 'last_nurse_progress_note_list' patient.id %}">See More</a>
+                                </div>
+
+                                <div class="tab-pane" id="interventiontab">
+                                    
+                                        <hr>
+                                        {% for  intervention, evaluation_count in intervention_zip %}
+                                        <h5 class="font-bold">Cause Of Intervention </h5>
+                                        <p class="m-t-30">{{intervention.intervention_cause}}</p>
+                                            
+
+                                        <h5 class="font-bold">Intervention</h5>                                         
+                                        <span><p class="m-t-30">{{intervention.intervention}}</p>
+                                            <a href="{% url 'independent_intervention_detail' intervention.id %}" class="pull-right">{{evaluation_count}} evaluations</a>
+                                        </span>
+
+                                        <h5 class="font-bold">Rational</h5>                                            
+                                        <p class="m-t-30">{{intervention.rational}}</p>  
+
+
+                                        <hr>
+                                        {% endfor %}
+                                        <a href="">See More</a>
+
+                                </div>
+
+                                <div class="tab-pane" id="instructiontab">
+                                        
+                                        <h4 class="font-bold">Instructions </h4>
+                                            <hr>
+                                            {% for instruction in instruction_list %}
+                                            <span><p class="m-t-30">{{instruction.instruction}}</p>
+                                                <a href="{% url 'intervention_list_for_doctor' instruction.id %}" class="pull-right">Instruction Response</a>
+                                            </span>
+                                            <h5 class="font-bold">Instructed By:</b> <span class=""><b>{{instruction.doctor}}</b></span></h5>
+
+                                            <hr>
+                                            {% endfor %}
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-12 col-sm-12 col-12">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>Actions</header>
+                </div>
+                <div class="card-body" id="bar-parent">
+                    <ul>
+                    <li><a href="{% url 'nurse_progress_note'   patient.id %}">Make Observations</a></li>
+                    <li><a href="{% url 'inpatient_prescription'   patient.id %}">Prescribe Drugs</a></li>
+                    <li><a href="{% url 'doctor_instruction_form' patient.id %}">Give Instructions</a></li>
+                    <li><a href="" data-toggle='modal' data-target="#doctor-progress-note-modal">Write Progress Note </a></li>
+                        <li>
+                            <a href="{% url 'order-for-patient' patient.id %}">Order Lab test</a>
+                        </li>
+                        <li>
+                            <a href="#">Order X-Ray</a>
+                        </li>
+                        <li>
+                            <a href="#">Order Ct-scan</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>Patient Info</header>
+                    <a href="#">See all</a>
+                </div>
+                <div class="card-body" id="bar-parent">
+                    No upcoming appointments
+                </div>
+            </div>
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>Reports</header>
+                </div>
+                <div class="card-body" id="bar-parent">
+                    <table style="border: none;" class="table display product-overview mb-30" id="support_table">
+                        <thead>
+                            <tr>
+                                <th>Test</th>
+                                <th>-</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>CBC</td>
+                                <td>
+                                    <a href="#">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>X-Ray</td>
+                                <td>
+                                    <a href="#">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <a href="#">See all</a>
+                </div>
+            </div>
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>Visits</header>
+                    <a href="#">See all</a>
+                </div>
+                <div class="card-body" id="bar-parent">
+                    <table style="border: none;" class="table display product-overview mb-30" id="support_table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Reason</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Jan 14 2022</td>
+                                <td>Chest pain</td>
+                            </tr>
+                            <tr>
+                                <td>Wed Jan 20 2022</td>
+                                <td>Diarrhea</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

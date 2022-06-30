@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block style %}
+    <link href="{% static '/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css' %}" rel="stylesheet" media="screen">
+{% endblock %}
+{% block title %} Attendance {% endblock %}
+{% block page_content %}
+<table class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded">
+    <thead>
+    <tr>
+        <th class="mdl-data-table__cell--non-numeric">#</th>
+        <th class="mdl-data-table__cell--non-numeric">Name</th>
+        <th class="mdl-data-table__cell--non-numeric">Date</th>
+        <th class="mdl-data-table__cell--non-numeric">Shift</th>
+        <th class="mdl-data-table__cell--non-numeric">Work hours</th>
+        <th class="mdl-data-table__cell--non-numeric">Is Present?</th>
+        <th class="mdl-data-table__cell--non-numeric">Action</th>
+    </tr>
+    </thead>
+    <tbody>
+        {% for att in attendance_list %}
+            {% include "attendance_modal.html" %}
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric"> {{ forloop.counter }} </th>
+                <td class="mdl-data-table__cell--non-numeric"> {{ att.employee.full_name }} </td>
+                <td class="mdl-data-table__cell--non-numeric"> {{ att.date }} </td>
+                <td class="mdl-data-table__cell--non-numeric"> {{ att.shift.start_time }} - {{ att.shift.end_time }} </td>
+                <td class="mdl-data-table__cell--non-numeric"> {{ att.work_hours }}</td>
+                <td class="mdl-data-table__cell--non-numeric"> 
+                    {% if att.is_present %}
+                        <button class="btn btn-success">
+                            <i class="green fa fa-check small"></i>
+                        </button>
+                    {% else %}
+                        <button class="btn btn-danger small">
+                            <i class="green fa fa-times"></i>
+                        </button>
+                    {% endif %}
+                </td>
+                <td class="mdl-data-table__cell--non-numeric">
+                    <div>
+                        <button type="button" class="btn btn-info btn-rounded btn-icon"  data-toggle="modal" data-target="#att_for_id_{{att.id}}"> 
+                            <i class="fa fa-plus"></i> 
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static '/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js' %}"></script>
+    <script src="{% static '/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker-init.js' %}"></script>
+{% endblock %}

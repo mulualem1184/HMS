@@ -1,0 +1,99 @@
+
+
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Fill Supply Form {% endblock %}
+{% load crispy_forms_tags %}
+{% block style %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css"> 
+
+{% endblock %}
+{% block page_content %}
+  
+    <div class="" style="width: 100%;">
+        <div class="card card-box">
+            <div class="card-head">
+                <header>Patient Form</header>
+                <button id = "panel-button2" 
+                       class = "mdl-button mdl-js-button mdl-button--icon pull-right" 
+                       data-upgraded = ",MaterialButton">
+                       <i class = "material-icons">more_vert</i>
+                    </button>
+                    <ul class = "mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+                       data-mdl-for = "panel-button2">
+                       <li class = "mdl-menu__item"><i class="material-icons">assistant_photo</i>Action</li>
+                       <li class = "mdl-menu__item"><i class="material-icons">print</i>Another action</li>
+                       <li class = "mdl-menu__item"><i class="material-icons">favorite</i>Something else here</li>
+                    </ul>
+            </div>
+            <div class="card-body " id="bar-parent1">
+       
+    <h4 class=" card-body"><b>   </b></h4>
+        
+        <form action="" method="POST">
+      {% csrf_token %}
+
+
+        <div class="form-row">
+            <div class="form-group col-md-6 mb-0">
+		    {{patient_form.first_name|as_crispy_field}}
+            </div>
+            <div class="form-group col-md-6 mb-0">
+                {{patient_form.last_name|as_crispy_field}}      
+            </div>
+
+        </div>
+        
+        <div class="form-row">
+
+              <div class="form-group col-md-4 mb-0">
+              {{patient_form.sex|as_crispy_field}}      
+              </div>
+              <div class="form-group col-md-4 mb-0">
+              {{patient_form.dob|as_crispy_field}}      
+              </div>
+              <div class="form-group col-md-4 mb-0">
+              {{patient_form.address|as_crispy_field}}      
+              </div>
+        </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-6">
+        
+		{{patient_form.occupation|as_crispy_field}}
+        </div>
+        <div class="form-group col-md-6">
+          {{patient_form.phone_number|as_crispy_field}}
+        </div>
+      
+      </div>
+    	
+        <div style="width: 100%">
+   
+        <input type="submit" class="btn-info btn" name="Submit">
+        </div>
+          
+            </form>
+            {% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+{% block script %}
+<script>
+
+
+
+ </script> 
+
+
+{% endblock %}
+
+
+{% endblock %}
+

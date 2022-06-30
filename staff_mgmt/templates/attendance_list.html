@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+{% load check_shift %}
+{% block style %}
+    <!-- data tables -->
+    <link href="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"/>
+{% endblock %}
+{% block title %} Attendance {% endblock %}
+{% block page_content %}
+    <div class='row'>
+        <div class="col-md-12">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>
+                        Attendance Sheet
+                    </header>
+                    <div class="tools">
+                        <!--  -->
+                    </div>
+                </div>
+                <div class="card-body ">
+                    <table id="example1" class="display table-bordered table-striped table-hover" style="width:100%;">
+                        <thead>
+                            <tr class="gradeX odd">
+                                <th>Date</th>
+                                {% for shift in employee_shift %}
+                                    <th> {{ shift }} </th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for att in attendance_list %}
+                                <tr>
+                                    <td> {{ att.date }} </td>
+                                    {% for shift in employee_shift %}
+                                        {% update_shift_flag att shift %}
+                                        {% if checkShift %}
+                                            <td> {{ att.work_hours }} hrs </td>
+                                        {% else %}
+                                            <td> - </td>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <!-- data tables -->
+    <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}" ></script>
+    <script src="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.js' %}" ></script>
+    <script src="{% static 'js/pages/table/table_data.js' %}"></script>
+{% endblock %}

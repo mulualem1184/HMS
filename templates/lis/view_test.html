@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} View Test {% endblock %}
+{% block page_content %}
+
+<!-- Sepcimen view and add modals -->
+{% include "lis/add_specimen_info_modal.html" %}
+{% include "lis/view_specimen_modal.html" %}
+{% include "lis/acc_no_modal.html" %}
+<!-- end modal -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>Test Detail</header>
+                </div>
+                <div class="card-body ">
+                    Test Id: <b>{{ test.id }} <br></b>
+                    Ordered at: <b>{{ test.ordered_at }} <br></b>
+                    Ordered by: <b>{{ test.order.ordered_by }} <br></b>
+                    <!-- Priority: <b>{{ test.priority }} <br></b> -->
+                    Price:<b> {{ test.price }} <br></b>
+                    Paid: <b>
+                            {% if test.paid %}
+                                Yes
+                            {% else %}
+                                No
+                            {% endif %}
+                        </b> <br>
+                    Section: <b>{{ test.section }}</b> <br>
+                    Test type: <b> {{ test.test_type.name}} </b><br>
+                    Status: <b> {{ test.status }}</b>
+                    {% if test.paid and test.specimen %}
+                        <div>
+                            <form action="{% url 'update-test-status' test.id %}" method="POST">
+                                {% csrf_token %}
+                                <label for="test_status">Update Status to:</label>
+                                <select name="test_status" id="test_status" class="form-control">
+                                    <option value="STARTED">STARTED</option>
+                                    <option value="AWAITING RESULT ENTRY">AWAITING RESULT ENTRY</option>
+                                </select>
+                                <br>
+                                <input type="submit" class="btn" value="Update Status">
+                            </form>
+                        </div>
+                    {% endif %}
+                    <br> <br>
+                    Special instructions: <b> {% if test.special_instructions %} {{ test.special_instructions  }} {% else %} ---- {% endif %}</b> <br>
+                    <br><br>
+                    <div class="form-group">
+                        <div class="offset-md-3 col-md-9">
+                            {% if not test.paid and not test.referred %} <!-- if test is not paid -->
+                                <p class="txt-info"> Test is not paid yet. </p>                   
+                            {% else %} <!-- if test is paid -->
+                                {% if not test.referred %}
+                                <div class="btn-group"> <!-- Specimen info -->
+                                    <button data-toggle="dropdown" class="btn btn-primary btn-circle dropdown-toggle m-r-20" type="button">
+                                        Specimen <span class="caret"></span>
+                                    </button>
+                                    <ul role="menu" class="dropdown-menu">
+                                        {% if test.specimen %}
+                                            <li> <!-- if test has specimen show options to edit/view-->
+                                                <a data-toggle="modal" data-target="#viewSpecimenModal">
+                                                    View Specimen Info
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a data-toggle="modal" data-target="#addSpecimenModal">
+                                                    Edit Specimen Info
+                                                </a>
+                                            </li>
+                                        {% else %} <!-- if it doesn't have specimen; enter specimen info/ specimen accession number-->
+                                            <li>
+                                                <a data-toggle="modal" data-target="#addSpecimenModal">
+                                                    Add Specimen Info 
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a data-toggle="modal" data-target="#setAccessionNumberModal">
+                                                    Set accession number 
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                        <li class="divider"></li>
+                                    </ul>
+                                </div> <!-- End Specimen info -->
+                                {% endif %}
+                                {% if test.specimen or test.referred %} <!-- if test has specimen of is referred show TestResult button -->
+                                    <div class="btn-group"> <!-- Laboratory Test result -->
+                                        <button data-toggle="dropdown" class="btn btn-primary btn-circle dropdown-toggle m-r-20" type="button">
+                                            Test Result <span class="caret"></span>
+                                        </button>
+                                        <ul role="menu" class="dropdown-menu">
+                                            {% if test.result_set.count > 0  %}
+                                                <li>
+                                                    <a href="{% url 'view-test-result' test.id %}">View Test Result</a>
+                                                </li>
+                                                <li>
+                                                    <a href="{% url 'edit-test-result' test.id %}">Edit Test Result</a>
+                                                </li>
+                                            {% else %}
+                                                <li>
+                                                    <a href="{% url 'enter-test-result' test.id %}">Enter Test result</a>
+                                                </li>
+                                            {% endif %}
+                                            <li class="divider"></li>
+                                        </ul>
+                                    </div> <!-- End Laboratory test result -->
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

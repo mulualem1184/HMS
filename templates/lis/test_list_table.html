@@ -1,0 +1,84 @@
+{% load static %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card card-box">
+            <div class="card-head">
+                <header>Test Lists</header>
+                <div class="tools">
+                    <a class="fa fa-repeat btn-color box-refresh" href="javascript:;"></a>
+                    <a class="t-collapse btn-color fa fa-chevron-down" href="javascript:;"></a>
+                    <a class="t-close btn-color fa fa-times" href="javascript:;"></a>
+                </div>
+            </div>
+            <div class="card-body ">
+                <table id="example1" class="display table-bordered table-striped table-hover" style="width:100%;">
+                    <thead>
+                        <tr class="gradeX odd">
+                            <th>Test Id</th>
+                            <th>Order Id</th>
+                            <th>Ordered at</th>
+                            <th>Test type</th>
+                            <th>Lab. Section</th>
+                            <th>Status</th>
+                            <th>Price</th>
+                            <th>Paid</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for test in test_set %}
+                            <tr>
+                                <td> {{ test.id }}</td>
+                                <td> {{ test.order.id }} </td>
+                                <!-- Priority -->
+                                <td> {{ test.ordered_at }} </td>
+                                <td> {{ test.test_type.name }} </td>
+                                <td> {{ test.test_type.section }} </td>
+                                <td>
+                                    {% if test.status == 'FAIL' %}
+                                        <span class="label label-sm label-danger "> {{ test.status }} </span>
+                                    {% elif test.status == 'COMPLETED' %}
+                                        <span class="label label-sm label-success "> {{ test.status }} </span>
+                                    {% else %}
+                                        <span class="label label-sm label-info "> {{ test.status }} </span>
+                                    {% endif %}
+                                </td>
+                                <td> {{ test.price }} </td>
+                                <td>
+                                    {% if test.paid == True %}
+                                        <i class="fa fa-check" style="color: green;"></i>
+                                        <span style="display: none;">True</span>
+                                    {% else %}
+                                        <i class="fa fa-times" style="color: red;"></i>
+                                        <span style="display: none;">False</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-circle">
+                                        <button type="button" class="btn btn-primary">Actions</button>
+                                        <button type="button" class="btn btn-circle-right btn-primary dropdown-toggle m-r-20" data-toggle="dropdown" aria-expanded="false">
+                                            <i class="fa fa-angle-down"></i>
+                                        </button>
+                                        <ul class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(79px, 34px, 0px); top: 0px; left: 0px; will-change: transform;">
+                                            <li><a href="{% url 'view-test' test.id %}">View</a></li>
+                                            <li> <a href="{% url 'enter-test-result' test.id %}">Enter Result</a> </li>
+                                            <li>
+                                                {% if test.paid %}
+                                                    <a href="{% url 'toggle-test-paid-status' test.id %}">Mark as Unpaid</a>
+                                                {% else %}
+                                                    <a href="{% url 'toggle-test-paid-status' test.id %}">Mark as paid</a>
+                                                {% endif %}
+                                            </li>
+                                            <li class="divider"></li>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,11 @@
+{% load static %}
+<div>
+    <img src="/media/{{specimen.barcode_image}}" width="140px" height="80px" alt="Barcode"><br>
+</div>
+
+<script>
+    window.print();
+    window.onafterprint = function () {
+        window.close();
+    }
+</script>

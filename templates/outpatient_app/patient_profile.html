@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+    <link href="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"/>
+{% endblock %}
+{% block title %} Patient Profile {% endblock %}
+
+{% block page_content %}
+
+<div class="page-content">
+                    <div class="page-bar">
+                        <div class="page-title-breadcrumb">
+                            <div class=" pull-left">
+                                <div class="page-title">Patient Profile</div>
+                            </div>
+                            <ol class="breadcrumb page-breadcrumb pull-right">
+                                <li><i class="fa fa-home"></i>&nbsp;<a class="parent-item" href="index.html">Home</a>&nbsp;<i class="fa fa-angle-right"></i>
+                                </li>
+                                <li><a class="parent-item" href="#">Patients</a>&nbsp;<i class="fa fa-angle-right"></i>
+                                </li>
+                                <li class="active">Patient Profile</li>
+                            </ol>
+                        </div>
+                    </div>
+                    <div class="row">
+	                    <div class="col-md-6 col-xs-12">
+	                        <div class="white-box">
+								<div class=" cardbox patient-profile">
+									<img src="../assets/img/patient1.jpg" class="img-responsive" alt="">
+								</div>
+			                    <div class="header">
+			                        <h4 class="font-bold">ABOUT PATIENT</h4>
+			                    </div>
+				                    <div class="body">
+				                        <div class="user-btm-box">
+				                                <!-- .row -->
+				                                <div class="row text-center m-t-10">
+				                                    <div class="col-lg-6 col-md-12 col-sm-6 col-xs-12 b-r"><strong>Name</strong>
+				                                        <p>Pankaj Rai</p>
+				                                    </div>
+				                                    <div class="col-lg-6 col-md-12 col-sm-6 col-xs-12"><strong>Occupation</strong>
+				                                        <p>Engineer</p>
+				                                    </div>
+				                                </div>
+				                                <!-- /.row -->
+				                                <hr>
+				                                <!-- .row -->
+				                                <div class="row text-center m-t-10">
+				                                    <div class="col-lg-6 col-md-12 col-sm-6 col-xs-12 b-r"><strong>Email ID</strong>
+				                                        <p><a href="https://radixtouch.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0171606f6a606b41666c60686d2f626e6c">[email&#160;protected]</a></p>
+				                                    </div>
+				                                    <div class="col-lg-6 col-md-12 col-sm-6 col-xs-12"><strong>Phone</strong>
+				                                        <p>+123 456 789</p>
+				                                    </div>
+				                                </div>
+				                                <!-- /.row -->
+				                                <hr>
+				                                <!-- .row -->
+				                                <div class="row text-center m-t-10">
+				                                    <div class="col-md-12"><strong>Address</strong>
+				                                        <p>345, Sarju Appt., Mota Varacha, Surat
+				                                            <br> Gujarat, India.</p>
+				                                    </div>
+				                                </div>
+				                            </div>
+				                    	</div>
+			                		</div>
+	                        	</div>
+	                   	 </div>
+	                   	 <div class="profile-content">
+                                <div class="row">
+									<div class="profile-tab-box">
+										<div class="p-l-20">
+											<ul class="nav ">
+												<li class="nav-item tab-all"><a
+													class="nav-link active show" href="#tab1" data-toggle="tab">Medication History</a></li>
+												<li class="nav-item tab-all p-l-20"><a class="nav-link"
+													href="#tab2" data-toggle="tab">Surgery History</a></li>
+												<li class="nav-item tab-all p-l-20"><a class="nav-link"
+													href="#tab3" data-toggle="tab">Settings</a></li>
+											</ul>
+										</div>
+									</div>
+							</div>
+						</div>	
+
+{% endblock %}
+                     
+    {% block scripts %}
+               
+    <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}" ></script>
+    <script src="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.js' %}" ></script>
+    <script src="{% static 'js/pages/table/table_data.js' %}"></script>
+            {% endblock %}
+

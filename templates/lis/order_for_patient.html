@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Create Orders {% endblock %}
+
+{% block style %}
+    <!-- Datatables -->
+    <link href="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"/>
+{% endblock %}
+
+{% block page_content %}
+
+    <div class="col-md-12 col-sm-10">
+        <div class="card card-box">
+            <div class="card-head">
+                <header>Order Form</header>
+            </div>
+            <div class="card-body " id="bar-parent1">
+                <form class="form-horizontal" method="POST" id="orderForm">
+                    {% csrf_token %}
+                    <div class="form-group row col-md-8 col-sm-10">
+                        <label for="patient_id" class="col-sm-2 control-label"> Patient: </label>
+                        <div class="col-sm-10">
+                            <b> {{ patient.full_name }} </b> 
+                            {% include "lis/patient_info_modal.html" %}
+                            <button type="button" class="btn btn-primary col-sm-5" data-toggle="modal" data-target="#patientInfoModal">
+                                View patient Info 
+                            </button>
+                        </div>
+                    </div>
+                    {% for field in order_form %}
+                        <div class="form-group row col-md-8 col-sm-10">
+                            <label for="{{ field.id_for_label }}" class="col-sm-2 control-label"> {{ field.label }} </label>
+                            <div class="col-sm-10">
+                                {{ field }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class="form-group row col-md-8 col-sm-10">
+                        <label for="labsectionList" class="col-sm-2 control-label"> Filter Lab. Section </label>
+                        <select id="labsectionList" class="form-control col-sm-10" onchange="editSearchBox(this.value)">
+                            <option value="" selected>All</option>
+                            {% for section in lab_sections %}
+                                <option value="{{section.name}}"> {{ section.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {% include "lis/added_tests.html" %}
+
+                    <div class="form-group">
+                        <div class="offset-md-3 col-md-9">
+                            <button type="submit" class="btn btn-info"> Order </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% block scripts %}
+        <!-- data tables -->
+        <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}" ></script>
+        <script src="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.js' %}" ></script>
+        <script src="{% static 'js/pages/table/table_data.js' %}"></script>
+        <script>
+            $('#orderForm').submit(function() {
+                if(!$('#orderForm input:checked').length > 0) {
+                    alert("Please select at least one Laboratory test.");
+                    return false;
+                }
+            });
+
+            function editSearchBox(dept) {
+                $('#example1_filter input:first')[0].value = dept;
+                $('#example1_filter input:first').keyup();
+            }
+        </script>
+    {% endblock %}
+
+{% endblock %}

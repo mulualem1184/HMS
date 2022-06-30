@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} {% endblock %}
+{% load crispy_forms_tags %}
+{% block style %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+{% endblock%}
+{% block page_content %}
+       
+    <div class="" style="width: 100%;">
+        <div class="card card-box">
+            <div class="card-head">
+                <button id = "panel-button2" 
+                       class = "mdl-button mdl-js-button mdl-button--icon pull-right" 
+                       data-upgraded = ",MaterialButton">
+                       <i class = "material-icons">more_vert</i>
+                    </button>
+                    <ul class = "mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+                       data-mdl-for = "panel-button2">
+                       <li class = "mdl-menu__item"><i class="material-icons">assistant_photo</i>Action</li>
+                       <li class = "mdl-menu__item"><i class="material-icons">print</i>Another action</li>
+                       <li class = "mdl-menu__item"><i class="material-icons">favorite</i>Something else here</li>
+                    </ul>
+            </div>  <div class="card-body " id="bar-parent1">
+              
+        
+    <form action="" method="POST">
+        		{% csrf_token %}
+            
+                <div class="form-group col-md-12">  
+                    {{instruction_form.instruction|as_crispy_field}}
+                </div>
+                
+                <div class="form-group col-md-12">  
+                    {{instruction_form.expected_outcome|as_crispy_field}}
+                </div>
+            	 
+               <div class="form-group col-md-4">  
+                    {{instruction_form.instruction_time|as_crispy_field}}
+                </div>
+
+              </div>
+            	
+            
+
+                <button class="form-group btn btn-primary" type="submit" > Submit</button>
+
+            	</div>
+            
+    </form>
+           
+    {% block scripts %}
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>        
+
+
+      
+    {% endblock %}
+
+{% endblock %}
+
+ 
+ <div class="row">
+            <div class="col-sm-12">
+              <div class="card-box">
+                <div class="card-head">
+                  <header>Date Time Picker</header>
+                </div>
+                <div class="card-body ">
+                  <div class="col-lg-6 p-t-20">
+                    <div class="form-control-wrapper">
+                      <input type="text" id="date-format" class="floating-label mdl-textfield__input" placeholder="Date Time Picker">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>

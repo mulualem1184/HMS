@@ -1,0 +1,292 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Doctor Chart View {% endblock %}
+{% block page_content %}
+
+
+{% include "inpatient_app/partials/inpatient_medication_info.html" %}
+{% include "inpatient_app/partials/admission_info.html" %}
+{% include "inpatient_app/partials/care_plan_info.html" %}
+{% include "inpatient_app/partials/vital_sign_modal.html" %}
+{% include "inpatient_app/partials/allergy_info_modal.html" %}
+{% include "inpatient_app/partials/habit_info_modal.html" %}
+
+<div class="btn-group btn-group-circle" style="padding-bottom: 20px;">
+    <button type="button" class="btn btn-primary">Patient Info</button>
+    <button type="button" class="btn btn-circle-right btn-primary dropdown-toggle m-r-20" data-toggle="dropdown" aria-expanded="false">
+        <i class="fa fa-angle-down"></i>
+    </button>
+    <ul class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(79px, 34px, 0px); top: 0px; left: 0px; will-change: transform;">
+        <li><a href="" data-toggle='modal' data-target="#room-queue-modal">Patient Medication </a></li>
+        <li><a href="" data-toggle='modal' data-target="#admission-info-id">Admission Info </a></li>
+        <li><a href="" data-toggle='modal' data-target="#care-plan-info-id">Care Plan </a></li>
+        <li><a href="" data-toggle='modal' data-target="#vital-sign-modal">Check Vital Sign </a></li>
+        <li><a href="" data-toggle='modal' data-target="#allergy-info-modal">Patient Allergies </a></li>
+        <li><a href="" data-toggle='modal' data-target="#habit-info-modal">Patient Habits </a></li>
+        
+    </ul>
+    </div>
+
+<div class="btn-group btn-group-circle pull-right" style="padding-bottom: 20px; padding-right: 100px;">
+    <button type="button" class="btn btn-primary">Actions</button>
+    <button type="button" class="btn btn-circle-right btn-primary dropdown-toggle m-r-20" data-toggle="dropdown" aria-expanded="false" >
+        <i class="fa fa-angle-down"></i>
+    </button>
+
+    <ul class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(79px, 34px, 0px); top: 0px; left: 0px; will-change: transform;">
+        
+        <li><a href="{% url 'nurse_progress_note'   patient.id %}">Make Observations</a></li>
+        <li><a href="{% url 'inpatient_prescription'   patient.id %}">Prescribe Drugs</a></li>
+        <li><a href="{% url 'doctor_instruction_form' patient.id %}">Give Instructions</a></li>
+          
+    </ul>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <!-- BEGIN PROFILE SIDEBAR -->
+            <div class="profile-sidebar">
+                <div class="card ">
+                    <div class="card-body no-padding height-9">
+                        
+                        <div class="profile-usertitle">
+                            <div class="profile-usertitle-name"><a href="{% url 'patient_record' patient.id  %}">{{ patient.full_name }}</a> </div>
+                            
+                        </div>
+                        <ul class="list-group list-group-unbordered">
+                            
+                            <li class="list-group-item">
+                                <b>First Name </b>
+                                <div class="profile-desc-item pull-right"> {{ patient.first_name }}</div>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Last Name </b>
+                                <div class="profile-desc-item pull-right"> {{patient.last_name }}</div>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Gender </b>
+                                <div class="profile-desc-item pull-right"> {{patient.sex }}</div>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Age</b>
+                                <div class="profile-desc-item pull-right"> {{patient.age }}</div>
+                            </li>
+                        </ul>
+
+                        <!-- END SIDEBAR USER TITLE -->
+                        <!-- SIDEBAR BUTTONS -->
+                       
+                        <!-- END SIDEBAR BUTTONS -->
+                    </div>
+                </div>
+            
+            </div>
+            <!-- END BEGIN PROFILE SIDEBAR -->
+            <!-- BEGIN PROFILE CONTENT -->
+          
+        </div>
+
+
+    </div>
+    <div class="card">
+            </div>
+            <div class="profile-content">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="profile-tab-box">
+                            <div class="p-l-20">
+                                <ul class="nav ">
+                                    <li class="nav-item tab-all">
+                                        <a class="nav-link active show" href="#charttab" data-toggle="tab">Nurse Progress Note</a></li>
+                                    <li class="nav-item tab-all p-l-20">
+                                        <a class="nav-link" href="#instructiontab" data-toggle="tab">Instructions</a></li>
+
+                                    <li class="nav-item tab-all p-l-20">
+                                        <a class="nav-link" href="#interventiontab" data-toggle="tab">Independent Interventions </a></li>
+
+
+                                    <li class="nav-item tab-all p-l-20">
+                                        <a class="nav-link" href="#doctab" data-toggle="tab">Current Medication</a></li>
+                                    <!--
+                                    <li class="nav-item tab-all p-l-20">
+                                        <a class="nav-link" href="#settingtab" data-toggle="tab">Visit History</a></li>-->
+ 
+
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="white-box">
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+                                <div class="tab-pane active fontawesome-demo" id="charttab">
+                                        
+                                        <h4 class="font-bold">Latest Observation </h4>
+                                            {% for chart in progress_note_list %}
+                                            <hr>
+                                            <p class="m-t-30">{{chart.observation}}</p>
+
+                                            <h4 class="font-bold">Latest Patient Appearance</h4>
+
+                                            <hr>
+                                            <p class="m-t-30">{{chart.appearance}}</p>
+                                            <br>
+
+                                            {% endfor %}
+                                        <a href="{% url 'last_nurse_progress_note_list' patient.id %}">See More</a>
+                                </div>
+
+                                <div class="tab-pane" id="interventiontab">
+                                    
+                                        <hr>
+                                        {% for  intervention, evaluation_count in intervention_zip %}
+                                        <h5 class="font-bold">Cause Of Intervention </h5>
+                                        <p class="m-t-30">{{intervention.intervention_cause}}</p>
+                                            
+
+                                        <h5 class="font-bold">Intervention</h5>                                         
+                                        <span><p class="m-t-30">{{intervention.intervention}}</p>
+                                            <a href="{% url 'independent_intervention_detail' intervention.id %}" class="pull-right">{{evaluation_count}} evaluations</a>
+                                        </span>
+
+                                        <h5 class="font-bold">Rational</h5>                                            
+                                        <p class="m-t-30">{{intervention.rational}}</p>  
+
+
+                                        <hr>
+                                        {% endfor %}
+                                        <a href="">See More</a>
+
+                                </div>
+
+                                <div class="tab-pane" id="instructiontab">
+                                        
+                                        <h4 class="font-bold">Instructions </h4>
+                                            <hr>
+                                            {% for instruction in instruction_list %}
+                                            <span><p class="m-t-30">{{instruction.instruction}}</p>
+                                                <a href="{% url 'intervention_list_for_doctor' instruction.id %}" class="pull-right">Instruction Response</a>
+                                            </span>
+                                            <h5 class="font-bold">Instructed By:</b> <span class=""><b>{{instruction.doctor}}</b></span></h5>
+
+                                            <hr>
+                                            {% endfor %}
+
+                                </div>
+
+                                <div class="tab-pane" id="doctab">
+                                    <table id="example1" class="display table-bordered table-striped table-hover" style="width: 100%;">
+                                        <thead>
+                                            <tr class="gradeX odd">
+                                                <th>Drug</th>
+                                                <th>Diagnosis</th>
+                                                <th>Date</th>
+                                                <th>Prescriber</th>
+                                                
+                                                
+                                                
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for medication in patient_medication %}
+                                                <tr>
+                                           
+                                                    <td> {{ medication.drug_prescription.drug }}</td>
+                                                    <td> {{ medication.drug_prescription.diagnosis }} </td>
+                                                    <td> {{ medication.registered_on }} </td>
+                                                    <td> {{ medication.drug_prescription.prescriber }} </td>
+                                                    
+                                                
+                                                </tr>
+                                            {% endfor %}
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="tab-pane" id="admissiontab">
+    
+                                        <h4 class="font-bold">Reason For Admission </h4>
+                                            <hr>
+                                            <p class="m-t-30">{{inpatient_reason.reason}}</p>
+
+                                        <h4 class="font-bold">Admission Date</h4>
+                                            <hr>
+                                            <p class="m-t-30">{{chart.stay_duration.admission_date}}</p>
+                                    
+                                </div>
+
+                                <div class="tab-pane" id="settingtab">
+                                     <table id="example1" class="display table-bordered table-striped table-hover" style="width: 100%;">
+                                        <thead>
+                                            <tr class="gradeX odd">
+                                                <th>Surgery Type</th>
+                                                <th>Diagnosis</th>
+                                                <th>Date</th>
+                                                
+                                                
+                                                
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for surgery in patient_surgery %}
+                                                <tr>
+                                           
+                                                    <td> {{ surgery.surgery }}</td>
+                                                    <td> {{ surgery.diagnosis }} </td>
+                                                    <td> {{ surgery.registered_on }} </td>    
+                                                
+                                                </tr>
+                                            {% endfor %}
+
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div class="tab-pane" id="allergytab">
+                                    <table id="example1" class="display table-bordered table-striped table-hover" style="width: 100%;">
+                                        <thead>
+                                            <tr class="gradeX odd">
+                                                <th>Allergy</th>
+                                                
+                                                
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for allergy in patient_allergy %}
+                                                <tr>
+                                           
+                                                    <td> {{ allergy.allergy }}</td>
+                                                </tr>
+                                            {% endfor %}
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="tab-pane" id="chronictab">
+                                    <table id="example1" class="display table-bordered table-striped table-hover" style="width: 100%;">
+                                        <thead>
+                                            <tr class="gradeX odd">
+                                                <th>Medical Condition</th>
+                                                
+                                                
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for condition in medical_condition %}
+                                                <tr>
+                                           
+                                                    <td> {{ condition.medical_condition }}</td>
+                                                </tr>
+                                            {% endfor %}
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+{% endblock %}

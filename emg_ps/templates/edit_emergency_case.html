@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style %}     
+    <link href="{% static 'plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css' %}" rel="stylesheet" type="text/css" />
+	<link href="{% static 'css/pages/formlayout.css' %}" rel="stylesheet" type="text/css" />
+{% endblock %}
+{% block title %} Edit Case Info {% endblock %}
+{% block page_content %}
+    <div class="row">
+        <div class="col-md-12 col-sm-12">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>Edit case info</header>
+                </div>
+                <div class="card-body" id="bar-parent">
+                    <form method="POST" id="form_sample_1" class="form-horizontal" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-body">
+                            {% for field in edit_case_form %}
+                                {% if field.widget_type == 'checkbox' %}
+                                    <div class="form-group row">
+                                        <label class="control-label col-md-3" for="{{ field.id_for_label }}">
+                                            {{ field.label }}
+                                        </label>
+                                        <div class="col-md-5">
+                                            {{ field }}
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="form-group row">
+                                        <label class="control-label col-md-3" for="{{ field.id_for_label }}" >
+                                            {{ field.label }}<span class="required"> * </span>
+                                        </label>
+                                        <div class="col-md-5">
+                                            {{ field }}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                            
+                            {% for field in contact_person_form %}
+                                {% if field.id_for_label == 'id_employed_date' %}
+                                    <div class="form-group row">
+                                        <label class="control-label col-md-3"> 
+                                            {{ field.label }} <span class="required"> * </span>
+                                        </label>
+                                        <div class="col-md-5">
+                                            <div class="input-group date form_date " data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+                                                {{ field }}
+                                                <span class="input-group-addon"><span class="fa fa-calendar"></span></span>
+                                            </div>
+                                            <input type="hidden" id="dtp_input2" value="" />
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="form-group row">
+                                        <label class="control-label col-md-3" for="{{ field.id_for_label }}" >
+                                            {{ field.label }}<span class="required"> * </span>
+                                        </label>
+                                        <div class="col-md-5">
+                                            {{ field }}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        
+                            <div class="form-actions">
+                                <div class="row">
+                                    <div class="offset-md-3 col-md-9">
+                                        <button type="submit" class="btn btn-info">Submit</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js' %}"></script>
+    <script src="{% static 'plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker-init.js' %}"></script>
+{% endblock %}

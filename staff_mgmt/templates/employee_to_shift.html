@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Assign Work shift{% endblock %}
+{% block page_content %}
+<h3>Assign Employees to <b>{{ shift }} </b> shift </h3>
+<form action="" method="POST">
+    {% csrf_token %}
+    <table class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded">
+        <thead>
+        <tr>
+            <th class="mdl-data-table__cell--non-numeric"></th>
+            <th class="mdl-data-table__cell--non-numeric">Name</th>
+            <th class="mdl-data-table__cell--non-numeric">Current shifts</th>
+            <th class="mdl-data-table__cell--non-numeric">ID</th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for e in employee_list %}
+                <tr>
+                    <td class="mdl-data-table__cell--non-numeric">
+                        <input type="checkbox" name="employee" value="{{ e.id }}" {% if e.id in current_employees %} checked {% endif %}>
+                    </td>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ e.full_name }} </td>
+                    <td class="mdl-data-table__cell--non-numeric">
+                        {% if e.shift_set.all %}
+                        {% endif %}
+                        {% for s in e.shift_set.all %}
+                            {% if s.id != shift.id %}
+                                {{ s }} <br>
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ e.employee_id }} </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="form-actions">
+        <div class="row">
+            <div class="offset-md-3 col-md-9">
+                <button type="submit" class="btn btn-info">Update</button>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}

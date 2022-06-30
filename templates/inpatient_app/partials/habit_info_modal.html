@@ -1,0 +1,41 @@
+{% load static %}
+
+<div class="modal fade" id="habit-info-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel">Patient Habits</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                
+                
+                    <table id="example1" class="display table-bordered table-striped table-hover" style="width:100%;">
+                        <thead>
+                            <tr class="gradeX odd">
+                                <th style=" ">Habit</th>
+                                <th> Habit Duration</th>
+                                <th>Active Status</th>    
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for habit in patient_habit %}
+                            <td>{{habit.habit}}</td>
+                            <td>{{habit.habit_duration}} {{habit.habit_duration_unit}}</td>
+                            
+                            <td>{{habit.active}}</td>
+                            
+                        </tbody>
+                        {% endfor %}
+                    </table>
+                    
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                
+            </div>
+        </div>
+    </div>
+</div>

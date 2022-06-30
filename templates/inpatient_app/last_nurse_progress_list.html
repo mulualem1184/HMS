@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} {% endblock %}
+{% load crispy_forms_tags %}
+{% block style %}
+    <!-- wizard -->
+    <link rel="stylesheet" href="{% static 'css/pages/steps.css' %}">
+    <style>
+    </style>
+{% endblock %}
+{% block page_content %}
+          
+    <div class="" style="width: 100%;">
+        <div class="card card-box">
+              <div class="card-body " id="bar-parent1">
+              
+                {% for note in progress_note_list %}   
+                    <header class="panel-heading panel-heading-blue">
+                        {{note.registered_on}}
+                    </header>
+                    <label class="panel-body font-bold">Appearance</label>
+                    <div class="panel-body">{{note.appearance}}</div>
+
+                    <label class="panel-body font-bold">Observation</label>
+                    <div class="panel-body">{{note.observation}}</div>
+
+                    <label class="panel-body font-bold">Registered By: </label><label>{{note.nurse}}</label>
+
+<!--
+                <legend> {{note.registered_on}} </legend>
+                    <label class="font-bold">Appearance</label>
+                    <p class="m-t-30 col-md-12">{{note.appearance}}</p>
+                    <label class="font-bold">Observation</label>
+                    <p class="m-t-30 col-md-12">{{note.observation}}</p>
+                    <br>
+                    <hr>
+-->
+                {% endfor %}
+
+                </div>
+                                    
+
+                <hr>
+          
+
+                
+            
+    {% block scripts %}
+    <script src="{% static 'plugins/steps/jquery.steps.js' %}" ></script>
+    <script src="{% static 'js/pages/steps/steps-data.js' %}" ></script>
+<script >
+  $(document).ready(function() {
+    $('#service_room').select2();
+    $('#patient').select2();
+});
+  </script>
+
+      
+    {% endblock %}
+
+{% endblock %}
+
+ 

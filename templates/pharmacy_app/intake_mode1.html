@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load static %}
+
+
+<!-- Navigation -->
+
+{% block title %} Add Drug Info {% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block style %}
+     <link href="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"/>
+    {% endblock %}
+</head>
+<body>
+
+{% block page_content %}
+<!--  line 50 and 52 in base.html -->
+
+<ul class="nav nav-tabs">
+  <li ><a href="{% url 'drug_interaction' %}" style="color: grey;">Drug Interaction</a></li>
+  <li class="active"><a href="{% url 'alcohol_interaction' %}"  style="color: grey;">Alcohol Interaction</a></li>
+  <li><a href="{% url 'food_interaction' %}" style="color: grey;">Food Interaction</a></li>
+  <li><a href="{% url 'disease_interaction' %}" style="color: grey;">Disease Interaction</a></li>
+  <li><a href="#" style="color: grey;">Intake Mode</a></li>
+</ul>
+
+    {% include "pharmacy_app/intake_mode_form.html" %}
+        <div class="card-body ">
+        {%block content1%}
+            <table id="example1" class="display table-bordered table-striped table-hover" style="width:50%; float: left;">                                        
+                <tr>
+                    <th style=" ">Intake Mode</th>
+                </tr>
+                {% for intake_mode in intake_mode_lists %}
+                <tr>
+                    <td style="">{{intake_mode}}</td>
+                </tr>                                             
+                 {% endfor %}
+            </table>
+        {% endblock %}                                   
+        </div>
+                           
+        <div class="form-group row" style="padding-left: 50px;">
+            <div class="offset-sm-2 col-sm-10"><
+                <button type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect btn-circle btn-primary"
+                                data-toggle="modal" data-target="#addTestModalCenter">
+                                Add Intake Mode <i class="fa fa-plus"></i>
+                </button>
+            </div>
+        </div>
+    </form>
+
+   
+        <script>
+            {% block scripts %}
+               <!-- data tables -->
+    <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}" ></script>
+    <script src="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.js' %}" ></script>
+    <script src="{% static 'js/pages/table/table_data.js' %}"></script>
+            {% endblock %}  
+        </script>
+    {% endblock %}
+

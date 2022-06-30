@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} {% endblock %}
+
+{% block page_content %}
+
+{% include "pharmacy_app/procurement_detail_form.html" %}
+{% include "pharmacy_app/procurement_form.html" %}
+
+    <div class="" style="width: 100%;">
+        <div class="card card-box">
+            <div class="card-head">
+                <header>Procurement</header>
+                <button id = "panel-button2" 
+                       class = "mdl-button mdl-js-button mdl-button--icon pull-right" 
+                       data-upgraded = ",MaterialButton">
+                       <i class = "material-icons">more_vert</i>
+                    </button>
+                    <ul class = "mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+                       data-mdl-for = "panel-button2">
+                       <li class = "mdl-menu__item"><i class="material-icons">assistant_photo</i>Action</li>
+                       <li class = "mdl-menu__item"><i class="material-icons">print</i>Another action</li>
+                       <li class = "mdl-menu__item"><i class="material-icons">favorite</i>Something else here</li>
+                    </ul>
+            </div>
+            <div class="card-body " id="bar-parent1">
+              
+        
+                    {%block content1%}
+                    <table id="example1" class="display table-bordered table-striped table-hover" style="width:100%;">
+                        <thead>
+                            <tr class="gradeX odd">
+                                <th style=" ">Procurement</th>
+                                <th style=" "></th>
+                                <th></th>                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for procurement, status in procurement_zip %}
+                           <tr> 
+                              <td style="">
+                                    <a href="{% url 'procurement_detail' procurement.procurement_no %}">{{procurement}} </a>
+                              </td>
+
+                              {% if status %}
+                              <td style="">
+                                    <div class="offset-sm-2 col-sm-10">
+                                        <button type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect btn-circle btn-primary"  data-toggle="modal" data-target="#addTestModalCenter">  Add Detail <i class="fa fa-plus"></i>
+                                          </button>
+                                    </div>
+                              </td>
+                              
+                              <td> <button class="btn btn-circle btn-danger"><a href="{% url 'cancel_procurement' procurement.procurement_no %}" style="color: white"> Cancel </a> </button> </td>
+                              {% endif %}
+                              {%  if not status %}
+                              <td></td>
+                              <td></td>
+                              {% endif %}
+          </tr>
+                                           
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% endblock %}
+
+            <div class="offset-sm-2 col-sm-10"><
+                <button type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect btn-circle btn-primary"
+                                data-toggle="modal" data-target="#addTestModalCenter2">
+                                Add New Procurement <i class="fa fa-plus"></i>
+                </button>
+            </div>
+ 
+                     
+    {% block scripts %}
+               
+    <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}" ></script>
+    <script src="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.js' %}" ></script>
+    <script src="{% static 'js/pages/table/table_data.js' %}"></script>
+    {% endblock %}
+
+{% endblock %}
+
+ 

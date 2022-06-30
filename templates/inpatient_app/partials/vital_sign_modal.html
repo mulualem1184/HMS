@@ -1,0 +1,43 @@
+{% load static %}
+
+<div class="modal fade" id="vital-sign-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel">Unallocated Beds</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                
+                
+                   <div class="card-body">
+                <div class="post-box">
+                    <h4 class="font-bold">Patient Vital Signs</h4>                                        
+                    <hr>
+                    <h5>Heart Beat <span class="pull-right">{{vital_sign.pulse_rate}}</span></h5>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"> <span class="sr-only">100% Complete (success)</span> </div>
+                    </div>
+                    <h5>Blood Pressure<span class="pull-right">{{vital_sign.blood_pressure}}</span></h5>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-warning progress-bar-striped active" role="progressbar" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100" style="width:100%;"> <span class="sr-only">50% Complete</span> </div>
+                    </div>
+                    <h5>Temperature<span class="pull-right">{{vital_sign.temperature}} {{vital_sign.temperature_unit}}</span></h5>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-primary progress-bar-striped active" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:50%;"> <span class="sr-only">50% Complete</span> </div>
+                    </div>
+                    
+                    <h5 class="font-bold">Recorded On:</b> <span class=""><b>{{vital_sign.registered_on}}</b></span></h5>
+                    <br>
+                </div>
+                </div> 
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Fill Supply Form {% endblock %}
+{% load crispy_forms_tags %}
+{% block style %}
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css"> 
+
+
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+
+{% endblock %}
+{% block page_content %}
+        
+{% csrf_token %}
+  <
+    <div class="" style="width: 100%;">
+        <div class="card card-box">
+            <div class="card-head">
+                <header>Stock Supply Form</header>
+                <button id = "panel-button2" 
+                       class = "mdl-button mdl-js-button mdl-button--icon pull-right" 
+                       data-upgraded = ",MaterialButton">
+                       <i class = "material-icons">more_vert</i>
+                    </button>
+                    <ul class = "mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+                       data-mdl-for = "panel-button2">
+                       <li class = "mdl-menu__item"><i class="material-icons">assistant_photo</i>Action</li>
+                       <li class = "mdl-menu__item"><i class="material-icons">print</i>Another action</li>
+                       <li class = "mdl-menu__item"><i class="material-icons">favorite</i>Something else here</li>
+                    </ul>
+            </div>
+            <div class="card-body " id="bar-parent1">
+              
+        
+    <form action="" method="POST">
+      
+            {% csrf_token %}
+
+            <div class="form-row">
+                <div class=" form-group col-md-6">
+                    {{batch_form.procurement|as_crispy_field}}
+                </div>
+                <div class=" form-group col-md-6">
+                    {{batch_form.batch_no|as_crispy_field}}
+                </div>
+            </div>
+            <div class="form-row">
+                <div class=" form-group col-md-6">
+                    {{batch_form.drug|as_crispy_field}}
+                </div>
+
+                
+                <div class=" form-group col-md-6">
+                    {{stock_supply_form.stock_slot_no|as_crispy_field}}
+                </div>
+            </div> 
+
+            <div class="form-row">
+                <div class=" form-group col-md-4">
+                    {{batch_form.quantity|as_crispy_field}}
+                </div>
+                <div class=" form-group col-md-4">
+                    {{stock_supply_form.purchasing_cost|as_crispy_field}}
+                </div>
+                <div class=" form-group col-md-4">
+                    {{stock_supply_form.supplier|as_crispy_field}}
+                </div>
+                
+                
+            </div> 
+                <div class="form-row">
+                    <div class="form-group col-md-6">                            
+                        {{drug_expiration_form.manufacturing_date|as_crispy_field}}                        
+                    </div>
+                    <div class="form-group col-md-6">                            
+                        {{drug_expiration_form.expiration_date|as_crispy_field}}                        
+                    </div>
+                </div>       
+        
+        <div class="form-row">
+            <div class="form-group">
+                <input  type="submit" class="btn btn-info" name="Submit">
+            </div>
+        </div>
+                 
+
+            
+             
+    </form>
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+    {% block scripts %}
+  
+<script>
+/* When the user clicks on the button,
+toggle between hiding and showing the dropdown content */
+function myFunction() {
+  document.getElementById("myDropdown").classList.toggle("show");
+}
+
+function filterFunction() {
+  var input, filter, ul, li, a, i;
+  input = document.getElementById("myInput");
+  filter = input.value.toUpperCase();
+  div = document.getElementById("myDropdown");
+  a = div.getElementsByTagName("a");
+  for (i = 0; i < a.length; i++) {
+    txtValue = a[i].textContent || a[i].innerText;
+    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+      a[i].style.display = "";
+    } else {
+      a[i].style.display = "none";
+    }
+  }
+}
+</script>
+
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>        
+<script>
+$(document).ready(function() {
+    $('.datepicker').datepicker();
+    $('#id_drug').select2();
+    $('#id_stock_slot_no').select2();
+     
+});
+</script>
+
+
+      
+    {% endblock %}
+
+{% endblock %}
+
+ 

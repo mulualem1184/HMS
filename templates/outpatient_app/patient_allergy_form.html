@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} {% endblock %}
+{% load crispy_forms_tags %}
+{% block style %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+        
+        legend {
+          background-color: rgb(150, 159, 161);
+          color: white;
+          padding: 5px 10px;
+          border-radius: 2px;
+        }
+    </style>
+{% endblock%}
+{% block page_content %}
+       
+    <div class="" style="width: 100%;">
+        <div class="card card-box">
+              
+              
+                <div class="card-body">
+				<form action="" method="POST">
+			        		{% csrf_token %}
+                  <legend>Allergy Form</legend>
+			            <div class="form-group col-md-4">  
+			                    {{allergy_form.allergy|as_crispy_field}}
+			                </div>
+                  <div class="form-group col-md-9">  
+                          {{allergy_form.reaction|as_crispy_field}}
+                      </div>
+			            
+			                <button class="form-group btn btn-primary" type="submit" > Submit</button>
+                            
+			            	</div>
+				            
+				    </form>
+
+                </div>
+
+            
+    {% block scripts %}
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>        
+<script >
+  $(document).ready(function() {
+    $('#service_room').select2();
+    $('#patient').select2();
+});
+  </script>
+
+      
+    {% endblock %}
+
+{% endblock %}
+
+ 

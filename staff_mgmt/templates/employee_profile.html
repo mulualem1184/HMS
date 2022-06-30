@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Employee Profile {% endblock %}
+{% block page_content %}
+    <div class="row">
+        <div class="col-md-12">
+            <!-- BEGIN PROFILE SIDEBAR -->
+            <div class="profile-sidebar">
+                <div class="card ">
+                    <div class="card-body no-padding height-9">
+                        <div class="row">
+                            <div class="profile-userpic">
+                                <img src="/media/{{employee.user_profile.profile_image}}" class="img-responsive" alt=""> </div>
+                        </div>
+                        <div class="profile-usertitle">
+                            <div class="profile-usertitle-name">Dr. {{ employee.full_name }} </div>
+                            <div class="profile-usertitle-job"> {{ employee.designation }} </div>
+                        </div>
+                        <ul class="list-group list-group-unbordered">
+                            <li class="list-group-item">
+                                <b> Id </b>
+                                <div class="profile-desc-item pull-right"> {{ employee.employee_id }}</div>
+                            </li>
+                            <li class="list-group-item">
+                                <b>First Name </b>
+                                <div class="profile-desc-item pull-right"> {{ employee.first_name }}</div>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Last Name </b>
+                                <div class="profile-desc-item pull-right"> {{ employee.last_name }}</div>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Gender </b>
+                                <div class="profile-desc-item pull-right"> {{ employee.user_profile.gender }}</div>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Age</b>
+                                <div class="profile-desc-item pull-right"> {{ employee.user_profile.age }}</div>
+                            </li>
+                            <li class="list-group-item">
+                                <b> Department </b>
+                                <div class="profile-desc-item pull-right"> {{ employee.department}}</div>
+                            </li>
+                            <li class="list-group-item">
+                                <b> Specialty </b>
+                                <div class="profile-desc-item pull-right"> {% if employee.specialty %} {{ employee.specialty }} {% else %} - {% endif %}</div>
+                            </li>
+                            <li class="list-group-item">
+                                <b> Active </b>
+                                <div class="profile-desc-item pull-right"> {{ employee.user_profile.is_active }} </div>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Employed Date </b>
+                                <div class="profile-desc-item pull-right"> {{ employee.employed_date }}</div>
+                            </li>
+                        </ul>
+                        <!-- END SIDEBAR USER TITLE -->
+                        <!-- SIDEBAR BUTTONS -->
+                        <div class="profile-userbuttons">
+                            <!-- <a href="{% url 'staff:active_status' employee.id %}">
+                                <button type="button" class="btn btn-circle green btn-sm">Suspend/Activate</button>
+                            </a> -->
+                            <a href="{% url 'staff:request_leave' employee.id %}">
+                                <button type="button" class="btn btn-circle green btn-sm"> Make Leave Request</button>
+                            </a>
+                            <a href="{% url 'staff:edit_employee' employee.employee_id %}">
+                                <button type="button" class="btn btn-circle blue btn-sm">Edit</button>
+                            </a>
+                            <a href="{% url 'staff:remove_employee' employee.id %}">
+                                <button type="button" class="btn btn-circle red btn-sm">Delete</button>
+                            </a>
+                        </div>
+                        <!-- END SIDEBAR BUTTONS -->
+                    </div>
+                </div>
+            </div>
+            <!-- END BEGIN PROFILE SIDEBAR -->
+            <!-- BEGIN PROFILE CONTENT -->
+            <div class="profile-content">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="profile-tab-box">
+                            <div class="p-l-20">
+                                <ul class="nav ">
+                                    <li class="nav-item tab-all"><a
+                                        class="nav-link active show" href="#doctab" data-toggle="tab">Documents</a></li>
+                                    <li class="nav-item tab-all p-l-20"><a class="nav-link"
+                                        href="#settingtab" data-toggle="tab">Settings</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="white-box">
+                            <!-- Tab panes -->
+                            <div class="tab-content">
+                                <div class="tab-pane active fontawesome-demo" id="doctab">
+                                    {% include "document_tab.html" %}
+                                </div>
+                                <div class="tab-pane" id="settingtab">
+                                    {% if employee.user_profile == user %}
+                                        {% include "change_password.html" %}
+                                    {% else %}
+                                        {% include "reset_password.html" %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

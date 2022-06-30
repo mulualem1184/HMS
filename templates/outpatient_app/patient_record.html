@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} {% endblock %}
+
+{% block page_content %}
+        
+
+    <div class="" style="width: 100%;">
+        <div class="card card-box">
+            <div class="card-head">
+                <header>
+<ul class="nav nav-tabs">
+  <li ><a href="" style="color: black;">Medication History</a></li>
+  <li class="active"><a href="{% url 'patient_medical_condition' patient.id %} "  style="color: grey;">Medical Conditon</a></li>
+
+</ul>  
+</header>
+                <button id = "panel-button2" 
+                       class = "mdl-button mdl-js-button mdl-button--icon pull-right" 
+                       data-upgraded = ",MaterialButton">
+                       <i class = "material-icons">more_vert</i>
+                    </button>
+                    <ul class = "mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+                       data-mdl-for = "panel-button2">
+                       <li class = "mdl-menu__item"><i class="material-icons">assistant_photo</i>Action</li>
+                       <li class = "mdl-menu__item"><i class="material-icons">print</i>Another action</li>
+                       <li class = "mdl-menu__item"><i class="material-icons">favorite</i>Something else here</li>
+                    </ul>
+            </div>
+            <div class="card-body " id="bar-parent1">
+              
+        
+                    {%block content1%}
+                    <table id="example1" class="display table-bordered table-striped table-hover" style="width:100%;">
+                        <thead>
+                            <tr class="gradeX odd">
+                                <th style=" ">Drug</th>
+                                <th style=" ">Duration</th>
+                                <th style=" ">Diagnosis</th>
+                                <th style=" ">Started On</th>
+                                
+                                <!--<th style=" ">Quantity</th>
+                                <th>Actions</th>-->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for medication in patient_medication %}
+                            <tr>
+                                <td style=""> {{medication.drug_prescription.drug}}</td>
+                                <td style=""> {{medication.drug_prescription.duration_amount}}</td>
+                                <td style=""> {{medication.drug_prescription.diagnosis}}</td>                               
+                                <td style=""> {{medication.drug_prescription.registered_on}}</td>
+                                
+                                
+                            </tr>
+                                           
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% endblock %}
+                     
+    {% block scripts %}
+               
+    <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}" ></script>
+    <script src="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.js' %}" ></script>
+    <script src="{% static 'js/pages/table/table_data.js' %}"></script>
+            {% endblock %}
+
+{% endblock %}
+
+ 

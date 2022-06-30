@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+    <link href="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"/>
+{% endblock %}
+
+{% block title %} View Result {% endblock %}
+
+{% block  page_content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header> <a href="{% url 'view-test' test.id %}"> {{ test }}  test result </a> </header>
+                    <div class="tools">
+                        <a class="fa fa-repeat btn-color box-refresh" href="javascript:;"></a>
+                        <a class="t-collapse btn-color fa fa-chevron-down" href="javascript:;"></a>
+                        <a class="t-close btn-color fa fa-times" href="javascript:;"></a>
+                    </div>
+                </div>
+                <div class="card-body ">
+                    <!-- {% for result in test_result_set %}
+                        <h4> {{ result.label }} : {{ result.value }} </h4>
+                    {% endfor %} <br><br> -->
+
+                    <table id="example1" class="display table-bordered table-striped table-hover" style="width:100%;">
+                        <thead>
+                            <tr class="gradeX odd">
+                                <th></th>
+                                <th></th>
+                                <th>is Normal?</th>
+                                <th>Normal Range</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for result in test_result_set %}
+                                <tr>
+                                    <td> {{ result.label }} </td>
+                                    <td>
+                                        {{ result.get_parsed_value }}
+                                    </td>
+                                    <td> 
+                                        {% if result.normal_range %}
+                                            {% if result.get_parsed_value >= result.normal_range.min_value and  result.get_parsed_value <= result.normal_range.max_value %}
+                                                Yes
+                                            {% else %}
+                                                <span class="badge badge-lg badge-danger"> NO </span>
+                                            {% endif %} 
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td> {{ result.normal_range.min_value}} - {{ result.normal_range.max_value  }} {{ result.normal_range.m_unit }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %} <!-- endblock page-content -->
+
+{% block scripts %}
+    <!-- data tables -->
+    <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}" ></script>
+    <script src="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.js' %}" ></script>
+    <script src="{% static 'js/pages/table/table_data.js' %}"></script>
+{% endblock %}

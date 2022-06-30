@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %} Emergency Cases {% endblock %}
+{% block page_content %}
+    <h1>Emergency case list</h1>
+    <table class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded">
+        <thead>
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric">#</th>
+                <th class="mdl-data-table__cell--non-numeric">Patient Name</th>
+                <th class="mdl-data-table__cell--non-numeric">Emergency Type</th>
+                <th class="mdl-data-table__cell--non-numeric">Date</th>
+                <th class="mdl-data-table__cell--non-numeric">Contact Person</th>
+                <th class="mdl-data-table__cell--non-numeric">Contact Phone</th>
+                <th class="mdl-data-table__cell--non-numeric">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for case in case_list %}
+                {% include "text_message_modal.html" %}
+                <tr>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ forloop.counter }} </td>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ case.patient_name }} </td>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ case.type }} </td>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ case.date_created }} </td>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ case.contact_person.name }} </td>
+                    <td class="mdl-data-table__cell--non-numeric"> 
+                        <a href="" data-toggle="modal" data-target="#textMessageModal">
+                            {{ case.contact_person.phone_number }} 
+                        </a>
+                    </td>
+                    <td class="mdl-data-table__cell--non-numeric">
+                        <div>
+                            <div class="col-sm-">
+                                <a href="{% url 'emergency:edit_case' case.id %}">
+                                    <button type="button" class="btn btn-info btn-rounded btn-icon"> <i class="fa fa-eye"></i> </button>
+                                </a>
+                                <a href="#">
+                                    <button type="button" class="btn btn-info btn-rounded btn-icon" data-toggle="modal" data-target="#textMessageModal"> 
+                                        <i class="fa fa-bell"></i> 
+                                    </button>
+                                </a>
+                                <a href="{% url 'emergency:delete_case' case.id %}">
+                                    <button type="button" class="btn btn-danger btn-rounded btn-icon"> <i class="fa fa-times"></i> </button> 
+                                </a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

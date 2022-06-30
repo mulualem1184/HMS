@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} {% endblock %}
+{% load crispy_forms_tags %}
+{% block style %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+{% endblock%}
+{% block page_content %}
+	 					<div class="state-overview">	
+						<div class="row">
+							<div class="col-lg-3 col-sm-6">
+								<div class="overview-panel purple">
+									<div class="symbol">
+										<i class="fa fa-users usr-clr"></i>
+									</div>
+									<div class="value white">
+										<a href="{% url 'instruction_list_for_nurse' %}" style="color: white;">
+										<p class="sbold addr-font-h1" data-counter="counterup" data-value="23">{{instruction_count}}</p>
+										<p>DOCTOR INSTRUCTIONS</p>
+										</a>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-3 col-sm-6">
+								<div class="overview-panel deepPink-bgcolor">
+									<div class="symbol">
+										<i class="fa fa-user"></i>
+									</div>
+									<div class="value white">
+										<a href="{% url 'intervention_list_for_nurse' %}" style="color: white;">
+										<p class="sbold addr-font-h1" data-counter="counterup" data-value="48">{{intervention_count}}</p>
+										<p>INTERVENTIONS</p>
+										</a>
+									</div>
+								</div>
+							</div>
+							<div class="col-lg-3 col-sm-6">
+								<div class="overview-panel orange">
+									<div class="symbol">
+										<i class="fa fa-heartbeat"></i>
+									</div>
+									<div class="value white">
+										<a href="{% url 'medicine_to_be_administered_list_for_nurse' %}" style="color: white">
+										<p class="sbold addr-font-h1" data-counter="counterup" data-value="14">{{medication_count}}</p>
+										<p>DRUG ADMINISTRATION</p>
+										</a>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+						</div>
+       
+            
+    {% block scripts %}
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>        
+<script >
+  $(document).ready(function() {
+    $('#service_room').select2();
+    $('#patient').select2();
+});
+  </script>
+
+      
+    {% endblock %}
+
+{% endblock %}
+

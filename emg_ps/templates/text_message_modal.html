@@ -1,0 +1,29 @@
+<div class="modal fade" id="textMessageModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel">Send text message</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{% url 'emergency:notify_user' case.id %}" method="POST">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="col-sm-10">
+                            <label for="special_inst_for_{{test_type.id}}" class="control-label"> Message: </label>
+                            <textarea name="message" id="" cols="50" rows="5"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="$('#special_inst_for_{{test_type.id}}')[0].value=''; $('#specialInst_{{test_type.id}}').modal('hide')">Clear</button>
+                    <button type="submit" class="btn btn-primary" onclick="$('#specialInst_{{test_type.id}}').modal('hide')">
+                        <i class="fa fa-message"></i> Send
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

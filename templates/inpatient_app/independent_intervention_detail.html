@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} {% endblock %}
+{% load crispy_forms_tags %}
+{% block style %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+{% endblock%}
+{% block page_content %}
+       
+    <div class="" style="width: 100%;">
+        <div class="card card-box">
+              <div class="card-body " id="bar-parent1">
+              
+        
+                    <header class="panel-heading panel-heading-blue">
+                        Intervention 
+                    </header>
+                    <div class="panel-body">{{intervention.intervention}}</div>
+
+<!--                <h4 class="font-bold">Nurse Intervention </h4>
+                    
+                    <p class="m-t-30 col-md-12">{{intervention.intervention}}</p>
+  -->  
+                <h4 class="font-bold">Nurse:</h4>
+                    
+                    <p class="m-t-30 col-md-12">{{intervention.nurse}}</p>
+
+                <hr>
+                    <header class="panel-heading panel-heading-red">
+                        Evaluations 
+                    </header>
+
+                    {% for evaluation in evaluation_list %}
+                    {% if evaluation %}
+                    <hr>
+
+                <h4 class="font-bold">Evaluation</h4>
+                    
+                    <p class="m-t-30 col-md-12">{{evaluation.evaluation}}</p>
+                    
+                <h4 class="font-bold">Evaluated By: </h4>
+                    <p class="m-t-30">{{evaluation.nurse}}</p>
+
+                <h4 class="font-bold">Evaluation Time: </h4>
+                
+                    <p class="m-t-30">{{evaluation.registered_on}}</p>
+                <br>
+                    {% else %}
+                   <label class="font-bold"> No Evaluations </label>
+                   {% endif %}
+                    {% endfor %}
+                    
+
+                </div>
+                                    
+
+                <hr>
+                                
+                <div style="width: 20%; padding: 2%" >
+                    <a class=" btn btn-primary" href="{% url 'nurse_independent_intervention_evaluation_form' intervention.id %}">Add Evaluation</a> 
+                </div>
+            
+    {% block scripts %}
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>        
+<script >
+  $(document).ready(function() {
+    $('#service_room').select2();
+    $('#patient').select2();
+});
+  </script>
+
+      
+    {% endblock %}
+
+{% endblock %}
+
+ 

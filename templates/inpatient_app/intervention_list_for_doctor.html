@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} {% endblock %}
+{% load crispy_forms_tags %}
+{% block style %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+{% endblock%}
+{% block page_content %}
+    <!--  <div class="btn-group btn-group-circle" style="padding-bottom: 20px;">
+    <button type="button" class="btn btn-primary">Actions</button>
+    <button type="button" class="btn btn-circle-right btn-primary dropdown-toggle m-r-20" data-toggle="dropdown" aria-expanded="false">
+        <i class="fa fa-angle-down"></i>
+    </button>
+    <ul class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(79px, 34px, 0px); top: 0px; left: 0px; will-change: transform;">
+        
+        <li><a href="{% url 'mark_instruction_as_done_for_doctor' instruction.id %}">Mark Instruction As Done</a></li>
+    </ul>
+    </div>       -->
+    <div class="" style="width: 100%;">
+        <div class="card card-box">
+              <div class="card-body " id="bar-parent1">
+              
+        
+                <a class="pull-right" href="{% url 'mark_instruction_as_done_for_doctor' instruction.id %}">Mark Instruction As Done</a>
+                <h4 class="font-bold">Instruction </h4>
+                    
+                    <p class="m-t-30 col-md-9">{{instruction.instruction}}</p>
+                <hr>
+
+                
+                    {% for intervention in intervention_list %}
+                <h4 class="font-bold">Intervention</h4>
+                    <p class="m-t-30 col-md-9">{{intervention.intervention}}</p>
+                    
+                <h4 class="font-bold">Intervention Time: </h4>
+                
+                    <span>                    
+                    <p class="m-t-30">{{intervention.registered_on}}</p>
+
+                        <a href="{% url 'intervention_detail' intervention.id %}" class="pull-right">Check Evaluations</a>
+                    </span>
+
+                <h4 class="font-bold">Intervening Nurse: </h4>
+                    <p class="m-t-30">{{intervention.nurse}}</p>
+                
+
+                <hr>
+                    {% endfor %}
+
+                </div>
+                                    
+
+                <hr>
+          
+
+                
+            
+    {% block scripts %}
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>        
+<script >
+  $(document).ready(function() {
+    $('#service_room').select2();
+    $('#patient').select2();
+});
+  </script>
+
+      
+    {% endblock %}
+
+{% endblock %}
+
+ 

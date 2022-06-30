@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	{% block style %}
+	 <link href="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"/>
+    {% endblock %}
+</head>
+<body>
+{% block page_content %}
+
+
+                                <div class="card-body ">
+                                    {%block content1%}
+                                    <table id="example1" class="display table-bordered table-striped table-hover" style="width:100%; float: left;">
+                                        
+                                            <tr>
+                                                <th style=" ">Drug</th>
+                                                <th style=" ">Begining Quantity</th>
+                                                <th style=" ">Quantity Recieved</th>
+                                                <th style=" ">Quantity Expired</th>
+                                                <th>Quantity Sold</th>
+                                                <th style=" ">End Quantity</th>
+                                            </tr>
+                                        {% for drug,begin_quantity, quantity_recieved, quantity_expired, quantity_sold,end_balance in report_zip %}
+                                                <tr>
+                                                <td style="">{{drug}}</td>
+                                                <td style="">{{begin_quantity}}</td>
+                                                <td style="">{{quantity_recieved}}</td>
+                                                <td style="">{{quantity_expired}}</td>
+                                                <td>{{quantity_sold}}</td>
+                                                <td style="">{{end_balance}}</td>
+                                                
+                                                </tr>
+                                           
+                                        {% endfor %}
+                                    </table>
+                                     {% endblock %}
+                                
+
+                                    </div>
+                       
+               
+            {% block scripts %}
+               <!-- data tables -->
+    <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}" ></script>
+    <script src="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.js' %}" ></script>
+    <script src="{% static 'js/pages/table/table_data.js' %}"></script>
+            {% endblock %}  
+{% endblock  %}
+</body>
+</html>
+
+{% endblock %}

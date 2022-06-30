@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} {% endblock %}
+{% load crispy_forms_tags %}
+{% block style %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+{% endblock%}
+{% block page_content %}
+<!--
+<div class="btn-group btn-group-circle" style="padding-bottom: 20px;">
+    <button type="button" class="btn btn-primary">By Month</button>
+    <button type="button" class="btn btn-circle-right btn-primary dropdown-toggle m-r-20" data-toggle="dropdown" aria-expanded="false">
+        <i class="fa fa-angle-down"></i>
+    </button>
+    <ul class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(79px, 34px, 0px); top: 0px; left: 0px; will-change: transform;">
+        
+        <li><a href="{% url 'drug_sale_detail'   1 %}">January</a></li>
+        <li><a href="{% url 'drug_sale_detail'  2 %}">February</a></li>
+        <li><a href="{% url 'drug_sale_detail'  3  %}">March</a></li>
+    </ul>
+    </div>-->
+       
+    <div class="" style="width: 100%;">
+        <div class="card card-box">
+            <div class="card-head">
+                <header>
+            
+                </header>
+                <button id = "panel-button2" 
+                       class = "mdl-button mdl-js-button mdl-button--icon pull-right" 
+                       data-upgraded = ",MaterialButton">
+                       <i class = "material-icons">more_vert</i>
+                    </button>
+                    <ul class = "mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+                       data-mdl-for = "panel-button2">
+                       <li class = "mdl-menu__item"><i class="material-icons">assistant_photo</i>Action</li>
+                       <li class = "mdl-menu__item"><i class="material-icons">print</i>Another action</li>
+                       <li class = "mdl-menu__item"><i class="material-icons">favorite</i>Something else here</li>
+                    </ul>
+            </div>
+            <div class="card-body " id="bar-parent1">
+              
+        
+    <form action="" method="POST">
+        		{% csrf_token %}
+                <h4> {{patient}}</h4>
+                <div class="form-group col-md-12">  
+                    {{progress_chart_form.appearance|as_crispy_field}}
+                </div>
+                <div class="form-group col-md-12">  
+                    {{progress_chart_form.observation|as_crispy_field}}
+                </div>
+
+            	<div class="form-group" style="padding-top: 15px;">
+                <button class="form-group btn btn-primary"  type="submit" > Assign</button>
+
+            	</div>
+            
+    </form>
+
+    {% block scripts %}
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>        
+<script >
+  $(document).ready(function() {
+    $('#service-provider-id').select2();
+    $('#room-id').select2();
+});
+  </script>
+
+      
+    {% endblock %}
+
+{% endblock %}
+
+ 

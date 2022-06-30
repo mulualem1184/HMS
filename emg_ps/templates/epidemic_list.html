@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %} Epidemic Diseases {% endblock %}
+{% block page_content %}
+    <h1>Epidemic Diseases</h1>
+    <table class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded">
+        <thead>
+            <tr>
+                <th class="mdl-data-table__cell--non-numeric">#</th>
+                <th class="mdl-data-table__cell--non-numeric">Name</th>
+                <th class="mdl-data-table__cell--non-numeric">Currently Active?</th>
+                <th class="mdl-data-table__cell--non-numeric">Started</th>
+                <th class="mdl-data-table__cell--non-numeric">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in epid_list %}
+                <tr>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ forloop.counter }} </td>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ e.name }} </td>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ e.active }} </td>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ e.start_date }} </td>
+                    <td class="mdl-data-table__cell--non-numeric">
+                        <div>
+                            <div class="col-sm-"> 
+                                <a href="{% url 'emergency:edit_epidemic' e.id %}">
+                                    <button type="button" class="btn btn-info btn-rounded btn-icon"> <i class="fa fa-edit"></i> </button>
+                                </a>
+                                <a href="{% url 'emergency:delete_epidemic' e.id %}">
+                                    <button type="button" class="btn btn-danger btn-rounded btn-icon"> <i class="fa fa-times"></i> </button> 
+                                </a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

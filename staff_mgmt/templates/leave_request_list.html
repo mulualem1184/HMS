@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Leave request list {% endblock %}
+{% block page_content %}
+    <table class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded">
+        <thead>
+        <tr>
+            <th class="mdl-data-table__cell--non-numeric">#</th>
+            <th class="mdl-data-table__cell--non-numeric">Employee</th>
+            <th class="mdl-data-table__cell--non-numeric">Id</th>
+            <th class="mdl-data-table__cell--non-numeric">Department</th>
+            <th class="mdl-data-table__cell--non-numeric">From Date</th>
+            <th class="mdl-data-table__cell--non-numeric">To Date</th>
+            <th class="mdl-data-table__cell--non-numeric">No of Days</th>
+            <th class="mdl-data-table__cell--non-numeric">Status</th>
+            <th class="mdl-data-table__cell--non-numeric">Action</th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for lr in request_list %}
+                <tr>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ forloop.counter }} </td>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ lr.employee.full_name }} </td>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ lr.employee.employee_id }} </td>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ lr.employee.department }} </td>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ lr.from_date }} </td>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ lr.to_date }} </td>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ lr.no_of_days }} </td>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ lr.status }} </td>
+                    <td class="mdl-data-table__cell--non-numeric">
+                        <div>
+                            <div class="col-sm-"> 
+                                <a href="{% url 'staff:view_leave_request' lr.id %}">
+                                    <button type="button" class="btn btn-info btn-rounded btn-icon"> <i class="fa fa-eye"></i> </button>
+                                </a>
+                                <a href="{% url 'staff:approve_leave' lr.id %}">
+                                    <button type="button" class="btn btn-success btn-rounded btn-icon"> <i class="fa fa-check"></i> </button>
+                                </a>
+                                <a href="{% url 'staff:deny_leave' lr.id %}">
+                                    <button type="button" class="btn btn-danger btn-rounded btn-icon"> <i class="fa fa-times"></i> </button> 
+                                </a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}

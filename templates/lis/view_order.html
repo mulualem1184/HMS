@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} View Order detail {% endblock %}
+
+{% block page_content %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>Order Detail</header>
+                </div>
+                <div class="card-body ">
+                    Order Id: <b>{{ order.id }} <br></b>
+                    Ordered at: <b>{{ order.ordered_at }} <br></b>
+                    Ordered by: <b>{{ order.ordered_by }} <br></b>
+                    Priority: <b>{{ order.priority }} <br></b>
+                    Price:<b> {{ order.total_price }} <br></b>
+                    Paid: <b>{% if order.is_paid %} 
+                                    <span class="label label-sm label-success"> Yes </span> 
+                            {% else %} 
+                                <span class="label label-sm label-danger"> Not paid </span> ( {{order.no_of_paid_tests }}/ {{ order.no_of_tests }} tests paid) 
+                            {% endif %} <br></b> 
+                    <br><br>
+                    {% include "lis/test_list.html" %}
+                    <br><br><br><br>
+                    {% if user == order.ordered_by %}
+                        {% if order.no_of_paid_tests == 0 %}
+                            <div class="btn-group">
+                                <form action="{% url 'cancel-order' %}" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" value="{{order.id}}" name="order_id">
+                                    <button class="btn btn-danger"> <i class="fa fa-times red"> </i> Cancel Order </button>
+                                </form>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

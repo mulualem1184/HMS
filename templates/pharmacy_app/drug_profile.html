@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} {% endblock %}
+
+{% block page_content %}
+<!-- END HEAD -->
+			<!-- start page content -->
+                <div class="page-content">
+                    <div class="page-bar">
+                        <div class="page-title-breadcrumb">
+                            <div class=" pull-left">
+                                <div class="page-title">Drug Profile</div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="row" >
+                        <div class="col-md-12">
+                            <!-- BEGIN PROFILE SIDEBAR -->
+                            <div class="profile-sidebar">
+                                <div class="card">
+                                    <div class="card-body no-padding height-9">
+                                        <div class="row">
+                                            <div class="">
+                                                <img src= "{{image.image.url}}" class="img-responsive" alt=""> </div>
+                                        </div>
+                                        <div class="profile-usertitle">
+                                            <div class="profile-usertitle-name"> {{image.drug}} </div>
+                                            <div class="profile-usertitle-job"> {{drug.drug.drug.generic_name}} </div>
+                                        </div>
+                                        
+                                        <!-- END SIDEBAR USER TITLE -->
+                                        <!-- SIDEBAR BUTTONS -->
+                                        <div class="profile-userbuttons">
+                                            <button type="button" class="btn btn-circle blue btn-sm">Edit</button>
+                                            
+                                        </div>
+                                        <!-- END SIDEBAR BUTTONS -->
+                                    </div>
+                                </div>
+                                
+                                <div class="card">
+                                    <div class="card-head ">
+                                        <header>Additional Info</header>
+                                    </div>
+                                    <div class="card-body no-padding height-9">
+                                        <div class="row text-center m-t-10">
+                                    <div class="col-md-12">
+                                        <p>Taken with {{intake_mode.food}}
+                                            {% if intake_mode.additional_info %}
+                                            <br> {{intake_mode.additional_info}}</p>
+                                            {% endif %}
+                                    </div>
+                                </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- END BEGIN PROFILE SIDEBAR -->
+                            <!-- BEGIN PROFILE CONTENT -->
+                            <div class="profile-content">
+                                <div class="card">
+                                    <div class="card-head ">
+                                        <header>About Drug</header>
+                                    </div>
+                                    <div class="card-body no-padding height-9">
+                                        
+                                        <ul class="list-group list-group-unbordered">
+                                            <li class="list-group-item">
+                                                <b> Tier </b>
+                                                <div class="profile-desc-item pull-right">{{drug.drug.drug.tier}}</div>
+                                            </li>
+                                             <li class="list-group-item">
+                                                <b>Age Range </b>
+                                                <div class="profile-desc-item pull-right">{{drug.age_range}}</div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <b>Weight Range</b>
+                                                <div class="profile-desc-item pull-right">{{drug.weight_range}}</div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <b>Dosage Amount</b>
+                                                <div class="profile-desc-item pull-right">{{drug.dosage_amount}}</div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <b>Weight Range</b>
+                                                <div class="profile-desc-item pull-right">{{drug.weight_range}}</div>
+                                            </li>
+                                        </ul>
+                                        <div class="row list-separated profile-stat">
+                                            <div class="col-md-4 col-sm-4 col-xs-6">
+                                                <div class="uppercase profile-stat-title"> </div>
+                                                <div class="uppercase profile-stat-text">  </div>
+                                            </div>
+                                            <div class="col-md-4 col-sm-4 col-xs-6">
+                                                <div class="uppercase profile-stat-title">{{image_count}} </div>
+                                                <div class="uppercase profile-stat-text"> <a href="{% url 'drug_image_form' drug.id %}"> More Images</a> </div>
+                                            </div>
+                                            <div class="col-md-4 col-sm-4 col-xs-6">
+                                                <div class="uppercase profile-stat-title"> </div>
+                                                <div class="uppercase profile-stat-text">  </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--
+                                <div class="row">
+                                     <div class="card">
+                                         <div class="white-box">
+					                -->            <!-- Nav tabs -->
+					                   <!--         <div class="p-rl-20">
+						                            <ul class="nav customtab nav-tabs" role="tablist">
+						                                <li class="nav-item"><a href="#tab1" class="nav-link active"  data-toggle="tab" >Alcohol Interaction</a></li>
+						                                <li class="nav-item"><a href="#tab2" class="nav-link" data-toggle="tab">Activity</a></li>
+						                            </ul>
+					                            </div>
+					                       -->     <!-- Tab panes -->
+					                          <!--  <div class="tab-content" >
+					                                <div class="tab-pane active fontawesome-demo" id="tab1">
+													<table id="example1" class="display  table-striped table-hover" style="">
+                                                        <thead>
+                                                            <tr class="gradeX odd">
+                                                                <th style=" ">Substance</th>
+                                                                <th style=" ">Relation</th>
+                                                               
+                                                                
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {% for drug_corelation in drug_corelation %}
+                                                            <tr>
+                                                                {% if drug_corelation.alcohol %}
+                                                                <td style=""> <a class="">{{drug_corelation.alcohol}}</a></td>
+                                                                {% elif drug_corelation.food %}
+                                                                <td style=""> <a class="">{{drug_corelation.food}}</a></td>
+                                                                {% elif drug_corelation.pathological_findings %}
+                                                                <td style=""> <a class="">{{drug_corelation.pathological_findings}}</a></td>
+                                                                {% endif %}
+                                                                <td style="">{{drug_corelation.relation}}</td>
+                                                                
+                                                              
+                                                            </tr>
+                                                                           
+                                                            {% endfor %}
+                                                        </tbody>
+                                                    </table>
+                                                   		
+    													
+					                                
+													</div>
+					                            </div>
+					                        </div>
+                                     </div>
+                                </div>-->
+                                <!-- END PROFILE CONTENT -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end page content -->
+                <!-- start chat sidebar -->
+                
+                <!-- end chat sidebar -->
+            <!-- end page container -->
+            <!-- start footer -->
+            
+            <!-- end footer -->
+       
+        </div>
+    </div>
+       {% endblock %}
+        <!-- start js include path -->
+        <script data-cfasync="false" src="../../../../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="../assets/plugins/jquery/jquery.min.js" ></script>
+	<script src="../assets/plugins/popper/popper.min.js" ></script>
+        <script src="../assets/plugins/jquery-blockui/jquery.blockui.min.js" ></script>
+		<script src="../assets/plugins/jquery-slimscroll/jquery.slimscroll.js"></script>
+        <script src="../assets/plugins/sparkline/jquery.sparkline.min.js" ></script>
+        <!-- bootstrap -->
+        <script src="../assets/plugins/bootstrap/js/bootstrap.min.js" ></script>
+        <!-- Common js-->
+		<script src="../assets/js/app.js" ></script>
+        <script src="../assets/js/pages/profile/profile.js" ></script>
+        <script src="../assets/js/layout.js" ></script>
+		<script src="../assets/js/theme-color.js" ></script>
+		<!-- Material -->
+		<script src="../assets/plugins/material/material.min.js"></script>
+        <!-- end js include path -->
+</body>
+
+<!-- Mirrored from radixtouch.com/templates/admin/sunray/source/light/staff_profile.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 08 Nov 2021 08:06:20 GMT -->
+</html>
