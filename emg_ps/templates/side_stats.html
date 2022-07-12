@@ -1,0 +1,71 @@
+<div class="card card-box">
+    <div class="card-head">
+        <header>Stats</header>
+    </div>
+    <div class="card-body" id="bar-parent">
+        <div class="table-wrap">
+            <div class="table-responsive">
+                <h4>Latest cases</h4>
+                <table class="table display product-overview mb-30" id="support_table">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Name</th>
+                            <th>Color</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for case in latest_cases %}
+                            <tr>
+                                <td> {{ forloop.counter }}</td>
+                                <td> {{ case.patient_name }} </td>
+                                <td> 
+                                    {% if case.triage_color == 'RED' %}
+                                        <span class="label label-sm label-danger">
+                                            {{ case.triage_color }} 
+                                        </span>
+                                    {% elif case.triage_color == 'YELLOW' %}
+                                        <span class="label label-sm label-info">
+                                            {{ case.triage_color }} 
+                                        </span>
+                                    {% elif case.triage_color == 'GREEN'%}
+                                        <span class="label label-sm label-success">
+                                            {{ case.triage_color }} 
+                                        </span>
+                                    {% else %}
+                                        <span class="label label-sm label-info">
+                                            {{ case.triage_color }} 
+                                        </span>
+                                    {% endif %}
+                                   
+                                </td>
+                                <td> <a href="{% url 'emergency:edit_case' case.id %}">View</a> </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+        </div>
+        <h4>Case Statistics</h4>
+        <div>
+            <div class="card-block">
+            </div>
+            <div class="row justify-content-center text-center b-t-default m-t-15 p-t-20">
+                <div class="col-3 b-r-default">
+                    <h5>{{ total_number }}</h5>
+                    <p class="text-muted m-b-0">in Emergency room</p>
+                </div>
+                <div class="col-3 b-r-default">
+                    <h5>{{tot_refs}}</h5>
+                    <p class="text-muted m-b-0">Referrals</p>
+                </div>
+                <div class="col-3">
+                    <h5>{{ dead_patients }}</h5>
+                    <p class="text-muted m-b-0">Dead</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

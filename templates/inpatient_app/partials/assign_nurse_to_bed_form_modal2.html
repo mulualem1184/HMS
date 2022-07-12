@@ -1,0 +1,35 @@
+{% load crispy_forms_tags %}
+<div class="modal fade" id="assign-nurse-to-bed-modal{{nurse.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel">Vital Sign Form</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{% url 'assign_nurse_to_bed_form' nurse.id %}" method="POST">
+
+                {% csrf_token %}
+                <div class="modal-body">
+            <div class="form-row">
+                <div class="form-group col-md-6">  
+                    {{assign_nurse_form.bed|as_crispy_field}}
+                </div>
+                </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="$('#textMessageBoxId')[0].value='';">Close</button>
+                    <button type="submit" class="btn btn-primary" onclick="$('#specialInst_{{test_type.id}}').modal('hide')">
+                        <i class="fa fa-message"></i> Submit
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script >
+  $(document).ready(function() {
+    $('#bed-id').select2();
+});
+  </script>

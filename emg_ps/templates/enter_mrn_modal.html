@@ -1,0 +1,29 @@
+<div class="modal fade" id="addMRNModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel">Associate case with record</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="" method="POST">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="col-sm-10">
+                            <label for="mrnTextBox_" class="control-label"> Enter MRN: </label>
+                            <input type="text" name="message" id="mrnTextBox" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="$('#mrnTextBox')[0].value='';">Clear</button>
+                    <button type="submit" class="btn btn-primary" onclick="$('#specialInst_{{test_type.id}}').modal('hide')">
+                        <i class="fa fa-message"></i> Add
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

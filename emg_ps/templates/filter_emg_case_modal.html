@@ -1,0 +1,33 @@
+<div class="modal fade" id="filterEmergencyCasesModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel">Filter Cases</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{% url 'emergency:filter_cases' %}" method="POST">
+                {% csrf_token %}
+                <div class="modal-body">
+                    {% for field in filter_case_form %}
+                        <div class="form-group row">
+                            <label class="control-label col-md-3" for="{{ field.id_for_label }}">
+                                {{ field.label }}
+                            </label>
+                            <div class="col-md-5">
+                                {{ field }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="$('#filterEmergencyCasesModal').modal('hide')">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa fa-message"></i> Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

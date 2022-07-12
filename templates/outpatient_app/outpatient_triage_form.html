@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+    Emergency Triage
+{% endblock %}
+{% load crispy_forms_tags %}
+
+{% block style %}
+    <!-- wizard -->
+	<link rel="stylesheet" href="{% static 'css/pages/steps.css' %}">
+    <style>
+        fieldset {
+            padding: 15px;
+        }
+        legend {
+          background-color: rgb(150, 159, 161);
+          color: white;
+          padding: 5px 10px;
+          border-radius: 2px;
+          display: none;
+        }
+    </style>
+{% endblock %}
+
+{% block page_content %}
+    {% include "triage_color_table.html" %}
+    <div class="row">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+            <div class="panel tab-border card-box">
+                <header class="panel-heading panel-heading-gray custom-tab ">
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item" >
+                            <a href="#chiefComplaint" data-toggle="tab" class="active">Chief Complaint</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="#vital-sign" data-toggle="tab" >Patient Info</a>
+                        </li>
+                        <li class="nav-item" >
+                            <a href="#arrival-form" data-toggle="tab">Other Info</a>
+                        </li>
+
+
+                    </ul>
+                </header>
+                <div class="panel-body">
+                    <form id="example-advanced-form" method="POST">
+                        {% csrf_token %}
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="chiefComplaint">
+                                <fieldset>
+                                    <legend> Compliant Form </legend>                                  
+                                        
+                                            <div class="col-md-5">
+                                                {{complaint_form.patient|as_crispy_field}}
+                                            </div>
+
+                                            <div class="col-md-5">
+                                                {{complaint_form.complaint|as_crispy_field}}
+                                            </div>
+                                                                          
+                                </fieldset>
+                            </div>
+                            <div class="tab-pane" id="arrival-form">
+                                <fieldset>
+                                    <legend> Other Patient Info </legend>
+                                            <div class="col-md-5">
+                                                {{arrival_form.pre_hospital_care|as_crispy_field}}
+                                            </div>
+                                            <div class="col-md-5">
+                                                {{arrival_form.triage_treatment|as_crispy_field}}
+                                            </div>
+                                            <div class="col-md-5">
+                                                {{arrival_form.injury_mechanism|as_crispy_field}}
+                                            </div>
+                                            <div class="col-md-5">
+                                                {{arrival_form.avpu|as_crispy_field}}
+                                            </div>
+                                            <div class="col-md-5">
+                                                {{arrival_form.mobility|as_crispy_field}}
+                                            </div>
+                                </fieldset>
+                            </div>
+
+                            <div class="tab-pane" id="vital-sign">
+                                <fieldset>
+                                    <legend> Vital Signs Form </legend>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-5">  
+                                                {{vital_form.pulse_rate|as_crispy_field}}
+                                            </div>
+                                            </div>
+                                        <div class="form-row">   
+                                           <div class="form-group col-md-5">  
+                                                {{vital_form.temperature|as_crispy_field}}
+                                            </div>
+                                            <div class="form-group col-md-5">  
+                                                {{vital_form.temperature_unit|as_crispy_field}}
+                                            </div>
+                                          </div>
+                                            
+                                          <div class="form-row">
+                                              <div class="form-group col-md-5">  
+                                                {{vital_form.blood_pressure|as_crispy_field}}
+                                              </div>
+                                          </div>
+
+                                          <div>
+                                </fieldset>
+                            </div>
+                            <br><br>
+                            <button class="btn btn-primary" type="submit">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Additional info -->
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <!-- wizard -->
+    <script src="{% static 'plugins/steps/jquery.steps.js' %}" ></script>
+    <script src="{% static 'js/pages/steps/steps-data.js' %}" ></script>
+    <script>
+        triageScore = 0;
+        document.getElementById('otherCC').onclick = function () {
+            display_value = 'none'
+            if (document.getElementById('otherCC').checked) {
+                display_value = 'block'
+            }
+            document.getElementById('otherComplaintId').style.display = display_value;
+            document.getElementById('ccLabel').style.display = display_value;
+            if (display_value == 'none'){
+                document.getElementById('otherComplaintId').value = ''
+            }
+        };
+
+        function openTriageModal() {
+            $('#triageTableModal').modal('show');
+        }
+    </script>
+{% endblock %}

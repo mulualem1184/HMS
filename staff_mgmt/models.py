@@ -113,7 +113,7 @@ class Employee(models.Model):
     on_leave = models.BooleanField(default=False)
 
     def __str__(self) -> str:
-        return str(self.user_profile.first_name + " " + self.user_profile.last_name)
+        return str(self.user_profile)
 
     @property
     def department(self):

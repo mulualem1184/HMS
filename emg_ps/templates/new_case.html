@@ -1,0 +1,201 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+    Emergency Triage
+{% endblock %}
+{% block style %}
+    <!-- wizard -->
+	<link rel="stylesheet" href="{% static 'css/pages/steps.css' %}">
+    <style>
+        fieldset {
+            padding: 15px;
+        }
+        legend {
+          background-color: rgb(150, 159, 161);
+          color: white;
+          padding: 5px 10px;
+          border-radius: 2px;
+          display: none;
+        }
+    </style>
+{% endblock %}
+
+{% block page_content %}
+    {% include "triage_color_table.html" %}
+    <div class="row">
+        <div class="col-lg-8 col-md-12 col-sm-12 col-12">
+            <div class="panel tab-border card-box">
+                <header class="panel-heading panel-heading-gray custom-tab ">
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <a href="#patientInfo" data-toggle="tab" class="active">Patient Info</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#contactPerson" data-toggle="tab">Contact Person Info</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#refLocation" data-toggle="tab">Referral Location</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#chiefComplaint" data-toggle="tab">Chief Complaint</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#patientStats" data-toggle="tab">Patient Stats</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#other" data-toggle="tab">Other</a>
+                        </li>
+                    </ul>
+                </header>
+                <div class="panel-body">
+                    <form id="example-advanced-form" method="POST">
+                        {% csrf_token %}
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="patientInfo">
+                                <fieldset>
+                                    <legend> {{ fieldset.title }} </legend>
+                                    {% for field in patient_info_fieldset.fields %}
+                                        <div class="form-group row">
+                                            <label class="control-label col-md-3" for="{{ field.id_for_label }}">
+                                                {{ field.label }}
+                                            </label>
+                                            <div class="col-md-5">
+                                                {{ field }}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </fieldset>
+                            </div>
+                            <div class="tab-pane" id="contactPerson">
+                                <fieldset>
+                                    <legend> {{ fieldset.title }} </legend>
+                                    {% for field in contact_person_fieldset.fields %}
+                                        <div class="form-group row">
+                                            <label class="control-label col-md-3" for="{{ field.id_for_label }}">
+                                                {{ field.label }}
+                                            </label>
+                                            <div class="col-md-5">
+                                                {{ field }}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </fieldset>
+                            </div>
+                            <div class="tab-pane" id="refLocation">
+                                <fieldset>
+                                    <legend>Referral Location</legend>
+                                    <div class="row form-group">
+                                        {% for location in ref_locations %}
+                                            <div class="col-4 text-center radio p-0">
+                                                <input type="radio" value="{{location.id}}" name="referral_location" id="radioId_{{location.id}}">
+                                                <label for="radioId_{{location.id}}">{{ location }}</label>
+                                            </div>
+                                        {% endfor %}
+                                    </div> 
+                                </fieldset>
+                            </div>
+                            <div class="tab-pane" id="chiefComplaint">
+                                <fieldset>
+                                    <legend>Chief Complaint</legend>
+                                    <div class="form-group">
+                                        {% for cc in cc_list %}
+                                            <div class="col-4 text-center radio p-0">
+                                                <input type="checkbox" value="{{cc.id}}" name="chief_complaint" id="{{ cc.id }}">
+                                                <label for="{{cc.id}}">{{ cc }}</label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                    <input type="checkbox" id="otherCC">
+                                    <label for="otherCC">Other</label>
+                                    <label for="otherComplaintId" style="display: none;" id="ccLabel">Input Symptoms</label>
+                                    <textarea style="display: none;" name="other_complaint" id="otherComplaintId" class="form form-control" cols="30" rows="10"></textarea>
+                                </fieldset>
+                            </div>
+                            <div class="tab-pane" id="patientStats">
+                                <fieldset>
+                                    <legend>Patient Stats</legend>
+                                    {% for field in vitalsign_form %}
+                                        <div class="form-group row">
+                                            <label class="control-label col-md-3" for="{{ field.id_for_label }}">
+                                                {{ field.label }}
+                                            </label>
+                                            <div class="col-md-5">
+                                                {{ field }}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                    {% for field in triage_color_fieldset.fields %}
+                                        <div class="form-group row">
+                                            <label class="control-label col-md-3" for="{{ field.id_for_label }}">
+                                                {{ field.label }}
+                                            </label>
+                                            <div class="col-md-5">
+                                                {{ field }}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                    {% for field in triage_stat_fieldset.fields %}
+                                    <div class="form-group row">
+                                        <label class="control-label col-md-3" for="{{ field.id_for_label }}">
+                                            {{ field.label }}
+                                        </label>
+                                        <div class="col-md-5">
+                                            {{ field }}
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                    <button class="btn btn-success" type="button" onclick="openTriageModal();"> Triage Ref</button> <br>
+                                </fieldset>
+                            </div>
+                            <div class="tab-pane" id="other">
+                                <fieldset>
+                                    <legend>{{ other_fieldset.title }}</legend>
+                                    {% for field in other_fieldset.fields %}
+                                        <div class="form-group row">
+                                            <label class="control-label col-md-3" for="{{ field.id_for_label }}">
+                                                {{ field.label }}
+                                            </label>
+                                            <div class="col-md-5">
+                                                {{ field }}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </fieldset>
+                            </div>
+                            <br><br>
+                            <button class="btn btn-primary" type="submit">Submit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- Additional info -->
+        <div class="col-lg-4 col-md-12 col-sm-12 col-12">
+            {% include "side_stats.html" %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <!-- wizard -->
+    <script src="{% static 'plugins/steps/jquery.steps.js' %}" ></script>
+    <script src="{% static 'js/pages/steps/steps-data.js' %}" ></script>
+    <script>
+        triageScore = 0;
+        document.getElementById('otherCC').onclick = function () {
+            display_value = 'none'
+            if (document.getElementById('otherCC').checked) {
+                display_value = 'block'
+            }
+            document.getElementById('otherComplaintId').style.display = display_value;
+            document.getElementById('ccLabel').style.display = display_value;
+            if (display_value == 'none'){
+                document.getElementById('otherComplaintId').value = ''
+            }
+        };
+
+        function openTriageModal() {
+            $('#triageTableModal').modal('show');
+        }
+    </script>
+{% endblock %}

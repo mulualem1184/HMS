@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+{% block style %}
+    <!-- data tables -->
+
+    <link href="{% static '/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css' %}" rel="stylesheet" media="screen">
+
+{% endblock %}
+{% block title %} Doctor Team List {% endblock %}
+
+{% block page_content %}
+{% include "inpatient_app/partials/create_doctor_team_form.html" %}
+                                         
+    
+        
+
+                        <div class="col-md-12">
+                            <div class="tabbable-line">
+                                <ul class="nav nav-pills nav-pills-rose">
+                                    <li class="nav-item tab-all"><a class="nav-link active show"
+                                        href="#tab1" data-toggle="tab">List View</a></li>
+                                    <li class="nav-item tab-all"><a class="nav-link" href="#tab2"
+                                        data-toggle="tab">Grid View</a></li>
+                                </ul>
+                                <div class="tab-content">
+                                    <div class="tab-pane active fontawesome-demo" id="tab1">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="card  card-box">
+                                                    <div class="card-head">
+                                                        <header></header>
+                                                                        <button style="size: 5px;" type="button" class="btn btn-success btn-rounded btn-icon pull-right" data-toggle="modal" data-target="#create-doctor-team-form"> <i style="size: 5px;padding-right: 2px;" class="fa fa-plus">   Create</i> </button>
+
+                                                    </div>
+                                                    <div class="tab-pane" id="tab1">
+
+                                                    <div class="card-body ">
+                                                        
+                                                        <table class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded" id="example4">
+                                                            <thead>
+                                                                <tr>
+                                                                    
+                                                                    <th class="mdl-data-table__cell--non-numeric"> Team Name </th>
+                                                                    <th class="mdl-data-table__cell--non-numeric"> Amount Of Members </th>     <th class="mdl-data-table__cell--non-numeric">Add Members</th>
+                                            
+                                                                    <th class="mdl-data-table__cell--non-numeric"> Assign To Bed </th>
+
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {% for team,amount in doctor_team_zip %}
+                                                                 {% include "inpatient_app/partials/assign_doctor_to_bed_form_modal.html" %}
+                                                                 {% include "inpatient_app/partials/add_team_member_form.html" %}
+
+                                                                <tr class="odd gradeX">
+                                                                    
+                                                                    <td class="mdl-data-table__cell--non-numeric">{{team}}</td>
+                                                                    <td class="mdl-data-table__cell--non-numeric">{{amount}}  </td>
+                                                                    <td class="mdl-data-table__cell--non-numeric">
+
+                                                                        <button style="size: 5px;" type="button" class="btn btn-info btn-rounded btn-icon" data-toggle="modal" data-target="#add-team-member-form{{team.id}}"> <i style="size: 5px;" class="fa fa-plus"></i> </button>
+                                                                    
+                                                                    </td>
+                                                                                                                                        
+                                                                    <td class="mdl-data-table__cell--non-numeric">
+
+                                                            <a href="" data-toggle="modal" data-target="#assign-doctor-to-bed-modal{{team.id}}">
+                                                                <span class="">Assign To Bed</span> 
+                                                            </a>
+
+                                                                    </td>
+                                                                </tr>
+                                                                {% endfor %}
+
+                                                            </tbody>
+                                                        </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane" id="tab2">
+                                        <div class="row">
+                                            {% for team,amount in doctor_team_zip2 %}
+                                            <div class="col-md-4">
+                                                <div class="card card-box">
+                                                    <div class="card-body no-padding ">
+                                                        <div class="doctor-profile">
+                                                                <img src="../assets/img/user/user10.jpg" class="doctor-pic" alt=""> 
+                                                            <div class="profile-usertitle">
+                                                                <div class="doctor-name">{{team}} </div>
+                                                            </div>
+                                                                <p>A-103, shyam gokul flats, Mahatma Road <br />Mumbai</p> 
+                                                                <div><p><a href="tel:(123)456-7890">  {{amount}} Members</a></p> </div>
+                                                            <div class="profile-userbuttons">
+                                                            <a href="" data-toggle="modal" data-target="#assign-doctor-to-bed-modal">
+                                                                <span class="">Assign To Bed</span> 
+                                                            </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+{% endblock %}
+
+{% block scripts %}
+    <!-- data tables -->
+
+    <script src="{% static '/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js' %}"></script>
+    <script src="{% static '/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker-init.js' %}"></script>
+
+{% endblock %}

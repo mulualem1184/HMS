@@ -61,6 +61,85 @@ class PatientRegistrationForm(forms.ModelForm):
 			}
 
 
+class PatientArrivalForm(forms.ModelForm):
+
+    class Meta:
+        model = PatientArrivalDetail
+        fields = [
+            'pre_hospital_care', 'date_of_illness', 
+            'injury_mechanism', 'triage_treatment', 
+            'avpu', 'mobility',
+        ]
+        widgets = {
+            'pre_hospital_care': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'If any treatment was given before patient came to hospital ',#to emergency room 
+            }),
+
+            'triage_treatment': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'If any treatment was given before patient was admitted to OPD',#to emergency room 
+            }),
+            'injury_mechanism': forms.Textarea(attrs={
+                'class': 'form-control',
+                #'placeholder': 'If any treatment was given before patient was admitted to OPD',to emergency room 
+            }),
+
+            'avpu': forms.Select(attrs={
+                'class': 'form-control'
+            }),
+            'mobility': forms.Select(attrs={
+                'class': 'form-control'
+            }),
+			'date_of_illness': forms.DateTimeInput(attrs={
+			'class' : 'forms form-control',
+				}),
+
+
+			}
+
+class ChiefComplaintForm(forms.ModelForm):
+
+    class Meta:
+        model = OutpatientChiefComplaint
+        fields = ['complaint', 'patient']
+        widgets = {
+            'complaint': forms.Textarea(attrs={
+                'class': 'form-control',
+            }),
+            'patient': forms.Select(attrs={
+                'class': 'form-control'
+            }),
+
+			}
+
+class VitalSignForm(forms.ModelForm):
+
+	class Meta:
+		model = PatientVitalSign
+		fields = ['pulse_rate', 'temperature', 'blood_pressure', 
+				'temperature_unit']
+
+		widgets = {						
+			'pulse_rate': forms.NumberInput(attrs={
+			'class' : 'form-control forms',
+
+				}),
+			'temperature': forms.NumberInput(attrs={
+			'class' : 'form-control forms',
+
+				}),
+			'blood_pressure': forms.NumberInput(attrs={
+			'class' : 'form-control forms',
+
+				}),
+			'temperature_unit': forms.Select(attrs={
+			'class' : 'form-control select2',
+
+				}),
+
+			}
+
 class HospitalStructureForm(forms.Form):
 	building_name = forms.CharField(widget=forms.TextInput(
 		attrs={
@@ -290,32 +369,6 @@ class AssignServiceTeamForm(forms.ModelForm):
 			}
 
 
-class VitalSignForm(forms.ModelForm):
-
-	class Meta:
-		model = PatientVitalSign
-		fields = ['pulse_rate', 'temperature', 'blood_pressure', 
-				'temperature_unit']
-
-		widgets = {						
-			'pulse_rate': forms.NumberInput(attrs={
-			'class' : 'form-control forms',
-
-				}),
-			'temperature': forms.NumberInput(attrs={
-			'class' : 'form-control forms',
-
-				}),
-			'blood_pressure': forms.NumberInput(attrs={
-			'class' : 'form-control forms',
-
-				}),
-			'temperature_unit': forms.Select(attrs={
-			'class' : 'form-control select2',
-
-				}),
-
-			}
 
 
 class PatientAllergyForm(forms.ModelForm):

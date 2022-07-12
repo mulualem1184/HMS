@@ -4,7 +4,7 @@
     <!-- data tables -->
     <link href="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"/>
 {% endblock %}
-{% block title %} Prescriptions {% endblock %}
+{% block title %} Unallocated Patient List {% endblock %}
 
 {% block page_content %}
 
@@ -12,7 +12,7 @@
         <div class="col-md-12">
             <div class="card card-box">
                 <div class="card-head">
-                    <header>Prescription Lists</header>
+                    <header>Inpatient List Lists</header>
                     <div class="tools">
                         <a class="fa fa-repeat btn-color box-refresh" href="javascript:;"></a>
                         <a class="t-collapse btn-color fa fa-chevron-down" href="javascript:;"></a>
@@ -20,29 +20,28 @@
                     </div>
                 </div>
                 <div class="card-body ">
-                    <table id="example1" class="display table-bordered table-striped table-hover" style="width:100%;">
+                    <table id="example1" class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded" >
                         <thead>
-                            <tr class="gradeX odd">
-                                <th>Name</th>
-                                <th>Gender</th>
-                                <th>Age</th>
-                                <th>Adress</th>                                
-                                <th>Phone Number</th>
-                                <th>Allocate</th>
+                            <tr class="">
+                                <th class = "mdl-data-table__cell--non-numeric">Name</th>
+                                <th class = "mdl-data-table__cell--non-numeric">Gender</th>
+                                <th class = "mdl-data-table__cell--non-numeric">Age</th>
+                                                                
+                                <th class = "mdl-data-table__cell--non-numeric">Priority</th>
+                                <th class = "mdl-data-table__cell--non-numeric">Allocate</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for patient in patient_list %}
+                            {% for patient, priority in inpatient_zip %}
                                 <tr>
-                            <td>{{patient.first_name}} {{patient.last_name}}</td>
-                                    <td> {{ patient.sex }}</td>
-                                    <td> {{ patient.age }} </td>
+                            <td class = "mdl-data-table__cell--non-numeric">{{patient.first_name}} {{patient.last_name}}</td>
+                                    <td class = "mdl-data-table__cell--non-numeric"> {{ patient.sex }}</td>
+                                    <td class = "mdl-data-table__cell--non-numeric"> {{ patient.age }} </td>
                                     
-                                    <td> {{ patient.address }} </td>
-                                    <td> {{ patient.phone_number }} </td>
+                                    <td class = "mdl-data-table__cell--non-numeric"> {{ priority.priority }} </td>
                                   
                                   
-                                    <td><button class="btn btn-info"><a href="{% url 'allocate_patient' patient.id %}" style="color: white;">Allocate</a></button></td>
+                                    <td class = "mdl-data-table__cell--non-numeric"><button class="btn btn-info"><a href="{% url 'allocate_patient' patient.id %}" style="color: white;">Allocate</a></button></td>
                                 </tr>
                             {% endfor %}
                         </tbody>

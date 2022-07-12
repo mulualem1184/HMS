@@ -20,22 +20,34 @@
                     </div>
                 </div>
                 <div class="card-body ">
-                    <table id="example1" class="display table-bordered table-striped table-hover" style="width:100%;">
+                    <table id="example1" class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded" >
                         <thead>
                             <tr class="gradeX odd">
-                                <th>Patient</th>
-                                <th>Queue</th>
-                                <th>View Symptoms</th>
-                                <th>Actions</th>
+                                <th class="mdl-data-table__cell--non-numeric">Patient</th>
+                                <th class="mdl-data-table__cell--non-numeric">Queue</th>
+                                <th class="mdl-data-table__cell--non-numeric">View Symptoms</th>
+                                <th class="mdl-data-table__cell--non-numeric">Additional Services</th>
+                                <th class="mdl-data-table__cell--non-numeric">Lab Order</th>
+                                <th class="mdl-data-table__cell--non-numeric">Make Prescription</th>
+
+                                <th class="mdl-data-table__cell--non-numeric">Assign To Ward</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for queue in visit_queue %}
                                 <tr>
-                                    <td><a href="{% url 'patient_record' queue.visit.patient.id %}">{{queue.visit.patient}}</a></td>
-                                    <td> {{ queue.queue_number }}</td>
-                                    <td><a href="{% url 'view_patient_symptom' queue.visit.patient.id %}">View Symptom</a></td>
-                                    <td>
+                                    <td class="mdl-data-table__cell--non-numeric"><a href="{% url 'patient_record' queue.visit.patient.id %}">{{queue.visit.patient}}</a></td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ queue.queue_number }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric"><a href="{% url 'view_patient_symptom' queue.visit.patient.id %}">View Symptom</a></td>
+                                    <td class="mdl-data-table__cell--non-numeric"> <a href="{% url 'give_service' queue.visit.patient.id %}">Additional Services </a></td>
+                                    <td class="mdl-data-table__cell--non-numeric"><a href="{% url 'create-order' %}">Make Lab Order Lab Order</a></td>
+                                   <td> <a href="{% url 'patient_prescription' queue.visit.patient.id queue.visit.id room.room.id queue.id %}"><div class="fa-item col-md-5 col-sm-5 col-12">
+                                                    <i class="fa fa-medkit"> </i> </div></a></td>
+
+                                    <td class="mdl-data-table__cell--non-numeric"> <a href="{% url 'inpatient_assignment' queue.visit.patient.id %}">Assign To Ward</a></td>
+
+                                    <!--
+                                    <td class="mdl-data-table__cell--non-numeric">
                                     <div class="btn-group btn-group-circle">
                                     <button type="button" class="btn btn-primary">Actions</button>
                                     <button type="button" class="btn btn-circle-right btn-primary dropdown-toggle m-r-20" data-toggle="dropdown" aria-expanded="false">
@@ -56,22 +68,13 @@
                                            <a href="{% url 'create-order' %}">Make Lab Order</a>
                                             
                                         </li>
-
-                                        
-                                        
                                         
                                     </ul>
                                     </div>    
-                                    </td>
+                                    </td>-->
                                 </tr>
                                       
                             {% endfor %}
-                                                  <tr class="gradeX odd">
-                                <th>#</th>
-                                <th>#</th>
-                                <th>#</th>
-                                <th>#</th>
-                            </tr>
                         </tbody>
                     </table>
                 </div>

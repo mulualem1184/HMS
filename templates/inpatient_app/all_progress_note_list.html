@@ -20,14 +20,18 @@
                             <div class="panel tab-border card-box">
                                 <header class="panel-heading panel-heading-gray custom-tab ">
                                     <ul class="nav nav-tabs">
+                                        
                                         <li class="nav-item"><a href="#home" data-toggle="tab" class="active">Home</a>
                                         </li>
-                                        <li class="nav-item"><a href="#about" data-toggle="tab">About</a>
+                                        {% for note in progress_note_list %}
+                                        <li class="nav-item"><a href="#about" data-toggle="tab">{{note.registered_on}}</a>
                                         </li>
+                                        {% endfor %}
+                                        <!--
                                         <li class="nav-item"><a href="#profile" data-toggle="tab">Profile</a>
                                         </li>
                                         <li class="nav-item"><a href="#contact" data-toggle="tab">Contact</a>
-                                        </li>
+                                        </li>-->
                                     </ul>
                                 </header>
                                 <div class="panel-body">

@@ -7,6 +7,8 @@ from .views import *
 urlpatterns = [
 
  	path('patient_registration/', views.PatientRegistration, name="patient_registration"),
+ 	path('outpatient_triage_form/', views.OutpatientTriageForm, name="outpatient_triage_form"),
+
  	path('hospital_structure_form/', views.HospitalStructure, name="hospital_structure_form"),
  	path('building_list/', views.BuildingList, name="building_list"),
  	path('room_list/<int:pk>/', views.RoomList, name="room_list"),

@@ -29,6 +29,7 @@ admin.site.register(NurseEvaluation)
 admin.site.register(NurseInstructionCheck)
 admin.site.register(NurseIndependentIntervention)
 
+admin.site.register(InpatientDischargeSummary)
 
 
 

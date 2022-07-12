@@ -1,0 +1,29 @@
+{% load crispy_forms_tags %}
+<div class="modal fade" id="assign-nurse-team-to-bed-form{{team.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel">Assign Nurse Team To Bed</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{% url 'assign_nurse_team_to_bed_form' team.id %}" method="POST">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="form-group">
+                        <div class="col-sm-10">
+                            {{assign_form.bed}}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="$('#textMessageBoxId')[0].value='';">Clear</button>
+                    <button type="submit" class="btn btn-primary" onclick="$('#specialInst_{{test_type.id}}').modal('hide')">
+                        <i class="fa fa-message"></i> Send
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

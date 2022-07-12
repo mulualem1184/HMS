@@ -46,10 +46,56 @@ class HospitalStructureForm(forms.Form):
 		}
 	))
 
+class BedCategoryForm(forms.ModelForm):
+	class Meta:
+		model = BedCategory
+		fields = ['category']
+		widgets = {			
+			'category': forms.TextInput(attrs={
+			'class' : 'form-control forms',
+
+				}),
+		
+			}
+"""
+from models import Organism, Kingdom
+from forms import OrganismForm
+form = OrganismForm()
+form.fields['organism'].choices = list()
+
+# Now loop the kingdoms, to get all organisms in each.
+for k in Kingdom.objects.all():
+    # Append the tuple of OptGroup Name, Organism.
+    form.fields['organism'].choices = form.fields['organism'].choices.append(
+        (
+            k.name, # First tuple part is the optgroup name/label
+            list( # Second tuple part is a list of tuples for each option.
+                (o.id, o.name) for o in Organism.objects.filter(kingdom=k).order_by('name')
+                # Each option itself is a tuple of id and name for the label.
+            )
+        )
+    )
+"""
+"""	
+class OrganismForm(forms.ModelForm):
+    organism = forms.ModelChoiceField(
+        queryset=Organism.objects.all().order_by('kingdom__name', 'name')
+    )
+    class Meta:
+        model = Organism
+"""
 class BedForm(forms.ModelForm):
+	"""
+	bed = forms.Select(Bed.objects.order_by('category'))
+	
+	bed = forms.ModelChoiceField(
+		queryset=Bed.objects.all().order_by('category__category')
+    )
+	"""
 	class Meta:
 		model = BedPatientAllocation
 		fields = ['bed']
+				
 		widgets = {			
 			'bed': forms.Select(attrs={
 			'class' : 'form-control select2',
@@ -58,6 +104,23 @@ class BedForm(forms.ModelForm):
 				}),
 		
 			}
+
+
+"""
+class AllocateBedForm(forms.ModelForm):
+	class Meta:
+		model = BedReleaseDate
+		fields = ['bed']
+				
+		widgets = {			
+			'bed': forms.Select(attrs={
+			'class' : 'form-control select2',
+			'id' : 'bed',
+
+				}),
+		
+			}
+"""		
 """
 class NursePatientForm(forms.ModelForm):
 	class Meta:
@@ -75,6 +138,7 @@ class NursePatientForm(forms.ModelForm):
 		
 			}
 """
+
 class PatientForm(forms.ModelForm):
 	class Meta:
 		model = PatientCredit
@@ -286,24 +350,82 @@ class InpatientAssessmentForm(forms.ModelForm):
 
 }
 
-class AssignNurseForm(forms.ModelForm):
+class BedReleaseDateForm(forms.ModelForm):
+	class Meta:
+		model = BedReleaseDate
+		fields = ['bed_release_date']
+
+		widgets = {						
+			'bed_release_date': forms.TextInput(attrs={
+			'class' : 'form-control forms',
+
+				}),
+
+
+}
+
+class StayDurationPredictionForm(forms.ModelForm):
+	class Meta:
+		model = PatientStayDurationPrediction
+		fields = ['duration', 'duration_unit']
+
+		widgets = {						
+			'duration': forms.NumberInput(attrs={
+			'class' : 'form-control forms',
+
+				}),
+			'duration_unit': forms.Select(attrs={
+			'class' : 'form-control forms',
+
+				}),
+
+
+}
+
+
+class WardAdmissionPriorityForm(forms.ModelForm):
+
+	class Meta:
+		model = AdmissionPriorityLevel
+		fields = ['priority']
+
+		widgets = {						
+			'priority': forms.Select(attrs={
+			'class' : 'form-control forms',
+
+				}),
+
+
+}
+
+class AssignNurseToBedForm(forms.ModelForm):
 
 	class Meta:
 		model = WardTeamBed
-		fields = ['team', 'nurse_team']
+		fields = ['bed']
 
 		widgets = {						
-			'team': forms.Select(attrs={
+			'bed': forms.Select(attrs={
 			'class' : 'form-control select2',
 			'id' : 'room-id',
 
 				}),
-			'nurse_team': forms.Select(attrs={
+			}
+
+class AllocateNurseToBedForm(forms.ModelForm):
+
+	class Meta:
+		model = ServiceProviderBed
+		fields = ['bed']
+
+		widgets = {						
+			'bed': forms.Select(attrs={
 			'class' : 'form-control select2',
-			'id' : 'service-team-id',
+			'id' : 'bed-id',
 
 				}),
 			}
+
 
 class AssignInpatientToTeamForm(forms.ModelForm):
 
@@ -323,22 +445,61 @@ class AssignInpatientToTeamForm(forms.ModelForm):
 
 				}),
 			}
-
+"""
 class AssignNurseToTeamForm(forms.ModelForm):
 
 	class Meta:
 		model = WardNurseTeam
-		fields = ['team', 'nurse']
+		fields = ['nurse']
 
 		widgets = {						
 			'team': forms.Select(attrs={
 			'class' : 'form-control select2',
-			'id' : 'room-id',
+			'id' : 'nurse-id',
 
 				}),
+			}
+"""
+class AssignNurseToTeamForm(forms.ModelForm):
+
+	class Meta:
+		model = WardNurseTeam
+		fields = [ 'nurse']
+
+
+		widgets = {						
 			'nurse': forms.Select(attrs={
 			'class' : 'form-control select2',
 			'id' : 'service-provider-id',
+
+				}),
+			}
+
+class AssignDoctorToTeamForm(forms.ModelForm):
+
+	class Meta:
+		model = WardTeam
+		fields = [ 'ward_service_provider']
+
+
+		widgets = {						
+			'ward_service_provider': forms.Select(attrs={
+			'class' : 'form-control select2',
+			'id' : 'service-provider-id',
+
+				}),
+			}
+
+
+class CreateDoctorTeamForm(forms.ModelForm):
+
+	class Meta:
+		model = InpatientTeam
+		fields = [ 'team_name']
+
+		widgets = {						
+			'team_name': forms.TextInput(attrs={
+			'class' : 'form-control forms',
 
 				}),
 			}
@@ -403,6 +564,27 @@ class DoctorInstructionForm(forms.ModelForm):
 		fields = ['instruction']
 		widgets = {			
 			'instruction': forms.TextInput(attrs={
+			'class' : 'form-control forms',
+				}),
+		
+			}
+
+
+class DischargeSummaryForm(forms.ModelForm):
+	class Meta:
+		model = InpatientDischargeSummary 
+		fields = ['discharge_condition',
+					'significant_findings',
+					'summary'
+					]
+		widgets = {			
+			'discharge_condition': forms.Select(attrs={
+			'class' : 'form-control forms',
+				}),
+			'significant_findings': forms.TextInput(attrs={
+			'class' : 'form-control forms',
+				}),
+			'summary': forms.Textarea(attrs={
 			'class' : 'form-control forms',
 				}),
 		

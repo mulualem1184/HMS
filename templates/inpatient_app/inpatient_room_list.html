@@ -4,7 +4,7 @@
     <!-- data tables -->
     <link href="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"/>
 {% endblock %}
-{% block title %} Inpatient Stay Duration {% endblock %}
+{% block title %} Bed List {% endblock %}
 
 {% block page_content %}
 
@@ -12,7 +12,7 @@
         <div class="col-md-12">
             <div class="card card-box">
                 <div class="card-head">
-                    <header>{{patient}} Ward Stay Durations </header>
+                    <header>Bed List </header>
                     <div class="tools">
                         <a class="fa fa-repeat btn-color box-refresh" href="javascript:;"></a>
                         <a class="t-collapse btn-color fa fa-chevron-down" href="javascript:;"></a>
@@ -20,44 +20,55 @@
                     </div>
                 </div>
                 <div class="card-body ">
-                    <table id="example1" class="display table-bordered table-striped table-hover" style="width:100%;">
+                    <table id="example1" class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded" >
                         <thead>
                             <tr class="gradeX odd">
-                                <th>Room</th>
-                                <th>Status</th>
-                                <th>Price</th>
-                                
+                                <th class="mdl-data-table__cell--non-numeric">Room</th>
+                                <th class="mdl-data-table__cell--non-numeric">Status</th>
+                                <th class="mdl-data-table__cell--non-numeric">Price</th>
+                                <th class="mdl-data-table__cell--non-numeric">Change Price</th>
+                                <th class="mdl-data-table__cell--non-numeric">Current Patient</th>
+
                             </tr>
                         </thead>
                         <tbody>
                             {% for room in room_prices %}
+{% include "inpatient_app/partials/current_patient_info.html" %}
+
                                 <tr>
-                                    <td><div class="icon-holder">
+                                    <td class="mdl-data-table__cell--non-numeric"><div class="icon-holder">
                                                 <i class="material-icons f-left">airline_seat_flat</i> {{room.room}}
                                               </div></td>
                                     <!--<td>{{room.room}}</td>-->
-                                    <td> {% if room.room.patient %} Allocated {% else%} Free {% endif %}</td>
-                                    <td> {{ room.room_price}}</td>
-                                        <td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {% if room.room.patient %} Allocated {% else%} Free {% endif %}</td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ room.room_price}}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">  <a href="{% url 'change_room_price_form' room.id %}">Change Price</a> </td>
+                                    <td class="mdl-data-table__cell--non-numeric">{% if room.room.patient %}<a href="{% url 'check_current_patient' room.room.id %}">Current Patient</a> {% else %} None   
+                                    {% endif %}
+                                     </td><!--                                       
+                                     <td>{% if room.room.patient %}       <a data-toggle="modal" data-target="#current_patient{{room.patient.id}}">
+                                                        Current Patient
+                                                </a>
+                                                {% else %} None
+                                                {% endif %}
+                                    </td>-->
+<!--
                                     <div class="btn-group btn-group-circle">
                                     <button type="button" class="btn btn-primary">Actions</button>
                                     <button type="button" class="btn btn-circle-right btn-primary dropdown-toggle m-r-20" data-toggle="dropdown" aria-expanded="false">
                                         <i class="fa fa-angle-down"></i>
                                     </button>
                                     <ul class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(79px, 34px, 0px); top: 0px; left: 0px; will-change: transform;">
-                                        <li><a href="{% url 'change_room_price_form' room.id %}">Change Price</a>
+                                        <li>
                                         </li>
                                         <li><a href="{% url 'bed_stay_duration' room.room.id %}">Bed Stay Duration</a>
                                         </li>
-                                        {% if room.room.patient %}
-                                        <li><a href="{% url 'check_current_patient' room.room.id %}">Current Patient</a>  
-                                        </li>
-                                        {% endif %}                                        
+                                                                                
                                         
                                     </ul>
                                     </div>    
                                     </td>                                    
-                                </tr>
+-->                                </tr>
                             {% endfor %}
                         </tbody>
                     </table>

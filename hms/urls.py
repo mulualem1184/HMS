@@ -13,6 +13,8 @@ urlpatterns = [
     path('emergency/', include('emg_ps.urls', namespace='emergency')),
     path('base-temp', TemplateView.as_view(template_name='base.html')),
     path('original-temp', TemplateView.as_view(template_name='original_template.html')),
+    path('core/', include('core.urls', namespace='core')),
+    
     path('', include('pharmacy_app.urls')),
     path('', include('inpatient_app.urls')),
     path('', include('outpatient_app.urls')),

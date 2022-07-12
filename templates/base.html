@@ -260,7 +260,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="login.html">
+                                    <a href="{% url 'core:logout' %}">
                                         <i class="fa fa-sign-out"></i> Log Out </a>
                                 </li>
                             </ul>
@@ -375,7 +375,7 @@
 	                            </a>
 	                            <ul class="sub-menu" {% if active_link == 'emg' %} style="display: block;" {% endif %}>
 									<li class="nav-item">
-	                                    <a href="{% url 'emergency:new_case' %}" class="nav-link ">
+	                                    <a href="{% url 'emergency:new_emg_case' %}" class="nav-link ">
 	                                        <span class="title">Register new case</span>
 	                                    </a>
 	                                </li>

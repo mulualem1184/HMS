@@ -8,6 +8,7 @@
 {% endblock%}
 {% block page_content %}
 {% include "inpatient_app/partials/bed_availibility_modal.html" %}
+{% include "inpatient_app/partials/bed_release_date_info.html" %}
         
 
     <div class="" style="width: 100%;">
@@ -31,10 +32,14 @@
         
     <form action="" method="POST">
         		{% csrf_token %}
-            
+              <div class="form-row">            
                 <div class="form-group col-md-4">  
                     {{bed_form.bed|as_crispy_field}}
                 </div>
+                <div class="form-group">
+
+            </div>
+              </div>
             	<div>
             		<input class="form-group btn btn-info" type="submit" name="Submit">
             	</div>
@@ -47,12 +52,15 @@
     {% endfor %}
 </ul>
 {% endif %}
-
-            <div class="offset-sm-2 col-sm-10">
+                 <a data-toggle="modal" data-target="#bed-release-date-info">
+              Check Bed Release Dates
+            </a>
+            <!--<div class="offset-sm-2 col-sm-10">
                 <button type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect btn-circle btn-info" data-toggle="modal" data-target="#room-queue-modal">
                                 Check Bed Availibility 
                 </button>
             </div>
+          -->
     {% block scripts %}
  <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>        

@@ -1,0 +1,43 @@
+{% load crispy_forms_tags %}
+<div class="modal fade" id="nurse-vital-sign-form-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel">Vital Sign Form</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{% url 'vital_sign_form_modal' patient.id 2 %}" method="POST">
+                {% csrf_token %}
+                <div class="modal-body">
+            <div class="form-row">
+                <div class="form-group col-md-4">  
+                    {{vital_form.pulse_rate|as_crispy_field}}
+                </div>
+                </div>
+            <div class="form-row">   
+               <div class="form-group col-md-4">  
+                    {{vital_form.temperature|as_crispy_field}}
+                </div>
+                <div class="form-group col-md-4">  
+                    {{vital_form.temperature_unit|as_crispy_field}}
+                </div>
+              </div>
+                
+              <div class="form-row">
+                  <div class="form-group col-md-4">  
+                    {{vital_form.blood_pressure|as_crispy_field}}
+                  </div>
+              </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="$('#textMessageBoxId')[0].value='';">Clear</button>
+                    <button type="submit" class="btn btn-primary" onclick="$('#specialInst_{{test_type.id}}').modal('hide')">
+                        <i class="fa fa-message"></i> Send
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

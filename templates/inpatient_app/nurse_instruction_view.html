@@ -10,6 +10,8 @@
 {% include "inpatient_app/partials/allergy_info_modal.html" %}
 {% include "inpatient_app/partials/habit_info_modal.html" %}
 {% include "inpatient_app/partials/doctor_progress_note_form_modal.html" %}
+{% include "inpatient_app/partials/nurse_vital_sign_form_modal.html" %}
+
 <!--
 <div class="btn-group btn-group-circle" style="padding-bottom: 20px;">
     <button type="button" class="btn btn-primary">Patient Info</button>
@@ -49,43 +51,8 @@
         <div class="col-md-12">
             <!-- BEGIN PROFILE SIDEBAR -->
             <div class="profile-sidebar">
-                <!--<div class="card ">
-                    <div class="card-body no-padding height-9">
-                        
-                        <div class="profile-usertitle">
-                            <div class="profile-usertitle-name"><a href="{% url 'patient_record' patient.id  %}">{{ patient.full_name }}</a> </div>
-                            
-                        </div>
-                        <ul class="list-group list-group-unbordered">
-                            
-                            <li class="list-group-item">
-                                <b>First Name </b>
-                                <div class="profile-desc-item pull-right"> {{ patient.first_name }}</div>
-                            </li>
-                            <li class="list-group-item">
-                                <b>Last Name </b>
-                                <div class="profile-desc-item pull-right"> {{ patient.last_name }}</div>
-                            </li>
-                            <li class="list-group-item">
-                                <b>Gender </b>
-                                <div class="profile-desc-item pull-right"> {{ patient.sex }}</div>
-                            </li>
-                            <li class="list-group-item">
-                                <b>Age</b>
-                                <div class="profile-desc-item pull-right"> {{ patient.age }}</div>
-                            </li>
-                        </ul>
-                        
-                    
-                    </div>
-                </div>-->
-
-                               <!-- <div class="card-head">
-                                    <header>ACCORDIONS</header>
-                                    
-                                </div>-->
-                                <div class="card-body" id="line-parent">
-                                    <div class="panel-group accordion" id="accordion3">
+                                <div class="card-body col-sm-9" id="line-parent">
+                                    <div class="panel-group accordion"  id="accordion3">
                                           <div class="panel panel-default">
                                               <div class="panel-heading panel-heading-gray">
                                                   
@@ -147,19 +114,6 @@
 
                                     <li class="nav-item tab-all p-l-20">
                                         <a class="nav-link" href="#interventiontab" data-toggle="tab">Nurse Independent Interventions</a></li>
-
-<!--
-                                    <li class="nav-item tab-all">
-                                        <a class="nav-link active show" href="#doctab" data-toggle="tab">Current Medication</a></li>
-
-                                    <li class="nav-item tab-all p-l-20">
-                                        <a class="nav-link" href="#admissiontab" data-toggle="tab">Admission Info</a></li>
-
-
-
-                                    <li class="nav-item tab-all p-l-20">
-                                        <a class="nav-link" href="#settingtab" data-toggle="tab">Visit History</a></li>
- -->
 
                                 </ul>
                             </div>
@@ -406,8 +360,8 @@
                     </div>
                     
                 </div>-->
-        <div class="col-lg-3 col-md-12 col-sm-12 col-12">
-            <div class="card card-box">
+        <div class="col-sm-3" style="padding-left: 20px;">
+            <div class="card card-box ">
                 <div class="card-head">
                     <header>Actions</header>
                 </div>
@@ -420,6 +374,26 @@
                 </div>
             </div>
         </div>
+        <div class="col-sm-3" style="padding-left: 20px;">
+            <div class="card card-box" >
+                <div class="card-head">
+                    <header>Patient Info</header>
+                </div>
+                <div class="card-body" id="bar-parent">
+                    <ul>
+        <li><a href="" data-toggle='modal' data-target="#room-queue-modal">Patient Medication </a></li>
+        <li><a href="" data-toggle='modal' data-target="#admission-info-id">Admission Info </a></li>
+        <li><a href="" data-toggle='modal' data-target="#care-plan-info-id">Care Plan </a></li>
+        <li><a href="" data-toggle='modal' data-target="#vital-sign-modal">Check Vital Sign </a></li>
+        <li><a href="" data-toggle='modal' data-target="#allergy-info-modal">Patient Allergies </a></li>
+        <li><a href="" data-toggle='modal' data-target="#habit-info-modal">Patient Habits </a></li>
+        <li><a href="" data-toggle='modal' data-target="#nurse-vital-sign-form-modal">Fill Vital Sign </a></li>
+
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         </div>
 
     </div>

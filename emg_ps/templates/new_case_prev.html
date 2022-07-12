@@ -1,0 +1,99 @@
+<div class="card card-box" style="display: none;">
+    <div class="card-head">
+        <header>Emergency Triage</header>
+    </div>
+    <div class="card-body" id="bar-parent">
+        <form id="example-advanced-form" method="POST">
+            {% csrf_token %}
+            {% for fieldset in fieldsets %}
+                <fieldset>
+                    <legend> {{ fieldset.title }} </legend>
+                    {% for field in fieldset.fields %}
+                        <div class="form-group row">
+                            <label class="control-label col-md-3" for="{{ field.id_for_label }}">
+                                {{ field.label }}
+                            </label>
+                            <div class="col-md-5">
+                                {{ field }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </fieldset>
+            {% endfor %}
+            <fieldset>
+                <legend>Referral Location</legend>
+                <div class="row form-group">
+                    {% for location in ref_locations %}
+                        <div class="col-4 text-center radio p-0">
+                            <input type="radio" value="{{location.id}}" name="referral_location" id="radioId_{{location.id}}">
+                            <label for="radioId_{{location.id}}">{{ location }}</label>
+                        </div>
+                    {% endfor %}
+                </div> 
+            </fieldset>
+            <fieldset>
+                <legend>Chief Complaint</legend>
+                <div class="form-group">
+                    {% for cc in cc_list %}
+                        <div class="col-4 text-center radio p-0">
+                            <input type="checkbox" value="{{cc.id}}" name="chief_complaint" id="{{ cc.id }}">
+                            <label for="{{cc.id}}">{{ cc }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+                <input type="checkbox" id="otherCC">
+                <label for="otherCC">Other</label>
+                <label for="otherComplaintId" style="display: none;" id="ccLabel">Input Symptoms</label>
+                <textarea style="display: none;" name="other_complaint" id="otherComplaintId" class="form form-control" cols="30" rows="10"></textarea>
+            </fieldset>
+            <fieldset>
+                <legend>Patient Stats</legend>
+                {% for field in vitalsign_form %}
+                    <div class="form-group row">
+                        <label class="control-label col-md-3" for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                        </label>
+                        <div class="col-md-5">
+                            {{ field }}
+                        </div>
+                    </div>
+                {% endfor %}
+                {% for field in triage_color_fieldset.fields %}
+                    <div class="form-group row">
+                        <label class="control-label col-md-3" for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                        </label>
+                        <div class="col-md-5">
+                            {{ field }}
+                        </div>
+                    </div>
+                {% endfor %}
+                {% for field in triage_stat_fieldset.fields %}
+                <div class="form-group row">
+                    <label class="control-label col-md-3" for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                    </label>
+                    <div class="col-md-5">
+                        {{ field }}
+                    </div>
+                </div>
+                {% endfor %}
+                <button class="btn btn-success" type="button" onclick="openTriageModal();"> Triage Ref</button> <br>
+            </fieldset>
+            <fieldset>
+                <legend>{{ other_fieldset.title }}</legend>
+                {% for field in other_fieldset.fields %}
+                    <div class="form-group row">
+                        <label class="control-label col-md-3" for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                        </label>
+                        <div class="col-md-5">
+                            {{ field }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </fieldset>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</div>

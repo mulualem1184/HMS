@@ -4,6 +4,8 @@ from django.contrib.auth import get_user_model
 from core.models import * 
 from staff_mgmt.models import Employee
 import datetime
+from django.utils import timezone
+
 # Create your models here.
 
 
@@ -11,6 +13,51 @@ import datetime
 USER = get_user_model()
 
 
+
+class OutpatientChiefComplaint(models.Model):
+    complaint = models.CharField(max_length=100,)
+    active = models.BooleanField(default=True)
+    patient = models.ForeignKey(to=Patient, on_delete=models.CASCADE, null=True, blank=True)
+
+    def __str__(self):
+        return self.compliant
+
+"""
+class PatientReferralLocation(models.Model):
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+"""
+
+class PatientArrivalDetail(models.Model):
+    # stores details of patient,
+    # including patient info, case type, date
+    AVPU_CHOICES = [
+        (0, 'ALERT'),
+        (1, 'REACTS TO VOICE'),
+        (2, 'REACTS TO PAIN'),
+        (3, 'UNRESPONSIVE'),
+    ]
+    MOBILITY_CHOICES = [
+        (0, 'Walking'),
+        (1, 'With help'),
+        (2, 'Stretcher/Immobile'),
+    ]
+    registered_by = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True)
+    arrival_date = models.DateTimeField(default=timezone.now, verbose_name='Date and Time of Arrival')
+#   was_referred = models.BooleanField(default=False)
+#   referred_from = models.ForeignKey(to=PatientReferralLocation, null=True, on_delete=models.SET_NULL)
+    pre_hospital_care = models.CharField(verbose_name="Was pre-hospital care/first aid given?", max_length=300, default='')
+    date_of_illness = models.DateTimeField(default=timezone.now, blank=True)
+    injury_mechanism = models.CharField(verbose_name="Mechanism of injury", max_length=400, null=True, blank=True)
+    chief_complaint = models.ForeignKey(to=OutpatientChiefComplaint,on_delete=models.SET_NULL, null=True)
+    vital_sign = models.ForeignKey(to=PatientVitalSign, on_delete=models.CASCADE, null=True, blank=True)
+    triage_treatment = models.TextField(verbose_name="Treatment and Investigation on Triage", null=True, blank=True)
+    avpu = models.IntegerField(verbose_name='AVPU', choices=AVPU_CHOICES, null=True, blank=True)
+    mobility = models.IntegerField(choices=MOBILITY_CHOICES, null=True, blank=True, default=None)
+    patient = models.ForeignKey(to=Patient, on_delete=models.CASCADE, null=True, blank=True)
+    active = models.BooleanField(default=True)
 
 class PatientAnthropometry(models.Model):
 	
@@ -213,6 +260,9 @@ class PatientMedication(models.Model):
     drug_status = models.CharField(max_length=100,choices=Visit_status, null=True)
     date = models.DateField(null=True, blank=True)
 
+
+
+
 class SurgeryHistory(models.Model):
     patient = models.ForeignKey(to=Patient, on_delete=models.SET_NULL, null=True, blank=True)
     diagnosis = models.CharField(max_length=100, blank=True, null=True)
@@ -226,3 +276,15 @@ class PatientMedicalCondition(models.Model):
     registered_by = models.ForeignKey(to=USER, on_delete=models.SET_NULL, null=True, blank=True)
 
 
+class OutpatientMedication(models.Model):
+	medication_status = (
+		('Ended', 'Ended'),
+		('Cancelled', 'Cancelled'),     
+		('Active', 'Active'),       
+		)
+	patient = models.ForeignKey(Patient,  on_delete= models.SET_NULL, null=True, blank=True)
+	visit =  models.ForeignKey(PatientVisit, on_delete=models.CASCADE)	
+	drug_prescription = models.ForeignKey(to=DrugPrescription, on_delete=models.SET_NULL, null=True, blank=True)
+	drug_status = models.CharField(max_length=100,choices=medication_status, null=True)
+	doctor = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
+	registered_on = models.DateField(null=True, blank=True)

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+    <link href="{% static 'fullcalendar/main.css' %}" rel="stylesheet" type="text/css" />
+{% endblock %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    Schedule
+{% endblock %}
+{% block page_content %}
+           <div class="col-md-12 col-sm-12" style="width: 100%;">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>Assign Nurse To Team</header>
+                </div>
+                <div class="card-body" id="bar-parent">
+
+        
+    <form class="form-horizontal" style="padding-left: 200px;" id="team_id" action="" method="POST">
+            {% csrf_token %}
+                <h3> </h3>
+                <div class="form-group col-md-6 col-sm-6">  
+                    {{assign_form.nurse|as_crispy_field}}
+                </div>
+
+
+                 
+              <div class="form-group" style="padding-top: 15px;">
+                <button class="form-group btn btn-primary"  type="submit" > Submit</button>
+                <a href="{% url 'nurse_team_list' %}" class="form-group btn">Done</a>
+              </div>
+            
+    </form>
+      </div>
+    </div>
+  </div>
+
+                <div class="card-head">
+                    <header>Nurse Shift</header>
+                </div>
+
+    <form action="">
+        {{ filter_form }}
+        <br>
+        <button class="btn btn-primary">Filter</button>
+    </form>
+    <div id="calendar" style="height: 20%;" ></div>
+{% endblock %}
+
+{% block scripts %}
+    <script src="{% static 'fullcalendar/main.js' %}" ></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+          initialDate: '{{ initial_date | safe }}',
+          eventOrder: 'color,start',
+          events: {{ events | safe }},
+          eventClick: function(info) {
+            if(info.event.url) {
+                console.log('redirecting to view employee page')
+            }
+          },
+        });
+        calendar.render();
+      });
+    </script>
+{% endblock %}

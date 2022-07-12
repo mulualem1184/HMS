@@ -9,6 +9,8 @@ urlpatterns = [
  	path('hospital_structure/', views.HospitalStructure, name="hospital_structure"),
  	path('patient_list/', views.PatientList, name="patient_list"),
  	path('allocate_patient/<int:pk>/', views.AllocatePatient, name="allocate_patient"),
+ 	path('bed_release_date_form/<int:patient_id>/', views.BedReleaseDateFormPage, name="bed_release_date_form"),
+
 	path('unallocated_patient/', views.UnallocatedPatient, name="unallocated_patient"),
 	path('allocate_nurse/', views.AllocateNurse, name="allocate_nurse"),
 	path('assign_inpatient/', views.AssignInpatient, name="assign_inpatient"),
@@ -16,9 +18,39 @@ urlpatterns = [
  	path('allocated_patient_list/', views.AllocatedPatientList, name="allocated_patient_list"),
  	path('give_inpatient_service/<int:patient_id>', views.GiveInpatientService, name="give_inpatient_service"),
 
+ 	path('ward_team_list/', views.WardTeamList, name="ward_team_list"),
+ 	path('nurse_team_list/', views.NurseTeamList, name="nurse_team_list"),
+
+ 	path('assign_nurse_team_to_bed_form/<int:inpatient_team_id>', views.AssignNurseTeamToBedFormPage, name="assign_nurse_team_to_bed_form"),
+ 	path('assign_doctor_to_bed_form/<int:inpatient_team_id>', views.AssignDoctorToBedFormPage, name="assign_doctor_to_bed_form"),
+ 	path('assign_doctor_to_team_modal/<int:team_id>', views.AssignDoctorToTeamModal, name="assign_doctor_to_team_modal"),
+
+	path('create_inpatient_team_form/', views.CreateInpatientTeamFormPage, name="create_inpatient_team_form"),
+	path('create_nurse_team_form/', views.CreateNurseTeamFormPage, name="create_nurse_team_form"),
+	path('assign_nurse_to_team_form/<int:team_id>', views.AssignNurseToTeamFormPage, name="assign_nurse_to_team_form"),
+
+	path('assign_doctor_to_team_form/<int:team_id>', views.AssignDoctorToTeamFormPage, name="assign_doctor_to_team_form"),
+
+
+ 	path('nurse_list/', views.NurseList, name="nurse_list"),
+ 	path('assign_nurse_to_bed_form/<int:employee_id>', views.AssignNurseToBedFormPage, name="assign_nurse_to_bed_form"),
+ 	path('assign_nurse_team_to_bed_form/<int:inpatient_id>', views.AssignNurseTeamToBedFormPage, name="assign_nurse_team_to_bed_form"),
+ 	path('assign_nurse_to_team_modal/<int:team_id>', views.AssignNurseToTeamModal, name="assign_nurse_to_team_modal"),
+    path('schedule_nurse/<int:team_id>', ScheduleNurse.as_view(), name='schedule_nurse'),
+
+ 	path('doctor_list/', views.DoctorList, name="doctor_list"),
+ 	path('assign_doctor_to_bed_form2/<int:employee_id>', views.AssignDoctorToBedFormPage2, name="assign_doctor_to_bed_form2"),
+
+
  	path('inpatient_assignment/<int:patient_id>', views.InpatientAssignment, name="inpatient_assignment"),
+ 	path('inpatient_assignment_from_emergency/<int:patient_id>', views.InpatientAssignmentFromEmergency, name="inpatient_assignment_from_emergency"),
+
+
 #	path('inpatient_prescription/<int:bill_id>', views.GenerateServiceBill, name="generate_service_bill"),
  	path('inpatient_bill_detail/<int:patient_id>', views.InpatientBillDetailPage, name="inpatient_bill_detail"),
+
+ 	path('discharge_summary_form/<int:patient_id>', views.DischargeSummaryFormPage, name="discharge_summary_form"),
+ 
  	path('discharge_inpatient/<int:patient_id>', views.DischargeInpatient, name="discharge_inpatient"),
  	path('really_discharge_inpatient/<int:patient_id>', views.ReallyDischargeInpatient, name="really_discharge_inpatient"),
  	path('room_bill_list/<int:patient_id>', views.RoomBillList, name="room_bill_list"),
@@ -38,6 +70,7 @@ urlpatterns = [
 
  	path('assign_inpatient_to_team/', views.AssignInpatientToTeam, name="assign_inpatient_to_team"),
  	path('assign_nurse_to_team/', views.AssignNurseToTeam, name="assign_nurse_to_team"),
+
  	path('patient_list_for_nurse/', views.PatientListForNurse, name="patient_list_for_nurse"),
  	path('patient_list_for_doctor/', views.PatientListForDoctor, name="patient_list_for_doctor"),
 
@@ -46,6 +79,8 @@ urlpatterns = [
 
  	path('doctor_instruction_form/<int:patient_id>', views.DoctorInstructionFormPage, name="doctor_instruction_form"),
  	path('doctor_chart_view/<int:patient_id>', views.DoctorChartView, name="doctor_chart_view"),
+ 	path('vital_sign_form_modal/<int:patient_id>/<int:role_id>', views.VitalSignFormModalPage, name="vital_sign_form_modal"),
+
  	path('last_nurse_progress_note_list/<int:patient_id>', views.LastNurseProgressNoteList, name="last_nurse_progress_note_list"),
  	path('all_progress_note_list/<int:patient_id>', views.AllProgressNoteList, name="all_progress_note_list"),
 
@@ -79,3 +114,4 @@ urlpatterns = [
  	path('inpatient_prescription_list', views.InpatientPrescriptionList, name="inpatient_prescription_list"),
 
 ]
+#https://github.com/mulualem1184/HMS

@@ -11,13 +11,14 @@
     <div class="" style="width: 100%;">
         <div class="card card-box">
             <div class="card-head">
-                <header>  <ul class="nav nav-tabs">
+                <header> <!-- <ul class="nav nav-tabs">
  
   <li ><a href="" style="color: grey;">Patient Symptom</a></li>
   <li ><a href="" style="color: black;">Vital Signs</a></li>
   <li class="active"><a href="{% url 'assign_patient' %}"  style="color: grey;">Assign Patient</a></li>
 
 </ul> 
+-->
 </header>
                 <button id = "panel-button2" 
                        class = "mdl-button mdl-js-button mdl-button--icon pull-right" 
@@ -49,11 +50,12 @@
                 </div>
               </div>
             	
-               <div class="form-row">
-              <div class="form-group col-md-4">  
+              <div class="form-row">
+                  <div class="form-group col-md-4">  
                     {{vital_form.blood_pressure|as_crispy_field}}
-                </div>
+                  </div>
               </div>
+
               <div>
 
                 <button class="form-group btn btn-primary" type="submit" > Submit</button>

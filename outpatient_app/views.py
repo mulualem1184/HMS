@@ -12,12 +12,15 @@ from datetime import datetime
 # Create your views here.
 
 def PatientRegistration(request):
+	"""
 	count = 0
 	visits = VisitQueue.objects.all()
 	for visit in visits:
 		if count == 0:
 			visit.delete()
 			count = count + 1
+	"""
+
 	patient_form = PatientRegistrationForm()
 	if request.method == 'POST':
 		patient_form = PatientRegistrationForm(request.POST)
@@ -25,8 +28,62 @@ def PatientRegistration(request):
 			patient_model = patient_form.save()
 			messages.success(request, patient_model.first_name + " " + patient_model.last_name + " has been successfully registered!")
 
+
 	context = {'patient_form':patient_form}
 	return render(request,'outpatient_app/patient_registration.html',context)
+
+def OutpatientTriageForm(request):
+	allocated_patient_array = []
+	patient_list = Patient.objects.exclude(inpatient='yes')
+	patient_compliant = OutpatientChiefComplaint.objects.filter(active=True)
+	for patient in patient_compliant:
+		allocated_patient_array.append(patient.id)
+	arrival_form = PatientArrivalForm()
+	complaint_form = ChiefComplaintForm()
+	vital_sign_form = VitalSignForm()
+	complaint_form.fields['patient'].queryset = Patient.objects.exclude(inpatient='yes', id__in=allocated_patient_array)
+
+	if request.method == 'POST':
+		arrival_form = PatientArrivalForm(request.POST)
+		complaint_form = ChiefComplaintForm(request.POST)
+		vital_sign_form = VitalSignForm(request.POST)
+		if all([arrival_form.is_valid(), complaint_form.is_valid(), vital_sign_form.is_valid()]):
+			arrival_model = arrival_form.save(commit=False)
+			complaint_model = complaint_form.save(commit=False)
+			vital_sign_model = vital_sign_form.save(commit=False)
+
+			patient = complaint_model.patient
+
+			arrival_model.registered_by = Employee.objects.get(user_profile=request.user, designation__name='Outpatient Triage')
+			arrival_model.arrival_date = datetime.now()
+			arrival_model.vital_sign = vital_sign_model
+			arrival_model.active = True
+			arrival_model.patient = patient
+
+			complaint_model.patient = patient
+			complaint_model.active =True
+			try:
+				recent_vital_sign = PatientVitalSign.objects.get(patient=patient,active='active')
+				recent_vital_sign.active ='not_active'
+				recent_vital_sign.save()
+			except:
+				print('No Vital Signs')
+
+			vital_sign_model.patient = patient
+			vital_sign_model.active = 'active'
+			vital_sign_model.registered_on = datetime.now()
+
+			vital_sign_model.save()
+			complaint_model.save()
+			arrival_model.save()
+
+			messages.success(request, 'Success')
+			return redirect('assign_visiting_card_form')
+	context = {'arrival_form':arrival_form,
+				'vital_form':vital_sign_form,
+				'complaint_form':complaint_form,
+	}
+	return render(request,'outpatient_app/outpatient_triage_form.html',context)
 
 
 def HospitalStructure(request):

@@ -1,13 +1,26 @@
 {% extends "base.html" %}
 {% block title %} Emergency Cases {% endblock %}
 {% block page_content %}
-    <h1>Emergency case list</h1>
+    <!-- <h2>Emergency case list</h2> -->
+    {% include "filter_emg_case_modal.html" %}
+    <a href="{% url 'emergency:new_emg_case' %}">
+        <button  class="btn btn-primary" >
+            <i class="fa fa-plus"></i> Add New Case
+        </button>
+    </a>
+    <button  class="btn btn-primary" data-toggle="modal" data-target="#filterEmergencyCasesModal">
+         <i class="fa fa-filter"></i> Filter
+    </button> <br> <br>
     <table class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded">
         <thead>
             <tr>
                 <th class="mdl-data-table__cell--non-numeric">#</th>
                 <th class="mdl-data-table__cell--non-numeric">Patient Name</th>
-                <th class="mdl-data-table__cell--non-numeric">Emergency Type</th>
+                <th class="mdl-data-table__cell--non-numeric">Card Number</th>
+                <th class="mdl-data-table__cell--non-numeric">Triage Color</th>
+                <th class="mdl-data-table__cell--non-numeric">Triage Score</th>
+                <th class="mdl-data-table__cell--non-numeric">Chief Complaints</th>
+                <th class="mdl-data-table__cell--non-numeric">Referred From</th>
                 <th class="mdl-data-table__cell--non-numeric">Date</th>
                 <th class="mdl-data-table__cell--non-numeric">Contact Person</th>
                 <th class="mdl-data-table__cell--non-numeric">Contact Phone</th>
@@ -17,11 +30,40 @@
         <tbody>
             {% for case in case_list %}
                 {% include "text_message_modal.html" %}
+                {% include "enter_mrn_modal.html" %}
                 <tr>
                     <td class="mdl-data-table__cell--non-numeric"> {{ forloop.counter }} </td>
                     <td class="mdl-data-table__cell--non-numeric"> {{ case.patient_name }} </td>
-                    <td class="mdl-data-table__cell--non-numeric"> {{ case.type }} </td>
-                    <td class="mdl-data-table__cell--non-numeric"> {{ case.date_created }} </td>
+                    <td class="mdl-data-table__cell--non-numeric">
+                        {% if case.card_number %}
+                            {{ case.card_number }}
+                        {% else %}
+                            <a href="#">
+                                <button style="size: 5px;" type="button" class="btn btn-info btn-rounded btn-icon" data-toggle="modal" data-target="#addMRNModal"> <i style="size: 5px;" class="fa fa-plus"></i> </button>
+                            </a>
+                        {% endif %}     
+                    </td>
+                    <td class="mdl-data-table__cell--non-numeric"> 
+                        <b>{{ case.triage_color }} </b>
+                    </td>
+                    <td class="mdl-data-table__cell--non-numeric"> 
+                        <b>{{ case.triage_score }} </b>
+                    </td>
+                    <td class="mdl-data-table__cell--non-numeric"> 
+                        {% for cc in case.chief_complaint_set.all %}
+                            <a href="{% url 'emergency:filter_cases' %}?cc_id={{cc.id}}">
+                                <b style="color: red;">{{ cc }} <br></b>
+                            </a>
+                        {% endfor %}
+                    </td>
+                    <td class="mdl-data-table__cell--non-numeric"> 
+                        {% if case.referred_from %}
+                            {{ case.referred_from }} 
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ case.arrival_date }} </td>
                     <td class="mdl-data-table__cell--non-numeric"> {{ case.contact_person.name }} </td>
                     <td class="mdl-data-table__cell--non-numeric"> 
                         <a href="" data-toggle="modal" data-target="#textMessageModal">
@@ -49,4 +91,10 @@
             {% endfor %}
         </tbody>
     </table>
+    {% if not case_list %}
+        <br>
+        <h3 style="padding-left: 120px; color: rgb(190, 42, 42);">
+            No data available. Try applying different filter.
+        </h3>
+    {% endif %}
 {% endblock %}

@@ -1,0 +1,37 @@
+{% load static %}
+{% load crispy_forms_tags %}
+
+<div class="modal fade" id="create-doctor-team-form" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel">Create Team</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                
+                
+        <form action="{% url 'create_inpatient_team_form' %}" method="POST">
+                {% csrf_token %}
+                <h4> {{patient}}</h4>
+                <div class="form-group col-md-12">  
+                    {{doctor_team_form.team_name|as_crispy_field}}
+                </div>
+
+                <div class="form-group" style="padding-top: 15px;">
+                <button class="form-group btn btn-primary"  type="submit" > Create</button>
+
+                </div>
+            
+        </form>
+ 
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                
+            </div>
+        </div>
+    </div>
+</div>

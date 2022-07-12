@@ -4,11 +4,12 @@
 {% load crispy_forms_tags %}
 {% block style %}
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <link href="{% static 'css/pages/formlayout.css' %}" rel="stylesheet" type="text/css" />
 
 {% endblock%}
 {% block page_content %}
        
-    <div class="" style="width: 100%;">
+ <!--   <div class="" style="width: 100%;">
         <div class="card card-box">
             <div class="card-head">
                 <header>
@@ -25,27 +26,58 @@
                        <li class = "mdl-menu__item"><i class="material-icons">print</i>Another action</li>
                        <li class = "mdl-menu__item"><i class="material-icons">favorite</i>Something else here</li>
                     </ul>
+
             </div>
             <div class="card-body " id="bar-parent1">
-              
+              <div class="row">
+-->        <div class="col-md-12 col-sm-12">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>Register new case</header>
+                </div>
+                <div class="card-body" id="bar-parent">
+
         
-    <form action="" method="POST">
+    <form class="form-horizontal"  id="form_sample_1" action="" method="POST">
         		{% csrf_token %}
                 <h3> </h3>
-                <div class="form-group col-md-12">  
+                                <div class="row form-horizontal">
+
+                <div class="form-group col-md-6 col-sm-6">  
                     {{inpatient_reason_form.reason|as_crispy_field}}
                 </div>
-
-                <div class="form-group col-md-12">  
+              </div>
+                                <div class="row form-horizontal">
+                <div class="form-group col-md-6 col-sm-6">  
                     {{inpatient_care_plan_form.care_plan|as_crispy_field}}
                 </div>
+                </div>
+                <div class="row form-horizontal">
+                <div class="form-group col-md-3 col-sm-3">  
+                    {{prediction_form.duration|as_crispy_field}}
+                </div>
+                <div class="form-group col-md-3 col-sm-3">  
+                    {{prediction_form.duration_unit|as_crispy_field}}
+                </div>
 
+                  </div>
+                <div class="row form-horizontal">
+
+                <div class="form-group col-md-3 col-sm-3">  
+                    {{priority_form.priority|as_crispy_field}}
+                </div>
+              </div>
             	<div class="form-group" style="padding-top: 15px;">
                 <button class="form-group btn btn-primary"  type="submit" > Assign</button>
 
             	</div>
             
     </form>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
 
     {% block scripts %}
  <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>

@@ -336,6 +336,34 @@ class InpatientMedication(models.Model):
 	doctor = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
 	registered_on = models.DateField(null=True, blank=True)
 
+class InpatientLabOrder(models.Model):
+	medication_status = (
+		('Ended', 'Ended'),
+		('Cancelled', 'Cancelled'),     
+		('Active', 'Active'),       
+		)
+	patient = models.ForeignKey(Patient,  on_delete= models.SET_NULL, null=True, blank=True)
+	stay_duration = models.ForeignKey(PatientStayDuration, on_delete=models.CASCADE)	
+	laboratory_order = models.ForeignKey(to=Order, on_delete=models.SET_NULL, null=True, blank=True)
+	doctor = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
+	registered_on = models.DateField(null=True, blank=True)
+
+
+class InpatientDischargeSummary(models.Model):
+	discharge_conditions = (
+		('Completed Treatment', 'Completed Treatment'),
+		('Treatment Not Completed', 'Treatment Not Completed'),     
+		('Died', 'Died'),       
+		)
+	patient = models.ForeignKey(Patient,  on_delete= models.SET_NULL, null=True, blank=True)
+	discharge_condition = models.CharField(max_length=100,choices=discharge_conditions, null=True)
+	significant_findings = models.CharField(max_length=2000, null=True)
+	summary = models.CharField(max_length=2000, null=True) 
+	registered_on = models.DateField(null=True, blank=True)
+	stay_duration = models.ForeignKey(PatientStayDuration, on_delete=models.CASCADE)	
+	discharged_by = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
+
+
 class InpatientAdministrationTime(models.Model):
 
 	drug_prescription = models.ForeignKey(to=DrugPrescription, on_delete=models.SET_NULL, null=True, blank=True)

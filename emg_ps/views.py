@@ -1,12 +1,17 @@
+from core.forms import VitalSignForm
 from core.utils.sms import send_text
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views import View
+from django.utils import timezone
 
-from emg_ps.models import EmergencyCase, Epidemic, MedicalEmergencyType
+from emg_ps.models import (ChiefComplaint, EmergencyCase, Epidemic, MedicalEmergencyType,
+                           PatientReferralLocation)
 
-from .forms import (ContactPersonForm, EmergencyCaseForm, EpidemicForm,
+from .forms import (ContactPersonForm, EmergencyCaseForm, EpidemicForm, FilterCaseForm,
                     MedicalEmergencyTypeForm)
+from .utils import Fieldset
+
 
 
 class RegisterEpidemic(View):
@@ -143,6 +148,121 @@ class MedicalEmergencyTypes(View):
         })
 
 
+class NewCase(View):
+
+    def get(self, *args, **kwargs):
+        from .forms import (
+            contact_person_fieldset, patient_info_fieldset,
+             triage_color_fieldset, other_fieldset,
+             triage_stat_fieldset
+        )
+        contact_person_form = ContactPersonForm()
+        new_case_form = EmergencyCaseForm()
+        referral_locations = PatientReferralLocation.objects.all()
+        chief_complaints = ChiefComplaint.objects.all()
+        vitalsign_form = VitalSignForm()
+        latest_cases = list(reversed(EmergencyCase.objects.filter(active=True)))[:5]
+        tot_refs = EmergencyCase.objects.exclude(referred_from__name='').count()
+        dead_patients = EmergencyCase.objects.filter(triage_color='BLACK').count()
+        return render(self.request, 'new_case.html', {
+            'contact_person_form': contact_person_form,
+            'new_case_form': new_case_form,
+            'vitalsign_form': vitalsign_form,
+            'ref_locations': referral_locations,
+            'cc_list': chief_complaints,
+            'triage_color_fieldset': triage_color_fieldset,
+            'other_fieldset': other_fieldset,
+            'triage_stat_fieldset': triage_stat_fieldset,
+            'patient_info_fieldset': patient_info_fieldset,
+            'contact_person_fieldset': contact_person_fieldset,
+            'fieldsets': [
+                patient_info_fieldset,
+                contact_person_fieldset,
+            ],
+            'latest_cases': latest_cases,
+            'total_number': EmergencyCase.objects.filter(active=True).count(),
+            'tot_refs': tot_refs,
+            'dead_patients': dead_patients,
+            'active_link': 'emg',
+        })
+
+    def post(self, *args, **kwargs):
+        contact_person_form = ContactPersonForm(data=self.request.POST)
+        new_case_form = EmergencyCaseForm(data=self.request.POST)
+        vital_sign_form = VitalSignForm(data=self.request.POST)
+        if new_case_form.is_valid():
+            contact_person = contact_person_form.save()
+            vital_sign = vital_sign_form.save()
+            new_case:EmergencyCase = new_case_form.save(commit=False)
+            new_case.contact_person = contact_person
+            new_case.vital_sign = vital_sign
+            # get referral location
+            try:
+                referral_location_id = self.request.POST.get('referral_location')
+                loc = PatientReferralLocation.objects.get(id=referral_location_id)
+                new_case.referred_from = loc
+            except: pass
+            new_case.save()
+            # get list of cc
+            cc_list = self.request.POST.getlist('chief_complaint')
+            if not cc_list:
+                # get other_complaint from request.post
+                cc = ChiefComplaint(name=self.request.POST.get('other_complaint', ''))
+                cc.save()
+                new_case.chief_complaint_set.add(cc)
+            else:
+                for cc_id in cc_list:
+                    try:
+                        cc = ChiefComplaint.objects.get(id=cc_id)
+                        new_case.chief_complaint_set.add(cc)
+                    except: pass
+            messages.success(self.request, 'Emergency case saved.')
+            return redirect('emergency:new_emg_case')
+        else:
+            messages.error(self.request, 'Error creating new case.')
+            return render(self.request, 'new_emg_case.html', {
+                'contact_person_form': contact_person_form,
+                'new_case_form': new_case_form,
+                'active_link': 'emg'
+            })
+
+
+class FilterCases(View):
+
+    def get(self, *args, **kwargs):
+        symptom_id = self.request.GET.get('cc_id')
+        cc = None
+        try:
+            cc = ChiefComplaint.objects.get(id=symptom_id)
+            case_list = cc.emergencycase_set.filter(active=True) 
+            return render(self.request, 'case_list.html', {
+                'case_list': case_list,
+                'active_link': 'emg',
+            })
+        except:
+            return redirect('emergency:case_list')
+
+    def post(self, *args, **kwargs):
+        filter_form = FilterCaseForm(data=self.request.POST)
+        filter_form.is_valid()
+        from_date = filter_form.data.get('from_date', '') or '1970-01-01'
+        to_date = filter_form.data.get('to_date', '') or str(timezone.now().date())
+        case_list = EmergencyCase.objects.filter(active=True)
+        triage_color = filter_form.data.get('triage_color', None) or None
+        try:
+            case_list = case_list.filter(referred_from=filter_form.data['referred_from'])
+        except:pass
+        case_list = case_list.filter(arrival_date__date__gte=from_date, arrival_date__date__lte=to_date)
+        if triage_color not in (0, '0', '', None):
+            case_list = case_list.filter(triage_color=triage_color)
+        return render(self.request, 'case_list.html', {
+            'case_list': case_list,
+            'filter_case_form': filter_form,
+            'active_link': 'emg',
+        })
+        
+
+"""
 class RegisterNewCase(View):
 
     def get(self, *args, **kwargs):
@@ -178,7 +298,7 @@ class RegisterNewCase(View):
                 'new_case_form': new_case_form,
                 'active_link': 'emg'
             })
-
+"""
 
 class DeleteEmergencyCase(View):
     
@@ -194,9 +314,11 @@ class ViewEmergencyCaseList(View):
     
     def get(self, *args, **kwargs):
         case_list = EmergencyCase.objects.filter(active=True)
+        filter_case_form = FilterCaseForm()
         return render(self.request, 'case_list.html', {
             'case_list': case_list,
             'active_link': 'emg',
+            'filter_case_form': filter_case_form,
         })
 
 

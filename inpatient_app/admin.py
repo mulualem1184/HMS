@@ -4,6 +4,7 @@ from .models import *
 # Register your models here.
 
 admin.site.register(Ward)
+admin.site.register(BedCategory)
 admin.site.register(Bed)
 #admin.site.register(Nurse)
 admin.site.register(BedPatientAllocation)
@@ -13,7 +14,14 @@ admin.site.register(RoomPrice)
 admin.site.register(WardTeam)
 admin.site.register(InpatientTeam)
 admin.site.register(WardTeamBed)
+admin.site.register(ServiceProviderBed)
+
 admin.site.register(InpatientReason)
 admin.site.register(InpatientCarePlan)
+admin.site.register(InpatientAdmissionAssessment)
 
 admin.site.register(WardNurseTeam)
+admin.site.register(BedReleaseDate)
+admin.site.register(AdmissionPriorityLevel)
+admin.site.register(PatientStayDurationPrediction)
+

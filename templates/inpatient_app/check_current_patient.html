@@ -20,37 +20,23 @@
                     </div>
                 </div>
                 <div class="card-body ">
-                    <table id="example1" class="display table-bordered table-striped table-hover" style="width:100%;">
+                    <table id="example1" class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded" style="width:100%;">
                         <thead>
-                            <tr class="gradeX odd">
-                                <th>Patient</th>
-                                <th>Duration</th>
-                                <th>Action</th>
+                            <tr >
+                                <th class="mdl-data-table__cell--non-numeric">Patient</th>
+                                <th class="mdl-data-table__cell--non-numeric">Duration</th>
+                                <th class="mdl-data-table__cell--non-numeric">Change Bed</th>
                                 
                             </tr>
                         </thead>
                         <tbody>
                            
                                 <tr>
-                                    <td>{{patient}}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{patient}}</td>
                                     <!--<td>{{room.room}}</td>-->
-                                    <td> {{duration}}</td>
-                                   
-                                        <td>
-                                    <div class="btn-group btn-group-circle">
-                                    <button type="button" class="btn btn-primary">Actions</button>
-                                    <button type="button" class="btn btn-circle-right btn-primary dropdown-toggle m-r-20" data-toggle="dropdown" aria-expanded="false">
-                                        <i class="fa fa-angle-down"></i>
-                                    </button>
-                                    <ul class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(79px, 34px, 0px); top: 0px; left: 0px; will-change: transform;">
-                                        
-                                        <li><a href="{% url 'change_patient_bed' stay_duration.room.id %}">Change Bed</a>  
-                                        </li>
-                                                                                
-                                        
-                                    </ul>
-                                    </div>    
-                                    </td>                                    
+                                    <td class="mdl-data-table__cell--non-numeric"> {{duration}}</td>
+                                   <td class="mdl-data-table__cell--non-numeric"> <a href="{% url 'change_patient_bed' stay_duration.room.id %}">Change Bed</a> </td>
+                                                                            
                                 </tr>
                         </tbody>
                     </table>
@@ -62,7 +48,4 @@
 
 {% block scripts %}
     <!-- data tables -->
-    <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}" ></script>
-    <script src="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.js' %}" ></script>
-    <script src="{% static 'js/pages/table/table_data.js' %}"></script>
 {% endblock %}

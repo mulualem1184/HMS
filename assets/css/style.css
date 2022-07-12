@@ -8648,4 +8648,13 @@ span.notificationtime {
 #demonote{
 	 display: none;
  }
- 
+
+.page-header-inner {
+    background-color: #0a7e37;
+}
+.page-logo {
+    background-color: #0a7e37;
+}
+.sidemenu-container {
+    background-color: #0a7e37;
+}
