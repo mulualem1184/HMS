@@ -1,0 +1,291 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+    Patient Info
+{% endblock %}
+{% block style %}
+    <style>
+        .patientimage {
+            width: 150px;
+            height: 180px;
+            border-radius: 5px;
+            display: flow-root;
+            padding-left: 20px;
+            margin: 5px;
+        }
+        .vitalCard {
+            width: 210px;
+            height: 70px;
+            background-color: rgb(36, 36, 126);
+            border-radius: 6px;
+            padding-right: 5px;
+            margin: 5px;
+        }
+        .vitaltext {
+            color: rgb(198, 235, 31);
+            padding-top: 8px;
+            padding-left: 8px;
+            font-size: 14;
+            font-weight: bolder;
+        }
+        .vitaltextinfo {
+            color: rgb(199, 191, 191);
+            padding-left: 3px;
+            padding-bottom: 5px;
+        }
+    </style>
+{% endblock %}
+{% block page_content %}
+    <div class="row">
+        <div class="col-lg-9 col-md-12 col-sm-12 col-12">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>Patient Info</header>
+                </div>
+                <div class="card-body" id="bar-parent">
+                    <div class="row">
+                        <img src="/media/{{user.profile_image}}" alt="User Image" class="patientimage" />
+                        <div style="padding-left: 5px; padding-top: 5px; font-weight: bolder;">
+                           <a href="{% url 'core:patient_visit_detail' patient.id %}"> <p style="font-weight: bolder;">{{ patient.full_name }} </p></a>
+                            Male - 35 years old
+                            <br> IPD - Room 34
+                            <br> Blood type O+
+                        </div>
+                       
+                    </div>
+                    <!-- VitalSign info -->
+                    <br>
+                    <div class="card-head">
+                        <header> Vitals</header>
+                        <a href="#">See all</a>
+                    </div>
+                    <div class="row" style="padding: 20px;">
+                        <br><br>
+                        <div class="vitalCard">
+                            <p class="vitaltext">
+                                130/80
+                            </p>
+                            <p class="vitaltextinfo">
+                                Blood Pressure
+                            </p> 
+                        </div>
+                        <div class="vitalCard">
+                            <p class="vitaltext">
+                                82Kg
+                            </p>
+                            <p class="vitaltextinfo">
+                                Weight
+                            </p> 
+                        </div>
+                        <div class="vitalCard">
+                            <p class="vitaltext">
+                                36.5 F
+                            </p>
+                            <p class="vitaltextinfo">
+                                Tempreature
+                            </p> 
+                        </div>
+                        <br>
+                        <div class="vitalCard">
+                            <p class="vitaltext">
+                                20 bpm
+                            </p>
+                            <p class="vitaltextinfo">
+                                Respiratory
+                            </p> 
+                        </div>
+                        <div class="vitalCard">
+                            <p class="vitaltext">
+                                6.4 mi/cmm
+                            </p>
+                            <p class="vitaltextinfo">
+                                RBC
+                            </p> 
+                        </div>
+                        <div class="vitalCard">
+                            <p class="vitaltext">
+                                166mg/dl
+                            </p>
+                            <p class="vitaltextinfo">
+                                Cholesterol
+                            </p> 
+                        </div>
+                    </div>
+                    <!-- End vitalsign info -->
+                    <div class="panel tab-border card-box">
+                        <header class="panel-heading panel-heading-gray custom-tab ">
+                            <ul class="nav nav-tabs">
+                                <li class="nav-item">
+                                    <a href="#medhistory" data-toggle="tab">Medical History</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#medicines" class="active" data-toggle="tab">Medicines</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="#famhistory" data-toggle="tab">Family History</a>
+                                </li>
+                            </ul>
+                        </header>
+                        <div class="panel-body">
+                            <div class="tab-content">
+                                <div class="tab-pane" id="medhistory">
+                                    None available
+                                </div>
+                                <div class="tab-pane active" id="medicines">
+                                    <table class="table display product-overview mb-30" id="support_table">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Dose</th>
+                                                <th>Started at</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Ethatin X 40mg</td>
+                                                <td>1 at 2am</td>
+                                                <td>12 Dec 2022</td>
+                                                <td>On</td>
+                                            </tr>
+                                            <tr>
+                                                <td>MaxPro 20mg</td>
+                                                <td>1-1-1</td>
+                                                <td>3 Jun 2019</td>
+                                                <td>Completed</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Flucsogen 10mg</td>
+                                                <td>3</td>
+                                                <td>31 Jan 2019</td>
+                                                <td>-</td>
+                                            </tr>
+                                            
+                                        </tbody>
+                                    </table>
+                                    <a href="#">See all</a>
+                                </div>
+                                <div class="tab-pane" id="famhistory">
+                                    <table class="table display product-overview mb-30" id="support_table">
+                                        <thead>
+                                            <tr>
+                                                <th>Relation</th>
+                                                <th>Disease</th>
+                                                <th>Cancer</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Mother</td>
+                                                <td>Diabetes</td>
+                                                <td>-</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Father</td>
+                                                <td>High blood pressure</td>
+                                                <td>
+                                                    Xionx
+                                                    <br> 
+                                                    Pio-ul
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-12 col-sm-12 col-12">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>Actions</header>
+                </div>
+                <div class="card-body" id="bar-parent">
+                    <ul>
+                        <li>
+                            <a href="{% url 'order-for-patient' patient.id %}">Order Lab test</a>
+                        </li>
+                        <li>
+                            <a href="#">Order X-Ray</a>
+                        </li>
+                        <li>
+                            <a href="#">Order Ct-scan</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>Appointments</header>
+                    <a href="#">See all</a>
+                </div>
+                <div class="card-body" id="bar-parent">
+                    No upcoming appointments
+                </div>
+            </div>
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>Reports</header>
+                </div>
+                <div class="card-body" id="bar-parent">
+                    <table style="border: none;" class="table display product-overview mb-30" id="support_table">
+                        <thead>
+                            <tr>
+                                <th>Test</th>
+                                <th>-</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>CBC</td>
+                                <td>
+                                    <a href="#">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>X-Ray</td>
+                                <td>
+                                    <a href="#">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <a href="#">See all</a>
+                </div>
+            </div>
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>Visits</header>
+                    <a href="#">See all</a>
+                </div>
+                <div class="card-body" id="bar-parent">
+                    <table style="border: none;" class="table display product-overview mb-30" id="support_table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Reason</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Jan 14 2022</td>
+                                <td>Chest pain</td>
+                            </tr>
+                            <tr>
+                                <td>Wed Jan 20 2022</td>
+                                <td>Diarrhea</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

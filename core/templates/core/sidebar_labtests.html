@@ -1,0 +1,33 @@
+<div class="card card-box">
+    <div class="card-head">
+        <header>Latest lab Reports</header>
+    </div>
+    <div class="card-body" id="bar-parent">
+        {% if tests %}
+            <table style="border: none;" class="table display product-overview mb-30" id="support_table">
+                <thead>
+                    <tr>
+                        <th>Test</th>
+                        <th>-</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for test in tests %}
+                        <tr>
+                            <td> {{ test.test_type }} </td>
+                            <td>
+                                <a href="{% url 'view-test-result' test.id %}">
+                                    <i class="fa fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <a href="#">See all</a>
+        {% else %}
+            No tests available
+        {% endif %}
+        
+    </div>
+</div>

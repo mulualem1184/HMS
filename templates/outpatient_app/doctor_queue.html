@@ -2,7 +2,6 @@
 {% load static %}
 {% block style %}
     <!-- data tables -->
-    <link href="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"/>
 {% endblock %}
 {% block title %} Queue {% endblock %}
 
@@ -10,22 +9,17 @@
 
     <div class="row">
         <div class="col-md-12">
-            <div class="card card-box">
+            <div class="card card-box" >
                 <div class="card-head">
-                    <header>{{room.room}}</header>
-                    <div class="tools">
-                        <a class="fa fa-repeat btn-color box-refresh" href="javascript:;"></a>
-                        <a class="t-collapse btn-color fa fa-chevron-down" href="javascript:;"></a>
-                        <a class="t-close btn-color fa fa-times" href="javascript:;"></a>
-                    </div>
+                    <h6>{{room.room}}</h6>
+                    
                 </div>
-                <div class="card-body ">
                     <table id="example1" class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded" >
-                        <thead>
-                            <tr class="gradeX odd">
+                        <thead >
+                            <tr style="height: 4px;">
                                 <th class="mdl-data-table__cell--non-numeric">Patient</th>
-                                <th class="mdl-data-table__cell--non-numeric">Queue</th>
-                                <th class="mdl-data-table__cell--non-numeric">View Symptoms</th>
+                               <!-- <th class="mdl-data-table__cell--non-numeric">Queue</th>-->
+                                <th class="mdl-data-table__cell--non-numeric">Chief Compliant</th>
                                 <th class="mdl-data-table__cell--non-numeric">Additional Services</th>
                                 <th class="mdl-data-table__cell--non-numeric">Lab Order</th>
                                 <th class="mdl-data-table__cell--non-numeric">Make Prescription</th>
@@ -33,51 +27,26 @@
                                 <th class="mdl-data-table__cell--non-numeric">Assign To Ward</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            {% for queue in visit_queue %}
+                        <tbody >
+                            {% for queue,detail in visit_zip %}
                                 <tr>
-                                    <td class="mdl-data-table__cell--non-numeric"><a href="{% url 'patient_record' queue.visit.patient.id %}">{{queue.visit.patient}}</a></td>
-                                    <td class="mdl-data-table__cell--non-numeric"> {{ queue.queue_number }}</td>
-                                    <td class="mdl-data-table__cell--non-numeric"><a href="{% url 'view_patient_symptom' queue.visit.patient.id %}">View Symptom</a></td>
+                                    <td class="mdl-data-table__cell--non-numeric"><a href="{% url 'outpatient_medical_note' queue.visit.patient.id %}">{{queue.visit.patient}}</a></td>
+                                  <!--  <td class="mdl-data-table__cell--non-numeric"> {{ queue.queue_number }}</td> -->
+                                    <!--<td class="mdl-data-table__cell--non-numeric"><a href="{% url 'view_patient_symptom' queue.visit.patient.id %}">View Symptom</a></td>-->
+                                    <td class="mdl-data-table__cell--non-numeric">{{detail.chief_complaint.complaint}} Hover</td>
+
                                     <td class="mdl-data-table__cell--non-numeric"> <a href="{% url 'give_service' queue.visit.patient.id %}">Additional Services </a></td>
-                                    <td class="mdl-data-table__cell--non-numeric"><a href="{% url 'create-order' %}">Make Lab Order Lab Order</a></td>
+                                    <td class="mdl-data-table__cell--non-numeric"><a href="{% url 'create-order' %}">Make Lab Order</a></td>
                                    <td> <a href="{% url 'patient_prescription' queue.visit.patient.id queue.visit.id room.room.id queue.id %}"><div class="fa-item col-md-5 col-sm-5 col-12">
                                                     <i class="fa fa-medkit"> </i> </div></a></td>
 
-                                    <td class="mdl-data-table__cell--non-numeric"> <a href="{% url 'inpatient_assignment' queue.visit.patient.id %}">Assign To Ward</a></td>
+                                    <td class="mdl-data-table__cell--non-numeric"> <a href="{% url 'inpatient_reason_form' queue.visit.patient.id %}">Assign To Ward</a></td>
 
-                                    <!--
-                                    <td class="mdl-data-table__cell--non-numeric">
-                                    <div class="btn-group btn-group-circle">
-                                    <button type="button" class="btn btn-primary">Actions</button>
-                                    <button type="button" class="btn btn-circle-right btn-primary dropdown-toggle m-r-20" data-toggle="dropdown" aria-expanded="false">
-                                        <i class="fa fa-angle-down"></i>
-                                    </button>
-                                    <ul class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(79px, 34px, 0px); top: 0px; left: 0px; will-change: transform;">
-                                        <li><a href="{% url 'patient_prescription' queue.visit.patient.id queue.visit.id room.room.id queue.id %}">Make Prescriprion</a>
-                                        </li>
-                                        <li>
-                                           <a href="{% url 'inpatient_assignment' queue.visit.patient.id %}">Assign To Ward</a>
-                                            
-                                        </li>
-                                                                                <li>
-                                           <a href="{% url 'give_service' queue.visit.patient.id %}">Additional Services</a>
-                                            
-                                        </li>
-                                        <li>
-                                           <a href="{% url 'create-order' %}">Make Lab Order</a>
-                                            
-                                        </li>
-                                        
-                                    </ul>
-                                    </div>    
-                                    </td>-->
                                 </tr>
                                       
                             {% endfor %}
                         </tbody>
                     </table>
-                </div>
             </div>
         </div>
     </div>
@@ -85,7 +54,4 @@
 
 {% block scripts %}
     <!-- data tables -->
-    <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}" ></script>
-    <script src="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.js' %}" ></script>
-    <script src="{% static 'js/pages/table/table_data.js' %}"></script>
 {% endblock %}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+    Patient Visit Detail
+{% endblock %}
+{% block style %}
+    <style>
+        .patientimage {
+            width: 185px;
+            height: 180px;
+            border-radius: 5px;
+            display: flow-root;
+            padding-left: 20px;
+            margin: 5px;
+        }
+        .vitalCard {
+            width: 210px;
+            height: 70px;
+            background-color: rgb(36, 36, 126);
+            border-radius: 6px;
+            padding-right: 5px;
+            margin: 5px;
+        }
+        .vitaltext {
+            color: rgb(198, 235, 31);
+            padding-top: 8px;
+            padding-left: 8px;
+            font-size: 14;
+            font-weight: bolder;
+        }
+        .vitaltextinfo {
+            color: rgb(199, 191, 191);
+            padding-left: 3px;
+            padding-bottom: 5px;
+        }
+    </style>
+{% endblock %}
+{% block page_content %}
+    <div class="row">
+        <div class="col-lg-9 col-md-12 col-sm-12 col-12">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>Patient Info</header>
+                </div>
+                <div class="card-body" id="bar-parent">
+                    <div class="row">
+                        <img src="{% static 'img/patient1.jpg' %}" alt="User Image" class="patientimage" />
+                        <div style="padding-left: 5px; padding-top: 5px; font-weight: bolder;">
+                            <p style="font-weight: bolder;">{{ patient.full_name }} </p>
+                            {{ patient.sex }} - {{patient.age}} years old
+                            <br> IPD - Room 34
+                            <br> Blood type - O+
+                        </div>  
+                    </div>
+                    <br> <br>
+                    {% include "core/history_tables.html" %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-12 col-sm-12 col-12">
+            {% include "core/sidebar_labtests.html" %}
+        </div>
+    </div>
+{% endblock %}

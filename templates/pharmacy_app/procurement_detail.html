@@ -13,18 +13,8 @@
         <div class="card card-box">
             <div class="card-head">
                 <header>Procurement {{procurement_pk}}</header>
-                <button id = "panel-button2" 
-                       class = "mdl-button mdl-js-button mdl-button--icon pull-right" 
-                       data-upgraded = ",MaterialButton">
-                       <i class = "material-icons">more_vert</i>
-                    </button>
-                    <ul class = "mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
-                       data-mdl-for = "panel-button2">
-                       <li class = "mdl-menu__item"><i class="material-icons">assistant_photo</i>Action</li>
-                       <li class = "mdl-menu__item"><i class="material-icons">print</i>Another action</li>
-                       <li class = "mdl-menu__item"><i class="material-icons">favorite</i>Something else here</li>
-                    </ul>
             </div>
+            
             <div class="card-body " id="bar-parent1">
                                                     <div class="btn-group btn-group-circle">
                                     <button type="button" class="btn btn-primary">By Batch</button>
@@ -39,24 +29,24 @@
                                     </ul>
                                     </div>
         
-                    
-                    <table id="example1" class="display table-bordered table-striped table-hover" style="width:100%;">
+            <hr>        
+                    <table class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded" id="example4">
                         <thead>
                             <tr class="gradeX odd">
-                                <th style=" ">Drug</th>
-                                <th style=" ">Ordered Quantity</th>
-                                <th style=" ">Supplied Quantity</th>
-                                <th style=" ">Remaining Quantity</th>
+                                <th class="mdl-data-table__cell--non-numeric">Drug</th>
+                                <th class="mdl-data-table__cell--non-numeric">Ordered Quantity</th>
+                                <th class="mdl-data-table__cell--non-numeric">Supplied Quantity</th>
+                                <th class="mdl-data-table__cell--non-numeric">Remaining Quantity</th>
                                 
                             </tr>
                         </thead>
                         <tbody>
                             {% for a, b ,c in procurement_zip %}
                             <tr>
-                                <td style="">{{a.drug}}</td>
-                                <td style="">{{a.quantity}}</td>
-                                <td style="">{{b}}</td>
-                                <td style="">{{c}}</td>
+                                <td class="mdl-data-table__cell--non-numeric">{{a.drug}}</td>
+                                <td class="mdl-data-table__cell--non-numeric">{{a.quantity}}</td>
+                                <td class="mdl-data-table__cell--non-numeric">{{b}}</td>
+                                <td class="mdl-data-table__cell--non-numeric">{{c}}</td>
                                
                             </tr>
                                            
@@ -64,14 +54,12 @@
                         </tbody>
                     </table>
                     {% endblock %}
+                    <hr>
              <a href="{% url 'stock_supply_form' procurement_pk %}" class="btn btn-primary"> Supply Stock</a>
 
 
     {% block scripts %}
                
-    <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}" ></script>
-    <script src="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.js' %}" ></script>
-    <script src="{% static 'js/pages/table/table_data.js' %}"></script>
             {% endblock %}
 
 {% endblock %}

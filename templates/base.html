@@ -36,18 +36,23 @@
     {% endblock %}
  </head>
  <!-- END HEAD -->
-<body class="page-header-fixed sidemenu-closed-hidelogo page-content-white page-md header-white dark-color logo-dark">
+<body class="page-header-fixed sidemenu-closed-hidelogo page-content-white page-md header-white dark-color logo-dark" > 
     <div class="page-wrapper">
         <!-- start header -->
 		<div class="page-header navbar navbar-fixed-top">
             <div class="page-header-inner ">
                 <!-- logo start -->
-                <div class="page-logo">
+            <div class="page-logo">
                     <a href="index.html">
-                    <img alt="" src="{% static 'img/logo.png' %}">
-                    <span class="logo-default" >BATU HMS</span> </a>
-                </div>
-                <!-- logo end -->
+                    {% if site_config.logo %}
+                      <img alt="" src="{{ site_config.logo.url }}" style="width: 50px; height: 50px;">
+                    {% else %}
+                      <img alt="" src="{% static 'img/logo.png' %}">
+                    {% endif %}
+                              
+                              <span class="logo-default" > {{ site_config.name }} </span> 
+                    </a>
+            </div>                <!-- logo end -->
 				{% block navbar %}
 				<ul class="nav navbar-nav navbar-left in">
 					<li><a href="#" class="menu-toggler sidebar-toggler font-size-20"><i class="fa fa-exchange" aria-hidden="true"></i></a></li>
@@ -63,12 +68,15 @@
                                 </li>
                                 <li>
                                     <ul class="dropdown-menu-list app-icon-dropdown" data-handle-color="#637283">
-										<li>
-											<a href="add_patient.html" class="patient-icon">
+                                {% if user.employee.designation.staff_code == '22' %}
+                                        <li>
+											<a href="{% url 'low_stock_drugs' %}" class="patient-icon">
 											<i class="material-icons">local_hotel</i>
-											<span class="block">Add Patient</span>
+											<span class="block">Low Stock Drug</span>
 											</a>
 										</li>
+                                {% endif %}
+
 										<li>
 											<a href="email_inbox.html" class="email-icon">
 											<i class="material-icons">drafts</i>
@@ -301,7 +309,7 @@
 	                                </div>
 	                            </div>
 	                        </li>
-							{% if user.is_staff %}
+							{% if user.employee.designation.staff_code == '17' %}
 								<li class="nav-item {% if active_link == 'staff' %} open {% endif %}">
 									<a href="#" class="nav-link nav-toggle">
 										<i class="fa fa-medkit"></i>
@@ -366,7 +374,44 @@
 										</li>
 									</ul>
 								</li>
+                            {% else %}
 							{% endif %}
+                            {% if user.employee.designation.staff_code == '20' %}
+                            <li class="nav-item {% if active_link == 'lab' %} open {% endif %}"> <!--Laboratory Dropdown menu-->
+                                <a href="#" class="nav-link nav-toggle">
+                                    <i class="fa fa-medkit"></i>
+                                    <span class="title">Patient Registration</span>
+                                    <span class="arrow"></span>
+                                </a>
+                                <ul class="sub-menu" {% if active_link == 'emg' %} style="display: block;" {% endif %}>
+                                    <li class="nav-item">
+                                        <a href="{% url 'patient_registration' %}" class="nav-link ">
+                                            <span class="title">Register Patient</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            {% else %}
+                            {% endif %}
+
+                            {% if user.employee.designation.staff_code == '16' %}
+                            <li class="nav-item {% if active_link == 'lab' %} open {% endif %}"> <!--Laboratory Dropdown menu-->
+                                <a href="#" class="nav-link nav-toggle">
+                                    <i class="fa fa-medkit"></i>
+                                    <span class="title">Patient Arrival Form</span>
+                                    <span class="arrow"></span>
+                                </a>
+                                <ul class="sub-menu" {% if active_link == 'emg' %} style="display: block;" {% endif %}>
+                                    <li class="nav-item">
+                                        <a href="{% url 'outpatient_triage_form' %}" class="nav-link ">
+                                            <span class="title">Triage Form</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            {% else %}
+                            {% endif %}
+                            {% if user.employee.designation.staff_code == '3378' %}
 							<li class="nav-item {% if active_link == 'lab' %} open {% endif %}"> <!--Laboratory Dropdown menu-->
 	                            <a href="#" class="nav-link nav-toggle">
 	                                <i class="fa fa-medkit"></i>
@@ -406,6 +451,9 @@
 	                                </li>
 	                            </ul>
 	                        </li>
+                            {% else %}
+                            {% endif %}
+                            {% if user.employee.designation.staff_code == '121' %}
 	                        <li class="nav-item {% if active_link == 'lab' %} open {% endif %}"> <!--Laboratory Dropdown menu-->
 	                            <a href="#" class="nav-link nav-toggle">
 	                                <i class="fa fa-medkit"></i>
@@ -435,7 +483,9 @@
 	                                </li>
 	                            </ul>
 	                        </li>
-
+                                {% else %}
+                                {% endif %}
+                                {% if user.employee.designation.staff_code == '23' %}
                             <li class="nav-item {% if active_link == 'outpatient' %} open {% endif %}">
                                 <a href="#" class="nav-link nav-toggle">
                                     <i class="fa fa-medkit"></i>
@@ -471,7 +521,61 @@
                                     </li>
                                 </ul>
                             </li>
-                            
+                            {% else %}
+                            {% endif %}
+                                {% if user.employee.designation.staff_code == '22' %}
+                            <li class="nav-item {% if active_link == 'outpatient' %} open {% endif %}">
+                                <a href="#" class="nav-link nav-toggle">
+                                    <i class="fa fa-medkit"></i>
+                                    <span class="title">Pharmacy</span>
+                                    <span class="arrow"></span>
+                                </a>
+                                <ul class="sub-menu {% if active_link == "lab" %} style="display: block;" {% endif %}">
+                                    
+                                    <li class="nav-item">
+                                        <a href="{% url 'pharmacy_dashboard' %}" class="nav-link ">
+                                            <span class="title">Dashboard</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{% url 'pharmacy_settings' %}" class="nav-link ">
+                                            <span class="title">Record Info</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item  ">
+                                        <a href="{% url 'procurement'  %}" class="nav-link ">
+                                            <span class="title">Procurement</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            {% else %}
+                            {% endif %}
+
+                            {% if user.employee.designation.staff_code == '2' %}
+                            <li class="nav-item {% if active_link == 'outpatient' %} open {% endif %}">
+                                <a href="#" class="nav-link nav-toggle">
+                                    <i class="fa fa-medkit"></i>
+                                    <span class="title">Patient List</span>
+                                    <span class="arrow"></span>
+                                </a>
+                                <ul class="sub-menu {% if active_link == "lab" %} style="display: block;" {% endif %}">
+                                    
+                                    <li class="nav-item">
+                                        <a href="{% url 'patient_list_for_doctor' %}" class="nav-link ">
+                                            <span class="title">Ward</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{% url 'doctor_queue' %}" class="nav-link ">
+                                            <span class="title">OPD</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                                {% else %}
+                                {% endif %}
+                            {% if user.employee.designation.staff_code == '27' %}
                             <li class="nav-item {% if active_link == 'outpatient' %} open {% endif %}">
                                 <a href="#" class="nav-link nav-toggle">
                                     <i class="fa fa-medkit"></i>
@@ -507,11 +611,13 @@
                                     </li>
                                 </ul>
                             </li>
-                            
+                            {% else %}
+                            {%  endif %}
+                            {% if user.employee.designation.staff_code == '34' %}                            
                             <li class="nav-item  ">
                                 <a href="#" class="nav-link nav-toggle">
                                     <i class="fa fa-calendar"></i>
-                                    <span class="title">Drug</span><span class="arrow"></span>
+                                    <span class="title">Drug Setting</span><span class="arrow"></span>
                                 </a>
                                 <ul class="sub-menu">
                                     <li class="nav-item  ">
@@ -537,6 +643,9 @@
 
                                 </ul>
                             </li>
+                            {% else %}
+                            {% endif %}
+                            {% if user.employee.designation.staff_code == '366' %}
                             <li class="nav-item  ">
                                 <a href="#" class="nav-link nav-toggle">
                                     <i class="fa fa-calendar"></i>
@@ -578,6 +687,9 @@
                                     </li>                                   
                                 </ul>
                             </li>
+                            {% else %}
+                            {% endif %}
+                            {% if user.employee.designation.staff_code == '337' %}
                             <li class="nav-item  ">
                                 <a href="#" class="nav-link nav-toggle">
                                     <i class="fa fa-calendar"></i>
@@ -604,130 +716,206 @@
                                         <a href="{% url 'drug_sale_chart'%} " class="nav-link "> <span class="title">Sales This Year</span>
                                         </a>
                                     </li>
-                                     
-                                    
+                                                                         
                                 </ul>
                             </li>
+                            {% else %}
+                            {% endif %}
 
-	                        <li class="nav-item  ">
-	                            <a href="#" class="nav-link nav-toggle">
-									<i class="fa fa-calendar"></i>
-	                            	<span class="title">Appointment</span><span class="arrow"></span>
-								</a>
-	                            <ul class="sub-menu">
-	                                <li class="nav-item  ">
-	                                    <a href="schedule.html" class="nav-link "> <span class="title">Doctor Schedule</span>
-	                                    </a>
-	                                </li>
-	                                <li class="nav-item  ">
-	                                    <a href="book_appointment.html" class="nav-link "> <span class="title">Book Appointment</span>
-	                                    </a>
-	                                </li>
-	                                <li class="nav-item  ">
-	                                    <a href="book_appointment_material.html" class="nav-link "> <span class="title">Book Appointment Material</span>
-	                                    </a>
-	                                </li>
-	                                 <li class="nav-item  ">
-	                                    <a href="edit_appointment.html" class="nav-link "> <span class="title">Edit Appointment</span>
-	                                    </a>
-	                                </li>
-	                                <li class="nav-item  ">
-	                                    <a href="view_appointment.html" class="nav-link "> <span class="title">View All Appointment</span>
-	                                    </a>
-	                                </li>
-	                            </ul>
-	                        </li>
-	                        <li class="nav-item  ">
-	                            <a href="#" class="nav-link nav-toggle">
-									<i class="fa fa-user-md"></i>
-	                                <span class="title">Doctors</span> <span class="arrow"></span>
-	                            </a>
-	                            <ul class="sub-menu">
-	                                <li class="nav-item  ">
-	                                    <a href="all_doctors.html" class="nav-link "> <span class="title">All Doctor</span>
-	                                    </a>
-	                                </li>
-	                                <li class="nav-item  ">
-	                                    <a href="add_doctor.html" class="nav-link "> <span class="title">Add Doctor</span>
-	                                    </a>
-	                                </li>
-	                                <li class="nav-item  ">
-	                                    <a href="add_doctor_material.html" class="nav-link "> <span class="title">Add Doctor Material</span>
-	                                    </a>
-	                                </li>
-	                                <li class="nav-item  ">
-	                                    <a href="edit_doctor.html" class="nav-link "> <span class="title">Edit Doctor</span>
-	                                    </a>
-	                                </li>
-	                                <li class="nav-item  ">
-	                                    <a href="doctor_profile.html" class="nav-link "> <span class="title">About Doctor</span>
-	                                    </a>
-	                                </li>
-	                            </ul>
-	                        </li>
-	                        <li class="nav-item  ">
-	                            <a href="#" class="nav-link nav-toggle"> 
-									<i class="fa fa-users"></i>
-	                                <span class="title">Other Staff</span> <span class="arrow"></span>
-	                            </a>
-	                            <ul class="sub-menu">
-	                                <li class="nav-item  ">
-	                                    <a href="all_staffs.html" class="nav-link "> <span class="title">All Staff</span>
-	                                    </a>
-	                                </li>
-	                                <li class="nav-item  ">
-	                                    <a href="add_staff.html" class="nav-link "> <span class="title">Add Staff</span>
-	                                    </a>
-	                                </li>
-	                                <li class="nav-item  ">
-	                                    <a href="add_staff_material.html" class="nav-link "> <span class="title">Add Staff Material</span>
-	                                    </a>
-	                                </li>
-	                                <li class="nav-item  ">
-	                                    <a href="edit_staff.html" class="nav-link "> <span class="title">Edit Staff</span>
-	                                    </a>
-	                                </li>
-	                                <li class="nav-item  ">
-	                                    <a href="staff_profile.html" class="nav-link "> <span class="title">Staff Profile</span>
-	                                    </a>
-	                                </li>
-	                            </ul>
-	                        </li>
-	                        <li class="nav-item  ">
-	                            <a href="#" class="nav-link nav-toggle"> 
-									<i class="fa fa-wheelchair"></i>
-	                                <span class="title">Patients</span> <span class="arrow"></span>
-	                            </a>
-	                            <ul class="sub-menu">
-	                                <li class="nav-item  ">
-	                                    <a href="all_patients.html" class="nav-link "> <span class="title">All Patients</span>
-	                                    </a>
-	                                </li>
-	                                <li class="nav-item  ">
-	                                    <a href="add_patient.html" class="nav-link "> <span class="title">Add Patient</span>
-	                                    </a>
-	                                </li>
-	                                <li class="nav-item  ">
-	                                    <a href="add_patient_material.html" class="nav-link "> <span class="title">Add Patient Material</span>
-	                                    </a>
-	                                </li>
-	                                <li class="nav-item  ">
-	                                    <a href="edit_patient.html" class="nav-link "> <span class="title">Edit Patient</span>
-	                                    </a>
-	                                </li>
-	                                <li class="nav-item  ">
-	                                    <a href="patient_profile.html" class="nav-link "> <span class="title">Patient Profile</span>
-	                                    </a>
-	                                </li>
-	                            </ul>
-	                        </li>
+                            {% if user.employee.designation.staff_code == '5' %}
+                            <li class="nav-item  ">
+                                <a href="#" class="nav-link nav-toggle">
+                                    <i class="fa fa-calendar"></i>
+                                    <span class="title">Billing</span><span class="arrow"></span>
+                                </a>
+                                <ul class="sub-menu">
+                                    <li class="nav-item  ">
+                                        <a href="{% url 'prescription_list'%}" class="nav-link "> <span class="title">Dispense Drugs</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item  ">
+                                        <a href="{% url 'visiting_card_list'%} " class="nav-link "> <span class="title">Visiting Card List</span>
+                                        </a>
+                                    </li>
+                                                                         
+                                </ul>
+                            </li>
+                            {% else %}
+                            {% endif %}
+
+                            {% if user.employee.designation.staff_code == '26' %}
+                            <li class="nav-item  ">
+                                <a href="#" class="nav-link nav-toggle">
+                                    <i class="fa fa-calendar"></i>
+                                    <span class="title">Pharmacy</span><span class="arrow"></span>
+                                </a>
+                                <ul class="sub-menu">
+                                    <li class="nav-item  ">
+                                        <a href="{% url 'prescription_list'%}" class="nav-link "> <span class="title">Dispense Drugs</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item  ">
+                                        <a href="{% url 'inpatient_prescription_list' %} " class="nav-link"> <span class="title">Ward Prescription List</span>
+                                        </a>
+                                    </li>
+                                                                         
+                                </ul>
+                            </li>
+                            {% else %}
+                            {% endif %}
+
+                            {% if user.employee.designation.staff_code == '37' %}
+                            <li class="nav-item  ">
+                                <a href="#" class="nav-link nav-toggle">
+                                    <i class="fa fa-calendar"></i>
+                                    <span class="title">Labotatory</span><span class="arrow"></span>
+                                </a>
+                                <ul class="sub-menu">
+                                    <li class="nav-item">
+                                        <a href="{% url 'view-orders' %}" class="nav-link ">
+                                            <span class="title">View Orders</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{% url 'view-tests' %}" class="nav-link ">
+                                            <span class="title">View Tests</span>
+                                        </a>
+                                    </li>
+                                                                         
+                                </ul>
+                            </li>
+                            {% else %}
+                            {% endif %}
+
+                            {% if user.employee.designation.staff_code == '19' %}
+                            <li class="nav-item  ">
+                                <a href="#" class="nav-link nav-toggle">
+                                    <i class="fa fa-calendar"></i>
+                                    <span class="title">Patient List</span><span class="arrow"></span>
+                                </a>
+                                <ul class="sub-menu">
+                                    <li class="nav-item  ">
+                                        <a href="{% url 'patient_list'%}" class="nav-link "> <span class="title">Allocate Beds</span>
+                                        </a>
+                                    </li>
+                                                                         
+                                </ul>
+                            </li>
+                            {% else %}
+                            {% endif %}
+
+                            {% if user.employee.designation.staff_code == '4' %}
+                            <li class="nav-item  ">
+                                <a href="#" class="nav-link nav-toggle">
+                                    <i class="fa fa-calendar"></i>
+                                    <span class="title">Patient List</span><span class="arrow"></span>
+                                </a>
+                                <ul class="sub-menu">
+                                    <li class="nav-item  ">
+                                        <a href="{% url 'patient_list'%}" class="nav-link "> <span class="title">Ward</span>
+                                        </a>
+                                    </li>
+                                                                         
+                                </ul>
+                            </li>
+                            {% else %}
+                            {% endif %}
+
+                            {% if user.employee.designation.staff_code == '11' %}
+                            <li class="nav-item  ">
+                                <a href="#" class="nav-link nav-toggle">
+                                    <i class="fa fa-calendar"></i>
+                                    <span class="title">Nurse List</span><span class="arrow"></span>
+                                </a>
+                                <ul class="sub-menu">
+                                    {% if setting.setting == 'Team' %}
+
+                                    <li class="nav-item  ">
+                                        <a href="{% url 'nurse_team_list'%}" class="nav-link "> <span class="title">Nurse Team List</span>
+                                        </a>
+                                    </li>
+                                    {% elif setting.setting == 'Individual' %}
+                                    <li class="nav-item  ">
+                                        <a href="{% url 'nurse_list'%}" class="nav-link "> <span class="title">Nurse List</span>
+                                        </a>
+                                    </li>
+                                    {% else %}
+                                    <li class="nav-item  ">
+                                        <a href="{% url 'nurse_team_list'%}" class="nav-link "> <span class="title">Nurse Team List</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item  ">
+                                        <a href="{% url 'nurse_list'%}" class="nav-link "> <span class="title">Nurse List</span>
+                                        </a>
+                                    </li>
+
+                                    {% endif %}
+                                                                         
+                                </ul>
+                            </li>
+                            {% else %}
+                            {% endif %}
+
+                            {% if user.employee.designation.staff_code == '25' %}
+                            <li class="nav-item  ">
+                                <a href="#" class="nav-link nav-toggle">
+                                    <i class="fa fa-calendar"></i>
+                                    <span class="title">Doctor List</span><span class="arrow"></span>
+                                </a>
+                                <ul class="sub-menu">
+                                    <li class="nav-item ">
+                                        <a href="{% url 'ward_team_list'%}" class="nav-link "> <span class="title">Doctor Team List</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item " >
+                                        <a href="{% url 'doctor_list'%}" class="nav-link "> <span class="title">Doctor List</span>
+                                        </a>
+                                    </li>
+                                                                         
+                                </ul>
+                            </li>
+                            {% else %}
+
+                            {% endif %}
+
+                            {% if user.employee.designation.staff_code == '36' %}
+                            <li class="nav-item " >
+                                <a href="#" class="nav-link nav-toggle">
+                                    <i class="fa fa-calendar"></i>
+                                    <span class="title">Settings</span><span class="arrow"></span>
+                                </a>
+                                <ul class="sub-menu">
+                                    <li class="nav-item  ">
+                                        <a href="{% url 'admin_dashboard' %}" class="nav-link "> <span class="title">Dashboard</span>
+                                        </a>
+                                    </li>
+                                    <!--
+                                    <li class="nav-item  ">
+                                        <a href="{% url 'admin_settings2' %}" class="nav-link "> <span class="title">Hospital Settings</span>
+                                        </a>
+                                    </li>-->
+                                    <li class="nav-item  ">
+                                        <a href="{% url 'admin_settings' %}" class="nav-link "> <span class="title">General Settings</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item  ">
+                                        <a href="{% url 'staff:add_employee' %}" class="nav-link "> <span class="title">Account Creation</span>
+                                        </a>
+                                    </li>
+                                                                         
+                                </ul>
+                            </li>
+                            {% else %}
+
+                            {% endif %}
+
 	                    </ul>
 	                </div>
                 </div>
             </div>
 			 <!-- end sidebar menu -->
 			<!-- start page content -->
-            <div class="page-content-wrapper">
+            <div class="page-content-wrapper" >
 				<div class="page-content">
 					<!-- Start message box -->
 					{% for message in messages %}
@@ -813,38 +1001,91 @@
  						<!-- Start Setting Panel --> 
  						<div class="tab-pane chat-sidebar-settings animated slideInUp" id="quick_sidebar_tab_2">
                             <div class="chat-sidebar-settings-list chat-sidebar-slimscroll-style">
-                                <div class="chat-header"><h5 class="list-heading">Layout Settings</h5></div>
+                                {% if user.employee.designation.staff_code == '36' %}
+                                <div class="chat-header"><h5 class="list-heading">Organizational Setting</h5></div>
 	                            <div class="chatpane inner-content ">
 									<div class="settings-list">
 					                    <div class="setting-item">
-					                        <div class="setting-text">Sidebar Position</div>
+					                        <div class="setting-text">Current Setting</div>
 					                        <div class="setting-set">
-					                           <select class="sidebar-pos-option form-control input-inline input-sm input-small ">
-	                                                <option value="left" selected="selected">Left</option>
-	                                                <option value="right">Right</option>
-                                            	</select>
-					                        </div>
-					                    </div>
-					                    <div class="setting-item">
-					                        <div class="setting-text">Header</div>
-					                        <div class="setting-set">
-					                           <select class="page-header-option form-control input-inline input-sm input-small ">
-	                                                <option value="fixed" selected="selected">Fixed</option>
-	                                                <option value="default">Default</option>
-                                            	</select>
-					                        </div>
-					                    </div>
-					                    
-					                    <div class="setting-item">
-					                        <div class="setting-text">Footer</div>
-					                        <div class="setting-set">
-					                           <select class="page-footer-option form-control input-inline input-sm input-small ">
-	                                                <option value="fixed">Fixed</option>
-	                                                <option value="default" selected="selected">Default</option>
-                                            	</select>
+					                           <div class="sidebar-pos-option setting-text ">
+	                                                {{current_setting}}
+                                            	</div>
 					                        </div>
 					                    </div>
 					                </div>
+                                    <div class="settings-list">
+                                        <div class="setting-item">
+                                            <div class="setting-text">Change</div>
+                                            <div class="setting-set sidebar-pos-option" >
+                                                <form action="{% url 'change_team_setting' %}" method="POST">
+                                                      {% csrf_token %}
+                                                        
+                                                            <div class="form-group col-md-12 ">
+                                                        {{team_setting_form.setting}}
+                                                            </div>
+                                                            
+                                                            <div class="form-group" style="padding-left: 30px;">   
+                                                                 <button class="btn-info btn" type="submit">Save</button>
+                                                            </div>
+
+        
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="settings-list">
+                                        <div class="setting-item">
+                                            <div class="setting-text">Site Setting</div>
+                                            <div class="setting-set sidebar-pos-option" >
+                                                <form action="{% url 'change_team_setting' %}" method="POST">
+                                                      {% csrf_token %}
+                                                        
+                                                            <div class="form-group col-md-12 ">
+                                                        <a href="{% url 'site_config:edit_site_info' %}"> Change </a>
+                                                            </div>
+                                                            
+
+        
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {% endif %}
+                                <div class="chat-header"><h5 class="list-heading">Layout Settings</h5></div>
+                                <div class="chatpane inner-content ">
+                                    <div class="settings-list">
+                                        <div class="setting-item">
+                                            <div class="setting-text">Sidebar Position</div>
+                                            <div class="setting-set">
+                                               <select class="sidebar-pos-option form-control input-inline input-sm input-small ">
+                                                    <option value="left" selected="selected">Left</option>
+                                                    <option value="right">Right</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="setting-item">
+                                            <div class="setting-text">Header</div>
+                                            <div class="setting-set">
+                                               <select class="page-header-option form-control input-inline input-sm input-small ">
+                                                    <option value="fixed" selected="selected">Fixed</option>
+                                                    <option value="default">Default</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="setting-item">
+                                            <div class="setting-text">Footer</div>
+                                            <div class="setting-set">
+                                               <select class="page-footer-option form-control input-inline input-sm input-small ">
+                                                    <option value="fixed">Fixed</option>
+                                                    <option value="default" selected="selected">Default</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
 									<div class="chat-header"><h5 class="list-heading">Account Settings</h5></div>
 									<div class="settings-list">
 					                    <div class="setting-item">
@@ -944,7 +1185,7 @@
             <!-- end chat sidebar -->
         </div>
         <!-- end page container -->
-        <!-- start footer -->
+        <!-- start footer 
         <div class="page-footer">
             <div class="page-footer-inner"> 2018 &copy; Sunray Template By
             <a href="https://radixtouch.com/cdn-cgi/l/email-protection#780a1d1c0b0c190a0c101d151d381f15191114561b1715" target="_top" class="makerCss">Redstar Theme</a>
@@ -952,7 +1193,7 @@
             <div class="scroll-to-top">
                 <i class="material-icons">eject</i>
             </div>
-        </div>
+        </div>-->
         <!-- end footer -->
     </div>
     <!-- start js include path -->
@@ -994,6 +1235,7 @@
 		}
 	</script>
     {% block scripts %}
+
     {% endblock %}
   </body>
 </html>

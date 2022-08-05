@@ -2,7 +2,6 @@
 {% load static %}
 {% block style %}
     <!-- data tables -->
-    <link href="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"/>
 {% endblock %}
 {% block title %} Prescriptions {% endblock %}
 
@@ -20,31 +19,29 @@
                     </div>
                 </div>
                 <div class="card-body ">
-                    <table id="example1" class="display table-bordered table-striped table-hover" style="width:100%;">
+                    <table id="example1" class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded">
                         <thead>
-                            <tr class="gradeX odd">
-                                <th>Time</th>
-                                <th>Prescriber</th>
-                                <th>Patient</th>
-                                <th>Diagnosis</th>
-                                <th>Drug</th>
+                            <tr >
+                                <th class="mdl-data-table__cell--non-numeric">Time</th>
+                                <th class="mdl-data-table__cell--non-numeric">Prescriber</th>
+                                <th class="mdl-data-table__cell--non-numeric">Patient</th>
+                                <th class="mdl-data-table__cell--non-numeric">Diagnosis</th>
+                                <th class="mdl-data-table__cell--non-numeric">Drug</th>
                                 
-                                <th>Comments</th>
-                                <th>Administer</th>
+                                <th class="mdl-data-table__cell--non-numeric">Comments</th>
+                                <th class="mdl-data-table__cell--non-numeric">Administer</th>
 
                             </tr>
                         </thead>
                         <tbody>
                             {% for prescription in prescription_list %}
                                 <tr>
-                                    <td>{{prescription.registered_on}}</td>
-                                    <td> {{ prescription.prescriber }}</td>
-                                    <td> {{ prescription.patient }} </td>
-                                    
-                                    <td> {{ prescription.diagnosis }} </td>
-                                    <td> {{ prescription.drug }} </td>
-                                    <td>{{prescription.comments}}</td>
-
+                                    <td class="mdl-data-table__cell--non-numeric">{{prescription.registered_on}}</td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ prescription.prescriber }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ prescription.patient }} </td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ prescription.diagnosis }} </td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ prescription.drug }} </td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{prescription.comments}}</td>
                                     <td><button class="btn btn-info"><a href="{% url 'drug_prescription_pharmacist_form' prescription.id  %}" style="color: white;">Administration Form</a></button></td>
                                 </tr>
                             {% endfor %}
@@ -58,7 +55,4 @@
 
 {% block scripts %}
     <!-- data tables -->
-    <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}" ></script>
-    <script src="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.js' %}" ></script>
-    <script src="{% static 'js/pages/table/table_data.js' %}"></script>
 {% endblock %}

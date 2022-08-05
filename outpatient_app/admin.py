@@ -2,6 +2,7 @@ from django.contrib import admin
 from .models import *
 
 # Register your models here.
+admin.site.register(TeamSetting)
 
 admin.site.register(PatientAnthropometry)
 admin.site.register(PatientHistory)
@@ -18,10 +19,17 @@ admin.site.register(ServiceRoomProvider)
 admin.site.register(PatientMedicalCondition)
 admin.site.register(PatientMedication)
 admin.site.register(ServiceTeam)
+admin.site.register(ServiceCopy)
+
 admin.site.register(OutpatientTeam)
+admin.site.register(OutpatientMedication)
+admin.site.register(OutpatientLabResult)
+
 #admin.site.register(PatientVitalSign)
 admin.site.register(PatientAllergy)
 admin.site.register(PatientHabit)
+admin.site.register(OutpatientChiefComplaint)
+admin.site.register(OutpatientDischargeSummary)
 
 
 

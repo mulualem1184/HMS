@@ -2,10 +2,11 @@ from django.db import models
 from pharmacy_app.models import *
 from django.contrib.auth import get_user_model
 from core.models import * 
+from lis.models import LaboratoryTestResult
 from staff_mgmt.models import Employee
 import datetime
 from django.utils import timezone
-
+from mptt.models import MPTTModel, TreeForeignKey
 # Create your models here.
 
 
@@ -19,8 +20,21 @@ class OutpatientChiefComplaint(models.Model):
     active = models.BooleanField(default=True)
     patient = models.ForeignKey(to=Patient, on_delete=models.CASCADE, null=True, blank=True)
 
-    def __str__(self):
-        return self.compliant
+#    def __str__(self):
+#        return self.compliant
+
+class TeamSetting(models.Model):
+	team_setting = (
+		('Team','Team'),
+		('Individual','Individual'),
+		('Both','Both'),
+		)
+
+	setting = models.CharField(max_length=100,null=True,blank=True, choices=team_setting)
+	registered_by = models.ForeignKey(Employee, on_delete=models.SET_NULL, null=True)	
+	active = models.BooleanField(default=True)
+	def __str__(self):
+		return self.setting
 
 """
 class PatientReferralLocation(models.Model):
@@ -59,9 +73,9 @@ class PatientArrivalDetail(models.Model):
     patient = models.ForeignKey(to=Patient, on_delete=models.CASCADE, null=True, blank=True)
     active = models.BooleanField(default=True)
 
+
 class PatientAnthropometry(models.Model):
 	
-
 	patient = models.ForeignKey(Patient,on_delete= models.SET_NULL, null=True)
 	height = models.FloatField(null=True,blank=True)
 	weight = models.FloatField(null=True,blank=True)
@@ -112,25 +126,6 @@ class PatientHabit(models.Model):
 	registered_by = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
 
 	registered_on = models.DateTimeField(null=True)
-"""
-class PatientVitalSign(models.Model):
-	symptom_status = (
-		('active','active'),
-		('not_active','not_active'),
-		)
-	temperature_unit = (
-		('Fahrenheit','Fahrenheit'),
-		('Celcius','Celcius'),
-		)
-
-	patient = models.ForeignKey(Patient,on_delete= models.SET_NULL, null=True)
-	pulse_rate = models.FloatField(null=True,blank=True)	
-	temperature = models.FloatField(null=True,blank=True)
-	temperature_unit = models.CharField(max_length=100,null=True,blank=True, choices=temperature_unit)
-	blood_pressure = models.FloatField(null=True,blank=True)
-	active = models.CharField(max_length=100,null=True,blank=True, choices=symptom_status)
-	registered_on = models.DateTimeField(null=True)
-"""
 
 
 class PatientHistory(models.Model):
@@ -157,21 +152,41 @@ class OutpatientTeam(models.Model):
 	def __str__(self):
 		return  str(self.team_name)
 
-class ServiceTeam(models.Model):
-	team = models.ForeignKey(OutpatientTeam,  on_delete= models.SET_NULL, null=True)	
-	service_provider = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True)
-	def __str__(self):
-		return  str(self.team.team_name)
-
 
 class Service(models.Model):
 
 	service_name = models.CharField(max_length=1000, blank=True)
-	service_team = models.ForeignKey(ServiceTeam,  on_delete= models.SET_NULL, null=True, blank=True)
 	service_price = models.IntegerField(null=True, blank=True)
 	service_discounted_price = models.IntegerField(null=True, blank=True)
+
 	def __str__(self):
-		return str(self.service_name) + "  by "  + str(self.service_team.team.team_name) + " for " +str(self.service_price)
+		return str(self.service_name)# + " for " +str(self.service_price)
+	"""
+	@property
+	def get(self):
+
+		return PostA.objects.filter(company__pk=self.pk)
+	"""
+class ServiceTeam(models.Model):
+	service = models.ForeignKey(Service,  on_delete= models.SET_NULL, null=True, related_name='team_set')
+	team = models.ForeignKey(OutpatientTeam,  on_delete= models.SET_NULL, null=True)	
+	service_provider = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True)
+#	service = TreeForeignKey(Service, on_delete=models.CASCADE, null=True, blank=True, related_name='children')
+
+	def __str__(self):
+#		if not self.level:
+#			self.level = 0
+		return  str(self.team.team_name) + str(self.service_provider)
+#	class MPTTMeta:
+#		order_insertion_by = ['name']
+
+class ServiceCopy(models.Model):
+	service = models.ForeignKey(Service,  on_delete= models.SET_NULL, null=True)	
+	def __str__(self):
+		return str(self.service.service_name)
+	@property
+	def get_team(self):
+		return ServiceTeam.objects.filter(service__id=self.service.id)
 
 class ServiceProvider(models.Model):
 	service = models.ForeignKey(Service,  on_delete= models.SET_NULL, null=True)
@@ -237,6 +252,25 @@ class VisitQueue(models.Model):
 #	def __str__(self):
 #		return self.visit.patient.first_name + " " + self.visit.patient.last_name + " in " + self.visit.service_room.room + ', Queue: ' +  str(self.queue_number)
 
+
+class OutpatientIntervention(models.Model):
+
+	patient = models.ForeignKey(Patient,  on_delete= models.SET_NULL, null=True, blank=True)	
+	service_provider = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
+	intervention_cause = models.CharField( max_length = 1000, blank=True, null=True)
+	intervention = models.CharField( max_length = 1000, blank=True, null=True)
+	rational = models.CharField( max_length = 1000, blank=True, null=True)
+	visit = models.ForeignKey(PatientVisit,  on_delete= models.SET_NULL, null=True, blank=True)
+	registered_on = models.DateTimeField(null=True)
+
+class OutpatientMedicalNote(models.Model):
+
+	patient = models.ForeignKey(Patient,  on_delete= models.SET_NULL, null=True, blank=True)	
+	note = models.CharField( max_length = 2000, blank=True, null=True)
+	service_provider = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
+	visit = models.ForeignKey(PatientVisit,  on_delete= models.SET_NULL, null=True, blank=True)
+	registered_on = models.DateTimeField(null=True)
+
 class PatientAppointment(models.Model):
 	"""
 	service_provider: staff member (doctor, councelor, etc..) who gives some type of clinical service
@@ -261,6 +295,37 @@ class PatientMedication(models.Model):
     date = models.DateField(null=True, blank=True)
 
 
+class OutpatientMedication(models.Model):
+	medication_status = (
+		('Ended', 'Ended'),
+		('Cancelled', 'Cancelled'),     
+		('Active', 'Active'),       
+		)
+	patient = models.ForeignKey(Patient,  on_delete= models.SET_NULL, null=True, blank=True)
+	visit =  models.ForeignKey(PatientVisit, on_delete=models.CASCADE)	
+	drug_prescription = models.ForeignKey(to=DrugPrescription, on_delete=models.SET_NULL, null=True, blank=True)
+	drug_status = models.CharField(max_length=100,choices=medication_status, null=True)
+	doctor = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
+	registered_on = models.DateField(null=True, blank=True)
+
+class OutpatientLabResult(models.Model):
+
+	patient = models.ForeignKey(Patient,  on_delete= models.SET_NULL, null=True, blank=True)
+	visit =  models.ForeignKey(PatientVisit, on_delete=models.CASCADE)	
+	lab_result = models.ForeignKey(to=LaboratoryTestResult, on_delete=models.SET_NULL, null=True, blank=True)
+	doctor = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
+	registered_on = models.DateField(null=True, blank=True)
+
+class OutpatientDischargeSummary(models.Model):
+	patient = models.ForeignKey(Patient,  on_delete= models.SET_NULL, null=True, blank=True)
+	#discharge_condition = models.CharField(max_length=100,choices=discharge_conditions, null=True)
+	significant_findings = models.CharField(max_length=400, null=True)
+	summary = models.CharField(max_length=2000, null=True) 
+	registered_on = models.DateField(null=True, blank=True)
+	visit =  models.ForeignKey(PatientVisit, on_delete=models.CASCADE, null=True)	
+	discharged_by = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
+
+
 
 
 class SurgeryHistory(models.Model):
@@ -274,17 +339,3 @@ class PatientMedicalCondition(models.Model):
     medical_condition = models.CharField(max_length=1000, null=True, blank=True)
     registered_date = models.DateField(null=True, blank=True)
     registered_by = models.ForeignKey(to=USER, on_delete=models.SET_NULL, null=True, blank=True)
-
-
-class OutpatientMedication(models.Model):
-	medication_status = (
-		('Ended', 'Ended'),
-		('Cancelled', 'Cancelled'),     
-		('Active', 'Active'),       
-		)
-	patient = models.ForeignKey(Patient,  on_delete= models.SET_NULL, null=True, blank=True)
-	visit =  models.ForeignKey(PatientVisit, on_delete=models.CASCADE)	
-	drug_prescription = models.ForeignKey(to=DrugPrescription, on_delete=models.SET_NULL, null=True, blank=True)
-	drug_status = models.CharField(max_length=100,choices=medication_status, null=True)
-	doctor = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
-	registered_on = models.DateField(null=True, blank=True)

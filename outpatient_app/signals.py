@@ -19,3 +19,15 @@ def QueueSignal(sender, **kwargs):
 		queue.queue_number = queue.queue_number - 1
 		print('\n',queue.queue_number,'\n')
 		queue.save()
+
+"""
+@receiver(pre_save, sender=TeamSetting)
+def TeamSettingSignal(sender, **kwargs):
+	instance : TeamSetting = kwargs.get('instance')
+	try:
+		previous_setting = TeamSetting.objects.get(active=True)
+		previous_setting.active = False
+		previous_setting.save()
+	except :
+		print('none')
+"""

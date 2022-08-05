@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+{% endblock %}
+{% block title %} Queue {% endblock %}
+
+{% block page_content %}
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6">
+                            <div class="card  card-box" style="background-color: #eef1f5; height: 300px;">
+                                <div class="card-head">
+                                    <header>Drug</header>
+                                </div>
+                                <div class="card-body " id="bar-parent">
+                                    <div class="row">
+                                        <div class="col-md-4 col-sm-3 col-xs-3">
+                                            <ul class="nav nav-tabs tabs-left">
+                                                <li class="nav-item">
+                                                    <a href="#drug-profile-tab" data-toggle="tab" class="active"> Drug Profile </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a href="#drug-related-info-tab" data-toggle="tab"> Drug Info </a>
+                                                </li>
+                                                
+                                                <li class="nav-item">
+                                                    <a href="#contraindication-tab" data-toggle="tab"> ContraIndication</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a href="#drug-threshold-tab" data-toggle="tab"> Drug Threshold </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-8 col-sm-9 col-xs-9">
+                                            <div class="tab-content">
+                                                <div class="tab-pane active" id="drug-profile-tab">
+                                                    <p>Lorem ipsum dolor sit amet, sumo impetus ea sit, ut pri mucius eruditi dolorum. Wisi liberavisse theophrastus mea cu, id enim elit erroribus nec. Et ridens fuisset volumus mel. Te duo prompta lucilius suavitate, viderer ocurreret ea ius.</p>
+                                                    <a href="{% url 'drug_profile_form_page' %}">Add Drug Profiles</a>
+                                                </div>
+                                                <div class="tab-pane fade" id="contraindication-tab">
+                                                    <p>Doming conclusionemque sed ex, invenire ocurreret dissentiet his no. Ius cu novum assueverit, eam ex dolor molestiae theophrastus. Ex sed alii dolorum, et vis impetus expetendis dissentiunt. Vim ad soluta admodum tibique, inermis salutandi at mei, mutat nominati eos id. Id aeque iudico sit, eros adolescens est te.
+                                                        <a href="{% url 'contraindication_drug_form' %}">Add</a>
+                                                    </p>
+                                                </div>
+                                                <div class="tab-pane fade" id="drug-related-info-tab">
+                                                    <p>Most of its text is made up from sections 1.10.32–3 of Cicero's De finibus bonorum et malorum (On the Boundaries of Goods and Evils; finibus may also be translated as purposes).
+                                                        <a href="{% url 'drug_related_info' %}">Add</a>
+                                                    </p>
+                                                </div>
+                                                <div class="tab-pane fade" id="drug-threshold-tab">
+                                                    <p>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo.
+                                                        <a href="{% url 'threshold' %}">Add</a>
+                                                    </p>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+{% endblock %}
+
+{% block scripts %}
+    <!-- data tables -->
+{% endblock %}

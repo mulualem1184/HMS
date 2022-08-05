@@ -6,6 +6,7 @@ from rest_framework.renderers import TemplateHTMLRenderer
 from django.http import JsonResponse
 
 from .models import *
+from outpatient_app.models import OutpatientMedication, PatientVisit
 from django.db.models import Sum
 from .forms import *
 from datetime import datetime
@@ -269,6 +270,7 @@ def DrugProfileFormPage(request):
 	side_effect_formset = SideEffectFormset(request.POST or None, queryset=qt)
 
 	all_drugs = DrugProfile.objects.all()
+	drug_list = Dosage.objects.all()
 	if request.method == 'POST':
 		drug_profile_form= DrugProfileForm(request.POST)
 		if drug_profile_form.is_valid():
@@ -301,7 +303,10 @@ def DrugProfileFormPage(request):
 	context = {'drug_profile_form' : drug_profile_form, 'route_form':route_form,
 				'dosage_model_form' :dosage_model_form, 'disease_formset':disease_formset,
 				'contraindication_formset':contraindication_formset, 
-				'side_effect_formset': side_effect_formset}
+				'side_effect_formset': side_effect_formset,
+				'drug_list': drug_list,
+
+				}
 	return render(request,'pharmacy_app/drug_profile_form_page.html',context)		
 
 #this function allows users to create one to many relationships between drugs and diseases 
@@ -637,6 +642,33 @@ def SupplyFormPage(request, pk):
 
 def StockSupplyFormPage(request,procurement_pk):
 	procurement = Procurement.objects.get(procurement_no=procurement_pk)
+	procurement_details = ProcurementDetail.objects.filter(procurement_no=procurement)
+
+	#Remaining and Supplied drugn info
+	remaining_quantity = 0
+	supplied_quantity_array = []
+	remaining_quantity_array = []
+	supplied_quantity = 0
+	total_remaining_quantity = 0
+	procurement_zip = None
+	for procurement_detail in procurement_details:
+		#below code retrieves supplied drugs for a particular request(procurement)
+
+		drug_supply = DrugSupply.objects.filter(batch__procurement=procurement, drug=procurement_detail.drug)
+		
+		#then for each supplied drug get how much was supplied (quantity)
+		for drug_supply in drug_supply:
+			supplied_quantity = supplied_quantity + drug_supply.supplied_quantity
+		supplied_quantity_array.append(supplied_quantity)	 
+		#remaining quantity holds how much of the requested amount of drug hasnot been supplied
+		remaining_quantity = procurement_detail.quantity - supplied_quantity
+		remaining_quantity_array.append(remaining_quantity)
+
+		procurement_zip = zip(procurement_details, supplied_quantity_array, remaining_quantity_array)
+		#print(supplied_quantity_array, remaining_quantity_array)
+		supplied_quantity = 0		
+		total_remaining_quantity = total_remaining_quantity + remaining_quantity
+
 #	create_random_record(schedule=5, repeat=5)
 	stock_supply_form = StockSupplyForm()
 	batch_form = BatchForm(initial={'procurement':procurement})
@@ -647,14 +679,14 @@ def StockSupplyFormPage(request,procurement_pk):
 		procurement_drug_id.append(pd.drug.id)
 	procurement_drugs = Dosage.objects.filter(id__in=procurement_drug_id)
 	#filter 'batch_form' field 'procurement' to only include procurements that are pending
-	batch_form.fields["procurement"].queryset = Procurement.objects.filter(status='pending')
+#	batch_form.fields["procurement"].queryset = Procurement.objects.filter(status='pending')
 	batch_form.fields["drug"].queryset = procurement_drugs
 	p = Procurement.objects.all()
 	for p in p:
 		print(p,p.status)
 	drug_expiration_form = ExpirationDateForm()
 	if request.method == 'POST':		
-		batch_form = BatchForm(request.POST,initial={'procurement':procurement})	
+		batch_form = BatchForm(request.POST)	
 		if batch_form.is_valid():
 			batch_model = batch_form.save(commit=False)
 			batch_model.procurement = procurement
@@ -685,11 +717,15 @@ def StockSupplyFormPage(request,procurement_pk):
 			drug_supply_model.registered_by = request.user
 			drug_supply_model.save()
 			messages.success(request, str(batch_model.quantity) + " " + str(drug_supply_model.drug) + ' supplied to ' + str(drug_supply_model.stock_slot_no) + ' successfully!')
-			
+			return redirect('procurement_detail', procurement_pk)
 		else:
 			messages.error(request,'Enter Form Correctly!')
 			print('supply form error:', stock_supply_form.errors)
-	context = {'batch_form':batch_form,'drug_expiration_form':drug_expiration_form,'stock_supply_form':stock_supply_form}
+	context = {'batch_form':batch_form,
+				'drug_expiration_form':drug_expiration_form,
+				'stock_supply_form':stock_supply_form,
+				'procurement_zip':procurement_zip 
+				}
 	return render(request, 'pharmacy_app/stock_supply_form.html',context)
 
 def DrugRelatedInfo(request):
@@ -837,25 +873,39 @@ def IntakeModePage(request):
 	context = {'intake_mode_form':intake_mode_form, 'intake_mode_lists':intake_mode_lists}
 	return render(request, 'pharmacy_app/intake_mode.html', context)
 
-def PrescriptionFormPage(request):
+def PrescriptionFormPage(request,patient_id):
+	patient = Patient.objects.get(id=patient_id)
 	prescription_form = PrescriptionForm()
 	print(request.user)
 	if request.method == 'POST':
 		prescription_form = PrescriptionForm(request.POST)
 		if prescription_form.is_valid():			
 			drug_prescription_model = prescription_form.save(commit=False)
+			drug_prescription_model.patient = patient #Assign user(doctor) to prescriber field in DrugPrescription model
 			drug_prescription_model.prescriber = request.user #Assign user(doctor) to prescriber field in DrugPrescription model
 			drug_prescription_model.registered_on = datetime.now()
+			#drug_prescription_model.inpatient = 'false'
+			medication_history = OutpatientMedication()
+			medication_history.patient = patient
+			medication_history.visit = PatientVisit.objects.filter(patient = patient).exclude(visit_status='Ended').last()
+			medication_history.drug_prescription = drug_prescription_model 
+			#medication_history.doctor = 
+			medication_history.registered_on = datetime.now()
+
 			drug_prescription_model.save()
+			medication_history.save()
 			messages.success(request,'Successfully Prescribed!')
+			return redirect('outpatient_medical_note', patient.id)
 		else:
 			print('error: ', prescription_form.errors)
+			messages.error(request,str(prescription_form.errors))
+
 	context = {'prescription_form':prescription_form}
 	return render(request,'pharmacy_app/prescription_form.html', context)
 	
 	
 def PrescriptionList(request):
-	prescription_list = DrugPrescription.objects.filter(dispensed='false')
+	prescription_list = DrugPrescription.objects.filter(dispensed='false', inpatient='false' )
 #	prescription_list = DrugPrescription.objects.all()
 	last_bill = Bill.objects.last()
 
@@ -1061,17 +1111,6 @@ def StockDrugList(request, pk):
 	stock_drug_zip = zip(stock_drug_array, stock_drug_quantity_array)
 	context = {'stock_drug_zip':stock_drug_zip,'pk':pk}
 	return render(request, 'pharmacy_app/stock_drug_list.html', context)
-"""
-def ProcurementFormPage(request):
-	procurement_list = Procurement.objects.all()
-	procurement_form = ProcurementForm()
-	if procurement_form.is_valid():
-		procurement_form = ProcurementForm(request.POST)
-		procurement_form.save()
-	context = {'procurement_list':procurement_list, 'procurement_form':procurement_form}
-	return render(request, 'pharmacy_app/procurement_form.html.html', context)
-
-"""
 
 def ProcurementPage(request):
 	"""
@@ -1097,15 +1136,23 @@ def ProcurementPage(request):
 		else:
 			print('error :',procurement_form.errors)
 	procurement_detail_form = ProcurementDetailForm()
-	if request.method == 'POST':
-		procurement_detail_form = ProcurementDetailForm(request.POST)
-		if procurement_detail_form.is_valid():
-			procurement_detail_form.save()
-		else:
-			print('error')
 
 	context = {'procurement_detail_form':procurement_detail_form,'procurement_zip':procurement_zip, 'procurement_form':procurement_form}
 	return render(request, 'pharmacy_app/procurement.html', context)
+
+def SaveProcurementDetail(request, procurement_id):
+	procurement = Procurement.objects.get(procurement_no=procurement_id)
+	if request.method == 'POST':
+		procurement_detail_form = ProcurementDetailForm(request.POST)
+		if procurement_detail_form.is_valid():
+			procurement_detail_model = procurement_detail_form.save(commit=False)
+			procurement_detail_model.procurement_no = procurement
+			procurement_detail_model.save()
+			messages.success(request, 'Procurement Created!')
+			return redirect('procurement')
+		else:
+			messages.error(request,str(procurement_detail_form.errors))
+			return redirect('procurement')
 
 def CancelProcurement(request, procurement_pk):
 	procurement = Procurement.objects.get(procurement_no=procurement_pk)
@@ -1245,7 +1292,7 @@ def ThresholdFormPage(request):
 	for threshold in inventory_threshold:
 		threshold_id_array.append(threshold.id)
 	#print(threshold_id_array)
-	low_stock_level_alert(threshold_id_array)
+	#low_stock_level_alert(threshold_id_array)
 
 	threshold_form = ThresholdForm()
 	if request.method == 'POST':
@@ -1282,10 +1329,12 @@ def LowStockDrugs(request):
 
 		stock_quantity_dict = drug_in_stock.aggregate(Sum('quantity'))
 		stock_quantity = stock_quantity_dict['quantity__sum']		
-
+		if stock_quantity == None:
+			stock_quantity = 0
 		dispensary_dict = drug_in_dispesary.aggregate(Sum('quantity'))
 		dispensary_quantity = dispensary_dict['quantity__sum']		
-
+		if dispensary_quantity == None:
+			dispensary_quantity = 0
 		total_quantity = stock_quantity + dispensary_quantity
 		threshold = InventoryThreshold.objects.get(drug = drug)
 		if total_quantity < threshold.threshold:
@@ -1294,9 +1343,11 @@ def LowStockDrugs(request):
 			needed_amount_array.append(threshold.threshold - total_quantity) 
 			drug_array.append(drug)
 			threshold_zip = zip(drug_array, stock_quantity_array, needed_amount_array)
-			stock_quantity = 0
-	context = {'threshold_zip':threshold_zip}
-	return render(request, 'pharmacy_app/low_stock_drugs.html',context)
+			stock_quantity = 0		
+			context = {'threshold_zip':threshold_zip}
+			return render(request, 'pharmacy_app/low_stock_drugs.html',context)
+		else:
+			return render(request, 'pharmacy_app/low_stock_drugs.html')
 
 
 def DrugProfilePage(request, pk):

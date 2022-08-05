@@ -8,50 +8,7 @@ User = get_user_model()
 
 #from .tasks import *
 # Create your models here.
-"""
-class Patient(models.Model):
-	gender = (
-		('Female', 'Female'),
-		('Male', 'Male'),		
-		)
 
-	pregnancy_status=(
-		('Pregnant','Pregnant'),
-		('Not_Pregnant','Not_Pregnant'),
-		)
-	status=(
-		('Undergoing Treatment','Undergoing Treatment'),
-		('Discharged','Discharged'),
-		)
-	treatment_status = (
-		('Drug administration', 'Drug administration'),
-		('Surgery','Surgery'),
-		)
-
-	patient_ID = models.IntegerField(primary_key=True)
-	name = models.CharField(max_length=200)
-	weight = models.FloatField()
-	height = models.FloatField()
-	age = models.IntegerField()
-	gender = models.CharField(max_length=6, choices=gender, default='Male')
-	phone_no = models.IntegerField(null=True)
-	adress = models.CharField(max_length=100,null=True)
-	ward = models.IntegerField(null=True)
-	bed_number = models.IntegerField(null=True)
-	status = models.CharField(max_length=200, choices=status, null=True, blank=True)
-	pregnancy_status = models.CharField(max_length=200, choices=pregnancy_status, null=True)
-	LMP= models.DateField(null=True) #Last Menstrual Period
-	treatment_status = models.CharField(max_length=200, choices=treatment_status, null=True,blank=True)
-
-#	drug_allergy = models.ManyToManyField(DrugProfile,  null=True)
-#	food_allergy = models.CharField(max_length=5000, null=True)
-	def __str__(self):
-		return self.name
-
-#	@property
-#	def Patient_location(self):
-#		return "%s - %s" % ( self.ward, self.bed_number)
-"""
 class Tag(models.Model):
 	name = models.CharField(max_length=200, null=True)
 

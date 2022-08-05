@@ -26,7 +26,7 @@ urlpatterns = [
 	path('age_range/', views.AgeRangePage, name = 'age_range'),
 	path('weight_range/', views.WeightRangePage, name = 'weight_range'),
 	path('intake_mode/', views.IntakeModePage, name = 'intake_mode'),
-  path('prescription_form', views.PrescriptionFormPage, name = 'prescription_form'),
+  path('prescription_form/<int:patient_id>', views.PrescriptionFormPage, name = 'prescription_form'),
 #  path('procurement_form', views.ProcurementFormPage, name = 'procurement_form'),
   path('prescription_list', PrescriptionList, name = 'prescription_list'),
   path('inventory_structure', InventoryStructure, name = 'inventory_structure'),
@@ -42,6 +42,8 @@ urlpatterns = [
   path('drug_location_stock_slot/<str:pk>/<str:pk2>', DrugLocationStockSlot, name = 'drug_location_stock_slot'),
 
   path('procurement', ProcurementPage, name = 'procurement'),
+  path('save_procurement_detail/<int:procurement_id>/', SaveProcurementDetail, name = 'save_procurement_detail'),
+
   path('cancel_procurement/<int:procurement_pk>', CancelProcurement, name = 'cancel_procurement'),
   
   path('procurement_detail/<str:pk>', ProcurementDetailPage, name = 'procurement_detail'),

@@ -14,7 +14,8 @@ urlpatterns = [
     path('base-temp', TemplateView.as_view(template_name='base.html')),
     path('original-temp', TemplateView.as_view(template_name='original_template.html')),
     path('core/', include('core.urls', namespace='core')),
-    
+    path('radiology/', include('radiology.urls', namespace='radiology')),
+    path('site-config/', include('site_config.urls', namespace='site_config')),    
     path('', include('pharmacy_app.urls')),
     path('', include('inpatient_app.urls')),
     path('', include('outpatient_app.urls')),

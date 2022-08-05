@@ -28,48 +28,26 @@
             </div>
             <div class="card-body " id="bar-parent1">
               
-     
+          
     <form method="post">
     {% csrf_token %}
     
     <div class="form-row" >
 
-      <div class="form-group col-md-6 mb-0">
-        {{ prescription_form.patient|as_crispy_field }}
-      </div>
-
-      <div class="form-group col-md-6 mb-0">
+      
+      <div class="form-group col-md-12 mb-0">
         {{ prescription_form.drug|as_crispy_field }}
       </div>
 
     </div>
 
     <div class="form-row ">
-         <div class= "form-group col-md-4 mb-0">
+         <div class= "form-group col-md-6 mb-0">
         {{prescription_form.diagnosis|as_crispy_field}}
          </div>
-          <div class="form-group col-md-4 mb-0">
+          <div class="form-group col-md-6 mb-0">
           {{ prescription_form.order_category|as_crispy_field }}
         </div>
-        <div class="form-group col-md-4 mb-0">
-          {{ prescription_form.units_per_take|as_crispy_field }}
-        </div>
-    </div>
-
-    <div class="form-row" >
-
-      <div class="form-group col-md-4 mb-0">
-        {{ prescription_form.frequency|as_crispy_field }}
-      </div>
-
-      <div class="form-group col-md-4 mb-0">
-        {{ prescription_form.duration_amount|as_crispy_field }}
-      </div>
-      
-        <div class="form-group col-md-4 mb-0">
-          {{ prescription_form.duration_unit|as_crispy_field }}
-        </div>
-      
     </div>
 
     
@@ -78,18 +56,11 @@
     {{prescription_form.comments|as_crispy_field}}
       </div>
     </div>
-    
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <div style="padding-top: 15px;" class="form-group">
+    <button type="submit" class="btn btn-primary" >Prescribe</button>
+      </div>
   </form>
-{% if messages %}
-<ul class="messages">
-    {% for message in messages %}
-    <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
-    {% endfor %}
-</ul>
-{% endif %}
     {% block scripts %}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
   
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>        
 <script >

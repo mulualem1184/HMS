@@ -14,22 +14,13 @@
 {% block page_content %}
         
 {% csrf_token %}
-  <
-    <div class="" style="width: 100%;">
+  
+    <div class="row">
+      <div class="col-md-6">
         <div class="card card-box">
             <div class="card-head">
                 <header>Stock Supply Form</header>
-                <button id = "panel-button2" 
-                       class = "mdl-button mdl-js-button mdl-button--icon pull-right" 
-                       data-upgraded = ",MaterialButton">
-                       <i class = "material-icons">more_vert</i>
-                    </button>
-                    <ul class = "mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
-                       data-mdl-for = "panel-button2">
-                       <li class = "mdl-menu__item"><i class="material-icons">assistant_photo</i>Action</li>
-                       <li class = "mdl-menu__item"><i class="material-icons">print</i>Another action</li>
-                       <li class = "mdl-menu__item"><i class="material-icons">favorite</i>Something else here</li>
-                    </ul>
+                
             </div>
             <div class="card-body " id="bar-parent1">
               
@@ -40,31 +31,31 @@
 
             <div class="form-row">
                 <div class=" form-group col-md-6">
-                    {{batch_form.procurement|as_crispy_field}}
-                </div>
-                <div class=" form-group col-md-6">
                     {{batch_form.batch_no|as_crispy_field}}
+
                 </div>
-            </div>
-            <div class="form-row">
                 <div class=" form-group col-md-6">
                     {{batch_form.drug|as_crispy_field}}
                 </div>
+
+            </div>
+            <div class="form-row">
 
                 
                 <div class=" form-group col-md-6">
                     {{stock_supply_form.stock_slot_no|as_crispy_field}}
                 </div>
+                <div class=" form-group col-md-6">
+                    {{batch_form.quantity|as_crispy_field}}
+                </div>
+
             </div> 
 
             <div class="form-row">
-                <div class=" form-group col-md-4">
-                    {{batch_form.quantity|as_crispy_field}}
-                </div>
-                <div class=" form-group col-md-4">
+                <div class=" form-group col-md-6">
                     {{stock_supply_form.purchasing_cost|as_crispy_field}}
                 </div>
-                <div class=" form-group col-md-4">
+                <div class=" form-group col-md-6">
                     {{stock_supply_form.supplier|as_crispy_field}}
                 </div>
                 
@@ -88,43 +79,40 @@
 
             
              
-    </form>
-{% if messages %}
-<ul class="messages">
-    {% for message in messages %}
-    <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
-    {% endfor %}
-</ul>
-{% endif %}
+        </form>
+    </div>
+  </div>
+  </div>
+              <div class="col-md-4">
+                    <table class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded" id="example4">
+                        <thead>
+                            <tr class="gradeX odd">
+                                <th class="mdl-data-table__cell--non-numeric">Drug</th>
+                                <th class="mdl-data-table__cell--non-numeric">Ordered </th>
+                                <th class="mdl-data-table__cell--non-numeric">Supplied </th>
+                                <th class="mdl-data-table__cell--non-numeric">Remaining </th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for a, b ,c in procurement_zip %}
+                            <tr>
+                                <td class="mdl-data-table__cell--non-numeric">{{a.drug}}</td>
+                                <td class="mdl-data-table__cell--non-numeric">{{a.quantity}}</td>
+                                <td class="mdl-data-table__cell--non-numeric">{{b}}</td>
+                                <td class="mdl-data-table__cell--non-numeric">{{c}}</td>
+                               
+                            </tr>
+                                           
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+</div>
+
 
     {% block scripts %}
   
-<script>
-/* When the user clicks on the button,
-toggle between hiding and showing the dropdown content */
-function myFunction() {
-  document.getElementById("myDropdown").classList.toggle("show");
-}
-
-function filterFunction() {
-  var input, filter, ul, li, a, i;
-  input = document.getElementById("myInput");
-  filter = input.value.toUpperCase();
-  div = document.getElementById("myDropdown");
-  a = div.getElementsByTagName("a");
-  for (i = 0; i < a.length; i++) {
-    txtValue = a[i].textContent || a[i].innerText;
-    if (txtValue.toUpperCase().indexOf(filter) > -1) {
-      a[i].style.display = "";
-    } else {
-      a[i].style.display = "none";
-    }
-  }
-}
-</script>
-
-<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-<script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
 
 
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>        

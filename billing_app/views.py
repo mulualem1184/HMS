@@ -12,14 +12,34 @@ from django.forms.models import modelformset_factory
 
 # Create your views here.
 def ServiceFormPage(request):
+	service_list = Service.objects.all()
+	visiting_card_list = VisitingCardPrice.objects.all()
 	service_form = CreateServiceForm()
+	visiting_price_form = VisitingBillForm()
+
 	if request.method == 'POST':
 		service_form = CreateServiceForm(request.POST)
 		if service_form.is_valid():
 			service_model = service_form.save()
 			messages.success(request,'Service Successfully Created')
-	context = {'service_form':service_form}
+			return redirect('service_form')
+	context = {'service_form':service_form,
+				'service_list':service_list,
+				'visiting_card_list':visiting_card_list,
+				'visit_form':visiting_price_form,
+	}
 	return render(request,'billing_app/service_form.html',context)
+
+def CreateVisitingCard(request):
+	if request.method == 'POST':
+		visiting_price_form = VisitingBillForm(request.POST)
+		if visiting_price_form.is_valid():
+			visiting_price_model = visiting_price_form.save()
+			messages.success(request,'Service Successfully Created')
+			return redirect('service_form')
+		else:
+			messages.error(request,visiting_price_form.errors)
+			return redirect('service_form')
 
 def VisitingCardPriceFormPage(request):
 	visiting_price_form = VisitingBillForm()
@@ -55,15 +75,23 @@ def GenerateVisitBill(request, bill_id):
 
 	bill = VisitBill()
 	visit_bill = VisitBillDetail.objects.get(id=bill_id)
-	discount_form = VisitBillDiscountForm(initial={'discount':'No'})
-	insurance_form = VisitBillInsuranceForm(initial={'insurance':'No'})
+	patient = visit_bill.patient
+	#discount_form = VisitBillDiscountForm(initial={'discount':'No'})
+	#insurance_form = VisitBillInsuranceForm(initial={'insurance':'No'})
+	visit_bill_detail = VisitBillDetail.objects.get(id=bill_id)
+	#service_team = ServiceTeam.objects.filter(service__id=service_recieved).first()
+	#service_room_provider = ServiceRoomProvider.objects.filter(service_team=service_team.team).last()
 
+	#service_room_provider = ServiceRoomProvider.objects.filter(service_team=visit_bill_detail.visiting_card.service.service_team.team).last()
+	#room = service_room_provider.room
+	"""
 	if request.method == 'POST':
 		discount_form = VisitBillDiscountForm(request.POST)
 		insurance_form = VisitBillInsuranceForm(request.POST)
 		if all([discount_form.is_valid(), insurance_form.is_valid()]):
 			bill_detail_model = discount_form.save(commit=False)
 			insurance_form = insurance_form.save(commit=False)
+			
 			if bill_detail_model.discount == 'Yes':
 				visit_bill.selling_price = visit_bill.visiting_card.discounted_price
 			else:
@@ -85,21 +113,50 @@ def GenerateVisitBill(request, bill_id):
 				visit_bill.insurance = 'Yes'
 			else:
 				visit_bill.insurance = 'No'
-			visit_bill.bill = bill			
-			visit_bill.registered_on = datetime.now()
-			
-			bill.save()
-			visit_bill.save()
-			patient_visit = PatientVisit()
-			patient_visit.patient = visit_bill.patient
-			patient_visit.visit_status = 'Pending'
-			patient_visit.payment_status = 'paid'
-			patient_visit.save()
-			return redirect('visit_bill_detail', bill_id)
-			messages.success(request,'Bill Successfully Generated')
+	"""
+	if visit_bill.discount== 'Yes':
+		visit_bill.selling_price = visit_bill.visiting_card.discounted_price	
+	else:
+		visit_bill.selling_price = visit_bill.visiting_card.visiting_price	
 
-	context = {'discount_form': discount_form, 'insurance_form':insurance_form}
-	return render(request,'billing_app/generate_visit_bill.html',context)
+	#bill.save()
+	patient_visit = PatientVisit.objects.get(visit_status = 'Pending', payment_status='not_paid', patient=patient)
+	patient_visit.payment_status = 'paid'
+
+	visit_bill.save()
+	patient_visit.save()
+#	patient_visit_model.save()
+	try:
+		room_queue = VisitQueue.objects.filter(visit__service_room=patient_visit_model.service_room, visit__visit_status='Pending')
+		last_visit_queue = room_queue.last()
+		print(last_visit_queue.queue_number)
+		"""
+		last_visit_queue = VisitQueue.objects.last()
+		"""
+		new_visit_queue = VisitQueue()
+		new_visit_queue.visit = patient_visit
+		new_visit_queue.queue_number = last_visit_queue.queue_number + 1
+		#new_visit_queue.visit.visit_status = 'Pending'
+		new_visit_queue.visit.save()
+		new_visit_queue.save()
+		messages.success(request, 'Successfully Assigned!')
+#				return redirect('assign_patient')
+
+	except:
+		new_visit_queue = VisitQueue()
+		new_visit_queue.visit = patient_visit
+		new_visit_queue.queue_number = 1
+#				new_visit_queue.visit.visit_status = 'Pending'
+		new_visit_queue.visit.save()
+		new_visit_queue.save()
+		messages.success(request, 'Successfully Assigned!')
+#				return redirect('assign_patient')			
+
+		return redirect('visit_bill_detail', bill_id)
+		messages.success(request,'Bill Successfully Generated')
+
+#	context = {'discount_form': discount_form, 'insurance_form':insurance_form}
+#	return render(request,'billing_app/generate_visit_bill.html',context)
 
 def VisitBillDetailPage(request, bill_id):
 	visit_bill = VisitBillDetail.objects.get(id=bill_id)

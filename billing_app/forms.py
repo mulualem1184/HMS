@@ -20,29 +20,53 @@ from django.forms.models import(
 
 
 
-
-
 #Drug profile form
 ###
+class PatientInsuranceDetailForm(forms.ModelForm):
+	
+	class Meta:
+		model = PatientInsuranceDetail
+		fields = ['sum_insured'	]
+		
+		widgets = {
+			
+			'sum_insured': forms.NumberInput(attrs={
+			'class' : 'forms form-control',
+				}),
+			}
+
+class InsuranceExcludedServiceForm(forms.ModelForm):
+	
+	class Meta:
+		model = InsuranceExcludedService
+		fields = ['excluded_service']
+		widgets = {
+			'excluded_service': forms.Select(attrs={
+			'class' : 'forms form-control select2',
+				}),
+			}
 
 class CreateServiceForm(forms.ModelForm):
 	
 	class Meta:
 		model = Service
-		fields = ['service_name', 'service_team', 'service_price'
+		fields = ['service_name', 'service_discounted_price', 'service_price'
 					]
 		
 		widgets = {
 			
 			'service_name': forms.TextInput(attrs={
 			'class' : 'forms form-control',
-			
+			'id' : 'service-name-id'
 				}),
-			'service_team': forms.Select(attrs={
+			'service_discounted_price': forms.NumberInput(attrs={
 			'class' : 'forms form-control',
+			'id' : 'service-team-id'
 				}),
 			'service_price': forms.NumberInput(attrs={
 			'class' : 'forms form-control',
+			'id' : 'service-price-id'
+
 				}),
 			}
 
@@ -134,7 +158,7 @@ class VisitBillInsuranceForm(forms.ModelForm):
 			'class' : 'select2 form-control',
 				}),
 			}
-
+"""
 class PatientInsuranceForm(forms.ModelForm):
 
 	class Meta:
@@ -149,7 +173,7 @@ class PatientInsuranceForm(forms.ModelForm):
 			'class' : 'forms form-control',
 				}),
 			}
-
+"""
 class InsuranceExcludedForm(forms.ModelForm):
 
 	class Meta:

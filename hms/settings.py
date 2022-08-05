@@ -46,8 +46,15 @@ INSTALLED_APPS = [
     'core',
     'staff_mgmt',
     'emg_ps',
+    'inpatient_app',
+    'outpatient_app',
+    'billing_app',
 
     'pharmacy_app',
+    'radiology',
+    'site_config',
+
+    'mptt',
     'django_celery_results',
     'django_celery_beat',
     'django_addanother',
@@ -55,9 +62,6 @@ INSTALLED_APPS = [
     'django_htmx',
     'crispy_forms',
 
-    'inpatient_app',
-    'outpatient_app',
-    'billing_app',
     'mathfilters',
 
 ]
@@ -85,6 +89,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'site_config.context_processors.site_configurations'                
             ],
         },
     },

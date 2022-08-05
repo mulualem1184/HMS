@@ -12,10 +12,53 @@
 {% endblock %}
 {% block page_content %}
 <ul class="nav nav-tabs">
-  <li class="active"><a href="#" style="color: black;">Drug Profile Form</a></li>
+ <li class="nav-item"><a class="nav-link" href="#drug-form-tab" data-toggle="tab">Drug Profile</a></li>
   <li ><a href="{% url 'dosage_form' %}"  style="color: grey;">Dosage Form</a></li>
+ <li class="nav-item"><a class="nav-link" href="#drug-tab" data-toggle="tab">Drug List</a></li>
+
   
 </ul>
+                     <!--   <div class="panel tab-border card-box col-md-12" >
+                        <header class="panel-heading panel-heading-gray custom-tab ">
+                            <ul class="nav nav-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active show" href="#lab-tab" data-toggle="tab"> Lab Results </a></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#Xray-tab" data-toggle="tab">X Ray Results</a></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#service-tab" data-toggle="tab">Services Administered</a></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#drug-tab" data-toggle="tab">Given Medication</a></li>
+
+                            </ul>
+                        </header>-->
+                        <div class="panel-body">
+                            <div class="tab-content">
+                                <div class="tab-pane  fontawesome-demo" id="drug-tab">
+                                        
+                    <table id="example1" class="mdl-data-table ml-table-bordered  " style="width:100%;">
+                                                            <thead>
+                                                                <tr>
+                                                                    
+                                                                    <th class="mdl-data-table__cell--non-numeric"> Name </th>
+                                                                    <th class="mdl-data-table__cell--non-numeric"> Dosage </th>   
+                                                                </tr>
+                                                            </thead>
+
+                        <tbody>
+                            {% for drug in drug_list %}
+                                <tr>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ drug.drug.drug }} </td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ drug.dosage_amount }} </td>
+                                  
+                                  
+                               
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                                               </table>
+                                </div>
+                                <div class="tab-pane  fontawesome-demo" id="drug-form-tab">
   
     <div class="" style="width: 100%;">
         <div class="card card-box">
@@ -43,7 +86,7 @@
 
         <div class="form-row">
             <div class="form-group col-md-6 mb-0">
-		    {{drug_profile_form.commercial_name|as_crispy_field}}
+        {{drug_profile_form.commercial_name|as_crispy_field}}
             </div>
             <div class="form-group col-md-6 mb-0">
                 {{drug_profile_form.generic_name|as_crispy_field}}      
@@ -64,7 +107,7 @@
       <div class="form-row">
         <div class="form-group col-md-6">
         
-		{{route_form.route|as_crispy_field}}
+    {{route_form.route|as_crispy_field}}
         </div>
         <div class="form-group col-md-6">
           {{dosage_model_form.dosage_form|as_crispy_field}}
@@ -93,20 +136,16 @@
         </div>
       
       </div>
-    	
+      
         <div style="width: 100%">
    
         <input type="submit" class="btn-info btn" name="Submit">
         </div>
           
             </form>
-            {% if messages %}
-<ul class="messages">
-    {% for message in messages %}
-    <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
-    {% endfor %}
-</ul>
-{% endif %}
+
+                            </div>
+
 {% block script %}
 <script>
 

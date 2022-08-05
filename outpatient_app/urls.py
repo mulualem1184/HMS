@@ -5,10 +5,20 @@ from . import views
 from .views import *
 
 urlpatterns = [
+ 	path('admin_settings/', AdminSetting, name="admin_settings"),
+ 	path('admin_settings2/', AdminSetting2, name="admin_settings2"),
+ 	path('admin_dashboard/', AdminDashboard, name="admin_dashboard"),
+ 	path('pharmacy_dashboard/', PharmacyDashboard, name="pharmacy_dashboard"),
+
+ 	path('change_team_setting/', ChangeTeamSetting, name="change_team_setting"),
+ 	path('create_staff_team/', CreateStaffTeam, name="create_staff_team"),
+
+ 	path('pharmacy_settings/', PharmacySettings, name="pharmacy_settings"),
 
  	path('patient_registration/', views.PatientRegistration, name="patient_registration"),
- 	path('outpatient_triage_form/', views.OutpatientTriageForm, name="outpatient_triage_form"),
+ 	path('enter_insurance_detail/<int:patient_id>', views.EnterInsuranceDetail, name="enter_insurance_detail"),
 
+ 	path('outpatient_triage_form/', views.OutpatientTriageForm, name="outpatient_triage_form"),
  	path('hospital_structure_form/', views.HospitalStructure, name="hospital_structure_form"),
  	path('building_list/', views.BuildingList, name="building_list"),
  	path('room_list/<int:pk>/', views.RoomList, name="room_list"),
@@ -18,6 +28,10 @@ urlpatterns = [
 	path('room_availibility/', views.DisplayRoomAvailibility, name="room_availibility"),
 	path('change_queue_order/<int:pk>/<int:room_pk>',ChangeQueueOrder , name="change_queue_order"),
 	path('doctor_queue/',DoctorQueue , name="doctor_queue"),
+	path('outpatient_medical_note/<int:patient_id>/',OutpatientMedicalNotePage , name="outpatient_medical_note"),
+	path('save_outpatient_note/<int:patient_id>/',SaveOutpatientNote, name="save_outpatient_note"),
+	path('save_service_bill/<int:patient_id>/',SaveServiceBill, name="save_service_bill"),
+
 	path('patient_anthropometry/',PatientAnthropometry , name="patient_anthropometry"),
 	path('patient_symptom/<int:patient_id>',FillPatientSymptom , name="patient_symptom"),
 	path('reassign_room/<int:pk>/<int:room_pk>/',ReassignRoom , name="reassign_room"),
@@ -35,8 +49,8 @@ urlpatterns = [
 	path('patient_surgery_history_form/<int:patient_id>/', PatientSurgeryHistoryFormPage, name="patient_surgery_history_form"),
 	path('patient_allergy_form/<int:patient_id>/', PatientAllergyFormPage, name="patient_allergy_form"),
 	path('patient_habit_form/<int:patient_id>/', PatientHabitFormPage, name="patient_habit_form"),
-
-#	path('/', , name=""),
+	path('discharge_outpatient_form/<int:patient_id>/', DischargeOutpatientFormPage, name="discharge_outpatient_form"),
+	path('discharge_outpatient/<int:patient_id>/', DischargeOutpatient, name="discharge_outpatient"),
 
   
 ]

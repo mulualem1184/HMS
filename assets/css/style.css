@@ -662,7 +662,7 @@ li [class^=icon-].icon-large {
 *******************************************************************************************/
 
 body {
-    background-color:#eef1f5;
+    background-color:white;
     padding: 0!important;
     margin: 0!important;
     font-family: Poppins,sans-serif;
@@ -3040,7 +3040,7 @@ span.notify {
 .page-content {
     margin-top: 0;
     padding: 0;
-    background-color: #eaeef3;
+    background-color: white;
 }
 .page-full-width .page-content {
     margin-left: 0 !important
@@ -8656,5 +8656,17 @@ span.notificationtime {
     background-color: #0a7e37;
 }
 .sidemenu-container {
-    background-color: #0a7e37;
+    background-color: grey;
+}
+.card {
+    background-color: #eef1f5;
+}
+.table {
+    background-color: white;
+}
+thead {
+    background-color: #eef1f5;
+}
+tbody{
+    background-color: white;
 }

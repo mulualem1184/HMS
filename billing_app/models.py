@@ -5,24 +5,24 @@ from outpatient_app.models import *
 from lis.models import *
 from inpatient_app.models import Bed, WardTeamBed
 from staff_mgmt.models import Employee
-
+from core.models import PatientInsurance
 #from pharmacy_app.models import DrugPrescription
 
-class PatientInsurance(models.Model):
-	insurance_name = models.CharField(max_length=50)
+class PatientInsuranceDetail(models.Model):
+	insurance = models.ForeignKey(to=PatientInsurance, on_delete=models.SET_NULL, null=True, blank=True)
 	patient = models.ForeignKey(to=Patient, on_delete=models.SET_NULL, null=True, blank=True)
-	monetary_limit = models.IntegerField(null=True, blank=True)
+	sum_insured = models.IntegerField(null=True, blank=True)
 
 class InsuranceExcludedService(models.Model):
 	insurance = models.ForeignKey(to=PatientInsurance, on_delete=models.SET_NULL, null=True, blank=True)
-	excluded_service =  models.ManyToManyField(Service, null=True, blank=True)
+	excluded_service =  models.ForeignKey(to=Service, on_delete=models.SET_NULL, null=True, blank=True)
 
 class VisitingCardPrice(models.Model):
 	service = models.ForeignKey(Service,  on_delete= models.SET_NULL, null=True)
 	visiting_price = models.IntegerField(null=True, blank=True)
 	discounted_price = models.IntegerField(null=True, blank=True)
 	def __str__(self):
-		return str(self.visiting_price) + " birr to visit " + str(self.service.service_team) + " for " + str(self.service.service_name)
+		return str(self.visiting_price) + " birr for " + str(self.service.service_name)
 
 class VisitBill(models.Model):
 	"""
@@ -90,6 +90,8 @@ class ServiceBillDetail(models.Model):
 
 	bill = models.ForeignKey(ServiceBill, on_delete=models.CASCADE)	
 	service = models.ForeignKey(Service, on_delete=models.CASCADE)	
+	visit = models.ForeignKey(PatientVisit, on_delete=models.CASCADE, blank=True,null=True)	
+
 	service_price = models.IntegerField(blank=True, null=True)
 	discount = models.CharField(null=True,blank=True, max_length=100, choices=discount)
 	insurance = models.CharField(null=True,blank=True, max_length=100, choices=insurance)

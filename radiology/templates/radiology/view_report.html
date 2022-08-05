@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+
+{% endblock %}
+
+{% block page_content %}
+    <div class='row'>
+        <div class="col-md-12">
+            <div class="card card-box">
+                <div class="card-body">
+                    Scan images
+                    <table class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded">
+                        <thead>
+                            <tr>
+                                <th class="mdl-data-table__cell--non-numeric">#</th>
+                                <th class="mdl-data-table__cell--non-numeric">File</th>
+                                <th class="mdl-data-table__cell--non-numeric">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for image in images %}
+                                <tr>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ forloop.counter }} </td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ image.file }} </td>
+                                    <td class="mdl-data-table__cell--non-numeric">
+                                        <div>
+                                            <div class="col-sm-"> 
+                                                <a href="{{ image.file.url }}" target="_blank">
+                                                    <button type="button" class="btn btn-info btn-rounded btn-icon"> <i class="fa fa-eye"></i> </button>
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <br>
+                   <label for="reportText">Report; by
+                       {% if reported_by %}
+                       <b>
+                           {{ reported_by.full_name }} at {{ date }} 
+                       </b>
+                       {% else %}
+                            -
+                       {% endif %} 
+                    </label>     
+                   <textarea style="font-weight: bolder; font-size: 18px;" name="report" id="reportText" cols="30" rows="10" class="form-control" disabled> {{ report }} </textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,84 @@
+<div class="panel tab-border card-box">
+    <header class="panel-heading panel-heading-gray custom-tab ">
+        <ul class="nav nav-tabs">
+            <li class="nav-item">
+                <a href="#medhistory" data-toggle="tab">Medical History</a>
+            </li>
+            <li class="nav-item">
+                <a href="#medicines" class="active" data-toggle="tab">Medicines</a>
+            </li>
+            <li class="nav-item">
+                <a href="#famhistory" data-toggle="tab">Family History</a>
+            </li>
+        </ul>
+    </header>
+    <div class="panel-body">
+        <div class="tab-content">
+            <div class="tab-pane" id="medhistory">
+                None available
+            </div>
+            <div class="tab-pane active" id="medicines">
+                <table class="table display product-overview mb-30" id="support_table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Dose</th>
+                            <th>Started at</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Ethatin X 40mg</td>
+                            <td>1 at 2am</td>
+                            <td>12 Dec 2022</td>
+                            <td>On</td>
+                        </tr>
+                        <tr>
+                            <td>MaxPro 20mg</td>
+                            <td>1-1-1</td>
+                            <td>3 Jun 2019</td>
+                            <td>Completed</td>
+                        </tr>
+                        <tr>
+                            <td>Flucsogen 10mg</td>
+                            <td>3</td>
+                            <td>31 Jan 2019</td>
+                            <td>-</td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+                <a href="#">See all</a>
+            </div>
+            <div class="tab-pane" id="famhistory">
+                {% if not fam_history %}
+                    No available family history
+                {% else %}
+                    <table class="table display product-overview mb-30" id="support_table">
+                        <thead>
+                            <tr>
+                                <th>Relation</th>
+                                <th>Disease</th>
+                                <th>Cancer</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for fh in fam_history %}
+                                <tr>
+                                    <td> {{ fh.relation }} </td>
+                                    <td> {{ fh.health_condition }} </td>
+                                    <td> 
+                                        {% for c in fh.cancer_history.all %}
+                                            {{ c.cancer_type }} <br>
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

@@ -47,6 +47,7 @@ class PatientRegistrationForm(forms.ModelForm):
 				}),
 			'dob': forms.DateInput(attrs={
 			'class' : 'form-control select2',
+			'placeholder': 'Date Of Birth',
 				}),
 			'occupation': forms.TextInput(attrs={
 			'class' : 'forms form-control',
@@ -60,6 +61,63 @@ class PatientRegistrationForm(forms.ModelForm):
 			
 			}
 
+class TeamSettingForm(forms.ModelForm):
+	
+	class Meta:
+		model = TeamSetting
+		fields = ['setting']
+		
+		widgets = {
+			'setting': forms.Select(attrs={
+			'class' : 'select2 form-control',
+				}),
+			}
+
+class ServiceTeamForm(forms.ModelForm):
+
+	class Meta:
+		model = ServiceTeam
+		fields = ['team', ]
+		
+		widgets = {
+			'team': forms.Select(attrs={
+			'class' : 'select2 form-control',
+
+				}),
+			}
+
+class OutpatientInterventionForm(forms.ModelForm):
+
+	class Meta:
+		model = OutpatientIntervention
+		fields = ['intervention_cause','intervention','rational']
+		
+		widgets = {
+			'intervention_cause': forms.Textarea(attrs={
+			'class' : 'forms form-control',
+			'rows':2,
+				}),
+			'intervention': forms.Textarea(attrs={
+			'class' : 'forms form-control',
+			'rows':2,
+				}),
+			'rational': forms.Textarea(attrs={
+			'class' : 'forms form-control',
+			'rows':2,
+				}),
+			}
+
+class OutpatientMedicalNote(forms.ModelForm):
+
+	class Meta:
+		model = OutpatientMedicalNote
+		fields = ['note']
+		
+		widgets = {
+			'note': forms.Textarea(attrs={
+			'class' : 'forms form-control',
+				}),
+			}
 
 class PatientArrivalForm(forms.ModelForm):
 
@@ -82,6 +140,10 @@ class PatientArrivalForm(forms.ModelForm):
             }),
             'injury_mechanism': forms.Textarea(attrs={
                 'class': 'form-control',
+                 'cols': 30,
+                 'rows': 10,
+				'placeholder': 'How patient was injured or became sick',
+
                 #'placeholder': 'If any treatment was given before patient was admitted to OPD',to emergency room 
             }),
 
@@ -98,6 +160,7 @@ class PatientArrivalForm(forms.ModelForm):
 
 			}
 
+
 class ChiefComplaintForm(forms.ModelForm):
 
     class Meta:
@@ -106,39 +169,43 @@ class ChiefComplaintForm(forms.ModelForm):
         widgets = {
             'complaint': forms.Textarea(attrs={
                 'class': 'form-control',
+				'placeholder': 'Main reason patient visited hospital',
+
             }),
             'patient': forms.Select(attrs={
                 'class': 'form-control'
             }),
 
 			}
-
 class VitalSignForm(forms.ModelForm):
+    class Meta:
+        model = PatientVitalSign
+        fields = [
+            'pulse_rate', 'temperature', 'temperature_unit',
+            'systolic_blood_pressure', 'diastolic_blood_pressure', 
+        ]
+        widgets = {            
+            'pulse_rate': forms.NumberInput(attrs={
+                'class' : 'form-control forms',
+                'class' : 'form-control forms',
+				'placeholder': 'Heart Beat Per Minute',
 
-	class Meta:
-		model = PatientVitalSign
-		fields = ['pulse_rate', 'temperature', 'blood_pressure', 
-				'temperature_unit']
+            }),
+            'temperature': forms.NumberInput(attrs={
+                'class' : 'form-control forms',
 
-		widgets = {						
-			'pulse_rate': forms.NumberInput(attrs={
-			'class' : 'form-control forms',
+            }),
+            'systolic_blood_pressure': forms.NumberInput(attrs={
+                'class' : 'form-control forms',
+            }),
+            'diastolic_blood_pressure': forms.NumberInput(attrs={
+                'class' : 'form-control forms',
+            }),
 
-				}),
-			'temperature': forms.NumberInput(attrs={
-			'class' : 'form-control forms',
-
-				}),
-			'blood_pressure': forms.NumberInput(attrs={
-			'class' : 'form-control forms',
-
-				}),
-			'temperature_unit': forms.Select(attrs={
-			'class' : 'form-control select2',
-
-				}),
-
-			}
+            'temperature_unit': forms.Select(attrs={
+                'class' : 'form-control select2',
+            }),
+        }
 
 class HospitalStructureForm(forms.Form):
 	building_name = forms.CharField(widget=forms.TextInput(
@@ -348,6 +415,7 @@ class AssignServiceProviderForm(forms.ModelForm):
 
 				}),
 			}
+# remind_me
 
 class AssignServiceTeamForm(forms.ModelForm):
 
@@ -433,3 +501,23 @@ class PatientMedicalConditionForm(forms.ModelForm):
 
 			}
 
+
+class DischargeOutpatientForm(forms.ModelForm):
+	class Meta:
+		model = OutpatientDischargeSummary 
+		fields = [
+					'significant_findings',
+					'summary'
+					]
+		widgets = {			
+			'discharge_condition': forms.Select(attrs={
+			'class' : 'form-control forms',
+				}),
+			'significant_findings': forms.TextInput(attrs={
+			'class' : 'form-control forms',
+				}),
+			'summary': forms.Textarea(attrs={
+			'class' : 'form-control forms',
+				}),
+		
+			}

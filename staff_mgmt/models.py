@@ -34,7 +34,7 @@ class Designation(models.Model):
         unique_together = ('name', 'staff_code')
 
     def __str__(self) -> str:
-        return self.name
+        return self.name + str(self.staff_code)
 
 
 class Specialty(models.Model):
@@ -263,3 +263,11 @@ class AttendanceReport:
         self.total_employees:int = self.shift.employee_set.count()
         self.total_work_hours = sum([a.shift.work_hours for a in attendance_list])
         self.actual_work_hours = sum([a.work_hours for a in attendance_list])       
+
+class StaffTeam(models.Model):
+    team_name = models.CharField(max_length=1000, blank=True)   
+    department = models.ForeignKey(to=Department, on_delete=models.CASCADE)
+    registered_on = models.DateTimeField(null=True)
+
+    def __str__(self):
+        return  str(self.team_name)

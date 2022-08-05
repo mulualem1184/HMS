@@ -1,14 +1,21 @@
 from django.shortcuts import render
 from .models import *
 from core.models import *
+from staff_mgmt.models import StaffTeam
+
 from pharmacy_app.models import *
 from inpatient_app.models import *
 from billing_app.models import *
 from django.contrib import messages
+from core.forms import PatientPaymentStatusForm, InsuranceDetailForm
 from .forms import *
+from billing_app.forms import ServiceForm, InsuranceExcludedServiceForm, PatientInsuranceDetailForm
+from staff_mgmt.forms import CreateStaffTeamForm
+
 from django.shortcuts import redirect
 from django.contrib import messages
 from datetime import datetime
+import itertools
 # Create your views here.
 
 def PatientRegistration(request):
@@ -22,35 +29,119 @@ def PatientRegistration(request):
 	"""
 
 	patient_form = PatientRegistrationForm()
+	payment_status_form = PatientPaymentStatusForm()
 	if request.method == 'POST':
 		patient_form = PatientRegistrationForm(request.POST)
+		payment_status_form = PatientPaymentStatusForm(request.POST)
 		if patient_form.is_valid():
 			patient_model = patient_form.save()
+			status_model = payment_status_form.save(commit=False)
+			status_model.patient = patient_model
+			status_model.active = True
+			status_model.registered_on = datetime.now()
+			status_model.save()
+			if status_model.payment_status == 'Insurance':
+				return redirect('enter_insurance_detail', patient_model.id)
 			messages.success(request, patient_model.first_name + " " + patient_model.last_name + " has been successfully registered!")
 
 
-	context = {'patient_form':patient_form}
+	context = {'patient_form':patient_form,
+				'payment_status_form':payment_status_form
+				}
 	return render(request,'outpatient_app/patient_registration.html',context)
 
+def EnterInsuranceDetail(request, patient_id):
+	patient = Patient.objects.get(id=patient_id)
+	insurance_info_form = InsuranceDetailForm()
+	insurance_detail_form = PatientInsuranceDetailForm()
+	insurance_excluded_form = InsuranceExcludedServiceForm()
+
+	if request.method == 'POST':
+		insurance_info_form = InsuranceDetailForm(request.POST)
+		insurance_detail_form = PatientInsuranceDetailForm(request.POST)
+		insurance_excluded_form = InsuranceExcludedServiceForm()
+		if insurance_info_form.is_valid():
+			insurance_model = insurance_info_form.save()
+			insurance_detail = insurance_detail_form.save(commit=False)
+			excluded_model = insurance_excluded_form.save(commit=False)
+
+			patient_insurance = PatientInsurance()
+			patient_insurance.patient = patient
+			patient_insurance.insurance_detail = insurance_model
+			patient_insurance.active = True
+
+			insurance_detail.patient = patient
+			insurance_detail.insurance = patient_insurance
+
+
+			excluded_model.insurance = patient_insurance
+
+			patient_insurance.save()
+			insurance_detail.save()
+			excluded_model.save()
+
+			messages.success(request, patient.first_name + " " + patient.last_name + " has been successfully registered!")
+			return redirect('patient_registration')
+
+	context = {'insurance_info_form':insurance_info_form,
+				'insurance_detail_form':insurance_detail_form,
+				'insurance_excluded_form':insurance_excluded_form,
+				}
+	return render(request,'outpatient_app/enter_insurance_detail.html',context)
+
 def OutpatientTriageForm(request):
-	allocated_patient_array = []
-	patient_list = Patient.objects.exclude(inpatient='yes')
-	patient_compliant = OutpatientChiefComplaint.objects.filter(active=True)
-	for patient in patient_compliant:
-		allocated_patient_array.append(patient.id)
+	service_list = ServiceCopy.objects.all()
+	service_team_array = []
+	service_array = []
+	"""
+	for service in service_list:
+		copy = ServiceCopy()
+		copy.service = service
+		copy.save()
+	"""
 	arrival_form = PatientArrivalForm()
 	complaint_form = ChiefComplaintForm()
 	vital_sign_form = VitalSignForm()
-	complaint_form.fields['patient'].queryset = Patient.objects.exclude(inpatient='yes', id__in=allocated_patient_array)
+	service_team_form = ServiceTeamForm()
+	patient_list = Patient.objects.exclude(inpatient='yes')
+
+	allocated_patient_array = []
+	patient_compliant = OutpatientChiefComplaint.objects.filter(active=True)
+	for patient in patient_compliant:
+		allocated_patient_array.append(patient.patient.id)
+		print('\n', patient.patient,'\n')
+
+	not_inpatient = Patient.objects.exclude(inpatient='yes')
+	not_outpatient = not_inpatient.exclude(id__in=allocated_patient_array)
+	complaint_form.fields['patient'].queryset = not_outpatient
+#	service_team_form.fields['service_team'].queryset = ServiceTeam.objects.filter( id__in=service_teams)
+	room_array = []
+	queue_amount_array = []
+	rooms = ServiceRoom.objects.all()
+	for room in rooms:
+		queue = VisitQueue.objects.filter(visit__service_room=room, visit__visit_status='Pending')
+		queue_amount = queue.count()
+		queue_amount_array.append(queue_amount)
+		room_array.append(room)
+#		print('yeaaaaaaa',queue_amount,'\n')
+	room_zip = zip(room_array, queue_amount_array )
 
 	if request.method == 'POST':
 		arrival_form = PatientArrivalForm(request.POST)
 		complaint_form = ChiefComplaintForm(request.POST)
 		vital_sign_form = VitalSignForm(request.POST)
+		#service_team_form = ServiceTeamForm(request.POST)
+		service_recieved = request.POST.get('service_name', None)
+		print('It Worked!!!!!!! ',service_recieved,'\n')
+
+		visiting_card = VisitingCardPrice.objects.filter(service__id=int(service_recieved)).last()
+		print('card : ',visiting_card,'\n')
+		
 		if all([arrival_form.is_valid(), complaint_form.is_valid(), vital_sign_form.is_valid()]):
 			arrival_model = arrival_form.save(commit=False)
 			complaint_model = complaint_form.save(commit=False)
 			vital_sign_model = vital_sign_form.save(commit=False)
+			#service_team_model = service_team_form.save(commit=False)
 
 			patient = complaint_model.patient
 
@@ -59,6 +150,7 @@ def OutpatientTriageForm(request):
 			arrival_model.vital_sign = vital_sign_model
 			arrival_model.active = True
 			arrival_model.patient = patient
+
 
 			complaint_model.patient = patient
 			complaint_model.active =True
@@ -73,18 +165,216 @@ def OutpatientTriageForm(request):
 			vital_sign_model.active = 'active'
 			vital_sign_model.registered_on = datetime.now()
 
+			bill = VisitBill()
+			bill_detail_model = VisitBillDetail()
+			bill_detail_model.bill = bill
+			#visiting_card = VisitingCardPrice.objects.filter(service__service_team=service_team_model.service_team).last()
+			bill_detail_model.visiting_card = visiting_card
+			bill_detail_model.patient = patient
+			payment_status = PatientPaymentStatus.objects.get(patient=patient,active=True)
+			if payment_status.payment_status == 'Free':
+				bill_detail_model.selling_price = 0
+				service_team = ServiceTeam.objects.filter(service__id=service_recieved)
+				for team in service_team:
+					service_room_provider = ServiceRoomProvider.objects.filter(service_team=team.team)
+					for room in service_room_provider:
+						room1 = room.room
+
+						patient_visit = PatientVisit()
+						patient_visit.patient = bill_detail_model.patient
+						#patient_visit.visit_status = 'Pending'
+						patient_visit.payment_status = 'paid'
+
+						patient_visit.service_room = room1
+						patient_visit.visit_status = 'Active'
+				#patient_visit.save()
+				#patient_visit_model.save()
+				try:
+					room_queue = VisitQueue.objects.filter(visit__service_room=patient_visit_model.service_room, visit__visit_status='Pending')
+					last_visit_queue = room_queue.last()
+					print(last_visit_queue.queue_number)
+					"""
+					last_visit_queue = VisitQueue.objects.last()
+					"""
+					new_visit_queue = VisitQueue()
+					new_visit_queue.visit = patient_visit
+					new_visit_queue.queue_number = last_visit_queue.queue_number + 1
+	#				new_visit_queue.visit.visit_status = 'Pending'
+					new_visit_queue.visit.save()
+					new_visit_queue.save()
+					#messages.success(request, 'Successfully Assigned!')
+	#				return redirect('assign_patient')
+
+				except:
+					new_visit_queue = VisitQueue()
+					new_visit_queue.visit = patient_visit
+					new_visit_queue.queue_number = 1
+	#				new_visit_queue.visit.visit_status = 'Pending'
+					new_visit_queue.visit.save()
+					new_visit_queue.save()
+					#messages.success(request, 'Successfully Assigned!')
+
+			elif payment_status.payment_status == 'Discount':
+				bill_detail_model.discount = 'Yes'
+				#bill_detail_model.selling_price = visiting_card.discounted_price
+				patient_visit = PatientVisit()
+				patient_visit.patient = bill_detail_model.patient
+				patient_visit.payment_status = 'not_paid'
+
+				patient_visit.service_room = room
+				patient_visit.visit_status = 'Pending'
+
+			elif payment_status.payment_status == 'Insurance':
+				bill_detail_model.insurance = 'Yes'
+				#bill_detail_model.selling_price = visiting_card.visiting_card.visiting_price				
+				patient_visit = PatientVisit()
+				patient_visit.patient = bill_detail_model.patient
+				patient_visit.payment_status = 'not_paid'
+
+				patient_visit.service_room = room
+				patient_visit.visit_status = 'Pending'
+
+			else:
+				#bill_detail_model.selling_price = visiting_card.visiting_card.visiting_price
+				patient_visit = PatientVisit()
+				patient_visit.patient = bill_detail_model.patient
+				patient_visit.payment_status = 'not_paid'
+
+				patient_visit.service_room = room
+				patient_visit.visit_status = 'Pending'
+				
+#			visit = PatientVisit.objects.get(payment_status='not_paid', patient=bill_detail_model.patient)
+			patient_visit.save()
+			#new_visit_queue.visit.save()
+			#new_visit_queue.save()
+
+			bill.save()
+			bill_detail_model.save()
+
+
 			vital_sign_model.save()
 			complaint_model.save()
 			arrival_model.save()
 
 			messages.success(request, 'Success')
-			return redirect('assign_visiting_card_form')
+			return redirect('visiting_card_list')
+		
 	context = {'arrival_form':arrival_form,
 				'vital_form':vital_sign_form,
 				'complaint_form':complaint_form,
+				'service_team_form':service_team_form,
+				'room_zip':room_zip,
+				'service_list':service_list,
 	}
 	return render(request,'outpatient_app/outpatient_triage_form.html',context)
 
+def AdminDashboard(request):
+	team_setting_form = TeamSettingForm()
+	context = {'team_setting_form':team_setting_form}
+
+	return render(request,'outpatient_app/admin_dashboard.html', context)
+
+def PharmacyDashboard(request):
+
+	return render(request,'outpatient_app/pharmacy_dashboard.html')
+
+def LabratoryDashboard(request):
+
+	return render(request,'outpatient_app/labratory_dashboard.html')
+
+def AdminSetting(request):
+	"""	
+	room_queue = VisitQueue.objects.filter(visit__service_room__room ='Room 1')
+	print('\n',room_queue.last(),'\n')
+	structure_form = HospitalStructureForm()
+	if request.method == "POST":
+		structure_form = HospitalStructureForm(request.POST)
+		if  structure_form.is_valid():
+			building_name = structure_form.data['building_name']
+	"""
+	team_setting_form = TeamSettingForm()
+	context = {'team_setting_form':team_setting_form}
+
+	return render(request,'outpatient_app/admin_settings.html', context)
+
+def PharmacySettings(request):
+
+	return render(request,'outpatient_app/pharmacy_settings.html')
+
+def AdminSetting2(request):
+	try:
+		current_setting = TeamSetting.objects.get(active=True)
+		current_setting = current_setting.setting 
+	except :		
+		current_setting = None
+	team_setting_form = TeamSettingForm()
+	if request.method == "POST":
+		team_setting_form = TeamSettingForm(request.POST)
+		try:
+			previous_setting = TeamSetting.objects.get(active=True)
+			previous_setting.active = False
+			previous_setting.save()
+		except :
+			print('none')
+
+		if  team_setting_form.is_valid():
+			setting_model = team_setting_form.save(commit=False)
+			setting_model.registered_by = Employee.objects.get(user_profile=request.user, designation__name='Admin')
+			setting_model.active = True
+			setting_model.save()
+			messages.success(request, "Successfully Changed!")
+			return redirect('admin_settings2')
+	context = {'team_setting_form':team_setting_form,
+				'current_setting':current_setting,
+			}
+	return render(request,'outpatient_app/admin_settings2.html', context)
+
+def ChangeTeamSetting(request):
+	if request.method == "POST":
+		team_setting_form = TeamSettingForm(request.POST)
+
+		if  team_setting_form.is_valid():
+			setting_model = team_setting_form.save(commit=False)
+			setting_model.registered_by = Employee.objects.get(user_profile=request.user, designation__name='Admin')
+			setting_model.active = True
+			try:
+				previous_setting = TeamSetting.objects.get(active=True)
+				previous_setting.active = False
+				previous_setting.save()
+			except :
+				print('none')
+
+			setting_model.save()
+			messages.success(request, "Successful!")
+			if setting_model.setting == 'Team':
+				return redirect('create_staff_team')
+			return redirect('admin_settings2')
+		else:
+			messages.error(request, str(team_setting_form.errors))
+			return redirect('admin_settings2')
+
+def CreateStaffTeam(request):
+	staff_team = StaffTeam.objects.all()
+	create_form = CreateStaffTeamForm()
+	for team in staff_team:
+		print(team,'dddddddddddddddddddddddddddddd')
+	if request.method == "POST":
+		create_form = CreateStaffTeamForm(request.POST)
+		
+		if  create_form.is_valid():
+			team_model = create_form.save(commit=False)
+			team_model.registered_on = datetime.now()
+			team_model.save()
+			messages.success(request, "Successful!")
+			return redirect('create_staff_team')
+		else:
+			messages.error(request,str(create_form.errors))
+			return redirect('create_staff_team')
+
+	context = {'staff_team':staff_team,
+				'create_form':create_form,
+			}
+	return render(request,'outpatient_app/create_staff_team.html', context)
 
 def HospitalStructure(request):
 	room_queue = VisitQueue.objects.filter(visit__service_room__room ='Room 1')
@@ -362,23 +652,102 @@ def ReassignRoom(request, pk, room_pk):
 	return render(request,'outpatient_app/reassign_room.html',context)
 
 def DoctorQueue(request):
+	acs = OutpatientChiefComplaint.objects.all()
+	for a in acs:
+		a.active=False
+		a.save()	
+	print(request.user)
+	service_team = ServiceTeam.objects.get(service_provider__user_profile=request.user)
+	#service_provider = ServiceProvider.objects.get(service_provider__user_profile=request.user)
+	room = ServiceRoomProvider.objects.get(service_team=service_team.team)
+	print(room.room)
+	visit_queue = VisitQueue.objects.filter(visit__service_room=room.room).exclude(visit__visit_status='Ended').order_by('queue_number')
+	visit_array = []
+	arrival_detail_array = []
+	for visit in visit_queue:
+		arrival_detail = PatientArrivalDetail.objects.filter(patient=visit.visit.patient, active=True).last()		
+		print(visit.queue_number,'s')
+		visit_array.append(visit)
+		arrival_detail_array.append(arrival_detail)
+	visit_zip = zip(visit_array,arrival_detail_array)
+#	for v,s in visit_zip:
+#		print(v,s,'\n')
+	context = {'visit_zip':visit_zip, 'room':room}
+	return render(request,'outpatient_app/doctor_queue.html',context)
 
-	try:	
-		print(request.user)
-		service_team = ServiceTeam.objects.get(service_provider__user_profile=request.user)
-		#service_provider = ServiceProvider.objects.get(service_provider__user_profile=request.user)
-		room = ServiceRoomProvider.objects.get(service_team=service_team.team)
-		print(room.room)
-		visit_queue = VisitQueue.objects.filter(visit__service_room=room.room, visit__visit_status='Active').order_by('queue_number')
-		for visit in visit_queue:
-			print(visit.queue_number,'s')
+def OutpatientMedicalNotePage(request,patient_id):
+	patient = Patient.objects.get(id=patient_id)
+	arrival_detail = PatientArrivalDetail.objects.filter(patient=patient, active=True).last()
+	intervention_list = OutpatientIntervention.objects.filter(patient=patient,visit__visit_status='Active')
+	visit = PatientVisit.objects.filter(patient = patient).exclude(visit_status='Ended').last()
+	medication_list = OutpatientMedication.objects.filter(visit=visit, patient=patient)
+	lab_result_list = OutpatientLabResult.objects.filter(visit=visit, patient=patient)
+	service_list = ServiceBillDetail.objects.filter(visit=visit)
+	service_form = ServiceForm()
+	medical_note_form = OutpatientMedicalNote()
+	intervention_form = OutpatientInterventionForm()
+	note_form = OutpatientMedicalNote()
+	if request.method == 'POST':
+		intervention_form = OutpatientInterventionForm(request.POST)
+		if intervention_form.is_valid():
+			intervention_model = intervention_form.save(commit=False)
+			intervention_model.patient = patient
+			intervention_model.service_provider = Employee.objects.get(user_profile=request.user, designation__name='Doctor')
+			intervention_model.registered_on = datetime.now()
+			intervention_model.save()
+			messages.success(request,'Successfully Registered!')
+			return redirect('outpatient_medical_note', patient.id)
+		else:
+			messages.error(request,str(intervention_form.errors))
+			return redirect('outpatient_medical_note', patient.id)
 
-		context = {'visit_queue':visit_queue, 'room':room}
-		return render(request,'outpatient_app/doctor_queue.html',context)
-	
-	except:
-		print('nothih')
-		return render(request,'outpatient_app/doctor_queue.html')
+	context = {'intervention_form':intervention_form,
+				'note_form':note_form,
+				'patient':patient,
+				'arrival_detail':arrival_detail,
+				'medical_note_form':medical_note_form,
+				'service_form':service_form,
+				'medication_list':medication_list,
+				'lab_result_list':lab_result_list,
+				'service_list':service_list,
+	}
+	return render(request,'outpatient_app/opd_doctor_note.html',context)
+
+#This function saves notes made by doctor 
+def SaveOutpatientNote(request,patient_id):
+	patient = Patient.objects.get(id=patient_id)
+	if request.method == 'POST':
+		note_form = OutpatientMedicalNote(request.POST)
+		if note_form.is_valid():
+			note_model = note_form.save(commit=False)
+			note_model.patient = patient
+			note_model.service_provider = Employee.objects.get(user_profile=request.user, designation__name='Doctor')
+			note_model.registered_on = datetime.now()
+			note_model.save()
+			messages.success(request,'Successfully Registered!')
+			return redirect('outpatient_medical_note', patient.id)
+		else:
+			messages.error(request,str(note_form.errors))
+			return redirect('outpatient_medical_note', patient.id)
+
+def SaveServiceBill(request,patient_id):
+	patient = Patient.objects.get(id=patient_id)
+	if request.method == 'POST':
+		service_form = ServiceForm(request.POST)
+
+		if service_form.is_valid():
+			service_model = service_form.save(commit=False)
+			service_model.patient = patient
+			bill = ServiceBill()
+			service_model.bill = bill
+			service_model.visit = PatientVisit.objects.get(visit_status='Active',patient=patient)
+			bill.save()
+			service_model.save()
+			messages.success(request,'Successfully Registered!')
+			return redirect('outpatient_medical_note', patient.id)
+		else:
+			messages.error(request,str(service_form.errors))
+			return redirect('outpatient_medical_note', patient.id)
 
 	"""
 		
@@ -595,3 +964,42 @@ def AssignServiceTeam(request):
 	context = {'assign_form':assign_form}
 	return render(request, 'outpatient_app/assign_service_team.html', context)
 
+def DischargeOutpatientFormPage(request, patient_id):
+	patient = Patient.objects.get(id=patient_id)
+	visit = PatientVisit.objects.filter(patient = patient).exclude(visit_status='Ended').last()
+
+	discharge_form = DischargeOutpatientForm()
+	if request.method == 'POST':
+		discharge_form = DischargeOutpatientForm(request.POST)
+		if discharge_form.is_valid():
+			discharge_model = discharge_form.save(commit=False)
+			discharge_model.patient = patient
+			discharge_model.discharged_by = Employee.objects.get(user_profile=request.user, designation__name='Doctor')
+			discharge_model.visit = visit
+			discharge_model.registered_on = datetime.now()
+			discharge_model.save()
+			messages.success(request, 'Successful!')
+			return redirect('discharge_outpatient', patient.id)
+	context = {'discharge_form':discharge_form,'patient_id': patient_id}
+	return render(request, 'outpatient_app/discharge_outpatient_form.html', context)
+
+def DischargeOutpatient(request, patient_id):
+	patient = Patient.objects.get(id=patient_id)
+
+	all_visit = PatientVisit.objects.filter(patient=patient).exclude(visit_status='Ended')
+	for visit in all_visit:
+		visit.visit_status='Ended'
+		visit.save()
+	#stay_duration.leave_date = datetime.now()
+
+	arrival_detail = PatientArrivalDetail.objects.filter(active=False)
+	for detail in arrival_detail:
+		detail.active=True
+		detail.save()
+
+	all_complaint = OutpatientChiefComplaint.objects.filter(active=False)
+	for complaint in all_complaint:
+		complaint.active=True
+		complaint.save()
+	messages.success(request, 'Successful!')
+	return redirect('doctor_queue')

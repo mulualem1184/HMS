@@ -17,7 +17,6 @@ from django.views import View
 from django.contrib import messages
 from .forms import *
 from outpatient_app.forms import VitalSignForm
-
 from django.shortcuts import redirect
 
 from django.db.models import Sum
@@ -382,12 +381,16 @@ def NurseTeamList(request):
 	doctor_team_form = CreateDoctorTeamForm()
 	
 	assign_form.fields['bed'].queryset = unallocated_beds
-
+	try:
+		setting = TeamSetting.objects.get(active=True)		
+	except :
+		setting = None
 	context = {'nurse_team_zip':nurse_team_zip,
 				'nurse_team_zip2':nurse_team_zip2,
 				'assign_form':assign_form,
 				'doctor_team_form':doctor_team_form,
 				'team_assign_form':team_assign_form,
+				'setting':setting,
 				}
 	return render(request,'inpatient_app/nurse_team_list.html',context)
 
@@ -706,12 +709,18 @@ def NurseList(request):
 
 	assign_nurse_form = AllocateNurseToBedForm()
 	assign_nurse_form.fields['bed'].queryset = unallocated_beds
+	try:
+		setting = TeamSetting.objects.get(active=True)		
+	except :
+		setting = None
+
 	context = {'nurse_zip':nurse_zip,
 				'nurse_zip2':nurse_zip2,
 				'assign_nurse_form':assign_nurse_form,
 				'nurse_bed_zip':nurse_bed_zip,
 				'bed_release_form':bed_release_form,
 				'nurse_list':nurse_list,
+				'setting':setting,
 				}
 	return render(request,'inpatient_app/nurse_list.html',context)
 
@@ -928,17 +937,20 @@ def InpatientAssignment(request, patient_id):
 	room_bill.patient = patient
 	room_bill.active = 'active'
 
-	patient_visit = PatientVisit.objects.get(patient=patient, visit_status='Active', payment_status='paid')
-	patient_visit.visit_status = 'Ended'
+	patient_visit = PatientVisit.objects.filter(patient=patient, visit_status='Active', payment_status='paid')
+	for visit in patient_visit:
+		visit.visit_status = 'Ended'
+		visit.save()
+#	patient_visit.visit_status = 'Ended'
 
-	patient_visit.save()
+#	patient_visit.save()
 	patient.save()
 	patient_bill.bill.save()
 	patient_bill.save()
 	stay_duration.save()
 	room_bill.save()
 	messages.success(request, 'Successful!')
-	return redirect('inpatient_reason_form', patient.id)
+	return redirect('patient_list')
 
 
 def InpatientAssignmentFromEmergency(request, patient_id):
@@ -987,16 +999,21 @@ def InpatientReasonFormPage(request, patient_id):
 	inpatient_care_plan_form = InpatientCarePlanForm()
 	prediction_form = StayDurationPredictionForm()
 	priority_form = WardAdmissionPriorityForm()
+	assessment_form = InpatientAssessmentForm()
+
 	if request.method == 'POST':
 		inpatient_reason_form = InpatientReasonForm(request.POST)
 		inpatient_care_plan_form = InpatientCarePlanForm(request.POST)
 		prediction_form = StayDurationPredictionForm(request.POST)
 		priority_form = WardAdmissionPriorityForm(request.POST)
+		assessment_form = InpatientAssessmentForm(request.POST)
+
 		if inpatient_reason_form.is_valid():
 			inpatient_reason_model = inpatient_reason_form.save(commit=False)
 			inpatient_care_plan_model = inpatient_care_plan_form.save(commit=False)
 			prediction_model = prediction_form.save(commit=False)
 			priority_model = priority_form.save(commit=False)
+			assessment_model = assessment_form.save(commit=False)
 
 			employee = Employee.objects.get(user_profile=request.user, designation__name='Doctor')
 			inpatient_reason_model.service_provider = employee
@@ -1013,17 +1030,39 @@ def InpatientReasonFormPage(request, patient_id):
 			priority_model.patient = patient
 			priority_model.status = 'active'
 
+			try:
+				emergency_assessment_model = InpatientAdmissionAssessment.objects.get(patient=patient,status='active', admitted_from='Emergency Department')
+				employee = Employee.objects.get(user_profile=request.user, designation__name='Doctor')
+				emergency_assessment_model.service_provider = employee
+				emergency_assessment_model.status = 'active'
+				emergency_assessment_model.patient = patient
+				emergency_assessment_model.general_appearance = assessment_model.general_appearance
+				emergency_assessment_model.other_assessment = assessment_model.other_assessment
+				emergency_assessment_model.save()
+				messages.success(request, 'Successful!')
+				return redirect('patient_list')
+
+			except:
+				employee = Employee.objects.get(user_profile=request.user, designation__name='Doctor')
+				assessment_model.service_provider = employee
+				assessment_model.status = 'active'
+				assessment_model.patient = patient
+
+				assessment_model.save()
+				messages.success(request, 'Successful!')
+
 			priority_model.save()
 			prediction_model.save()
 			inpatient_care_plan_model.save()
 			inpatient_reason_model.save()
 			messages.success(request, 'Successful!')
-			return redirect('inpatient_admission_assessment_form', patient.id)
+			return redirect('inpatient_assignment', patient.id)
 			
 	context = {'inpatient_reason_form':inpatient_reason_form, 'patient':patient,
 				'inpatient_care_plan_form':inpatient_care_plan_form,
 				'priority_form':priority_form,
 				'prediction_form':prediction_form,
+				'assessment_form':assessment_form,
 				}
 	return render(request,'inpatient_app/inpatient_reason_form.html',context)
 
@@ -1250,10 +1289,12 @@ def DoctorChartView(request, patient_id):
 		print('\n','except,,,,,,','\n')
 #	chart.view_status = 'seen'
 	"""
+	print('\n',request.user.employee.designation.staff_code,'\n')
+
 	patient = Patient.objects.get(id=patient_id)
 	progress_note_list = NurseProgressChart.objects.filter(ward_team_bed__bed__patient=patient)[:1]
-	for p in progress_note_list:
-		print('\n',p,'\n')
+#	for p in progress_note_list:
+#		print('\n',p,'\n')
 	inpatient_reason = InpatientReason.objects.filter(patient=patient, status='active').last()
 
 	care_plan = InpatientCarePlan.objects.filter(patient=patient, status='active').last()

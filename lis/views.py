@@ -16,8 +16,9 @@ from .forms import (LaboratoryTestForm, OrderForm, ReferredTestResultForm,
 from .models import (LaboratorySection, LaboratoryTest, LaboratoryTestResult,
                      LaboratoryTestResultType, LaboratoryTestType, NormalRange, Order,
                      Patient, ReferredTestResult, Specimen)
+from datetime import datetime
 
-
+from outpatient_app.models import OutpatientLabResult, PatientVisit
 @method_decorator(login_required, 'dispatch')
 class CreateOrder(View):
     # creates laboratory orders
@@ -98,7 +99,7 @@ class OrderForPatient(View):
             return redirect('order-for-patient')
         if order_form.is_valid():
             order: Order = order_form.save(commit=False)
-            # order.patient = patient
+            order.patient = patient
             order.ordered_by = get_user(self.request)
             order.save()
             for test_id in test_type_list:
@@ -432,7 +433,16 @@ class EnterTestResult(View):
                             if req_result.input_type == 'BOOL':
                                 result_value = 'off'
                         test_result = LaboratoryTestResult(test=test, reported_by=logged_in_user, result_type=req_result, value=result_value)
+                        lab_history = OutpatientLabResult()
+                        patient = test_result.test.order.patient
+                        lab_history.patient = patient
+                        lab_history.visit = PatientVisit.objects.filter(patient = patient).exclude(visit_status='Ended').last()
+                        lab_history.lab_result = test_result 
+                        #medication_history.doctor = 
+                        lab_history.registered_on = datetime.now()
+
                         test_result.save()
+                        lab_history.save()
                         # check if test was referred and save lab info
                         if test.referred:
                             _form = ReferredTestResultForm(self.request.POST)

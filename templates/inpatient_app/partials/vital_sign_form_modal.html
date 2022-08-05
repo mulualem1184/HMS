@@ -26,9 +26,13 @@
               </div>
                 
               <div class="form-row">
-                  <div class="form-group col-md-4">  
-                    {{vital_form.blood_pressure|as_crispy_field}}
-                  </div>
+                                              <div class="form-group col-md-2">  
+                                                {{vital_form.diastolic_blood_pressure|as_crispy_field}}
+                                              </div>
+
+                                              <div class="form-group col-md-2">  
+                                                {{vital_form.systolic_blood_pressure|as_crispy_field}}
+                                              </div>
               </div>
                 </div>
                 <div class="modal-footer">

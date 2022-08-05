@@ -8,7 +8,7 @@
     <div class="" style="width: 100%;">
         <div class="card card-box">
             <div class="card-head">
-                <header>Visiting Cards</header>
+                <header>Patient List</header>
                 <button id = "panel-button2" 
                        class = "mdl-button mdl-js-button mdl-button--icon pull-right" 
                        data-upgraded = ",MaterialButton">
@@ -49,7 +49,7 @@
                                     {{card.visiting_card.discounted_price}}
                                 </td>
                                 <td class="mdl-data-table__cell--non-numeric">
-                                    <a href="{% url 'generate_visit_bill' card.id %}" class="primary-btn"> Generate</a>
+                                    <a href="{% url 'generate_visit_bill' card.id %}" class="primary-btn"> Issue</a>
                                 </td>
                             </tr>
 

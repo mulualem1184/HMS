@@ -249,7 +249,7 @@ class BatchForm(forms.ModelForm):
 	
 	class Meta:
 		model = Batch
-		fields = ['batch_no','quantity', 'drug',  'procurement']
+		fields = ['batch_no','quantity', 'drug']
 
 		widgets = {
 			
@@ -260,9 +260,6 @@ class BatchForm(forms.ModelForm):
 			'class' : 'forms form-control',
 				}),
 			'drug': forms.Select(attrs={
-			'class' : 'form-control select2',
-				}),
-			'procurement': forms.Select(attrs={
 			'class' : 'form-control select2',
 				}),
 			}
@@ -300,12 +297,9 @@ class ProcurementForm(forms.ModelForm):
 class ProcurementDetailForm(forms.ModelForm):
 	class Meta:
 		model = ProcurementDetail
-		fields = ['procurement_no', 'drug', 'quantity']
+		fields = ['drug', 'quantity']
 		
 		widgets = {			
-			'procurement_no': forms.Select(attrs={
-			'class' : 'form-control select2',
-				}),
 			'drug': forms.Select(attrs={
 			'class' : 'form-control select2',
 				}),
@@ -471,6 +465,7 @@ class IntakeModeForm(forms.ModelForm):
 
 #drug prescription
 class PrescriptionForm(forms.ModelForm):
+	"""
 	diagnosis = forms.CharField(widget=forms.TextInput(
 		attrs={
 			'class': 'forms form-control',
@@ -481,40 +476,28 @@ class PrescriptionForm(forms.ModelForm):
 		diagnosis = PathologicalFindings.objects.get_or_create(disease=diagnosis_input)[0]  # returns (instance, <created?-boolean>)
 		self.instance.diagnosis = diagnosis
 		return super(PrescriptionForm, self).save(commit)
+	"""
 	class Meta:
 		model = DrugPrescription
-		fields = ['patient', 'drug','units_per_take','frequency','duration_amount','duration_unit','order_category', 'comments']
-
-		widgets = {						
-			'patient': forms.Select(attrs={
-			'class' : 'form-control select2',
+		fields = ['diagnosis','drug','order_category','comments']
+		widgets = {			
+			'diagnosis': forms.TextInput(attrs={
+			'class' : 'form-control forms',
+		
 				}),
 			'drug': forms.Select(attrs={
 			'class' : 'form-control select2',
-				}),
-			'units_per_take': forms.NumberInput(attrs={
-			'class' : 'forms form-control',
-				}),
-			'frequency': forms.NumberInput(attrs={
-			'class' : 'forms form-control',
-				}),
-			'diagnosis': forms.TextInput(attrs={
-			'class' : 'forms form-control',
-				}),
-			'duration_amount': forms.NumberInput(attrs={
-			'class' : 'forms form-control',
-				}),			
-			'duration_unit': forms.Select(attrs={
-			'class' : 'form-control select2',
+			'id' : 'drug',
+
 				}),
 			'order_category': forms.Select(attrs={
 			'class' : 'form-control select2',
 				}),
 			'comments': forms.TextInput(attrs={
-			'class' : 'forms form-control',
+			'class' : 'form-control forms',
 				}),
+		
 			}
-
 
 
 class InventoryStructureForm(forms.Form):

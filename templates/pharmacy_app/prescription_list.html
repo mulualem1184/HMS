@@ -20,34 +20,36 @@
                     </div>
                 </div>
                 <div class="card-body ">
-                    <table id="example1" class="display table-bordered table-striped table-hover" style="width:100%;">
+                    <table id="example1" class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded">
                         <thead>
                             <tr class="gradeX odd">
-                                <th>Time</th>
-                                <th>Prescriber</th>
-                                <th>Patient</th>
-                                <th>Diagnosis</th>
-                                <th>Drug</th>
+                                <th class="mdl-data-table__cell--non-numeric">Time</th>
+                                <th class="mdl-data-table__cell--non-numeric">Prescriber</th>
+                                <th class="mdl-data-table__cell--non-numeric">Patient</th>
+                                <th class="mdl-data-table__cell--non-numeric">Diagnosis</th>
+                                <th class="mdl-data-table__cell--non-numeric">Drug</th>
                                 
-                                <th>Frequency</th>
-                                <th>Duration</th>
-                                <th>Comments</th>
+                                <th class="mdl-data-table__cell--non-numeric">Frequency</th>
+                                <th class="mdl-data-table__cell--non-numeric">Duration</th>
+                                <th class="mdl-data-table__cell--non-numeric">Comments</th>
+                                <th class="mdl-data-table__cell--non-numeric">Dispense</th>
+
                             </tr>
                         </thead>
                         <tbody>
                             {% for prescription in prescription_list %}
                                 <tr>
-                                    <td>{{prescription.registered_on}}</td>
-                                    <td> {{ prescription.prescriber }}</td>
-                                    <td> {{ prescription.patient }} </td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{prescription.registered_on.time}}</td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ prescription.prescriber.full_name }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ prescription.patient }} </td>
                                     
-                                    <td> {{ prescription.diagnosis }} </td>
-                                    <td> {{ prescription.drug }} </td>
-                                    <td> {{ prescription.frequency }} times a day </td>
-                                    <td> {{ prescription.duration_amount }} {{ prescription.duration_unit }} </td>
-                                    <td>{{prescription.comments}}</td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ prescription.diagnosis }} </td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ prescription.drug }} </td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ prescription.frequency }} times a day </td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ prescription.duration_amount }} {{ prescription.duration_unit }} </td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{prescription.comments}}</td>
 
-                                    <td><button class="btn btn-info"><a href="{% url 'bill_form' prescription.id last_bill.bill_no %}" style="color: white;">Dispense</a></button></td>
+                                    <td class="mdl-data-table__cell--non-numeric"><button class="btn btn-info"><a href="{% url 'bill_form' prescription.id last_bill.bill_no %}" style="color: white;">Dispense</a></button></td>
                                 </tr>
                             {% endfor %}
                         </tbody>

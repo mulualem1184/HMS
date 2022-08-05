@@ -20,7 +20,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                        {% for room,queue in q_zip %}
+                        {% for room,queue in room_zip %}
                             <td><a href="{% url 'room_queue' room.id %}">{{room}}</td>
                             <td>{{queue}}</td>
                         </tbody>

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+    Edit Site info
+{% endblock %}
+{% block page_content %}
+    <div class="row">
+        <div class="col-md-12 col-sm-12">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>Edit Site Info</header>
+                </div>
+                <div class="card-body" id="bar-parent">
+                    <form method="POST" id="form_sample_1" class="form-horizontal" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-body">
+                            {% for field in edit_form %}
+                                <div class="form-group row">
+                                    <label class="control-label col-md-3" for="{{ field.id_for_label }}" >
+                                        {{ field.label }}<span class="required"> * </span>
+                                    </label>
+                                    <div class="col-md-5">
+                                        {{ field }}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            <div class="form-group row">
+                                <label class="control-label col-md-3" for="remove_logo_checkbox">
+                                    Remove Logo
+                                </label>
+                                <div class="col-md-5">
+                                    <input type="checkbox" id='remove_logo_checkbox' name="remove_logo">
+                                </div>
+                            </div>                            
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="margin-left: 75px;">Update</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

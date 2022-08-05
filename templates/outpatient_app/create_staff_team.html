@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Nurse Instruction View {% endblock %}
+{% block page_content %}
+{% load crispy_forms_tags %}
+
+{% include "inpatient_app/partials/inpatient_medication_info.html" %}
+{% include "inpatient_app/partials/admission_info.html" %}
+
+
+    <div class="row">
+          
+
+
+        <div class="col-md-5">
+            <div class="card card-box" id="intervention-form-id" >
+                
+                <div class="card-body" >
+                    <form action="" method="POST">
+                            {% csrf_token %}
+                                    <div class="form-group col-md-12">  
+                                      {{create_form.team_name|as_crispy_field}}
+                                    </div>
+                                    <div class="form-group col-md-12">  
+                                      {{create_form.department|as_crispy_field}}
+                                    </div>
+                                    
+                            <button class="form-group btn btn-primary" type="submit" > Save</button>
+                            <a href="{% url 'admin_settings' %}" class="form-group btn btn-primary">Done</a>                                        
+                                                                    
+                    </form>
+                </div>
+            </div>
+
+  
+            
+        </div>
+</div>
+<hr>
+<div class="row">
+                        
+                            
+                                
+                                        <table class="mdl-data-table ml-table-bordered  " id="example4">
+                                                            <thead>
+                                                                <tr>
+                                                                    
+                                                                    <th class="mdl-data-table__cell--non-numeric"> Team Name </th>
+                                                                    <th class="mdl-data-table__cell--non-numeric"> Department </th>                                                                   </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                {% for team in staff_team %}
+
+                                                                <tr class="odd gradeX">
+                                                                    
+                                                                    <td class="mdl-data-table__cell--non-numeric">{{team}}</td>
+                                                                    <td class="mdl-data-table__cell--non-numeric">{{team.department}}</td>
+                                                                </tr>
+                                                                {% endfor %}
+
+                                                            </tbody>
+                                                        </table>
+                                
+
+                            </div>
+                        
+
+
+    {% block scripts %}
+
+    <script>
+
+    </script>
+      
+    {% endblock %}
+
+{% endblock %}

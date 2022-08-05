@@ -36,6 +36,12 @@
                 <div class="form-group col-md-4">  
                     {{bed_form.bed|as_crispy_field}}
                 </div>
+                <div class="form-group" style="padding-top: 38px;">
+                  <a data-toggle="modal" data-target="#bed-release-date-info">
+                      Check Bed Release Dates
+                    </a>
+
+                </div>
                 <div class="form-group">
 
             </div>
@@ -52,9 +58,6 @@
     {% endfor %}
 </ul>
 {% endif %}
-                 <a data-toggle="modal" data-target="#bed-release-date-info">
-              Check Bed Release Dates
-            </a>
             <!--<div class="offset-sm-2 col-sm-10">
                 <button type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect btn-circle btn-info" data-toggle="modal" data-target="#room-queue-modal">
                                 Check Bed Availibility 

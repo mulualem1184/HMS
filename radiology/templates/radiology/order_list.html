@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Orders list {% endblock %}
+{% block page_content %}
+    <div class='row'>
+        <div class="col-md-12">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>
+                        Imaging Orders
+                    </header>
+                    <div class="tools"> </div>
+                </div>
+                <div class="card-body ">
+                    <table id="example1" class="display table-bordered table-striped table-hover" style="width:100%;">
+                        <thead>
+                            <tr class="gradeX odd">
+                                <th>#</th>
+                                <th>Type</th>
+                                <th>Scan Area</th>
+                                <th>Date</th>
+                                <th>Ordered By</th>
+                                <th>Paid</th>
+                                <th>Completed</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in order_list %}
+                                <tr>
+                                    <td> {{ forloop.counter }} </td>
+                                    <td> {{ order.type }} </td>
+                                    <td>
+                                        {% if order.scan_area %}
+                                            {{ order.scan_area }}
+                                        {% else %}
+                                            -
+                                        {% endif %}
+                                    </td>
+                                    <td> {{ order.ordered_at }} </td>
+                                    <td> {{ order.ordered_by.full_name }} </td>
+                                    <td> 
+                                        {% if order.paid %}
+                                            <button class="btn btn-success">
+                                                <i class='fa fa-check'> </i>
+                                            </button>
+                                        {% else %}
+                                            <button class="btn btn-danger">
+                                                <i class='fa fa-times'> </i>
+                                            </button>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if order.complete %}
+                                            <button class="btn btn-success">
+                                                <i class='fa fa-check'> </i>
+                                            </button>
+                                        {% else %}
+                                            <button class="btn btn-danger">
+                                                <i class='fa fa-times'> </i>
+                                            </button>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-circle">
+                                            <button type="button" class="btn btn-primary">Actions</button>
+                                            <button type="button" class="btn btn-circle-right btn-primary dropdown-toggle m-r-20" data-toggle="dropdown" aria-expanded="false">
+                                                <i class="fa fa-angle-down"></i>
+                                            </button>
+                                            <ul class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(79px, 34px, 0px); top: 0px; left: 0px; will-change: transform;">
+                                                {% if order.paid %}
+                                                    <li> <a href="{% url 'radiology:enter_result' order.id %}">Enter result</a> </li>
+                                                {% endif %}
+                                                {% if order.complete %}
+                                                    <li> <a href="{% url 'radiology:view_report' order.id %}">View result</a> </li>
+                                                {% endif %}
+                                                <li>
+                                                    {% if order.paid %}
+                                                        <a href="{% url 'radiology:toggle_payment' order.id %}">Mark as unpaid</a>
+                                                    {% else %}
+                                                        <a href="{% url 'radiology:toggle_payment' order.id %}">Mark as Paid</a>
+                                                    {% endif %}
+                                                </li>
+                                                <!-- <li>
+                                                    {% if order.report %}
+                                                        <a href="#">View Report</a>
+                                                    {% endif %}
+                                                </li> -->
+                                                <li class="divider"></li>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <!-- data tables -->
+    <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}" ></script>
+    <script src="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.js' %}" ></script>
+    <script src="{% static 'js/pages/table/table_data.js' %}"></script>
+{% endblock %}

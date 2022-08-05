@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+    Settings
+{% endblock %}
+{% block page_content %}
+    <ul>
+        <a href="{% url 'site_config:edit_site_info' %}">
+            <li>Edit Site info</li>
+        </a>
+        <a href="{% url 'staff:add_department' %}">
+            <li>Add Department</li>
+        </a>
+        <a href="{% url 'staff:add_designation' %}">
+            <li>Add Designation</li>
+        </a>
+        <a href="{% url 'create_lab_test_type' %}">
+            <li>Lab test type</li>
+        </a>
+    </ul>
+{% endblock %}

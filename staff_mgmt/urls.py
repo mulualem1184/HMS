@@ -50,5 +50,6 @@ urlpatterns = [
     path('view-lr/<int:id>', ViewLeaveRequest.as_view(), name='view_leave_request'),
     path('close-att', CloseAttendance.as_view(), name='finish_work'),
     path('schedule', Schedule.as_view(), name='schedule'),
+
     path('dashboard', Dashboard.as_view(), name='dashboard'),
 ]

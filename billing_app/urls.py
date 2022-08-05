@@ -7,6 +7,8 @@ from .views import *
 urlpatterns = [
 
  	path('visiting_card_price/', views.VisitingCardPriceFormPage, name="visiting_card_price"),
+ 	path('create_visiting_card/', views.CreateVisitingCard, name="create_visiting_card"),
+	
  	path('service_form/', views.ServiceFormPage, name="service_form"),
  	path('assign_visiting_card_form/', views.AssignVisitingCardFormPage, name="assign_visiting_card_form"),
 	path('visiting_card_list/', views.VisitingCardList, name="visiting_card_list"),

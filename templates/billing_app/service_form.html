@@ -7,60 +7,124 @@
 
 {% endblock%}
 {% block page_content %}
-    
-    <div class="" style="width: 100%;">
-        <div class="card card-box">
-            <div class="card-head">
-                <header>
-            
-                </header>
-                <button id = "panel-button2" 
-                       class = "mdl-button mdl-js-button mdl-button--icon pull-right" 
-                       data-upgraded = ",MaterialButton">
-                       <i class = "material-icons">more_vert</i>
-                    </button>
-                    <ul class = "mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
-                       data-mdl-for = "panel-button2">
-                       <li class = "mdl-menu__item"><i class="material-icons">assistant_photo</i>Action</li>
-                       <li class = "mdl-menu__item"><i class="material-icons">print</i>Another action</li>
-                       <li class = "mdl-menu__item"><i class="material-icons">favorite</i>Something else here</li>
-                    </ul>
-            </div>
-            <div class="card-body " id="bar-parent1">
-              
-        
-    <form action="" method="POST">
-        		{% csrf_token %}
-            
-                <div class="form-group col-md-4">  
-                    {{service_form.service_name|as_crispy_field}}
-                </div>
-            	 <div class="form-group col-md-4">  
-                    {{service_form.service_team|as_crispy_field}}
-                </div>
-                <div class="form-group col-md-4">  
-                    {{service_form.service_price|as_crispy_field}}
-                </div>
-            	<div class="form-group" style="padding-top: 15px;">
-                <button class="form-group btn btn-primary"  type="submit" > Create</button>
+          <div class="row">
+            <div class="col-md-3 " id='service-card-id'>
+                          <div class="card  card-box">
+                                <div class="card-head">
+                                    <header>Service List</header>
+                                    <div class="tools">
+                                      <a class=" btn-color fa fa-plus" id="addService" onclick="toggleServiceForm()"></a>
+                                    </div>
+                                </div>
+                                <div class="card-body no-padding height-9">
+                                    <div class="row">
+                                        <div class="noti-information notification-menu">
+                                            <div class="notification-list mail-list not-list small-slimscroll-style">
+                                              {% for service in service_list %}
+                                                      <a href="javascript:;" class="single-mail"> <span >                                                       </span> <span >{{service.service_name}}</span> 
+                                                          <span class="notificationtime">
+                                                              <small>{{service.service_price}} Birr</small>
+                                                          </span>
+                                                      </a>
+                                                {% endfor %}
+                                            </div>
+                              <div class="full-width text-center p-t-10" >
+                                <button type="button" class="btn purple btn-outline btn-circle margin-0">View All</button>
+                              </div>
+                                                </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                              <form action="" method="POST" id="ServiceFormId" style="display: none;" >
+                                      {% csrf_token %}
+                                      
+                                          <div class="form-group col-md-9">  
+                                              {{service_form.service_name|as_crispy_field}}
+                                          </div>
+                                          <div class="form-group col-md-9">  
+                                              {{service_form.service_price|as_crispy_field}}
+                                          </div>
+                                        <div class="form-group" style="padding-top: 15px;">
+                                          <button class="form-group btn btn-primary"  type="submit" > Create</button>
 
-            	</div>
-            
-    </form>
+                                        </div>
+                                      
+                              </form>
+                        </div>
+                        <div class="col-md-3">
+                            <form action="{% url 'create_visiting_card' %}" method="POST" id="VisitingCardFormId" style="display: none;">
+                                    {% csrf_token %}
+                                    
+                                        <div class="form-group col-md-9">  
+                                            {{visit_form.service|as_crispy_field}}
+                                        </div>
+                                       <div class="form-group col-md-9">  
+                                            {{visit_form.visiting_price|as_crispy_field}}
+                                        </div>
+                                        <div class="form-group col-md-9">  
+                                            {{visit_form.discounted_price|as_crispy_field}}
+                                        </div>
+                                      <div class="form-group" style="padding-top: 15px;">
+                                        <button class="form-group btn btn-primary"  type="submit" > Create</button>
 
-    {% block scripts %}
- <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>        
-<script >
-  $(document).ready(function() {
-    $('#service-id').select2();
-    $('#room-id').select2();
-});
-  </script>
+                                      </div>
+                                    
+                            </form>
+                        </div>
 
-      
-    {% endblock %}
+                      <div class="col-md-3 pull-right" >
+                                    <div class="card  card-box">
+                                          <div class="card-head">
+                                              <header>Visiting Card List</header>
+                                              <div class="tools">
+                                                <a class=" btn-color fa fa-plus" id="addVisitingCard" onclick="toggleVisitingCardForm()" ></a>
+                                              </div>
+                                          </div>
+                                          <div class="card-body no-padding height-9">
+                                              <div class="row">
+                                                  <div class="noti-information notification-menu">
+                                                      <div class="notification-list mail-list not-list small-slimscroll-style">
+                                                        {% for card in visiting_card_list %}
+                                                                <a href="javascript:;" class="single-mail"> <span >                                                       </span>  <span >{{card.service}}</span> By {{card.service.service_team}}
+                                                                    <span class="notificationtime">
+                                                                       <span >                                                       </span> <small>{{card.visiting_price}} Birr</small>
+                                                                    </span>
+                                                                </a>
+                                                          {% endfor %}
+                                                      </div>
+                                <div class="full-width text-center p-t-10" >
+                                  <button type="button" class="btn purple btn-outline btn-circle margin-0">View All</button>
+                                </div>
+                                                  </div>
+                                              </div>
+                                          </div>
+                                      </div>
+                                  </div>
+
+
+          </div>
 
 {% endblock %}
 
- 
+  
+    {% block scripts %}
+
+
+    <script>
+
+        function toggleServiceForm (){
+          document.getElementById('ServiceFormId').style.display = 'block';
+         
+        }
+
+        function toggleVisitingCardForm (){
+          document.getElementById('VisitingCardFormId').style.display = 'block';          
+
+        }
+
+    </script>
+      
+    {% endblock %}
+

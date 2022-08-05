@@ -1,7 +1,7 @@
 from typing import Any
 from django.forms import ModelForm
 from django import forms
-from .models import Attendance, Department, Designation, Employee, EmployeeDocument, StaffLeave, WorkShift
+from .models import Attendance, Department, Designation, Employee, EmployeeDocument, StaffLeave, WorkShift,StaffTeam
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -220,3 +220,21 @@ class FilterScheduleForm(forms.Form):
     ], widget=forms.Select(attrs={
         'class': 'form-control',
     }))
+
+class CreateStaffTeamForm(forms.ModelForm):
+
+    class Meta:
+        model = StaffTeam
+        fields = [ 'team_name', 'department']
+
+        widgets = {                     
+            'team_name': forms.TextInput(attrs={
+            'class' : 'form-control forms',
+
+                }),
+            'department': forms.Select(attrs={
+            'class' : 'form-control forms select2',
+
+                }),
+
+            }

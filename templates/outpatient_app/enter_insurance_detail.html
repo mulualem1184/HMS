@@ -1,0 +1,80 @@
+
+
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Fill Supply Form {% endblock %}
+{% load crispy_forms_tags %}
+{% block style %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="../assets/plugins/material-datetimepicker/bootstrap-material-datetimepicker.css" />
+
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css"> 
+
+{% endblock %}
+{% block page_content %}
+
+    <div class="" style="width: 100%;">
+        <div class="card card-box">
+            <div class="card-head">
+                <header>Insurance Form</header>
+              
+            </div>
+            <div class="card-body " id="bar-parent1">
+       
+  
+        <form action="" method="POST">
+      {% csrf_token %}
+
+
+        <div class="form-row">
+          <div class="form-group col-md-2 " style="padding-top: 38px;">            
+            <p>Insurance Info:</p>
+            
+          </div>
+            <div class="form-group col-md-2 mb-0">
+		    {{insurance_info_form.name|as_crispy_field}}
+            </div>
+            <div class="form-group col-md-2 mb-0">
+                {{insurance_info_form.address|as_crispy_field}}      
+            </div>
+            <div class="form-group col-md-2 mb-0">
+                {{insurance_info_form.phone_number|as_crispy_field}}      
+            </div>
+
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-2" style="padding-top: 38px;">
+            <p>Insurance Detail:</p>
+          </div>
+
+              <div class="form-group col-md-3 mb-0">
+              {{insurance_detail_form.sum_insured|as_crispy_field}}      
+              </div>              
+              <div class="form-group col-md-3 mb-0">
+              {{insurance_excluded_form.excluded_service|as_crispy_field}}      
+              </div>
+        </div>
+        <div style="width: 100%">
+   
+        <button type="submit" class="btn-info btn" > Register</button> 
+        </div>
+          
+            </form>
+
+{% block script %}
+<script>
+
+
+
+ </script> 
+  <script src="../assets/plugins/material/material.min.js"></script>
+  <script src="../assets/plugins/material-datetimepicker/moment-with-locales.min.js"></script>
+  <script src="../assets/plugins/material-datetimepicker/bootstrap-material-datetimepicker.js"></script>
+  <script src="../assets/plugins/material-datetimepicker/datetimepicker.js"></script>
+
+
+{% endblock %}
+
+
+{% endblock %}
+

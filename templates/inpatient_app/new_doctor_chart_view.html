@@ -55,7 +55,7 @@
                     <div class="row">
                         <img src="{% static 'img/male-patient.jpg' %}" alt="User Image" class="patientimage" />
                         <div style="padding-left: 5px; padding-top: 5px; font-weight: bolder;">
-                            <p style="font-weight: bolder;">{{ patient.full_name }} </p>
+                           <a href="{% url 'core:patient_history' patient.id %}"> <p style="font-weight: bolder;">{{ patient.full_name }} </p></a>
                             Male - {{patient.age}}
                             
                             <br> Blood type O+
@@ -229,7 +229,7 @@
                         </li>
 
                         <li>
-                            <a href="#">Order X-Ray</a>
+                            <a href="{% url 'radiology:xray_order' patient.id %}">Order X-Ray</a>
                         </li>
                         <li>
                             <a href="#">Order Ct-scan</a>

@@ -30,49 +30,75 @@
             </div>
             <div class="card-body " id="bar-parent1">
               <div class="row">
--->        <div class="col-md-12 col-sm-12">
+        <div class="col-md-12 col-sm-12">
             <div class="card card-box">
-                <div class="card-head">
-                    <header>Register new case</header>
+-->                <div class="card-head">
+                    <header>
+                                          <ul class="nav nav-tabs">
+                        <li class="nav-item" >
+                            <a href="#reason" data-toggle="tab" class="active">Reason</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="#assessment" data-toggle="tab" >Assessment</a>
+                        </li>
+
+
+                    </ul>
+
+                    </header>
                 </div>
+
+
                 <div class="card-body" id="bar-parent">
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="reason">
 
         
-    <form class="form-horizontal"  id="form_sample_1" action="" method="POST">
-        		{% csrf_token %}
-                <h3> </h3>
+                    <form class="form-horizontal"  id="form_sample_1" action="" method="POST">
+                        		{% csrf_token %}
+                                <h3> </h3>
                                 <div class="row form-horizontal">
-
-                <div class="form-group col-md-6 col-sm-6">  
-                    {{inpatient_reason_form.reason|as_crispy_field}}
-                </div>
-              </div>
+                                <div class="form-group col-md-6 col-sm-6">  
+                                    {{inpatient_reason_form.reason|as_crispy_field}}
+                                </div>
+                                <div class="form-group col-md-6 col-sm-6">  
+                                    {{inpatient_care_plan_form.care_plan|as_crispy_field}}
+                                </div>
+                              </div>
                                 <div class="row form-horizontal">
-                <div class="form-group col-md-6 col-sm-6">  
-                    {{inpatient_care_plan_form.care_plan|as_crispy_field}}
-                </div>
-                </div>
-                <div class="row form-horizontal">
-                <div class="form-group col-md-3 col-sm-3">  
-                    {{prediction_form.duration|as_crispy_field}}
-                </div>
-                <div class="form-group col-md-3 col-sm-3">  
-                    {{prediction_form.duration_unit|as_crispy_field}}
-                </div>
+                                <div class="form-group col-md-4 col-sm-3">  
+                                    {{prediction_form.duration|as_crispy_field}}
+                                </div>
+                                <div class="form-group col-md-4 col-sm-3">  
+                                    {{prediction_form.duration_unit|as_crispy_field}}
+                                </div>
 
+
+                                <div class="form-group col-md-4 col-sm-3">  
+                                    {{priority_form.priority|as_crispy_field}}
+                                </div>
+                                 </div>
+                            
+                    
                   </div>
-                <div class="row form-horizontal">
-
-                <div class="form-group col-md-3 col-sm-3">  
-                    {{priority_form.priority|as_crispy_field}}
+                            <div class="tab-pane" id="assessment">
+                <div class="row">
+                <div class="form-group col-md-6">  
+                    {{assessment_form.general_appearance|as_crispy_field}}
                 </div>
-              </div>
-            	<div class="form-group" style="padding-top: 15px;">
-                <button class="form-group btn btn-primary"  type="submit" > Assign</button>
 
-            	</div>
-            
-    </form>
+                <div class="form-group col-md-6">  
+                    {{assessment_form.other_assessment|as_crispy_field}}
+                </div>
+
+                            </div>
+                                <div class="form-group" style="padding-top: 15px;">
+                                <button class="form-group btn btn-primary"  type="submit" > Assign</button>
+
+                              </div>
+</form>
+                </div>
       </div>
     </div>
   </div>

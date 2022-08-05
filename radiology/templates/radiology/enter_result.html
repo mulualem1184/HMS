@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+    
+{% endblock %}
+{% block page_content %}
+    <div class='row'>
+        <div class="col-md-12">
+            <div class="card card-box">
+                <div class="card-body">
+                    <table class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded">
+                        <thead>
+                            <tr>
+                                <th class="mdl-data-table__cell--non-numeric">#</th>
+                                <th class="mdl-data-table__cell--non-numeric">File</th>
+                                <th class="mdl-data-table__cell--non-numeric">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for image in images %}
+                                <tr>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ forloop.counter }} </td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ image.file }} </td>
+                                    <td class="mdl-data-table__cell--non-numeric">
+                                        <div>
+                                            <div class="col-sm-"> 
+                                                <a href="{{ image.file.url }}" target="_blank">
+                                                    <button type="button" class="btn btn-info btn-rounded btn-icon"> <i class="fa fa-eye"></i> </button>
+                                                </a>
+                                                <a href="#">
+                                                    <button type="button" class="btn btn-primary btn-rounded btn-icon"> <i class="fa fa-edit"></i> </button> 
+                                                </a>
+                                                <a href="{% url 'radiology:remove_report_image' image.id %}">
+                                                    <button type="button" class="btn btn-danger btn-rounded btn-icon"> <i class="fa fa-times"></i> </button> 
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <br>
+                    <!-- insert new image form -->
+                    <form action="{% url 'radiology:insert_report_image' order.id %}" method="POST" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <label for="imageInput"> Insert Image</label>
+                        <input name='image' type="file" id="imageInput" class="form-control"> <br>
+                        <button type="submit" class="btn btn-success"> Insert </button>
+                        <br>
+                    </form>
+                    <!-- Write the report -->
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                        {{ report_form.as_p }}
+                        <button type="submit" class="btn btn-primary"> Submit </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

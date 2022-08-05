@@ -1,5 +1,5 @@
 from django import forms
-from .models import Patient, PatientVitalSign
+from .models import Patient, PatientVitalSign, PatientPaymentStatus, InsuranceDetail
 
 
 class PatientForm(forms.ModelForm):
@@ -16,7 +16,7 @@ class VitalSignForm(forms.ModelForm):
         model = PatientVitalSign
         fields = [
             'pulse_rate', 'temperature', 'temperature_unit',
-            'blood_pressure', 
+            'systolic_blood_pressure', 'diastolic_blood_pressure', 
         ]
         widgets = {            
             'pulse_rate': forms.NumberInput(attrs={
@@ -25,10 +25,47 @@ class VitalSignForm(forms.ModelForm):
             'temperature': forms.NumberInput(attrs={
                 'class' : 'form-control forms',
             }),
-            'blood_pressure': forms.NumberInput(attrs={
+            'systolic_blood_pressure': forms.NumberInput(attrs={
                 'class' : 'form-control forms',
             }),
+            'diastolic_blood_pressure': forms.NumberInput(attrs={
+                'class' : 'form-control forms',
+            }),
+
             'temperature_unit': forms.Select(attrs={
                 'class' : 'form-control select2',
             }),
         }
+
+
+class PatientPaymentStatusForm(forms.ModelForm):
+    
+    class Meta:
+        model = PatientPaymentStatus 
+        fields = ['payment_status']
+        
+        widgets = {
+            'payment_status': forms.Select(attrs={
+            'class' : 'select2 form-control',
+
+                }),
+            }
+
+class InsuranceDetailForm(forms.ModelForm):
+    
+    class Meta:
+        model = InsuranceDetail
+        fields = ['name',  'phone_number', 'address']
+        
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class' : 'form-control forms',
+            }),
+            'phone_number': forms.TextInput(attrs={
+                'class' : 'form-control forms',
+            }),
+            'address': forms.TextInput(attrs={
+                'class' : 'form-control forms',
+            }),
+
+            }

@@ -1,0 +1,71 @@
+
+{% block page_content %}
+
+    <div >
+        
+                      
+                   {% for service in service_list %}
+
+                    <div class="row">
+                        <a class="btn-color fa fa-plus" onclick="toggleTeamForm({{service.id}})"  id="plus-id{{service.id}}" style="padding-top: 5px;color: #0645AD " ></a>
+                        <a class=" btn-color fa fa-minus" onclick="reverseToggleTeamForm({{service.id}})" id="minus-id{{service.id}}"  style="padding-top: 5px; display: none; color: #0645AD"></a> 
+
+                           <p style="padding-left: 10px;">{{ service.service.service_name }} </p>
+                        </div>
+                                <div id="service{{service.id}}" style="display: none;">
+                                        {% for team in service.get_team %}
+
+                                            {% if team %}
+
+                                            <ul>
+                                        <!--<option value="{{service.id}}">{{team.team}}</option>-->
+                               
+                                    
+                                
+                                <input type="radio" id="input_id" name="service_name" value="{{service.id}}">
+                                  <label for="service.id">{{team.team}}</label>
+
+                                            </ul>
+                                            {% else %}
+                                            <h1>None</h1>
+                                            {% endif %}
+
+                                        {% endfor %}
+                                </div>                    
+
+
+                
+                {% endfor %}
+               
+
+    </div>
+
+               <div id="trial" style="display: none">
+                   <h1>Works!</h1>
+               </div>
+{% endblock %}
+
+{% block scripts %}
+    <!-- wizard -->
+   <script>
+        function toggleTeamForm (sid){
+          document.getElementById('service'+sid).style.display = 'block';
+          document.getElementById('plus-id'+sid).style.display = 'none';
+          document.getElementById('minus-id'+sid).style.display = 'block';
+          
+        }
+
+        function reverseToggleTeamForm (sid){
+          document.getElementById('service'+sid).style.display = 'none';
+          document.getElementById('plus-id'+sid).style.display = 'block';
+          document.getElementById('minus-id'+sid).style.display = 'none';
+
+        }
+          
+        function toggleVisitingCardForm (){
+          document.getElementById('VisitingCardFormId').style.display = 'block';          
+
+        }
+
+    </script>
+ {% endblock %}

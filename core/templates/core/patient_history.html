@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+    Patient History
+{% endblock %}
+{% block style %}
+    <link href="{% static 'plugins/owl-carousel/owl.carousel.css' %}" rel="stylesheet">
+    <link href="{% static 'plugins/owl-carousel/owl.theme.css' %}" rel="stylesheet">
+    <style>
+        tr {
+            color: black;
+        }
+    </style>
+{% endblock %}
+
+{% block page_content %}
+    <div class="page-bar">
+        <div class="page-title-breadcrumb">
+            <div class=" pull-left">
+                <div class="page-title">Patient History</div>
+            </div>
+            <ol class="breadcrumb page-breadcrumb pull-right">
+                <li>
+                    <i class="fa fa-angle-right"></i>
+                </li>
+                <li class="active">History</li>
+            </ol>
+        </div>
+    </div>
+    <div class="state-overview">
+        <div class="row">
+            {% for x in '45678'%}
+                {% include "core/phistory_modal.html" %}
+                <div class="col-lg-3 col-sm-6">
+                    <div class="overview-panel blue">
+                        <div class="symbol">
+                            <img src="{% static 'img/patient.png' %}" alt="" style="width: 35px; height: 35px;" onmouseover="showHistoryModal({{x}})" onmouseout="hideHistoryModal({{x}})">
+                            <!-- <i class="fa fa-info-circle usr-clr" onmouseover="showHistoryModal({{x}})" onmouseout="hideHistoryModal({{x}})"></i> -->
+                        </div>
+                        <div class="value white">
+                            <p class="sbold addr-font-h1" data-counter="counterup" dafta-value="53">May {{ x }}</p>
+                            <p>
+                                - May 13
+                                <br>
+                                <a href="{% url 'core:visit_detail' 1 %}" style="color: rgba(1, 7, 2, 0.959);">View</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            <table class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded">
+                <thead>
+                <tr>
+                    <th class="mdl-data-table__cell--non-numeric">#</th>
+                    <th class="mdl-data-table__cell--non-numeric">Admitted Date</th>
+                    <th class="mdl-data-table__cell--non-numeric">Leave Date</th>
+                    <th class="mdl-data-table__cell--non-numeric">Compliant</th>
+                    <th class="mdl-data-table__cell--non-numeric">Sign.Findings</th>
+                    <th class="mdl-data-table__cell--non-numeric">Discharge Summary</th>
+                </tr>
+                </thead>
+                <tbody>
+                    {% for x in lis %}
+                        <tr>
+                            <td class="mdl-data-table__cell--non-numeric"> {{ forloop.counter }} </td>
+                        </tr>
+                    {% endfor %}
+                    <tr>
+                        <td class="mdl-data-table__cell--non-numeric"> 1 </td>
+                        <td class="mdl-data-table__cell--non-numeric">Jan 4</td>
+                        <td class="mdl-data-table__cell--non-numeric">Jan 9</td>
+                        <td class="mdl-data-table__cell--non-numeric">khjghjg gkhjg kjgghjgkkhjg hfgdsh ffjf</td>
+                        <td class="mdl-data-table__cell--non-numeric">khjghjg gkhjg kjgghjgkkhjg hfgdsh ffjf</td>
+                        <td class="mdl-data-table__cell--non-numeric">-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <!-- owl carousel -->
+    <script src="{% static 'plugins/owl-carousel/owl.carousel.js' %}"></script>
+    <script src="{% static 'js/pages/owl-carousel/owl_data.js' %}"></script>
+    <!-- widget js-->
+	<script src="{% static 'js/pages/widget/widget-data.js' %}" ></script>
+    <script>
+        showingModal = false;
+        function showHistoryModal(id) {
+            if (showingModal == false) {
+                console.log('mouse hovered')
+                $("#patientHistoryModal"+id).modal('show');
+                showingModal = true;
+            }
+        }
+
+        function hideHistoryModal(id) {
+            if (showingModal == true) {
+                console.log('mouse outed')
+                $("#patientHistoryModal"+id).modal('hide');
+                showingModal = false;
+            }
+        }
+    </script>
+{% endblock %}

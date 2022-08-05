@@ -1,0 +1,298 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Nurse Instruction View {% endblock %}
+{% block page_content %}
+{% load crispy_forms_tags %}
+
+{% include "inpatient_app/partials/inpatient_medication_info.html" %}
+{% include "inpatient_app/partials/admission_info.html" %}
+
+
+    <div class="row col-md-12">
+       
+        <div class="col-md-6">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>Patient Info</header>
+                </div>
+                <div class="card-body" id="bar-parent">
+                    <div class="row">
+                        <div class="profile-userpic" style="width: 150px; height: 150px;">
+                        <img src="{% static 'img/male-patient.jpg' %}" alt="User Image" class="patientimage" />
+                        </div>
+                        <div style="padding-left: 5px; padding-top: 5px; font-weight: bolder;">
+                            <p style="font-weight: bolder;">{{ patient.full_name }} </p>
+                            Male - {{patient.age}}
+                            
+                            <br> Blood type O+
+                            <br>{{ patient.sex }}
+                            <br>{{ patient.age }}
+                        </div>
+                        <div style="padding-left: 90px; padding-top: 5px; font-weight: bolder;">
+                            <p style="font-weight: bolder;">Patient Info </p>
+<!--                                <li><a href="" data-toggle='modal' data-target="#room-queue-modal">Patient Medication </a></li>
+                                <li><a href="" data-toggle='modal' data-target="#admission-info-id">Admission Info </a></li>
+                                <li><a href="" data-toggle='modal' data-target="#care-plan-info-id">Care Plan </a></li>
+                                <li><a href="" data-toggle='modal' data-target="#vital-sign-modal">Check Vital Sign </a></li>
+                                <li><a href="" data-toggle='modal' data-target="#allergy-info-modal">Patient Allergies </a></li>
+                                <li><a href="" data-toggle='modal' data-target="#habit-info-modal">Patient Habits </a></li>
+-->
+                                    <ul><li> <a id="addNoteCard" onclick="toggleServiceForm()" style="color: #3366BB">Additional Services </a></li>
+                                        
+                                    <li><a href="{% url 'order-for-patient' patient.id %}">Make Lab Order</a></li>
+                                    
+                                    <li>  <a href="{% url 'radiology:xray_order' patient.id %}">Order X-Ray</a></li>
+                                    <li><a id="addInterventionCard" onclick="toggleInterventionForm() " style="color: #0645AD">Add Intervention</a></li>
+                                    <li><a id="addNoteCard" onclick="toggleNoteForm() " style="color: #0645AD">Medical Note</a></li>
+                                    <li>  <a href="{% url 'prescription_form' patient.id %}">Prescribe Drugs</a></li>
+                                    <li>  <a href="{% url 'radiology:xray_order' patient.id %}">Order X-Ray</a></li>
+                                    <li><a href="{% url 'discharge_outpatient_form' patient.id %}" style="color:red;">Discharge Patient</a></li>
+
+                                </ul>
+                        </div>
+                       
+                    </div>
+                </div>
+            </div>
+        </div>        
+            <!-- BEGIN PROFILE SIDEBAR -->
+       <!--     <div class="profile-sidebar">
+                                <div class="card-body col-md-12" id="line-parent">
+                                    <div class="panel-group accordion"  id="accordion3">
+                                          <div class="panel panel-default">
+                                               <div class="row">
+                                                    <div class="profile-userpic">
+                                                        <img src="../assets/img/dp.jpg" class="img-responsive" alt=""> </div>
+                                                </div>
+
+                                              <div class="panel-heading panel-heading-gray">
+                                                  
+                                                      <a class="accordion-toggle accordion-toggle-styled collapsed" data-toggle="collapse" data-parent="#accordion3" href="#collapse_3_1">
+                                                       <div class="profile-usertitle">
+                                                       <div class="profile-usertitle-name"> {{ patient.full_name }}
+                                                       </div>
+                                                        </div> 
+                                                        </a>
+                                                  
+                                              </div>
+                                              <div id="collapse_3_1" class="panel-collapse collapse">
+                                                  <div class="panel-body">
+                        
+                                                    
+                                                    <ul class="list-group list-group-unbordered">
+                                                        
+                                                        <li class="list-group-item">
+                                                            <b>First Name </b>
+                                                            <div class="profile-desc-item pull-right"> {{ patient.first_name }}</div>
+                                                        </li>
+                                                        <li class="list-group-item">
+                                                            <b>Last Name </b>
+                                                            <div class="profile-desc-item pull-right"> {{ patient.last_name }}</div>
+                                                        </li>
+                                                        <li class="list-group-item">
+                                                            <b>Gender </b>
+                                                            <div class="profile-desc-item pull-right"> {{ patient.sex }}</div>
+                                                        </li>
+                                                        <li class="list-group-item">
+                                                            <b>Age</b>
+                                                            <div class="profile-desc-item pull-right"> {{ patient.age }}</div>
+                                                        </li>
+                                                    </ul>
+
+                                                  </div>
+                                              </div>
+                                          </div>
+                                          
+                                      </div>
+                                </div>
+                            
+
+            </div>
+          
+
+
+        <div class="col-md-3" style="padding-left: 20px; height: 380px;">
+            <div class="card card-box ">
+                <div class="card-head">
+                    <header>Actions</header>
+                                    <ul><li> <a id="addNoteCard" onclick="toggleServiceForm()">Additional Services </a></li>
+                                    <li><a href="{% url 'order-for-patient' patient.id %}">Make Lab Order</a></li>
+                                    <li>  <a href="{% url 'radiology:xray_order' patient.id %}">Order X-Ray</a></li>
+                                    <li><a id="addInterventionCard" onclick="toggleInterventionForm()">Add Intervention</a></li>
+                                    <li><a id="addNoteCard" onclick="toggleNoteForm()">Medical Note</a></li>
+                                    <li>  <a href="{% url 'prescription_form' patient.id %}">Prescribe Drugs</a></li>
+                                    <li>  <a href="{% url 'radiology:xray_order' patient.id %}">Order X-Ray</a></li>
+                                    <li><a href="{% url 'discharge_summary_form' patient.id %}" style="color:red;">Discharge Patient</a></li>
+
+                                </ul>
+                </div>
+                
+            </div>
+        </div>
+    -->
+        <div class="col-md-5">
+            <div class="card card-box" id="intervention-form-id" style="display: none; height: 390px;">
+                
+                <div class="card-body" >
+                    <form action="" method="POST">
+                            {% csrf_token %}
+                                    <div class="form-group col-md-12">  
+                                      {{intervention_form.intervention_cause|as_crispy_field}}
+                                    </div>
+                                    <div class="form-group col-md-12">  
+                                      {{intervention_form.intervention|as_crispy_field}}
+                                    </div>
+                                    <div class="form-group col-md-12">  
+                                      {{intervention_form.rational|as_crispy_field}}
+                                    </div>
+                                    
+                                        <button class="form-group btn btn-primary" type="submit" > Save</button>
+                                        
+                                                                    
+                    </form>
+                </div>
+            </div>
+
+            <div class="card card-box" id="medical-note-form-id" style="display: none">            
+                <div class="card-body">
+                    <form action="{% url 'save_outpatient_note' patient.id %}" method="POST">
+                            {% csrf_token %}
+                                    <div class="form-group col-md-12">  
+                                      {{medical_note_form.note|as_crispy_field}}
+                                    </div>
+                                    
+                                    <button class="form-group btn btn-primary" type="submit" > Save</button>                                                                                                            
+                    </form>
+                </div>
+            </div>
+
+            <div class="card card-box" id="service-form-id" style="display: none">
+                <div class="card-body" >
+                    <form action="{% url 'save_service_bill' patient.id %}" method="POST">
+                            {% csrf_token %}
+                                    <div class="form-group col-md-12">  
+                                      {{service_form.service|as_crispy_field}}
+                                    </div>
+                                    
+                                    <button class="form-group btn btn-primary" type="submit" > Save</button>                                                                                                            
+                    </form>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+<hr>
+<div class="row">
+                        <div class="panel tab-border card-box col-md-12" >
+                        <header class="panel-heading panel-heading-gray custom-tab ">
+                            <ul class="nav nav-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active show" href="#lab-tab" data-toggle="tab"> Lab Results </a></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#Xray-tab" data-toggle="tab">X Ray Results</a></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#service-tab" data-toggle="tab">Services Administered</a></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#drug-tab" data-toggle="tab">Given Medication</a></li>
+
+                            </ul>
+                        </header>
+                        <div class="panel-body">
+                            <div class="tab-content">
+                                <div class="tab-pane active fontawesome-demo" id="lab-tab">
+                                                        <table class="mdl-data-table ml-table-bordered  " id="example4">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th class="mdl-data-table__cell--non-numeric"> Order </th>
+                                                                    <th class="mdl-data-table__cell--non-numeric"> Result Type </th>
+                                                                    <th class="mdl-data-table__cell--non-numeric"> Value </th>
+
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                            {% for result in lab_result_list %}
+                                                                <tr class="odd gradeX">
+                                                                    
+                                                                    <td class="mdl-data-table__cell--non-numeric">{{result.lab_result.test.order}}</td>
+                                                                    <td class="mdl-data-table__cell--non-numeric">{{result.lab_result.result_type}}</td>
+                                                                    <td class="mdl-data-table__cell--non-numeric">{{result.lab_result.value}}</td>
+
+                                                                </tr>
+                                                                {% endfor %}
+
+                                                            </tbody>
+                                                        </table>
+                                </div>
+                                <div class="tab-pane fontawesome-demo" id="drug-tab">
+                                                        <table class="mdl-data-table ml-table-bordered  " id="example4">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th class="mdl-data-table__cell--non-numeric"> Name </th>
+                                                                    <th class="mdl-data-table__cell--non-numeric"> Dosage </th>
+
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                            {% for medication in medication_list %}
+                                                                <tr class="odd gradeX">
+                                                                    
+                                                                    <td class="mdl-data-table__cell--non-numeric">{{medication.drug_prescription.drug}}</td>
+                                                                    <td class="mdl-data-table__cell--non-numeric">{{medication.drug_prescription.drug.dosage_amount}}</td>
+
+                                                                </tr>
+                                                                {% endfor %}
+
+                                                            </tbody>
+                                                        </table>
+                                        
+                                </div>
+                                <div class="tab-pane fontawesome-demo" id="drug-tab">
+                                                        <table class="mdl-data-table ml-table-bordered  " id="example4">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th class="mdl-data-table__cell--non-numeric"> Service </th>
+
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                            {% for service in service_list %}
+                                                                <tr class="odd gradeX">
+                                                                    
+                                                                    <td class="mdl-data-table__cell--non-numeric">{{service.service}}</td>
+
+                                                                </tr>
+                                                                {% endfor %}
+
+                                                            </tbody>
+                                                        </table>
+                                        
+                                </div>
+
+                            </div>
+                        </div>
+
+
+
+    {% block scripts %}
+
+    <script>
+
+        function toggleInterventionForm (){
+          document.getElementById('intervention-form-id').style.display = 'block';
+          
+        }
+
+        function toggleNoteForm (){
+          document.getElementById('medical-note-form-id').style.display = 'block';          
+        }
+
+        function toggleServiceForm (){
+          document.getElementById('service-form-id').style.display = 'block';          
+        }
+
+    </script>
+      
+    {% endblock %}
+
+{% endblock %}
