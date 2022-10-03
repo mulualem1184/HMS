@@ -33,7 +33,9 @@ class PatientRegistrationForm(forms.ModelForm):
 	class Meta:
 		model = Patient
 		fields = ['first_name', 'last_name', 'sex', 'dob',
-					'occupation', 'phone_number', 'address']
+					'occupation', 'phone_number', 'sub_city'
+					,'wereda','kebele','region'
+					]
 		
 		widgets = {
 			'first_name': forms.TextInput(attrs={
@@ -46,7 +48,7 @@ class PatientRegistrationForm(forms.ModelForm):
 			'class' : 'select2 form-control',
 				}),
 			'dob': forms.DateInput(attrs={
-			'class' : 'form-control select2',
+			'class' : 'form-control forms',
 			'placeholder': 'Date Of Birth',
 				}),
 			'occupation': forms.TextInput(attrs={
@@ -55,8 +57,17 @@ class PatientRegistrationForm(forms.ModelForm):
 			'phone_number': forms.TextInput(attrs={
 			'class' : 'forms form-control',
 				}),
-			'address': forms.TextInput(attrs={
+			'sub_city': forms.TextInput(attrs={
 			'class' : 'forms form-control',
+				}),
+			'wereda': forms.TextInput(attrs={
+			'class' : 'forms form-control',
+				}),
+			'kebele': forms.TextInput(attrs={
+			'class' : 'forms form-control',
+				}),
+			'region': forms.Select(attrs={
+			'class' : 'forms form-control select2',
 				}),
 			
 			}
@@ -116,6 +127,7 @@ class OutpatientMedicalNote(forms.ModelForm):
 		widgets = {
 			'note': forms.Textarea(attrs={
 			'class' : 'forms form-control',
+			'rows':8,
 				}),
 			}
 
@@ -177,23 +189,22 @@ class ChiefComplaintForm(forms.ModelForm):
             }),
 
 			}
+
 class VitalSignForm(forms.ModelForm):
     class Meta:
         model = PatientVitalSign
         fields = [
             'pulse_rate', 'temperature', 'temperature_unit',
             'systolic_blood_pressure', 'diastolic_blood_pressure', 
+            'oxygen_saturation','blood_glucose_level',
+            'glucose_level_unit'
         ]
         widgets = {            
             'pulse_rate': forms.NumberInput(attrs={
                 'class' : 'form-control forms',
-                'class' : 'form-control forms',
-				'placeholder': 'Heart Beat Per Minute',
-
             }),
             'temperature': forms.NumberInput(attrs={
                 'class' : 'form-control forms',
-
             }),
             'systolic_blood_pressure': forms.NumberInput(attrs={
                 'class' : 'form-control forms',
@@ -201,10 +212,19 @@ class VitalSignForm(forms.ModelForm):
             'diastolic_blood_pressure': forms.NumberInput(attrs={
                 'class' : 'form-control forms',
             }),
-
+            'oxygen_saturation': forms.NumberInput(attrs={
+                'class' : 'form-control forms',
+            }),
+            'blood_glucose_level': forms.NumberInput(attrs={
+                'class' : 'form-control forms',
+            }),
+            'glucose_level_unit': forms.Select(attrs={
+                'class' : 'form-control select2',
+            }),
             'temperature_unit': forms.Select(attrs={
                 'class' : 'form-control select2',
             }),
+
         }
 
 class HospitalStructureForm(forms.Form):
@@ -350,7 +370,7 @@ class PatientPrescriptionForm(forms.ModelForm):
 
 	class Meta:
 		model = DrugPrescription
-		fields = [ 'drug','diagnosis' ,'units_per_take','frequency','duration_amount','duration_unit','order_category', 'comments']
+		fields = ['info', 'drug','diagnosis' ,'units_per_take','frequency','duration_amount','duration_unit','order_category', 'comments']
 
 		widgets = {						
 			'drug': forms.Select(attrs={
@@ -369,9 +389,13 @@ class PatientPrescriptionForm(forms.ModelForm):
 			'duration_amount': forms.NumberInput(attrs={
 			'class' : 'forms form-control',
 				}),			
+			'info': forms.Select(attrs={
+			'class' : 'form-control select2',
+				}),
 			'duration_unit': forms.Select(attrs={
 			'class' : 'form-control select2',
 				}),
+
 			'order_category': forms.Select(attrs={
 			'class' : 'form-control select2',
 				}),
@@ -467,7 +491,6 @@ class PatientHabitForm(forms.ModelForm):
 		widgets = {						
 			'habit': forms.TextInput(attrs={
 			'class' : 'form-control forms',
-
 				}),
 			'habit_duration': forms.NumberInput(attrs={
 			'class' : 'form-control forms',
@@ -484,6 +507,20 @@ class PatientHabitForm(forms.ModelForm):
 
 				}),			
 
+
+			}
+
+class PatientFollowUpForm(forms.ModelForm):
+
+	class Meta:
+		model = FollowUp
+		fields = ['appointment_time']
+
+		widgets = {						
+			'appointment_time': forms.DateTimeInput(attrs={
+			'class' : 'form-control forms',
+			'placeholder': 'Appointment Date',
+				}),
 
 			}
 
@@ -519,5 +556,50 @@ class DischargeOutpatientForm(forms.ModelForm):
 			'summary': forms.Textarea(attrs={
 			'class' : 'form-control forms',
 				}),
+		
+			}
+
+class QuestionForPatientForm(forms.ModelForm):
+	class Meta:
+		model = QuestionForPatient 
+		fields = [
+					'question',
+					]
+		widgets = {			
+			'question': forms.Textarea(attrs={
+			'class' : 'form-control forms',
+				}),
+		
+			}
+
+
+class OpdPatientResponseForm(forms.ModelForm):
+	class Meta:
+		model = OpdPatientResponse 
+		fields = [
+					'response',
+					'question',
+					]
+		widgets = {			
+			'response': forms.Textarea(attrs={
+			'class' : 'form-control forms',
+				}),
+			'question': forms.Select(attrs={
+			'class' : 'form-control select2',
+				}),
+		
+		
+			}
+class OpdPatientResponseForm2(forms.ModelForm):
+	class Meta:
+		model = OpdPatientResponse 
+		fields = [
+					'response',
+					]
+		widgets = {			
+			'response': forms.Textarea(attrs={
+			'class' : 'form-control forms',
+				}),
+		
 		
 			}

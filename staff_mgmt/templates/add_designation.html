@@ -3,7 +3,8 @@
 
 {% block title %} Add Designation {% endblock %}
 {% block page_content %}
-    <div class="col-md-12 col-sm-10">
+<div class="row">
+    <div class="col-md-12 col-sm-10 col-lg-9">
         <div class="card card-box">
             <div class="card-head">
                 <header>Add Designation</header>
@@ -28,4 +29,32 @@
             </div>
         </div>
     </div>
+    <div class="col-md-12 col-sm-10 col-lg-3">
+        <div class="card card-box">
+            <div class="card-head">
+                <header>Designation List</header>
+            </div>
+            <div class="card-body " id="bar-parent1">
+                <table class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded">
+                    <thead>
+                    <tr>
+                        <th class="mdl-data-table__cell--non-numeric">#</th>
+                        <th class="mdl-data-table__cell--non-numeric">Name</th>
+                        <th class="mdl-data-table__cell--non-numeric">Code</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {% for d in designation_list %}
+                            <tr>
+                                <td class="mdl-data-table__cell--non-numeric"> {{ forloop.counter }} </td>
+                                <td class="mdl-data-table__cell--non-numeric"> {{ d.name }} </td>
+                                <td class="mdl-data-table__cell--non-numeric"> {{ d.staff_code }} </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

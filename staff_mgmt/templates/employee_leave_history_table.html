@@ -1,0 +1,22 @@
+{% if leave_list %}
+    <table class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded">
+        <thead>
+        <tr>
+            <th class="mdl-data-table__cell--non-numeric">From</th>
+            <th class="mdl-data-table__cell--non-numeric">To</th>
+            <th class="mdl-data-table__cell--non-numeric">Status</th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for leave in leave_list %}
+                <tr>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ leave.from_date }} </td>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ leave.to_date }} </td>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ leave.status }} </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    No Previous Leave Requests
+{% endif %}

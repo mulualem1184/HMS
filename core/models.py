@@ -1,6 +1,7 @@
 from django.db import models
 import datetime
 from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
+from datetime import datetime as datetime2
 #from django.core.validators import 
 
 class Patient(models.Model):
@@ -8,6 +9,19 @@ class Patient(models.Model):
         ('MALE','MALE'),
         ('FEMALE', 'FEMALE'),
     ]
+    REGION_CHOICES = [
+        ('Addis Ababa','Addis Ababa'),
+        ('Tigray','Tigray'),
+        ('Afar', 'Afar'),
+        ('Amhara', 'Amhara'),
+        ('Oromia', 'Oromia'),
+        ('Benishangul', 'Benishangul'),
+        ('Gambella', 'Gambella'),
+        ('SNNPRS', 'SNNPRS'),
+        ('Somali', 'Somali'),
+        ('Sidama', 'Sidama'),
+    ]
+
     inpatient_status = [
         ('yes','yes'),
         ('no', 'no'),
@@ -17,10 +31,15 @@ class Patient(models.Model):
     first_name = models.CharField(max_length=50, validators=[RegexValidator('^[a-zA-Z]*$', ),])
     last_name = models.CharField(max_length=50,validators=[RegexValidator('^[a-zA-Z]*$', ),])
     sex = models.CharField(max_length=10, choices=SEX_CHOICES)
-    dob = models.DateField()
+    dob = models.DateField(null=True,blank=True)
     occupation = models.CharField(max_length=150)
     phone_number = models.CharField(max_length=10)
-    address = models.CharField(max_length=300)
+    #address = models.CharField(max_length=300)
+    sub_city = models.CharField(max_length=2000, null=True, blank=True) 
+    wereda = models.CharField(max_length=2000, null=True, blank=True) 
+    kebele = models.CharField(max_length=2000, null=True, blank=True) 
+    region = models.CharField(max_length=20, choices=REGION_CHOICES, null=True)
+
     inpatient = models.CharField(max_length=10, choices=inpatient_status, null=True)
 
     def __str__(self):
@@ -34,9 +53,18 @@ class Patient(models.Model):
     @property
     def age(self):
         # returns age from dob
-        td = datetime.date.today() - self.dob
-        return td.days//365
+        if self.dob:
+            td = datetime.date.today() - self.dob
+            return td.days//365
 
+    @property
+    def registered_today(self):
+        today = datetime2.now()
+        rt = Patient.objects.filter(registered_at__day=today.day)
+        if rt:
+            return rt.count()
+        else:
+            return 0
 
 class TextMessage(models.Model):
     time = models.DateTimeField(auto_now_add=True)
@@ -99,12 +127,20 @@ class PatientVitalSign(models.Model):
         ('Fahrenheit', 'Fahrenheit'),
         ('Celcius', 'Celcius'),
     )
+    glucose_units = (
+        ('mmol/L', 'mmol/L'),
+    )
+
     patient = models.ForeignKey(Patient, on_delete=models.SET_NULL, null=True, blank=True)
     pulse_rate = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(200.0)], null=True, blank=True)  
     temperature = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(100.0)], null=True, blank=True)
     temperature_unit = models.CharField(max_length=100, null=True, blank=True, choices=temperature_unit)
     systolic_blood_pressure = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(200.0)], null=True, blank=True)
     diastolic_blood_pressure = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(90.0)], null=True, blank=True)
+    oxygen_saturation = models.FloatField(validators=[MinValueValidator(0.0), MaxValueValidator(100.0)],blank=True, null=True)
+    blood_glucose_level = models.FloatField( null=True, blank=True)
+    glucose_level_unit = models.CharField(max_length=100, null=True, blank=True, choices=glucose_units)
+
     active = models.CharField(max_length=100, null=True, blank=True, choices=symptom_status, default=True)
     registered_on = models.DateTimeField(null=True)
 
@@ -123,6 +159,39 @@ class PatientPaymentStatus(models.Model):
     payment_status = models.CharField(max_length=100, null=True, blank=True, choices=payment_status, default=True)
     active = models.BooleanField(default=True)
     registered_on = models.DateTimeField(null=True)
+
+    def __str__(self):
+        return  str(self.patient) + str(self.payment_status)
+
+    @property
+    def discountPatientAmount(self):
+        rt = PatientPaymentStatus.objects.filter(active=True,payment_status='Discount')
+        if rt:
+            return rt.count()
+        else:
+            return 0
+
+    @property
+    def freePatientAmount(self):
+        rt = PatientPaymentStatus.objects.filter(active=True,payment_status='Free')
+        if rt:
+            return rt.count()
+        else:
+            return 0
+    @property
+    def insurancePatientAmount(self):
+        rt = PatientPaymentStatus.objects.filter(active=True,payment_status='Insurance')
+        if rt:
+            return rt.count()
+        else:
+            return 0
+    @property
+    def defaultPatientAmount(self):
+        rt = PatientPaymentStatus.objects.filter(active=True, payment_status='Default')
+        if rt:
+            return rt.count()
+        else:
+            return 0
 
 class InsuranceDetail(models.Model):
     name = models.CharField(max_length=50)

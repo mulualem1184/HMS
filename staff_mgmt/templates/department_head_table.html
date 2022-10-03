@@ -1,0 +1,75 @@
+{% if dh_info %}
+    <h5>Department Head history</h5>
+    <table class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded">
+        <thead>
+        <tr>
+            <th class="mdl-data-table__cell--non-numeric">#</th>
+            <th class="mdl-data-table__cell--non-numeric">Employee Name</th>
+            <th class="mdl-data-table__cell--non-numeric">Employee Email</th>
+            <th class="mdl-data-table__cell--non-numeric">Assigned by</th>
+            <th class="mdl-data-table__cell--non-numeric">From</th>
+            <th class="mdl-data-table__cell--non-numeric">To</th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for dh in dh_info %}
+                <tr>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ forloop.counter }} </td>
+                    <td class="mdl-data-table__cell--non-numeric"> 
+                        {% if user.is_staff %}
+                            <a href="{% url 'staff:view_employee' dh.employee.id %}">
+                                {{ dh.employee.full_name }} 
+                            </a>
+                        {% else %}
+                            {{ dh.employee.full_name }} 
+                        {% endif %}
+                    </td>
+                    <td class="mdl-data-table__cell--non-numeric"> 
+                        {{ dh.employee.email }} 
+                    </td>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ dh.assigned_by }} </td>
+                    <td class="mdl-data-table__cell--non-numeric"> {{ dh.start_date }} </td>
+                    <td class="mdl-data-table__cell--non-numeric">
+                        {% if dh.end_date %}
+                            {{ dh.end_date }} 
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br>
+{% else %}
+    <b>
+        Department Head not assigned <br> <br>
+    </b> 
+{% endif %}
+<div class="row">
+    <div class="col-md-12 col-sm-12">
+        <div class="card card-box">
+            <div class="card-head">
+                <header>Assign Department Head for {{ department }}</header>
+            </div>
+            <div class="card-body" id="bar-parent">
+                <form method="POST" id="form_sample_1" class="form-horizontal">
+                    {% csrf_token %}
+                    <div class="form-body">
+                        {% for field in update_form %}
+                            <div class="form-group row">
+                                <label class="control-label col-md-3" for="{{ field.id_for_label }}" >
+                                    {{ field.label }}<span class="required"> * </span>
+                                </label>
+                                <div class="col-md-5">
+                                    {{ field }}
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <button class="btn btn-info" type="submit">Assign</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

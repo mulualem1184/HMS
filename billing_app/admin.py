@@ -8,6 +8,8 @@ admin.site.register(VisitBill)
 admin.site.register(VisitBillDetail)
 admin.site.register(ServiceBill)
 admin.site.register(ServiceBillDetail)
+admin.site.register(LabBillDetail)
+
 admin.site.register(InpatientBill)
 admin.site.register(InpatientDrugBillDetail)
 admin.site.register(InpatientRoomBillDetail)
@@ -30,6 +32,8 @@ admin.site.register(NurseInstructionCheck)
 admin.site.register(NurseIndependentIntervention)
 
 admin.site.register(InpatientDischargeSummary)
+admin.site.register(CashierDebt)
+admin.site.register(CashierReconcilation)
 
 
 

@@ -1,0 +1,101 @@
+<div class="modal fade" id="filterDrugBillModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Apply Filter</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="GET">
+                    <div class="form-group row col-md-12">
+                        <label for="start_date" class="col-md-2 control-label"> From </label>
+                        <div class="col-md-3">
+                            <input type="date" name="start_date" id="start_date" class="form-control">
+                        </div>
+                        <div class="col-md-1"></div>
+                        <label for="end_date" class="col-md-2 control-label"> To</label>
+                        <div class="col-md-3">
+                            <input type="date" name="end_date" id="end_date" class="form-control">
+                        </div>
+
+                    </div>
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-2 control-label"> Age From</label>
+                        <div class="col-md-3">
+                            <select name="from_age" id="labsection" class="form-control">
+                                <option value="0">All</option>
+                                {% for a in age_array %}
+                                    <option value="{{a}}">{{a}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-1"></div>
+
+                        <label for="labsection" class="col-md-2 control-label"> Age To</label>
+                        <div class="col-md-3">
+                            <select name="to_age" id="labsection" class="form-control">
+                                <option value="0">All</option>
+                                {% for a in age_array %}
+                                    <option value="{{a}}">{{a}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-2 control-label"> Department</label>
+                        <div class="col-md-3">
+                            <select name="department" id="labsection" class="form-control">
+                                <option value="0">All</option>
+                                {% for department in department %}
+                                    <option value="{{department}}">{{department}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-1"></div>
+                        <label for="labsection" class="col-md-2 control-label">Payment Status</label>
+                        <div class="col-md-3">
+                            <select name="payment_status" id="labsection" class="form-control">
+                                <option value="0">All</option>
+                                {% for status in payment_statuses %}
+                                    <option value="{{status}}">{{status}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-2 control-label"> Drug</label>
+                        <div class="col-md-3">
+                            <select name="drug" id="labsection" class="form-control">
+                                <option value="0">All</option>
+                                {% for drug in drugs %}
+                                    <option value="{{drug.id}}">{{drug}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-1"></div>
+
+                        <label for="labsection" class="col-md-2 control-label"> Dispensary</label>
+                        <div class="col-md-3">
+                            <select name="dispensary" id="labsection" class="form-control">
+                                <option value="0">All</option>
+                                {% for dispensary in dispensary_list %}
+                                    <option value="{{dispensary.id}}">{{dispensary}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer d-flex justify-content-center">
+                        <button class="btn btn-primary" type="submit">Filter</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

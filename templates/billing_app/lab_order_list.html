@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} {% endblock %}
+
+{% block page_content %}
+        
+
+    <div class="" style="width: 100%;">
+        <div class="card card-box">
+            <div class="card-head">
+                <header>Lab Order List</header>
+                <button id = "panel-button2" 
+                       class = "mdl-button mdl-js-button mdl-button--icon pull-right" 
+                       data-upgraded = ",MaterialButton">
+                       <i class = "material-icons">more_vert</i>
+                    </button>
+                    <ul class = "mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+                       data-mdl-for = "panel-button2">
+                       <li class = "mdl-menu__item"><i class="material-icons">assistant_photo</i>Action</li>
+                       <li class = "mdl-menu__item"><i class="material-icons">print</i>Another action</li>
+                       <li class = "mdl-menu__item"><i class="material-icons">favorite</i>Something else here</li>
+                    </ul>
+            </div>
+            <div class="card-body " id="bar-parent1">
+              
+        
+                    {%block content1%}
+                    <table id="example1" class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded">
+                        <thead>
+                            <tr class="gradeX odd">
+                                <th class="mdl-data-table__cell--non-numeric">Order ID</th>
+                                <th class="mdl-data-table__cell--non-numeric">Ordered By</th>
+                                <th class="mdl-data-table__cell--non-numeric">Priority</th>
+                                <th class="mdl-data-table__cell--non-numeric">Issue</th>
+ 
+                                <!--<th style=" ">Quantity</th>
+                                <th>Actions</th>-->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in unpaid_orders_array %}
+                            <tr>
+                                <td class="mdl-data-table__cell--non-numeric"> {{order.id}}</td>
+
+                                <td class="mdl-data-table__cell--non-numeric">
+                                    {{order.ordered_by}}
+                                </td>
+                                <td class="mdl-data-table__cell--non-numeric">
+                                       {% if order.priority == 'EMERGENCY' %}
+                                            <span class="badge badge-danger"> {{ order.priority }} </span> 
+                                        {% else %}
+                                            <span class="badge badge-info"> {{ order.priority }} </span>
+                                        {% endif %}
+
+                                </td>
+                                <td class="mdl-data-table__cell--non-numeric">
+                                    <a href="{% url 'view_lab_order_detail' order.id %}" class="primary-btn"> View</a>
+                                </td>
+                            </tr>
+
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% endblock %}
+                     
+    {% block scripts %}
+               
+            {% endblock %}
+
+{% endblock %}
+
+ 

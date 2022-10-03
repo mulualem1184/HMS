@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+    Result type
+{% endblock %}
+{% block style %}
+    <style>
+        .hiddenBox {
+            display: none;
+        }
+    </style>
+{% endblock %}
+{% block page_content %}
+    <div id="emptyChoiceForm" class="hiddenBox">
+        <div class="form-group row">
+            <label class="control-label col-md-3" for="choiceName" >
+                Choice Name<span class="required"> * </span>
+            </label>
+            <div class="col-md-5">
+                <input id="choiceName" type="text" class="form-control" name="choice_name">
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-lg-12">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>Expected test result fields for {{ test_type }}</header>
+                </div>
+                <div class="card-body" id="bar-parent">
+                    {% if rt_list %}
+                        {% include "lis/result_type_table.html" %}
+                        <br>
+                    {% endif %}
+                    <button id="newRTBoxButton" type="button" class="btn btn-primary" style="margin-left: 200px;" onclick="showNewFormBox()">Add New</button>
+                    <div id='newRTBox' style="display: none;">
+                        <form method="POST" id="form_sample_1" class="form-horizontal" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            <div class="form-body" id="formBody">
+                                {% for field in rt_form %}
+                                    {% if field.widget_type == 'checkbox' %}
+                                        <div class="form-group row">
+                                            <label class="control-label col-md-3" for="{{ field.id_for_label }}">
+                                                {{ field.label }}
+                                            </label>
+                                            <div class="col-md-5">
+                                                {{ field }}
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <div class="form-group row">
+                                            <label class="control-label col-md-3" for="{{ field.id_for_label }}" >
+                                                {{ field.label }}<span class="required"> * </span>
+                                            </label>
+                                            <div class="col-md-5">
+                                                {{ field }}
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                                <div id='newchoice'>
+                                    
+                                </div>
+                            </div>
+                            <button id="addChoice" onclick="addChoiceField()" type="button" class="btn btn-primary" style="margin-left: 200px; display: none;">Add Choice</button>
+                            <br>
+                            <button type="submit" class="btn btn-primary" style="margin-left: 200px;">Add</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block scripts %}
+    <script>
+        var choicenameid = 1;
+        function showNewFormBox() {
+            document.getElementById('newRTBox').style.display = 'block';
+            document.getElementById('newRTBoxButton').style.display = 'none';
+        }
+
+        function displayChoices() {
+            var elt = document.getElementById('id_input_type');
+            if (elt.value == 'CHOICE') {
+                document.getElementById('addChoice').style.display = 'block';
+                addChoiceField();
+            } else{
+                document.getElementById('addChoice').style.display = 'none';
+                document.getElementById('newchoice').style.display = 'none';
+            }
+        }
+
+        function addChoiceField() {
+            document.getElementById('newchoice').style.display = 'block';
+            var emptyform = document.getElementById('emptyChoiceForm');
+            var nf = emptyform.cloneNode();
+            nf.classList = [];
+            var fb = document.getElementById('newchoice');
+            var input = `<div class="form-group row">\
+                            <label class="control-label col-md-3" for="choiceName" >\
+                        Choice Name<span class="required"> * </span>\
+                    </label>\
+                    <div class="col-md-5">\
+                        <input id="choiceName${choicenameid}" type="text" class="form-control" name="choice_name">\
+                    </div>\
+                </div>`
+            $('#newchoice').append(input);
+            console.log('added new child');
+            choicenameid+=1;
+        }
+        {% if not rt_list %}
+            showNewFormBox();
+        {% endif %}
+        {% if no_choice_error %}
+            showNewFormBox();
+            displayChoices();
+        {% endif %}
+    </script>
+{% endblock %}

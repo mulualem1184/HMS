@@ -1,6 +1,7 @@
 from django.db import models
 #from django.contrib.auth.models import User
-from core.models import Patient 
+from core.models import Patient
+from staff_mgmt.models import Employee 
 
 from django.contrib.auth import get_user_model
 
@@ -66,6 +67,8 @@ class DrugProfile(models.Model):
 #	image = models.ImageField(null=True)
 	def __str__(self):
 		return self.commercial_name
+
+
 
 class DiseaseDrugModel(models.Model):
 	drug = models.ForeignKey(DrugProfile,  on_delete= models.SET_NULL, null=True)
@@ -149,6 +152,55 @@ class Dosage(models.Model):
 
 	def __str__(self):
 		return self.drug.drug.commercial_name + self.dosage_amount + " " + self.dosage_form
+
+class DrugPrescriptionInfo(models.Model):
+	route_types=(
+			('oral','oral'),
+			('sublingual','sublingual'),
+			('rectal','rectal'),
+			('intravenous','intravenous'),
+			('intramuscular','intramuscular'),
+			('subcutaneous','subcutaneous'),
+			('intranasal','intranasal'),
+			('inhaled','inhaled'),
+			('vaginal','vaginal'),
+			)
+
+	time_units=(
+			
+			('days','days'),
+			('weeks','weeks'),
+			('months','months'),
+		
+		)
+
+	frequency_units=(
+			
+			('a day','a day'),
+			('a week','a week'),
+			('a month','a month'),
+		
+		)
+
+	dosage_unit_types=(
+			('mg','mg'),
+			('ml','ml'),
+			('mm','mm'),
+			('mmol','mmol'),
+			('g','g'),
+			('kg','kg'),
+			('mmol','mmol'),
+			
+		)
+
+	drug = models.ForeignKey(Dosage,  on_delete= models.SET_NULL, null=True,blank=True)
+	units_per_take = models.IntegerField(max_length=200, null=True,blank=True)
+	frequency = models.IntegerField(max_length=200, null=True)
+	frequency_unit =models.CharField( max_length=200, choices=frequency_units, null=True) 
+	duration = models.IntegerField(null=True)
+	duration_unit = models.CharField( max_length=200, choices=time_units)
+	def __str__(self):
+		return str(self.drug) + " - " + str(self.units_per_take) + " Units Per Take - " + str(self.frequency) + " Times " + str(self.frequency_unit) + " For " + str(self.duration) + " " + str(self.duration_unit)
 
 
 
@@ -260,9 +312,10 @@ class InStockSlotDrug(models.Model):
 
 class Dispensary(models.Model):
 	dispensary_name = models.CharField(max_length=100, null=True)
+	stock = models.ForeignKey(InStock, on_delete= models.SET_NULL,null=True)
+
 	def __str__(self):
 		return  self.dispensary_name
-
 
 class DispensaryShelf(models.Model):
 	shelf_no = models.CharField(null=True, max_length=1000)
@@ -298,6 +351,13 @@ class DrugRelocationTemp(models.Model):
 	drug = models.ForeignKey(Dosage, on_delete= models.SET_NULL, null=True)	
 	quantity = models.IntegerField(null=True)	
 	
+class DrugSupplyToDispensary(models.Model):
+	drug = models.ForeignKey(Dosage, on_delete= models.SET_NULL, null=True)	
+	quantity = models.IntegerField(null=True)	
+	dispensary = models.ForeignKey(Dispensary, on_delete= models.SET_NULL, null=True)	
+	registered_by = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
+	registered_on = models.DateTimeField(auto_now_add=True, null=True)
+
 	"""
 class Pharmacy(models.Model):
 	pharmacy_name= models.CharField(max_length=1000, null=True)#needs choices
@@ -321,6 +381,9 @@ class Doctor(models.Model):
 """
 class Hospital(models.Model):
 	name = models.CharField(max_length=1000, null=True)
+
+	def __str__(self):
+		return name
 
 class DrugPrescription(models.Model):
 	order_categories = (
@@ -377,6 +440,13 @@ class DrugPrescription(models.Model):
 			('false','false'),
 			
 		)
+	department_choices=(
+			(1,'Ward'),
+			(2,'OPD'),
+			(3,'Emergency'),
+			
+		)
+
 	"""
 	diagnosis : identified disease of the patient   	
 	frequency : amount of times the drug is taken in a single day
@@ -386,21 +456,23 @@ class DrugPrescription(models.Model):
 
 	""" 
 
-	prescriber = models.ForeignKey(User, on_delete= models.SET_NULL,  related_name ='prescriber', null=True, blank=True)
-	patient = models.ForeignKey(Patient, on_delete= models.SET_NULL, null=True)	
-	diagnosis = models.CharField(max_length=1000, null=True, blank=True)
-	drug = models.ForeignKey(Dosage, on_delete= models.SET_NULL,  related_name ='DrugProfile_name', null=True) 
 	units_per_take = models.IntegerField(max_length=200, null=True,blank=True)
-	hospital = models.CharField(max_length=200, null=True)
 	frequency = models.IntegerField(max_length=200, null=True, blank=True)
 	frequency_unit =models.CharField( max_length=200, choices=frequency_units, null=True, blank=True) 
 	duration_amount = models.IntegerField(null=True, blank=True)
 	duration_unit = models.CharField( max_length=200, choices=time_units, blank=True)
-	order_category = models.CharField(max_length= 200, choices=order_categories)
+	prescriber = models.ForeignKey(Employee, on_delete= models.SET_NULL,  related_name ='prescriber', null=True, blank=True)
+	patient = models.ForeignKey(Patient, on_delete= models.SET_NULL, null=True)	
+	diagnosis = models.CharField(max_length=1000, null=True, blank=True)
+	info = models.ForeignKey(DrugPrescriptionInfo, on_delete= models.SET_NULL,null=True,blank=True) 
+	drug = models.ForeignKey(Dosage, on_delete= models.SET_NULL,  related_name ='DrugProfile_name', null=True, blank=True) 
+	hospital = models.CharField(max_length=200, null=True)
+	order_category = models.CharField(max_length= 200, choices=order_categories, null=True, blank=True)
 	registered_on = models.DateTimeField(auto_now_add=True)
 	comments = models.CharField(max_length=5000, blank=True)
 	dispensed = models.CharField(max_length=5000, blank=True , choices=dispensed, default='false')
 	inpatient = models.CharField(max_length=5000, blank=True , choices=inpatient, default='false')
+	department = models.CharField(max_length=5000, blank=True , choices=department_choices, default='false')
 	
 	"""
 	@property
@@ -464,6 +536,7 @@ class Procurement(models.Model):
 
 	procurement_no = models.IntegerField(primary_key =True, default=0)
 	status = models.CharField( max_length=20, default='pending')
+	dispensary = models.ForeignKey(Dispensary, on_delete=models.SET_NULL, null=True)
 
 	def __str__(self):
 		procurement_no_string = str(self.procurement_no)
@@ -478,8 +551,8 @@ class ProcurementDetail(models.Model):
 class Batch(models.Model):
 
 #	batch_no :
-	batch_no = models.IntegerField()
-	procurement = models.ForeignKey(Procurement, on_delete= models.SET_NULL, null=True)
+	batch_no = models.IntegerField(null=True, blank=True)
+	procurement = models.ForeignKey(Procurement, on_delete= models.SET_NULL, null=True, blank=True)
 	drug = models.ForeignKey(Dosage, on_delete= models.SET_NULL, null=True)	
 	quantity = models.IntegerField(null=True)
 	def __str__(self):
@@ -493,12 +566,12 @@ class Insurance(models.Model):
 
 class DrugSupply(models.Model):
 	drug = models.ForeignKey(Dosage,  on_delete= models.SET_NULL, null=True)
-	batch = models.ForeignKey(Batch,  on_delete= models.SET_NULL, null=True)
+	batch = models.ForeignKey(Batch,  on_delete= models.SET_NULL, null=True,blank=True)
 	expiration_date = models.ForeignKey(DrugExpiration, on_delete= models.SET_NULL, null=True)
 	supplied_quantity = models.IntegerField(null=True)
 	purchasing_cost = models.FloatField(null=True)
 	supplier = models.CharField(max_length=200)
-#	manufacturer = models.CharField(max_length=200, null=True)	
+#	manufacturer = models.CharField(max_length=200, null=True)
 	slot_no = models.ForeignKey(DispensarySlot,  on_delete= models.SET_NULL, null=True, blank=True)
 	stock_slot_no = models.ForeignKey(InStockSlot,  on_delete= models.SET_NULL, null=True)
 #	shelf_no = models.ForeignKey(DispensaryShelf,  on_delete= models.SET_NULL, null=True)
@@ -545,15 +618,21 @@ class Bill(models.Model):
 		return bill_string
 
 class BillDetail(models.Model):
-	discount = {('Yes','Yes'),
-				('No','No'),
+	departments = {('Outpatient','Outpatient'),
+				('Inpatient','Inpatient'),
+				('Emergency','Emergency'),
 	}
-	bill = models.ForeignKey(Bill, on_delete=models.CASCADE)	
+	bill = models.ForeignKey(Bill, on_delete=models.CASCADE,null=True, blank=True)	
 	drug = models.ForeignKey(Dosage, on_delete=models.CASCADE)
 	product = models.ForeignKey(OtherProducts, on_delete= models.SET_NULL, null=True, blank=True)
 	selling_price = models.ForeignKey(DrugPrice, on_delete=models.SET_NULL, null=True)
-	discount = models.CharField(null=True,blank=True, max_length=100, choices=discount)
 	quantity=models.IntegerField(null=True)
+	discount = models.BooleanField(default=False)
+	insurance = models.BooleanField(default=False)
+	free = models.BooleanField(default=False)
+	credit = models.BooleanField(default=False)
+	department = models.CharField(max_length=500, choices=departments, null=True)
+
 	patient =models.ForeignKey(Patient, on_delete=models.SET_NULL, null=True)
 	registered_on=models.DateTimeField(auto_now_add=True)
 	def __str__(self):
@@ -586,12 +665,14 @@ class DrugDispensed(models.Model):
 		)
 	drug = models.ForeignKey(Dosage, on_delete= models.SET_NULL, null=True)
 	bill_no = models.ForeignKey(BillDetail, on_delete=models.SET_NULL, null=True)
+	dispensary = models.ForeignKey(Dispensary, on_delete = models.CASCADE, null=True)
 #	sold_quantity = models.IntegerField(null=True)
 #	selling_price = models.ForeignKey(DrugPrice, on_delete=models.SET_NULL, null=True)
 	payment_type = models.CharField(max_length=500, choices=payment_types)
-	insurance = models.ForeignKey(Insurance, on_delete= models.SET_NULL, null=True)
+	insurance = models.ForeignKey(Insurance, on_delete= models.SET_NULL, null=True, blank=True)
 	sold_on = models.DateTimeField(auto_now_add=True, null=True)
-	clerk = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+	clerk = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+	registered_on=models.DateTimeField(auto_now_add=True,null=True, blank=True)
 
 class PatientCredit(models.Model):
 	patient =models.ForeignKey(Patient, on_delete=models.SET_NULL, null=True)
@@ -612,3 +693,32 @@ class MedicalAdministrationRecord(models.Model):
 	administration_time = models.DateTimeField(auto_now_add=True, null=True)
 	administration_check = models.BooleanField(default=False)
 
+class DispensaryPharmacist(models.Model):
+	dispensary = models.ForeignKey(Dispensary, on_delete = models.CASCADE, null=True)
+	pharmacist = models.ForeignKey(to=Employee, on_delete=models.SET_NULL, null=True, blank=True)
+	active = models.BooleanField(default=True)
+
+class DispensaryCashier(models.Model):
+	dispensary = models.ForeignKey(Dispensary, on_delete = models.CASCADE, null=True)
+	cashier = models.ForeignKey(to=Employee, on_delete=models.SET_NULL, null=True, blank=True)
+	active = models.BooleanField(default=True)
+
+class DispensaryProcurementRequest(models.Model):
+	dispensary = models.ForeignKey(DispensaryPharmacist, on_delete = models.CASCADE, null=True)
+	#pharmacist = models.ForeignKey(to=Employee, on_delete=models.SET_NULL, null=True, blank=True)
+	drug = models.ForeignKey(Dosage, on_delete= models.SET_NULL, null=True)
+	quantity = models.IntegerField(null=True)
+	active = models.BooleanField(default=True)
+	first_approval = models.BooleanField(default=False)
+	second_approval = models.BooleanField(default=False)
+
+"""
+class SingleProcurementRequest(models.Model):
+	request = models.ForeignKey(DispensaryPharmacist, on_delete = models.CASCADE, null=True)
+	#pharmacist = models.ForeignKey(to=Employee, on_delete=models.SET_NULL, null=True, blank=True)
+	drug = models.ForeignKey(Dosage, on_delete= models.SET_NULL, null=True)
+	quantity = models.IntegerField(null=True)
+	active = models.BooleanField(default=True)
+	first_approval = models.BooleanField(default=False)
+	second_approval = models.BooleanField(default=False)
+"""

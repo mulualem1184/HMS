@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+{% block style %}
+    <!-- data tables -->
+    <link href="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"/>
+
+    <link href="{% static '/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css' %}" rel="stylesheet" media="screen">
+
+{% endblock %}
+{% block title %} Prescriptions {% endblock %}
+
+{% block page_content %}
+                                         
+            <div class="card">
+                <div class="card-body">
+                 <table class="mdl-data-table ml-table-bordered  " id="example4">
+                    <thead>
+                        <tr>                        	
+                            <th class="mdl-data-table__cell--non-numeric"> Drug </th>
+                            <th class="mdl-data-table__cell--non-numeric"> Quantity </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    	{% for request in request_list %}
+						<tr>
+							
+							<td class="mdl-data-table__cell--non-numeric">{{request.drug}}</td>
+							<td class="mdl-data-table__cell--non-numeric">{{request.quantity}}</td>
+						</tr>
+						{% endfor %}
+
+					</tbody>
+                </table>
+                            {% include "pharmacy_app/partials/confirm_approval_modal.html" %}
+
+                                                        <div style="padding-top: 12px;"><a  class="btn btn-circle btn-primary pull-right"data-toggle='modal' data-target="#confirm-approval-modal{{request.id}}">Approve </a>
+                                                        </div>
+                            </td>
+
+                <!--
+                <div style="padding-top: 15px;">
+                <a class="btn btn-circle btn-primary pull-right" href="{% url 'approve_request' request.dispensary.dispensary.id %}"> Approve </a>
+                </div>-->
+            </div>
+            </div>    
+{% endblock %}
+
+{% block scripts %}
+    <!-- data tables -->
+
+{% endblock %}
+
+	

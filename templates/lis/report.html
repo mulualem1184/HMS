@@ -1,0 +1,154 @@
+k{% extends "base.html" %}
+{% load static %}
+{% block title %}
+    Report
+{% endblock %}
+{% block page_content %}
+    {% include "lis/filter_report_modal.html" %}
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-lg-12">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>Reports</header>
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#filterReportModal">
+                        <i class="fa fa-filter"></i> 
+                    </button>
+                    <button class="btn btn-primary" onclick="$('#reportTable').printElement()">
+                        <i class="fa fa-print"></i> 
+                    </button>
+                </div>
+                <div class="card-body" id="bar-parent">
+                    <table class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded" id='reportTable'>
+                        <thead style="background-color: rgb(102, 112, 104);">
+                            <tr>
+                                <th class="mdl-data-table__cell--non-numeric">#</th>
+                                <th class="mdl-data-table__cell--non-numeric">Test Name</th>
+                                <th class="mdl-data-table__cell--non-numeric">Lab. Section</th>
+                                <th class="mdl-data-table__cell--non-numeric">Total no of tests </th>
+                                <th class="mdl-data-table__cell--non-numeric">No of Patients </th>
+                                <th class="mdl-data-table__cell--non-numeric">Avg Per day tests </th>
+                                <th class="mdl-data-table__cell--non-numeric">Total Price in Birr </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for gp in general_report_list %}
+                                <tr>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ forloop.counter }} </td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ gp.test_type.name }} </td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ gp.test_type.section }} </td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ gp.total_no_tests }} </td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ gp.no_patient }} </td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ gp.avg_per_day }} </td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ gp.total_price }} </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th class="mdl-data-table__cell--non-numeric">Total</th>
+                                <th class="mdl-data-table__cell--non-numeric">-</th>
+                                <th class="mdl-data-table__cell--non-numeric">-</th>
+                                <th class="mdl-data-table__cell--non-numeric"> {{ total_no_tests }} </th>
+                                <th class="mdl-data-table__cell--non-numeric"> {{ total_no_patients }} </th>
+                                <th class="mdl-data-table__cell--non-numeric"> {{ total_avg_per_day }} </th>
+                                <th class="mdl-data-table__cell--non-numeric"> {{ total_price }} </th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- <div class="col-md-12 col-sm-12 col-lg-3">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>Test type info</header>
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#filterReportModal">
+                        <i class="fa fa-filter"></i> 
+                    </button>
+                </div>
+                <div class="card-body" id='bar-parent'>
+                    <table class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded">
+                        <thead>
+                            <tr>
+                                <th class="mdl-data-table__cell--non-numeric">Test Name</th>
+                                <th class="mdl-data-table__cell--non-numeric">TAT</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for tt in test_type_list %}
+                                <tr>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ tt.name }} </td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ tt.tat }} hrs </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div> -->
+        <!-- <div class="col-md-12 col-sm-12 col-lg-5">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>
+                        Total Tests 
+                        <button class="btn btn-primary" data-toggle="modal" data-target="#filterReportModal">
+                            <i class="fa fa-filter"></i> 
+                        </button>
+                    </header>
+                </div>
+                <div class="card-body" id="bar-parent" style="overflow-x: auto;">
+                    <table class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded">
+                        <thead>
+                            <tr>
+                                <th class="mdl-data-table__cell--non-numeric">Test Name</th>
+                                <th class="mdl-data-table__cell--non-numeric">Amount</th>
+                                <th class="mdl-data-table__cell--non-numeric">Total Prices</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for t, amt, price in lab_test_nos %}
+                                <tr>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ t }} </td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ amt }} </td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ price }} Birr </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td>No data available</td>
+                                </tr> 
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div> -->
+        <!-- <div class="col-md-12 col-sm-12 col-lg-4">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>By Section</header>
+                    <button class="btn btn-primary" data-toggle="modal" data-target="#filterReportModal">
+                        <i class="fa fa-filter"></i> 
+                    </button>
+                </div>
+                <div class="card-body" id="bar-parent">
+                    <table class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded">
+                        <thead>
+                            <tr>
+                                <th class="mdl-data-table__cell--non-numeric">Test Name</th>
+                                <th class="mdl-data-table__cell--non-numeric">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for ls, amount in lab_section_data %}
+                                <tr>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ ls }} </td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ amount }} </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div> -->
+    </div>
+{% endblock %}

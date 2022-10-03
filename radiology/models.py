@@ -19,6 +19,14 @@ class XRayFilm(models.Model):
     def __str__(self):
         return self.name
 
+class XRayFilmPrice(models.Model):
+    film = models.ForeignKey(to=XRayFilm, on_delete=models.SET_NULL, null=True)
+    price = models.IntegerField(null=True, blank=True)
+    discounted_price = models.IntegerField(null=True, blank=True)
+    active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return str(self.film) + str(self.price)
 
 class UltrasoundRequest(models.Model):
     reason = models.CharField(max_length=200)

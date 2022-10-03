@@ -113,5 +113,13 @@ urlpatterns = [
 
  	path('inpatient_prescription_list', views.InpatientPrescriptionList, name="inpatient_prescription_list"),
 
+	path('inpatient_report/', InpatientReport, name = 'inpatient_report'),
+
+	path('inpatient_report_chart/', InpatientReportChart, name = 'inpatient_report_chart'),
+	path('api/inpatient_report_chart_data/data', InpatientReportChartData.as_view(), name='inpatient_report_chart_data'),
+
+	path('inpatient_report_chart_two/', InpatientReportChartTwo, name = 'inpatient_report_chart_two'),
+	path('api/inpatient_report_chart_data_two/data', InpatientReportChartDataTwo.as_view()),
+
 ]
 #https://github.com/mulualem1184/HMS

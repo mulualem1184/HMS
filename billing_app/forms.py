@@ -240,4 +240,11 @@ class LabTestPriceForm(forms.ModelForm):
 			'class' : 'forms form-control',
 				}),
 			}
+
+class PartialReconcilationForm(forms.Form):
+	amount_paid = forms.IntegerField(widget=forms.NumberInput(
+		attrs={
+			'class': 'form-control',
+		}
+	))
 			

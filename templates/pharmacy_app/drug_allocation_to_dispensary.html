@@ -20,22 +20,19 @@
         <div class="card card-box">
             <div class="card-head">
                 <header>Drug Allocation To Dispensary</header>
-                <button id = "panel-button2" 
-                       class = "mdl-button mdl-js-button mdl-button--icon pull-right" 
-                       data-upgraded = ",MaterialButton">
-                       <i class = "material-icons">more_vert</i>
-                    </button>
-                    <ul class = "mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
-                       data-mdl-for = "panel-button2">
-                       <li class = "mdl-menu__item"><i class="material-icons">assistant_photo</i>Action</li>
-                       <li class = "mdl-menu__item"><i class="material-icons">print</i>Another action</li>
-                       <li class = "mdl-menu__item"><i class="material-icons">favorite</i>Something else here</li>
-                    </ul>
+                  <div class="pull-right">
+                <a  class="btn btn-circle btn-primary "
+                                data-toggle="modal" data-target="#addTestModalCenter2">
+                                Check Info 
+                </a>
+                </div>
+                
+                
             </div>
             <div class="card-body " id="bar-parent1">
        
-    <h4 class=" card-body"><b>   </b></h4>
- 
+    
+       <!--
         <form action="" method="POST">
        	{% csrf_token %} 
           {% if dispensary_drug_formset %}
@@ -69,45 +66,34 @@
 
 </div>
             </form>
+-->
+                     <table class="mdl-data-table ml-table-bordered  " id="example4">
+                    <thead>
+                        <tr>   
+                                                   
+                            <th class="mdl-data-table__cell--non-numeric">Row&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Drug &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Quantity&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Slot</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            <tr>
+              <td class="mdl-data-table__cell--non-numeric">{% include "pharmacy_app/partials/allocate_drug_to_dispensary_form.html" %}</td>
+            </tr>                     
+            <tr>
+              <td class="mdl-data-table__cell--non-numeric"><div id='drug-request-create'></div></td>
+            </tr>
+           
 
-                   <div class="offset-sm-2 col-sm-10"><
-                <button type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect btn-circle btn-primary"
-                                data-toggle="modal" data-target="#addTestModalCenter2">
-                                Check Unallocated Drugs
-                </button>
-                </div>           
+          </tbody>
+
+                </table>
+                <div style="padding-top: 1%;">
+                <a  class="btn btn-circle btn-primary" href="{% url 'drug_allocation_to_dispensary' 1 %}">
+                                Save 
+                </a>
+                </div>
+                             
     {% block scripts %}
  <script src="https://unpkg.com/htmx.org@1.6.1"></script>        
-<script>
-
-  const addMoreBtn = document.getElementById('add-more')
-  const totalNewForms = document.getElementById('id_form-TOTAL_FORMS')
-  
-  addMoreBtn.addEventListener('click', add_new_form)
-
-  function add_new_form(event){
-    if (event){
-      event.preventDefault()
-    }
-    const currentAdditionalForms = document.getElementsByClassName('additional-form')
-
-    const currentFormCount = currentAdditionalForms.length 
-    console.log(currentFormCount)
-    
-    const formCopyTarget = document.getElementById('additional-form-list')
-    const emptyFormEl = document.getElementById('empty-form').cloneNode(true)
-    emptyFormEl.setAttribute('class','additional-form') 
-    emptyFormEl.setAttribute('id', currentFormCount) 
-    const regex = new RegExp('__prefix__', 'g')
-    emptyFormEl.innerHTML = emptyFormEl.innerHTML.replace(regex, currentFormCount)
-    totalNewForms.setAttribute('value', currentFormCount + 1)
-
-    formCopyTarget.append(emptyFormEl)    
-
-
-  }
- </script> 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>        
 <script >
 

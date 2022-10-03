@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load static %}
+{% block page_content %}
+    <div class="row">
+        <div class="col-md-12 col-sm-12">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>Creat Lab test type</header>
+                </div>
+                <div class="card-body" id="bar-parent">
+                    <form method="POST" id="form_sample_1" class="form-horizontal" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-body">
+                            {% for field in form %}
+                                {% if field.widget_type == 'checkbox' %}
+                                    <div class="form-group row">
+                                        <label class="control-label col-md-3" for="{{ field.id_for_label }}">
+                                            {{ field.label }}
+                                        </label>
+                                        <div class="col-md-5">
+                                            {{ field }}
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="form-group row">
+                                        <label class="control-label col-md-3" for="{{ field.id_for_label }}" >
+                                            {{ field.label }}<span class="required"> * </span>
+                                        </label>
+                                        <div class="col-md-5">
+                                            {{ field }}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}                                                      
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="margin-left: 75px;">Add</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

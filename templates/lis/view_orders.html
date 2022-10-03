@@ -76,6 +76,8 @@
                                             <span style="display: none;">False</span>
                                         {% endif %}
                                     </td>
+                                    <td><a href="{% url 'view-order' order.id %}">View</a></td>
+                                    <!--
                                     <td>
                                         <div class="btn-group btn-group-circle">
                                             <button type="button" class="btn btn-primary">Actions</button>
@@ -87,8 +89,8 @@
                                                 </li>
                                                 <li>
                                                     {% if order.is_paid == True %}
-                                                        <!-- a href="#">Mark as Unpaid</a>< -->
-                                                    {% else %}
+                                        -->                <!-- a href="#">Mark as Unpaid</a>< -->
+                                           <!--         {% else %}
                                                         <a href="{% url 'mark-order-as-paid' order.id %}">Mark as paid</a>
                                                     {% endif %}
                                                 </li>
@@ -96,7 +98,7 @@
                                                 </li>
                                             </ul>
                                         </div>
-                                    </td>
+                                    </td>-->
                                 </tr>
                             {% endfor %}
                         </tbody>

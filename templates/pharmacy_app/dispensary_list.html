@@ -4,11 +4,6 @@
 
 {% block page_content %}
         
-<ul class="nav nav-tabs">
-  <li ><a href="{% url 'supply_form' %}" style="color: grey;"></a></li>
-  <li><a href="{% url 'stock_supply_form' %}" style="color: black;"></a></li>
-  
-</ul>  
     <div class="" style="width: 100%;">
         <div class="card card-box">
             <div class="card-head">
@@ -33,14 +28,18 @@
                         <thead>
                             <tr class="gradeX odd">
                                 <th style=" ">Dispensary</th>
+                                <th style=" ">Assign</th>
                                 
                             </tr>
                         </thead>
                         <tbody>
                             {% for dispensary in dispensary_list %}
+                            {% include "pharmacy_app/partials/assign_pharmacist_form.html" %}
+
                             <tr>
                                 <td style=""> <a class="" href="{% url 'dispensary_shelf_list' dispensary.id %}">{{dispensary}}</a></td>
-                               
+                                <td><a href="" data-toggle='modal' data-target="#assign-pharmacist-modal{{dispensary.id}}">Assign Pharmacist </a>
+                               </td>
                               
                             </tr>
                                            

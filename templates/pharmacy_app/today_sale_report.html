@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+    <link href="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"/>
+{% endblock %}
+{% block title %} Prescriptions {% endblock %}
+{% load mathfilters %}
+
+{% block page_content %}
+{% include "pharmacy_app/partials/filter_daily_prescription.html" %}
+{% include "pharmacy_app/partials/filter_prescription.html" %}
+
+    <div class="row">
+        <div class="col-md-12">
+        <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 650px;width: 1150px;">
+                <div class="card-head">
+                    <header>Sold Drugs</header>
+                <button class="btn btn-primary" data-toggle="modal" data-target="#filterPrescriptionModal">
+                    <i class="fa fa-filter"></i> 
+                </button>
+
+                </div>
+                
+                    <table id="example1" class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded">
+                        <thead>
+                            <tr class="gradeX odd">
+                                <th class="mdl-data-table__cell--non-numeric">Date</th>
+                                <th class="mdl-data-table__cell--non-numeric">Patient</th>
+
+                                <th class="mdl-data-table__cell--non-numeric">Drug</th>
+                                <th class="mdl-data-table__cell--non-numeric">Unit Price</th>
+                                <th class="mdl-data-table__cell--non-numeric">Quantity</th>
+                                <th class="mdl-data-table__cell--non-numeric">Discount</th>
+                                <th class="mdl-data-table__cell--non-numeric">Insurance</th>
+                                <th class="mdl-data-table__cell--non-numeric">Credit</th>
+                                <th class="mdl-data-table__cell--non-numeric">Total Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for dispensed in dispensed_drugs %}
+                                <tr>
+                                    <td class="mdl-data-table__cell--non-numeric">{{dispensed.bill_no.registered_on}}</td>
+
+                                    <td class="mdl-data-table__cell--non-numeric">{{dispensed.bill_no.patient}}</td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{dispensed.bill_no.drug }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{dispensed.bill_no.selling_price}} </td>                                  
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ dispensed.bill_no.quantity}} </td>
+                                    <td class="mdl-data-table__cell--non-numeric"> No </td>
+                                    <td class="mdl-data-table__cell--non-numeric"> No </td>
+                                    <td class="mdl-data-table__cell--non-numeric"> No </td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{dispensed.bill_no.quantity|mul:dispensed.bill_no.selling_price.selling_price}} Birr</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <!-- data tables -->
+{% endblock %}

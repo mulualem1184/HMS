@@ -5,9 +5,16 @@ from . import views
 from .views import *
 
 urlpatterns = [
+  path('daily_rx_report/', views.DailyRxReport, name="daily_rx_report"),
+  path('pharmacy_report/', views.PharmacyReport, name="pharmacy_report"),
 
- 	path('drug_supply_report/', views.SupplyReportPage, name="drug_supply_report"),
+  path('pdf_view/', views.ViewPDF.as_view(), name="pdf_view"),
+  path('pdf_download/', views.DownloadPDF.as_view(), name="pdf_download"),
+ 	
+  path('drug_supply_report/', views.SupplyReportPage, name="drug_supply_report"),
  	path('drug_profile_form_page/', views.DrugProfileFormPage, name="drug_profile_form_page"),
+  path('prescription_info_form/<int:drug_id>/<int:row>', views.PrescriptionInfoFormPage, name="prescription_info_form"),
+ 
   path('disease_drug_form/', views.DiseaseDrugFormPage, name="disease_drug_form"),
   path('contraindication_drug_form/', views.ContraIndicationDrugFormPage, name="contraindication_drug_form"),
   path('side_effect_drug_form/', views.SideEffectDrugFormPage, name="side_effect_drug_form"),
@@ -26,7 +33,9 @@ urlpatterns = [
 	path('age_range/', views.AgeRangePage, name = 'age_range'),
 	path('weight_range/', views.WeightRangePage, name = 'weight_range'),
 	path('intake_mode/', views.IntakeModePage, name = 'intake_mode'),
+
   path('prescription_form/<int:patient_id>', views.PrescriptionFormPage, name = 'prescription_form'),
+  path('save_prescription/<int:patient_id>', views.SavePrescription, name = 'save_prescription'),
 #  path('procurement_form', views.ProcurementFormPage, name = 'procurement_form'),
   path('prescription_list', PrescriptionList, name = 'prescription_list'),
   path('inventory_structure', InventoryStructure, name = 'inventory_structure'),
@@ -42,11 +51,15 @@ urlpatterns = [
   path('drug_location_stock_slot/<str:pk>/<str:pk2>', DrugLocationStockSlot, name = 'drug_location_stock_slot'),
 
   path('procurement', ProcurementPage, name = 'procurement'),
+  path('create_procurement', CreateProcurement, name = 'create_procurement'),
+
+  path('stock_manager_procurement', StockManagerProcurementPage, name = 'stock_manager_procurement'),
+ 
   path('save_procurement_detail/<int:procurement_id>/', SaveProcurementDetail, name = 'save_procurement_detail'),
 
   path('cancel_procurement/<int:procurement_pk>', CancelProcurement, name = 'cancel_procurement'),
   
-  path('procurement_detail/<str:pk>', ProcurementDetailPage, name = 'procurement_detail'),
+  path('procurement_detail/<str:pk>/<int:row>', ProcurementDetailPage, name = 'procurement_detail'),
   path('procurement_batch/<int:procurement_pk>/<int:batch_no>', ProcurementBatch, name = 'procurement_batch'),
 
   path('bill_form/<str:pk>/<int:pk2>', BillFormPage, name = 'bill_form'),
@@ -79,7 +92,6 @@ urlpatterns = [
   path('drug_sale_chart/', DrugSaleReport, name = 'drug_sale_chart'),
   path('api/drug_sale_chart/data', DrugSaleData.as_view()),
   path('drug_sale_detail/<int:month_no>', DrugSaleDetail, name = 'drug_sale_detail'),
- 
 
   path('monthly_sale_chart/', MonthlySaleReport, name = 'monthly_sale_chart'), 
   path('api/monthly_sale_chart/data', MonthlySaleData.as_view()),
@@ -97,7 +109,35 @@ urlpatterns = [
   path('edit_dispensary_shelf/<str:pk>/<str:dispensary_pk>', EditDispensaryShelf, name = 'edit_dispensary_shelf'),
   path('edit_stock_shelf/<str:pk>/<str:stock_pk>', EditStockShelf, name = 'edit_stock_shelf'),
   path('drug_relocation_from_stock', DrugRelocationFromStock, name = 'drug_relocation_from_stock'),
-  path('drug_allocation_to_dispensary', DrugAllocationToDispensary, name = 'drug_allocation_to_dispensary'),
+  path('drug_allocation_to_dispensary/<int:row>', DrugAllocationToDispensary, name = 'drug_allocation_to_dispensary'),
+  path('assign_pharmacist_to_dispensary/<int:dispensary_id>', AssignPharmacistToDispensary, name = 'assign_pharmacist_to_dispensary'),
 
+  path('pharmacist_drug_request/<int:row>', PharmacistDrugRequest, name = 'pharmacist_drug_request'),
+  path('drug_request_first_approval', DrugRequestFirstApproval, name = 'drug_request_first_approval'),
+  path('drug_request_second_approval', DrugRequestSecondApproval, name = 'drug_request_second_approval'),
+  path('temp_request_save/<int:dispensary_id>', TempRequestSave, name = 'temp_request_save'),
+
+  path('view_drug_request/<int:dispensary_id>', ViewDrugRequest, name = 'view_drug_request'),
+  path('view_approved_request/<int:dispensary_id>/<int:row>', ViewApprovedRequest, name = 'view_approved_request'),
+
+  path('request_list_from_stock/', RequestListFromStock, name = 'request_list_from_stock'),
+
+  path('approve_request/<int:dispensary_id>', ApproveRequest, name = 'approve_request'),
+
+  path('no_procurement_supply_form', views.NoProcurementSupplyPage, name="no_procurement_supply_form"),  
+  path('pharmacy_report1', views.PharmacyReport1, name="pharmacy_report1"),  
+
+  path('pharmacy_report_chart/', PharmacyReportChart, name = 'pharmacy_report_chart'),
+  path('pharmacy_report_chart1/', PharmacyReportChart1, name = 'pharmacy_report_chart1'),
+
+  path('api/pharmacy_report_chart_data/data', PharmacyReportChartData.as_view()),
+  path('api/pharmacy_report_chart_data1/data', PharmacyReportChartData1.as_view()),
+
+  path('prescription_list_report', PrescriptionListReport, name = 'prescription_list_report'),
+  path('supplied_drug_report', SuppliedDrugReport, name = 'supplied_drug_report'),
+  path('dispensary_supply_report', DispensarySupplyReport, name = 'dispensary_supply_report'),
+  path('drug_bill_report', DrugBillReport, name = 'drug_bill_report'),
+
+  path('today_sale_report', TodaySaleReport, name ='today_sale_report'),
 
 ]

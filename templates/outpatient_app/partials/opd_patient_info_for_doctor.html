@@ -1,0 +1,82 @@
+{% load static %}
+
+<div class="modal fade" id="opd-info-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="exampleModalLabel">Unallocated Drugs</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                
+        <div class="col-md-12">
+            <div class="card card-box" id="chief-complaint-id" style=" height: 255px;" >            
+                <div class="card-body">
+                                        <h4 class="font-bold">Complaint</h4>                                        
+                    <hr>
+
+                                    <div class="form-group col-md-12">  
+                                      {{complaint.complaint}}
+                                    </div>
+                                    
+                                                                                                                                   
+                    
+                </div>
+            </div>
+            <div class="card card-box" id="vital-sign-id" style=" height: 255px;" >            
+                <div class="card-body">
+                <div class="post-box">
+                    <h4 class="font-bold">Patient Vital Signs</h4>                                        
+                    <hr>
+                    <h5 class="font-bold">Heart Beat <span  class="pull-right">{{vital_sign.pulse_rate}}</span></h5>
+                    <h5 class="font-bold">Diastolic Blood Pressure<span class="pull-right">{{vital_sign.diastolic_blood_pressure}}</span></h5>
+                    <h5 class="font-bold">Systolic Blood Pressure<span class="pull-right">{{vital_sign.systolic_blood_pressure}}</span></h5>
+                    <h5 class="font-bold">Temperature<span class="pull-right">{{vital_sign.temperature}} {{vital_sign.temperature_unit}}</span></h5>
+                    
+                    <h5 class="font-bold">Recorded On:</b> <span class=""><b>{{vital_sign.registered_on}}</b></span></h5>
+                    <br>
+                </div>
+                </div>
+                                   
+                                    
+                  
+                
+            </div>
+            <div class="card card-box" id="pre-treatment-id" style=" height: 255px;" >            
+                <div class="card-body">
+                                        <h4 class="font-bold">Pre Hospital Care</h4>                                        
+                    <hr>
+
+                                    <div class="form-group col-md-12">  
+                                      {{arrival_detail.pre_hospital_care}}
+                                    </div>
+                                    
+                                                                                                                                                       
+                </div>
+            </div>
+            <div class="card card-box" id="injury_mechanism-id" style=" height: 255px;" >            
+                <div class="card-body">
+                                                            <h4 class="font-bold">Illness Mechanism</h4>                                        
+                    <hr>
+
+                                    <div class="form-group col-md-12">  
+                                      {{arrival_detail.injury_mechanism}}
+                                    </div>
+                                    
+                                                                                                                                                       
+                </div>
+            </div>
+
+        </div>
+
+                    
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                
+            </div>
+        </div>
+    </div>
+</div>

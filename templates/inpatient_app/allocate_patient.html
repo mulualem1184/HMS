@@ -7,7 +7,7 @@
 
 {% endblock%}
 {% block page_content %}
-{% include "inpatient_app/partials/bed_availibility_modal.html" %}
+{% include "inpatient_app/partials/choose_category_modal.html" %}
 {% include "inpatient_app/partials/bed_release_date_info.html" %}
         
 
@@ -37,6 +37,10 @@
                     {{bed_form.bed|as_crispy_field}}
                 </div>
                 <div class="form-group" style="padding-top: 38px;">
+                  <a data-toggle="modal" class="btn btn-primary " data-target="#chooseCategoryModal">
+                      <i class="fa fa-filter "></i>
+                    </a>
+
                   <a data-toggle="modal" data-target="#bed-release-date-info">
                       Check Bed Release Dates
                     </a>
@@ -51,26 +55,11 @@
             	</div>
           
     </form>
-    {% if messages %}
-<ul class="messages">
-    {% for message in messages %}
-    <li  {% if message.tags %} class=" {{ message.tags }} " {% endif %}> {{ message }} </li>
-    {% endfor %}
-</ul>
-{% endif %}
-            <!--<div class="offset-sm-2 col-sm-10">
-                <button type="button" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect btn-circle btn-info" data-toggle="modal" data-target="#room-queue-modal">
-                                Check Bed Availibility 
-                </button>
-            </div>
-          -->
     {% block scripts %}
- <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>        
 <script >
   $(document).ready(function() {
     $('#bed').select2();
-    $('#patient').select2();
 });
   </script>
        

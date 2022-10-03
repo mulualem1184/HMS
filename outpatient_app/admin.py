@@ -20,16 +20,22 @@ admin.site.register(PatientMedicalCondition)
 admin.site.register(PatientMedication)
 admin.site.register(ServiceTeam)
 admin.site.register(ServiceCopy)
+admin.site.register(ServicePrice)
 
 admin.site.register(OutpatientTeam)
 admin.site.register(OutpatientMedication)
 admin.site.register(OutpatientLabResult)
+admin.site.register(OutpatientRadiologyResult)
 
 #admin.site.register(PatientVitalSign)
 admin.site.register(PatientAllergy)
 admin.site.register(PatientHabit)
 admin.site.register(OutpatientChiefComplaint)
+admin.site.register(PatientArrivalDetail)
 admin.site.register(OutpatientDischargeSummary)
+admin.site.register(FollowUp)
+admin.site.register(QuestionForPatient)
+admin.site.register(OpdPatientResponse)
 
 
 

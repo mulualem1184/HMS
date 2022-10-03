@@ -4,14 +4,15 @@ from .views import (AddDepartment, AddDesignation, AddEmployee,
                     AddEmployeeDocument, AddWorkShift, ApproveDocument,
                     ApproveLeaveRequest, AssignEmployeesToShift,
                     AttendanceView, ChangePassword, CloseAttendance,
-                    DailyAttendanceView, Dashboard, DenyLeaveRequest, EditDepartment,
-                    EditDesignation, EditEmployee, EditWorkShift,
-                    EmployeeAttendance, EmployeeList, EmployeeProfile,
-                    LeaveRequestList, ListDepartment, ListDesignation,
-                    ListWorkShift, RemoveDepartment, RemoveDesignation,
-                    RemoveDocument, RemoveEmployee, RemoveWorkShift,
-                    RequestLeave, Schedule, ShiftReport, ToggleActiveStatus,
-                    UpdateAttendance, ViewLeaveRequest)
+                    DailyAttendanceView, Dashboard, DenyLeaveRequest,
+                    EditDepartment, EditDesignation, EditEmployee,
+                    EditWorkShift, EmployeeAttendance, EmployeeList,
+                    EmployeeProfile, LeaveRequestList, ListDepartment,
+                    ListDesignation, ListWorkShift, RemoveDepartment,
+                    RemoveDesignation, RemoveDocument, RemoveEmployee,
+                    RemoveWorkShift, RequestLeave, Schedule, ShiftReport,
+                    ToggleActiveStatus, UpdateAttendance, UpdateDepartmentHead,
+                    ViewLeaveRequest)
 
 app_name = 'staff'
 urlpatterns = [
@@ -19,6 +20,7 @@ urlpatterns = [
     path('edit-department/<int:dep_id>', EditDepartment.as_view(), name='edit_department'),
     path('remove-department/<int:dep_id>', RemoveDepartment.as_view(), name='remove_department'),
     path('list-departments', ListDepartment.as_view(), name='list_department'),
+    path('update-department-head/<int:id>', UpdateDepartmentHead.as_view(), name='update_department_head'),
     path('add-designation', AddDesignation.as_view(), name='add_designation'),
     path('edit-designation/<int:desig_id>', EditDesignation.as_view(), name='edit_designation'),
     path('list-designation', ListDesignation.as_view(), name='list_designation'),
@@ -50,6 +52,5 @@ urlpatterns = [
     path('view-lr/<int:id>', ViewLeaveRequest.as_view(), name='view_leave_request'),
     path('close-att', CloseAttendance.as_view(), name='finish_work'),
     path('schedule', Schedule.as_view(), name='schedule'),
-
     path('dashboard', Dashboard.as_view(), name='dashboard'),
 ]

@@ -18,20 +18,6 @@
 
   
 </ul>
-                     <!--   <div class="panel tab-border card-box col-md-12" >
-                        <header class="panel-heading panel-heading-gray custom-tab ">
-                            <ul class="nav nav-tabs">
-                                    <li class="nav-item">
-                                        <a class="nav-link active show" href="#lab-tab" data-toggle="tab"> Lab Results </a></li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#Xray-tab" data-toggle="tab">X Ray Results</a></li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#service-tab" data-toggle="tab">Services Administered</a></li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#drug-tab" data-toggle="tab">Given Medication</a></li>
-
-                            </ul>
-                        </header>-->
                         <div class="panel-body">
                             <div class="tab-content">
                                 <div class="tab-pane  fontawesome-demo" id="drug-tab">
@@ -41,14 +27,21 @@
                                                                 <tr>
                                                                     
                                                                     <th class="mdl-data-table__cell--non-numeric"> Name </th>
+                                                                    <th class="mdl-data-table__cell--non-numeric"> Weight Range </th>   
+                                                                    <th class="mdl-data-table__cell--non-numeric"> Age Range </th>   
                                                                     <th class="mdl-data-table__cell--non-numeric"> Dosage </th>   
+                                              
+
                                                                 </tr>
                                                             </thead>
 
                         <tbody>
                             {% for drug in drug_list %}
                                 <tr>
-                                    <td class="mdl-data-table__cell--non-numeric"> {{ drug.drug.drug }} </td>
+                                    <td class="mdl-data-table__cell--non-numeric"><a href="{% url 'prescription_info_form' drug.id 1 %}"> {{ drug.drug.drug }}</a> </td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ drug.age_range }} </td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ drug.weight_range }} </td>
+
                                     <td class="mdl-data-table__cell--non-numeric"> {{ drug.dosage_amount }} </td>
                                   
                                   

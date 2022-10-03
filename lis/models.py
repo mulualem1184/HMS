@@ -1,10 +1,22 @@
-from typing import Sequence
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from core.models import Patient
+from staff_mgmt.models import Employee
 
 User = get_user_model()
+
+
+class Laboratory(models.Model):
+    name = models.CharField(max_length=100, null=True)
+    def __str__(self):
+        return  self.dispensary_name
+
+class LabEmployee(models.Model):
+    laboratory = models.ForeignKey(Laboratory, on_delete = models.CASCADE, null=True)
+    laboratorist = models.ForeignKey(to=Employee, on_delete=models.SET_NULL, null=True, blank=True)
+    active = models.BooleanField(default=True)
+
 
 class SampleType(models.Model):
     """
@@ -54,15 +66,30 @@ class LaboratoryTestType(models.Model):
     tat: amount of time it takes to perform this test in hours
     is_available: is the test available in this lab/hospital
     """
+    TEST_AVAILABLE_CHOICES = [
+        (True, 'Yes'),
+        (False, 'No'),
+    ]
 
     section = models.ForeignKey(to=LaboratorySection, null=True, on_delete=models.SET_NULL)
     name = models.CharField(max_length=1000, unique=True, blank=False, null=False)
     price = models.FloatField(null=False)
     tat = models.FloatField(verbose_name='TAT', help_text="amount of time it takes to complete this test in hours")
-    is_available = models.BooleanField(default=True, blank=True)
+    is_available = models.BooleanField(default=True, blank=True,choices=TEST_AVAILABLE_CHOICES   )
 
     def __str__(self):
         return f"{self.name} [{self.section.name}]"
+
+class LaboratoryTestPrice(models.Model):
+
+    test_type = models.ForeignKey(to=LaboratoryTestType, on_delete=models.DO_NOTHING)
+    price = models.FloatField(null=True)
+    discounted_price = models.FloatField(null=True, blank=True)
+    effective_date = models.DateTimeField( null=True)
+    active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return f"{self.test_type} [{self.price}]"
 
 
 class Order(models.Model):
@@ -184,7 +211,7 @@ class LaboratoryTest(models.Model):
         return f"{self.test_type.name}"
 
     def save(self, *args, **kwargs) -> None:
-        if self.referred is None: # exectute only the first time
+        if self.referred is None: # execute only the first time
             self.referred = False if self.test_type.is_available else True # if test is available it will not be marked as 'referred'
         return super().save(*args, **kwargs)
 
@@ -250,7 +277,7 @@ class NormalRange(models.Model):
     min_age = models.PositiveIntegerField(default=0, blank=True, null=True)
     max_age = models.PositiveIntegerField(default=200, blank=True, null=True)
     min_value = models.FloatField(null=True, blank=True)
-    max_value = models.FloatField(null=True)
+    max_value = models.FloatField(null=True, blank=True)
     m_unit = models.CharField(max_length=200, verbose_name="Measurement Unit", blank=True, default="")
 
     def age_range(self) -> str:
@@ -272,6 +299,10 @@ class NormalRange(models.Model):
         return None
 
     def save(self, *args, **kwargs):
+        if not any([self.min_age, self.max_age]):
+            raise ValueError('Proper value for age is not provided.')
+        if not any([self.min_value, self.max_value]):
+            raise ValueError('Proper mininum and maximum value is not provided.')
         if self.min_age > self.max_age:
             raise ValueError('minumum age can not be greater than maximum age.')
         if self.min_value > self.max_value:
@@ -349,9 +380,9 @@ class TestResultChoice(models.Model):
     test_result_type = models.ForeignKey(to=LaboratoryTestResultType, on_delete=models.CASCADE, related_name='choice_set')
     choice = models.CharField(max_length=200)
 
-
     class Meta:
         unique_together = ('test_result_type', 'choice')
+        
     def __str__(self):
         return f"{self.choice}"
 

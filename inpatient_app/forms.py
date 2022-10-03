@@ -27,6 +27,18 @@ from django.forms.models import(
 
 #Drug profile form
 ###
+#drug prescription
+class PrescriptionInfoForm(forms.ModelForm):
+	class Meta:
+		model = DrugPrescription
+		fields = [ 'info']
+		widgets = {			
+			'info': forms.Select(attrs={
+			'class' : 'form-control select2',
+				}),
+			}
+
+
 class HospitalStructureForm(forms.Form):
 
 	building_name = forms.CharField(widget=forms.TextInput(
@@ -168,21 +180,17 @@ class AssignInpatientForm(forms.ModelForm):
 class InpatientPrescriptionForm(forms.ModelForm):
 	class Meta:
 		model = DrugPrescription
-		fields = ['diagnosis','drug','order_category','comments']
+		fields = ['diagnosis','comments','info']
 		widgets = {			
 			'diagnosis': forms.TextInput(attrs={
 			'class' : 'form-control forms',
 		
 				}),
-			'drug': forms.Select(attrs={
+			'info': forms.Select(attrs={
 			'class' : 'form-control select2',
-			'id' : 'drug',
 
 				}),
-			'order_category': forms.Select(attrs={
-			'class' : 'form-control select2',
-				}),
-			'comments': forms.TextInput(attrs={
+			'comments': forms.Textarea(attrs={
 			'class' : 'form-control forms',
 				}),
 		
@@ -395,7 +403,6 @@ class WardAdmissionPriorityForm(forms.ModelForm):
 
 				}),
 
-
 }
 
 class AssignNurseToBedForm(forms.ModelForm):
@@ -488,6 +495,7 @@ class AssignDoctorToTeamForm(forms.ModelForm):
 			'id' : 'service-provider-id',
 
 				}),
+
 			}
 
 

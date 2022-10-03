@@ -1,6 +1,6 @@
 {% load crispy_forms_tags %}
 <div class="modal fade" id="vital-sign-form-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title" id="exampleModalLabel">Vital Sign Form</h4>
@@ -15,6 +15,10 @@
                 <div class="form-group col-md-4">  
                     {{vital_form.pulse_rate|as_crispy_field}}
                 </div>
+                                              <div class="form-group col-md-4">  
+                                                {{vital_form.glucose_level_unit|as_crispy_field}}
+                                              </div>
+
                 </div>
             <div class="form-row">   
                <div class="form-group col-md-4">  
@@ -26,14 +30,23 @@
               </div>
                 
               <div class="form-row">
-                                              <div class="form-group col-md-2">  
+                                              <div class="form-group col-md-4">  
                                                 {{vital_form.diastolic_blood_pressure|as_crispy_field}}
                                               </div>
 
-                                              <div class="form-group col-md-2">  
+                                              <div class="form-group col-md-4">  
                                                 {{vital_form.systolic_blood_pressure|as_crispy_field}}
                                               </div>
               </div>
+              <div class="form-row">
+                                              <div class="form-group col-md-4">  
+                                                {{vital_form.oxygen_saturation|as_crispy_field}}
+                                              </div>
+                                              <div class="form-group col-md-4">  
+                                                {{vital_form.blood_glucose_level|as_crispy_field}}
+                                              </div>
+
+                </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" onclick="$('#textMessageBoxId')[0].value='';">Clear</button>

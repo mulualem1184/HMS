@@ -1,0 +1,274 @@
+
+	{% extends "base.html" %}
+{% load static %}
+{% block title %} {% endblock %}
+
+{% block page_content %} 
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+<div class="row">
+	<div class="col-md-4" class="card">
+		<div class="card-head" ><header >Supplied Drugs</header></div>
+		<div >	<canvas id="myChart5"  ></canvas></div>
+
+	</div>
+	<div class="col-md-2"></div>
+	<div class="col-md-6 col-md-6"  class="card">
+		<div class="card-head" style="padding-left: 150px;"><header >Alpha Drug List</header></div>
+		<div >	<canvas id="myChart4"  ></canvas></div>
+
+	</div>
+</div>
+<hr>
+<div class="row">
+	<div class="col-md-3" class="card">
+		<div class="card-head"><header>Medicated vs Unmedicated Patients</header></div>
+		<div >	<canvas id="myChart"  ></canvas></div>
+
+	</div>
+	<div class="col-md-3" class="card">
+		<div class="card-head"><header>Lab Tested Patients</header></div>
+		<div >	<canvas id="myChart2"  ></canvas></div>
+
+	</div>
+	<div class="col-md-3" class="card">
+		<div class="card-head"><header>Xray Tested Patients</header></div>
+		<div >	<canvas id="myChart3"  ></canvas></div>
+
+	</div>
+	<div class="col-md-3" class="card">
+		<div class="card-head"><header>Ward Admitted Patients</header></div>
+		<div >	<canvas id="myChart6"  ></canvas></div>
+
+	</div>
+
+</div>
+{% endblock %}
+
+
+{% block scripts %} 
+
+		
+
+<script >
+	var endpoint = '/api/pharmacy_rep/data'
+	var defaultData = []
+	var labels = []
+	$.ajax(
+	{
+		method: "GET",
+		url: endpoint,
+		success: function(data){
+			suppliedLabels = data.supplied_labels
+			suppliedData = data.supplied_numbers
+
+			inventoryLabels = data.drug_array
+			inventoryData = data.total_quantity_array
+
+			labels = data.labels
+			defaultData = data.numbers
+			defaultLabData = data.lab_numbers
+			defaultRadData = data.rad_numbers
+
+			admittedLabels = data.admission_label
+			defaultAdmittedData = data.admission
+
+			waitLabels = data.wait_labels
+			defaultWaitData = data.wait_numbers
+
+			paymentLabels = data.payment_labels
+			defaultPaymentData = data.payment_numbers
+
+			console.log('rr')
+			console.log(data)
+			setChart()
+		},
+
+		error: function(error_data){
+			console.log("charrrrrrrrrrrrrrrrrerror")
+			console.log(error_data)
+		}
+	}
+		)
+	
+function setChart(){
+		const ctx = document.getElementById('myChart');
+			const myChart = new Chart(ctx, {
+			    type: 'pie',
+			    data: {
+			        labels: labels,
+			        datasets: [{
+			            label: '# of Votes',
+			            data: defaultData,
+			            backgroundColor: [
+			                'rgba(255, 99, 132, 0.2)',
+			                'rgba(54, 162, 235, 0.2)',
+			                'rgba(255, 206, 86, 0.2)',
+			                'rgba(75, 192, 192, 0.2)',
+			                'rgba(153, 102, 255, 0.2)',
+			                'rgba(255, 159, 64, 0.2)'
+			            ],
+			            borderColor: [
+			                'rgba(255, 99, 132, 1)',
+			                'rgba(54, 162, 235, 1)',
+			                'rgba(255, 206, 86, 1)',
+			                'rgba(75, 192, 192, 1)',
+			                'rgba(153, 102, 255, 1)',
+			                'rgba(255, 159, 64, 1)'
+            ]
+		},
+		]
+    }})
+
+		const ctx2 = document.getElementById('myChart2');
+			const myChart2 = new Chart(ctx2, {
+			    type: 'pie',
+			    data: {
+			        labels: labels,
+			        datasets: [{
+			            label: '# of Votes',
+			            data: defaultLabData,
+			            backgroundColor: [
+			                'rgba(255, 99, 132, 0.2)',
+			                'rgba(54, 162, 235, 0.2)',
+			                'rgba(255, 206, 86, 0.2)',
+			                'rgba(75, 192, 192, 0.2)',
+			                'rgba(153, 102, 255, 0.2)',
+			                'rgba(255, 159, 64, 0.2)'
+			            ],
+			            borderColor: [
+			                'rgba(255, 99, 132, 1)',
+			                'rgba(54, 162, 235, 1)',
+			                'rgba(255, 206, 86, 1)',
+			                'rgba(75, 192, 192, 1)',
+			                'rgba(153, 102, 255, 1)',
+			                'rgba(255, 159, 64, 1)'
+            ]
+		},
+		]
+    }})
+
+		const ctx3 = document.getElementById('myChart3');
+			const myChart3 = new Chart(ctx3, {
+			    type: 'pie',
+			    data: {
+			        labels: labels,
+			        datasets: [{
+			            label: '# of Votes',
+			            data: defaultRadData,
+			            backgroundColor: [
+			                'rgba(255, 99, 132, 0.2)',
+			                'rgba(54, 162, 235, 0.2)',
+			                'rgba(255, 206, 86, 0.2)',
+			                'rgba(75, 192, 192, 0.2)',
+			                'rgba(153, 102, 255, 0.2)',
+			                'rgba(255, 159, 64, 0.2)'
+			            ],
+			            borderColor: [
+			                'rgba(255, 99, 132, 1)',
+			                'rgba(54, 162, 235, 1)',
+			                'rgba(255, 206, 86, 1)',
+			                'rgba(75, 192, 192, 1)',
+			                'rgba(153, 102, 255, 1)',
+			                'rgba(255, 159, 64, 1)'
+            ]
+		},
+		]
+    }})
+
+		const ctx6 = document.getElementById('myChart6');
+			const myChart6 = new Chart(ctx6, {
+			    type: 'pie',
+			    data: {
+			        labels: admittedLabels,
+			        datasets: [{
+			            label: '# of Patients',
+			            data: defaultAdmittedData,
+			            backgroundColor: [
+			                'rgba(255, 99, 132, 0.2)',
+			                'rgba(54, 162, 235, 0.2)',
+			                'rgba(255, 206, 86, 0.2)',
+			                'rgba(75, 192, 192, 0.2)',
+			                'rgba(153, 102, 255, 0.2)',
+			                'rgba(255, 159, 64, 0.2)'
+			            ],
+			            borderColor: [
+			                'rgba(255, 99, 132, 1)',
+			                'rgba(54, 162, 235, 1)',
+			                'rgba(255, 206, 86, 1)',
+			                'rgba(75, 192, 192, 1)',
+			                'rgba(153, 102, 255, 1)',
+			                'rgba(255, 159, 64, 1)'
+            ]
+		},
+		]
+    }})
+
+		const ctx4 = document.getElementById('myChart4');
+			const myChart4 = new Chart(ctx4, {
+			    type: 'bar',
+			    data: {
+			        labels: inventoryLabels,
+			        datasets: [{
+			            label: '# Average Minutes',
+			            data: inventoryData,
+			            backgroundColor: [
+			                'rgba(255, 99, 132, 0.2)',
+			                'rgba(54, 162, 235, 0.2)',
+			                'rgba(255, 206, 86, 0.2)',
+			                'rgba(75, 192, 192, 0.2)',
+			                'rgba(153, 102, 255, 0.2)',
+			                'rgba(255, 159, 64, 0.2)'
+			            ],
+			            borderColor: [
+			                'rgba(255, 99, 132, 1)',
+			                'rgba(54, 162, 235, 1)',
+			                'rgba(255, 206, 86, 1)',
+			                'rgba(75, 192, 192, 1)',
+			                'rgba(153, 102, 255, 1)',
+			                'rgba(255, 159, 64, 1)'
+            ]
+		},
+		]
+    }})
+
+		const ctx5 = document.getElementById('myChart5');
+			const myChart5 = new Chart(ctx5, {
+			    type: 'polarArea',
+			    data: {
+			        labels: suppliedLabels,
+			        datasets: [{
+			            label: '# Supplied Drugs',
+			            data: suppliedData,
+			            backgroundColor: [
+			                'rgba(255, 99, 132, 0.2)',
+			                'rgba(54, 162, 235, 0.2)',
+			                'rgba(255, 206, 86, 0.2)',
+			                'rgba(75, 192, 192, 0.2)',
+			                'rgba(153, 102, 255, 0.2)',
+			                'rgba(255, 159, 64, 0.2)'
+			            ],
+			            borderColor: [
+			                'rgba(255, 99, 132, 1)',
+			                'rgba(54, 162, 235, 1)',
+			                'rgba(255, 206, 86, 1)',
+			                'rgba(75, 192, 192, 1)',
+			                'rgba(153, 102, 255, 1)',
+			                'rgba(255, 159, 64, 1)'
+            ]
+		},
+		]
+    }})
+
+}
+
+
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.2/chart.min.js">	
+</script>
+    <script src="{% static 'plugins/chart-js/Chart.bundle.js' %}" ></script>
+    <script src=" {% static 'plugins/chart-js/utils.js' %}" ></script>
+    <script src="{% static 'js/pages/chart/chartjs/chartjs-data.js' %} " ></script>
+
+{% endblock %}

@@ -1,0 +1,37 @@
+                                                         <div id='drug-request-create'>
+
+                                          {% if dispensed_drugs2 %}
+
+
+                                   <div class="col-md-6">
+                                    <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                                <div class="card-head">
+                                                    <header>Total Drugs Sold In </header>
+                                                <button class="btn btn-primary" data-toggle="modal" data-target="#filterPrescriptionModal">
+                                                    <i class="fa fa-filter"></i> 
+                                                </button>
+
+                                                </div>
+                                            <table class="mdl-data-table ml-table-bordered  " id="example4">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="mdl-data-table__cell--non-numeric"> Dispensary </th>
+                                                        <th class="mdl-data-table__cell--non-numeric"> # Pharmacist </th>
+                                                    </tr>
+                                                </thead>
+                                          {% endif %}
+                                                <tbody>
+                                                    {% for dispensed in dispensed_drugs2 %}
+                                                        <tr class="odd gradeX">
+                                                            <td class="mdl-data-table__cell--non-numeric">{{dispensed.drug}}</td>
+                                                            <td class="mdl-data-table__cell--non-numeric">{{dispensed.bill_no.quantity}}</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+
+                                        </div>
+                                    
+                                    </div>
+                                  </div>
+

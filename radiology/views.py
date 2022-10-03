@@ -7,6 +7,8 @@ from django.views import View
 from .forms import ReportForm, XRayRequestForm
 from .models import ImageFile, ImagingReport, Order
 from notification.models import notify
+from outpatient_app.models import OutpatientRadiologyResult, PatientVisit
+from datetime import datetime
 
 
 class XRayOrder(View):
@@ -84,7 +86,17 @@ class EnterResult(View):
             report = report_form.save(commit=False)
             report.order = order
             report.reported_by = self.request.user
+
+            rad_history = OutpatientRadiologyResult()
+            patient = order.patient
+            rad_history.patient = patient
+            rad_history.visit = PatientVisit.objects.filter(patient = patient).exclude(visit_status='Ended').last()
+            rad_history.result = report 
+            #medication_history.doctor = 
+            rad_history.registered_on = datetime.now()
+
             report.save()
+            rad_history.save()
             order.complete = True
             order.save()
             messages.success(self.request, "Report saved.")

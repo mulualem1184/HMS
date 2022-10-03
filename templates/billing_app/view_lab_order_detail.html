@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} {% endblock %}
+
+{% block page_content %}
+        
+
+    <div class="" style="width: 100%;">
+        <div class="card card-box">
+            <div class="card-head">
+                <header>Patient List</header>
+                <button id = "panel-button2" 
+                       class = "mdl-button mdl-js-button mdl-button--icon pull-right" 
+                       data-upgraded = ",MaterialButton">
+                       <i class = "material-icons">more_vert</i>
+                    </button>
+                    <ul class = "mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+                       data-mdl-for = "panel-button2">
+                       <li class = "mdl-menu__item"><i class="material-icons">assistant_photo</i>Action</li>
+                       <li class = "mdl-menu__item"><i class="material-icons">print</i>Another action</li>
+                       <li class = "mdl-menu__item"><i class="material-icons">favorite</i>Something else here</li>
+                    </ul>
+            </div>
+            <div class="card-body " id="bar-parent1">
+              
+        
+                    {%block content1%}
+                    <table id="example1" class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded">
+                        <thead>
+                            <tr class="gradeX odd">
+                                <th class="mdl-data-table__cell--non-numeric">Test Type</th>
+                                <th class="mdl-data-table__cell--non-numeric">Payment Status</th>
+                                <th class="mdl-data-table__cell--non-numeric">Issue</th>
+ 
+                                <!--<th style=" ">Quantity</th>
+                                <th>Actions</th>-->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for type in test_types %}
+                            <tr>
+                                <td class="mdl-data-table__cell--non-numeric"> {{type.test_type}}</td>
+
+                                <td class="mdl-data-table__cell--non-numeric">
+                                       {% if type.paid == True %}
+                                            <span class="badge badge-danger"> Paid </span> 
+                                        {% else %}
+                                            <span class="badge badge-info"> Not Paid </span>
+                                        {% endif %}
+
+                                </td>
+                                <td class="mdl-data-table__cell--non-numeric">
+                                    <a href="{% url 'mark_lab_test_as_paid' type.id %}" class="primary-btn"> Issue</a>
+                                </td>
+                            </tr>
+
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% endblock %}
+                     
+    {% block scripts %}
+               
+            {% endblock %}
+
+{% endblock %}
+
+ 

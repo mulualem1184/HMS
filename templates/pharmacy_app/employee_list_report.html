@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+    <link href="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"/>
+{% endblock %}
+{% block title %} Prescriptions {% endblock %}
+
+{% block page_content %}
+{% include "pharmacy_app/partials/filter_daily_prescription.html" %}
+{% include "pharmacy_app/partials/filter_employee_list.html" %}
+
+    <div class="row">
+        <div class="col-md-12">
+        <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 650px;width: 1150px;">
+                <div class="card-head">
+                    <header>Prescriptions</header>
+                <button class="btn btn-primary" data-toggle="modal" data-target="#filterEmployeeListModal">
+                    <i class="fa fa-filter"></i> 
+                </button>
+
+                </div>
+                
+                    <table id="example1" class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded">
+                        <thead>
+                            <tr class="gradeX odd">
+                
+                                <th class="mdl-data-table__cell--non-numeric"> Name </th>
+                                <th class="mdl-data-table__cell--non-numeric"> Sex </th>
+                                <th class="mdl-data-table__cell--non-numeric"> Designation </th>
+                                <th class="mdl-data-table__cell--non-numeric"> Department </th>
+                                <th class="mdl-data-table__cell--non-numeric"> Registered At </th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for employee in employee_list %}
+                                <tr>
+                                    <td class="mdl-data-table__cell--non-numeric">{{employee.user_profile.full_name}}</td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ employee.user_profile.sex }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ employee.designation }} </td>
+                                    
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ employee.designation.department }} </td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{employee.employed_date}} </td>
+
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <!-- data tables -->
+{% endblock %}

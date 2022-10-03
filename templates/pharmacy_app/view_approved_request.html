@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+{% block style %}
+    <!-- data tables -->
+    <link href="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"/>
+
+    <link href="{% static '/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css' %}" rel="stylesheet" media="screen">
+
+{% endblock %}
+{% block title %} Prescriptions {% endblock %}
+
+{% block page_content %}
+                                         
+            <div class="card">
+                <div class="card-body">
+                 <table class="mdl-data-table ml-table-bordered  " id="example4">
+                    <thead>
+                        <tr>                        	
+                            <th class="mdl-data-table__cell--non-numeric"> Drug </th>
+                            <th class="mdl-data-table__cell--non-numeric"> Quantity </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    	{% for request in request_list %}
+
+                        <tr>
+							
+							<td class="mdl-data-table__cell--non-numeric">{{request.drug}}</td>
+							<td class="mdl-data-table__cell--non-numeric">{{request.quantity}}</td>
+						</tr>
+						{% endfor %}
+
+					</tbody>
+                </table>
+
+                
+
+            </div>
+            </div>
+
+                 <table class="mdl-data-table ml-table-bordered  " id="example4">
+                    <thead>
+                        <tr>   
+                                                   
+                            <th class="mdl-data-table__cell--non-numeric">Row&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Drug &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Quantity&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Slot</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            <tr>
+              <td class="mdl-data-table__cell--non-numeric">{% include "pharmacy_app/partials/approved_drug_request_form.html" %}</td>
+            </tr>                     
+            <tr>
+              <td class="mdl-data-table__cell--non-numeric"><div id='drug-request-create'></div></td>
+
+            </tr>
+           
+
+          </tbody>
+
+                </table>
+                <div style="padding-bottom: 50px;">
+                    <a class="btn btn-primary btn-circle right" href="{% url 'temp_request_save' request.dispensary.dispensary.id %}">Save</a>
+                </div>
+
+
+{% endblock %}
+
+{% block scripts %}
+    <!-- data tables -->
+
+{% endblock %}
+
+	

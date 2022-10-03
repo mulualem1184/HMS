@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Patient, TextMessage, PatientVitalSign, InsuranceDetail
+from .models import Patient, TextMessage, PatientVitalSign, InsuranceDetail,PatientPaymentStatus
 
 
 class PatientAdmin(admin.ModelAdmin):
@@ -18,3 +18,4 @@ admin.site.register(Patient, PatientAdmin)
 admin.site.register(TextMessage, TextMessageAdmin)
 admin.site.register([PatientVitalSign, ])
 admin.site.register(InsuranceDetail)
+admin.site.register(PatientPaymentStatus)

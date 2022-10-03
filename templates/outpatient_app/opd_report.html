@@ -1,0 +1,756 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} OPD Report {% endblock %}
+{% block style %}
+<style>
+    #residential-owners {
+  background-color: #ebeff5;
+}
+
+
+</style>
+
+{% endblock %}
+{% block page_content %}
+{% load crispy_forms_tags %}
+
+    {% include "inpatient_app/partials/filter_opd_report.html" %}
+    {% include "outpatient_app/partials/filter_by_date.html" %}
+    {% include "outpatient_app/partials/filter_by_drug.html" %}
+
+<head>
+    <script type="text/javascript" src="{% static "fusioncharts/fusioncharts.js" %}"></script>
+    <script type="text/javascript" src="{% static "fusioncharts/fusioncharts.charts.js" %}"></script>
+    <script type="text/javascript" src="{% static "fusioncharts/themes/fusioncharts.theme.fusion.js" %}"></script>
+
+</head>
+
+
+            <div class="row">
+                        <div class="panel tab-border card-box col-md-12" >
+                        <header class="panel-heading panel-heading-gray custom-tab ">
+                            <ul class="nav nav-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active show" href="#gg-opd-tab" data-toggle="tab"> General OPD </a></li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#resource-tab" data-toggle="tab">Resource Utilization</a></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#revenue-tab" data-toggle="tab">Revenue</a></li>
+
+                            </ul>
+                        </header>
+
+                        <div class="row" style="padding-top: 10px;">
+                            <div class="col-md-4"></div>
+                            <div class="col-md-2">
+                                <div class="overview-panel ">
+                                        <header class="center font-bold">Total Visits</header>
+
+                                    <div class="symbol center">
+                                        <i class="fa fa-user"></i>
+                                    </div>
+                                    <div class="value white center">
+                                        <p class="sbold addr-font-h1 center" data-counter="counterup" data-value="{{total_visit}}">{{total_visit}}</p>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filteropdReportModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3"></div>
+                            <div class="col-md-2">
+                                <a class="btn btn-primary btn-circle pull-right" href="{% url 'opd_report'  %}" style="color: white"> <i class="fa fa-refresh"></i></a>                                     
+                            </div>
+
+                        </div>
+
+                        <div class="panel-body">
+                            <div class="tab-content">
+                                <div class="tab-pane active fontawesome-demo" id="gg-opd-tab">
+                                  <div class="row">
+
+
+
+                                   <div class="col-md-6" style="display: none" id="used-service-bar-chart-id">
+                                        <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Services Used By Patient</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filteropdReportModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+
+                                            <a href="{% url 'service_bill_report' %}" class=" pull-right" style="padding-top: 5px;" >
+                                                <i class="fa fa-eye"></i> 
+                                            </a>
+
+                                            <a class="" onclick="toggleUsedServiceTable()" ><i class="fa fa-table"></i></a>
+
+                                            </div>
+                                    
+                                            <div id="used_service_bar_chart_container">{{ used_service_chart|safe }}</div>
+                                        </div>
+                                    </div>
+
+
+                                   <div class="col-md-6" id="used-service-table-id">
+                                    <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Services Used By Patient</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filteropdReportModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+                                            <a class="" onclick="toggleUsedServiceBarChart()" ><i class="fa fa-bar-chart"></i></a>
+                                            <a href="{% url 'service_bill_report' %}" class=" pull-right" style="padding-top: 5px;" >
+                                                <i class="fa fa-eye"></i> 
+                                            </a>
+
+                                            </div>
+
+                                                                                  <table class="mdl-data-table ml-table-bordered  " id="example4">
+                                            <thead>
+                                                <tr>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Category </th>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Amount </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                    <tr class="odd gradeX">
+                                                        
+                                                        <td class="mdl-data-table__cell--non-numeric">Taken Medication</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{medicated}}</td>
+
+                                                    </tr>
+                                                    <tr class="odd gradeX">
+                                                        
+                                                        <td class="mdl-data-table__cell--non-numeric">Taken Lab Test</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{lab_tested}}</td>
+                                                    </tr>
+                                                    <tr class="odd gradeX">
+                                                        
+                                                        <td class="mdl-data-table__cell--non-numeric">Taken Radiology Test</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{rad_tested}}</td>
+                                                    </tr>
+                                                    <tr class="odd gradeX">
+                                                        
+                                                        <td class="mdl-data-table__cell--non-numeric">Admitted To Ward</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">7</td>
+                                                    </tr>
+
+                                            </tbody>
+                                        </table>
+                                        </div>
+                                          </div>
+
+                                   <div class="col-md-6" style="display: none" id="payment-status-pie-chart-id">
+                                        <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Visitors By Payment Status</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filterByDateModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+                                            <a class="" onclick="togglePaymentStatusTable()" ><i class="fa fa-table"></i></a>
+                                            <a class="" onclick="togglePaymentStatusDoughnutChart()" ><i class="fa fa-bar-chart"></i></a>
+
+                                            </div>
+                                    
+                                            <div id="payment_status_pie_container">{{ payment_status_chart_pie|safe }}</div>
+                                        </div>
+                                    </div>
+
+                                   <div class="col-md-6" style="display: none" id="payment-status-doughnut-chart-id">
+                                        <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Visitors By Payment Status</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filterByDateModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+                                            <a class="" onclick="togglePaymentStatusTable()" ><i class="fa fa-table"></i></a>
+                                            <a class="" onclick="togglePaymentStatusPieChart()" ><i class="fa fa-pie-chart"></i></a>
+                                            <a href="{% url 'visiting_card_bill_report' %}" class=" pull-right" style="padding-top: 5px;" >
+                                                <i class="fa fa-eye"></i> 
+                                            </a>
+
+                                            </div>
+                                    
+                                            <div id="payment_status_doughnut_container">{{ payment_status_chart_doughnut|safe }}</div>
+                                        </div>
+                                    </div>
+
+                                   <div class="col-md-6" id="payment-status-table-id">
+                                    <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Visitors By Payment Status</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filterByDateModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+                                            <a class="" onclick="togglePaymentStatusDoughnutChart()" ><i class="fa fa-bar-chart"></i></a>
+                                            <a class="" onclick="togglePaymentStatusPieChart()" ><i class="fa fa-pie-chart"></i></a>
+                                            <a href="{% url 'visiting_card_bill_report' %}" class=" pull-right" style="padding-top: 5px;" >
+                                                <i class="fa fa-eye"></i> 
+                                            </a>
+
+                                            </div>
+
+
+                                        <table class="mdl-data-table ml-table-bordered  " id="example4">
+                                            <thead>
+                                                <tr>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Category </th>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Amount </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                    <tr class="odd gradeX">
+                                                        
+                                                        <td class="mdl-data-table__cell--non-numeric">Insurance</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{ipa}}</td>
+                                                    </tr>
+                                                    <tr class="odd gradeX">
+                                                        
+                                                        <td class="mdl-data-table__cell--non-numeric">Free</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{fpa}}</td>
+                                                    </tr>
+                                                    <tr class="odd gradeX">
+                                                        
+                                                        <td class="mdl-data-table__cell--non-numeric">Discount</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{dpa}}</td>
+                                                    </tr>
+                                                    <tr class="odd gradeX">
+                                                        
+                                                        <td class="mdl-data-table__cell--non-numeric">Default</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{dfpa}}</td>
+                                                    </tr>
+
+                                            </tbody>
+                                        </table>
+                                        </div>
+                                          </div>
+
+                                  </div>
+
+                                  <div class="row">
+
+                                   <div class="col-md-6">
+                                    <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Performance Report</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filterByDateModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+
+                                            </div>
+
+                                          <table class="mdl-data-table ml-table-bordered  " id="example4">
+                                            <thead>
+                                                <tr>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Category </th>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Amount </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                    <tr class="odd gradeX">
+                                                        
+                                                        <td class="mdl-data-table__cell--non-numeric">Average Hospital Stay</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">25.3 Minutes</td>
+
+                                                    </tr>
+                                                    <tr class="odd gradeX"> 
+                                                        <td class="mdl-data-table__cell--non-numeric">Average Wait Until Room Assignment</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">1.3 Minutes</td>
+                                                    </tr>
+                                                    <tr class="odd gradeX"> 
+                                                        <td class="mdl-data-table__cell--non-numeric">Average Wait Until Doctor Visit</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">4.4 Minutes</td>
+                                                    </tr>
+
+                                            </tbody>
+                                        </table>
+                                        </div>
+                                          </div>
+
+                                   <div class="col-md-6">
+                                    <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Average Service Usage By Patient</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filteropdReportModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+
+                                            </div>
+
+                                       <table class="mdl-data-table ml-table-bordered  " id="example4">
+                                            <thead>
+                                                <tr>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Category </th>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Amount </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                    <tr class="odd gradeX">
+                                                        
+                                                        <td class="mdl-data-table__cell--non-numeric">Average Medication</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{average_medication}} drugs</td>
+                                                    </tr>
+                                                    <tr class="odd gradeX">
+                                                        <td class="mdl-data-table__cell--non-numeric">Average Lab Test Taken</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{average_lab_test}} tests</td>
+                                                    </tr>
+                                                    <tr class="odd gradeX">
+                                                        <td class="mdl-data-table__cell--non-numeric">Average Xray Test Taken</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{average_xray_test}} tests</td>
+                                                    </tr>
+
+                                            </tbody>
+                                        </table>
+                                        </div>
+                                          </div>
+
+                                   <div class="col-md-6"  id="discharge-doughnut-chart-id">
+                                        <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Discharge Info</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filteropdReportModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+                                            <a class="" onclick="toggleDischargeTable()" ><i class="fa fa-table"></i></a>
+                                            </div>
+                                    
+                                            <div id="discharge_doughnut_container">{{ discharge_chart|safe }}</div>
+                                        </div>
+                                    </div>
+
+
+                                      <div class="col-md-12" style="display: none;" id="discharge-table-id">
+                                       <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Discharge Info</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filteropdReportModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+                                            <a class="" onclick="toggleDischargeDoughnutChart()" ><i class="fa fa-pie-chart"></i></a>
+                                            </div>
+
+                                          <table class="mdl-data-table ml-table-bordered  " id="example4">
+                                            <thead>
+                                                <tr>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Category </th>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Amount </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                    <tr class="odd gradeX">
+                                                        
+                                                        <td class="mdl-data-table__cell--non-numeric">Total Discharge</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{total_discharge}}</td>
+
+                                                    </tr>
+                                                    <tr class="odd gradeX"> 
+                                                        <td class="mdl-data-table__cell--non-numeric">Completed Discharge</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{completed_discharge}}</td>
+                                                    </tr>
+                                                    <tr class="odd gradeX"> 
+                                                        <td class="mdl-data-table__cell--non-numeric">Discharge With Follow Up</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{follow_up_discharge}}</td>
+                                                    </tr>
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                      </div>
+
+
+                                  </div>
+
+                                </div>
+                                <div class="tab-pane fontawesome-demo" id="resource-tab">
+                                    <div class="row">
+
+                                   <div class="col-md-4" style="display: none" id="occupancy-doughnut-chart-id">
+                                        <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 415px;">
+                                            <div class="card-head">
+                                                <header>Room Occupancy</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filteropdReportModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+
+                                            <a class="" onclick="toggleOccupancyTable()" ><i class="fa fa-table"></i></a>
+
+                                            </div>
+                                    
+                                            <div id="occupancy_pie_container">{{ occupancy_chart|safe }}</div>
+                                        </div>
+                                    </div>
+
+
+
+                                   <div class="col-md-4" id="occupancy-table-id">
+                                    <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 350px;">
+                                            <div class="card-head">
+                                                <header>Room Occupancy</header>
+                                            <a class="" onclick="toggleOccupancyDoughnutChart()" ><i class="fa fa-pie-chart"></i></a>
+
+                                            </div>
+
+                                            <table class="mdl-data-table ml-table-bordered  " id="example4"> 
+                                                <thead>
+                                                    <tr>
+                                                        <th class="mdl-data-table__cell--non-numeric"> Category </th>
+                                                        <th class="mdl-data-table__cell--non-numeric"> Amount </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                        <tr class="odd gradeX">
+                                                            
+                                                            <td class="mdl-data-table__cell--non-numeric">Total Rooms</td>
+                                                            <td class="mdl-data-table__cell--non-numeric">{{total_rooms}}</td>
+                                                        </tr>
+                                                        <tr class="odd gradeX">
+                                                            
+                                                            <td class="mdl-data-table__cell--non-numeric">Allocated Rooms</td>
+                                                            <td class="mdl-data-table__cell--non-numeric">{{allocated_rooms}}</td>
+                                                        </tr>
+                                                        <tr class="odd gradeX">
+                                                            
+                                                            <td class="mdl-data-table__cell--non-numeric">Free Rooms</td>
+                                                            <td class="mdl-data-table__cell--non-numeric">{{free_rooms}}</td>
+                                                        </tr>
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                          </div>
+
+
+                                   <div class="col-md-4">
+                                    <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 350px;">
+                                            <div class="card-head">
+                                                <header>Drug Utilization</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filterByDrugModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+                                            <a class="" onclick="toggleOccupancyDoughnutChar()" ><i class="fa fa-pie-chart"></i></a>
+
+                                            </div>
+
+                                        <table class="mdl-data-table ml-table-bordered  " id="example4"> 
+                                            <thead>
+                                                <tr>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Drug </th>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Amount Prescribed </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for name,amount in drug_zip %}
+                                                    <tr class="odd gradeX">
+                                                        
+                                                        <td class="mdl-data-table__cell--non-numeric">{{name}}</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{amount}}</td>
+                                                    </tr>
+                                                {% endfor %}
+
+                                            </tbody>
+                                        </table>
+                                        </div>
+                                          </div>
+
+
+                                   <div class="col-md-4">
+                                    <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 350px;">
+                                            <div class="card-head">
+                                                <header>Lab Test Utilization</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filteropdReportModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+                                            <a class="" onclick="toggleOccupancyDoughnutChar()" ><i class="fa fa-pie-chart"></i></a>
+
+                                            </div>
+
+                                        <table class="mdl-data-table ml-table-bordered  " id="example4"> 
+                                            <thead>
+                                                <tr>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Lab Test </th>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Amount </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for name,amount in lab_zip %}
+                                                    <tr class="odd gradeX">
+                                                        
+                                                        <td class="mdl-data-table__cell--non-numeric">{{name}}</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{amount}}</td>
+                                                    </tr>
+                                                {% endfor %}
+
+                                            </tbody>
+                                        </table>
+                                        </div>
+                                          </div>
+
+                                        
+                                </div>
+
+                            </div>
+
+                                <div class="tab-pane fontawesome-demo" id="revenue-tab">
+                                    <div class="row">
+
+                                <div class="tab-pane fontawesome-demo" id="resource-tab">
+                                    <div class="row">
+
+                                   <div class="col-md-6" style="display: none" id="building-bar-chart-id">
+                                        <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Revenue By Building Unit</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filteropdReportModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+                                            <a class="" onclick="toggleBuildingTable()" ><i class="fa fa-table"></i></a>
+
+                                            </div>
+                                    
+                                            <div id="building_bar_container">{{ building_revenue_chart|safe }}</div>
+                                        </div>
+                                    </div>
+
+                                   <div class="col-md-6" id="building-table-id">
+                                    <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Total Revenue</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filteropdReportModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+                                            <a class="" onclick="toggleBuildingBarChart()" ><i class="fa fa-bar-chart"></i></a>
+
+                                            </div>
+
+                                            <table class="mdl-data-table ml-table-bordered  " id="example4"> 
+                                                <thead>
+                                                    <tr>
+                                                        <th class="mdl-data-table__cell--non-numeric"> Category </th>
+                                                        <th class="mdl-data-table__cell--non-numeric"> Amount </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                        <tr class="odd gradeX">
+                                                            
+                                                            <td class="mdl-data-table__cell--non-numeric">Total Revenue</td>
+                                                            <td class="mdl-data-table__cell--non-numeric">{{total_revenue}}</td>
+                                                        </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                          </div>
+
+
+                                   <div class="col-md-6" style="display: none" id="building-bar-chart-id">
+                                        <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Revenue By Drug</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filteropdReportModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+                                            <a class="" onclick="toggleBuildingTable()" ><i class="fa fa-table"></i></a>
+
+                                            </div>
+                                    
+                                            <div id="building_bar_container">{{ building_revenue_chart|safe }}</div>
+                                        </div>
+                                    </div>
+
+                                   <div class="col-md-6">
+                                    <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Revenue By Drug</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filteropdReportModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+                                            <a class="" onclick="toggleBuildingTabl()" ><i class="fa fa-pie-chart"></i></a>
+                                            <a href="{% url 'drug_bill_report' %}" class=" pull-right" style="padding-top: 5px;" >
+                                                <i class="fa fa-eye"></i> 
+                                            </a>
+
+                                            </div>
+
+                                            <table class="mdl-data-table ml-table-bordered  " id="example4"> 
+                                                <thead>
+                                                    <tr>
+                                                        <th class="mdl-data-table__cell--non-numeric"> Building </th>
+                                                        <th class="mdl-data-table__cell--non-numeric"> Amount </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for building,revenue in drug_revenue_zip %}
+                                                        <tr class="odd gradeX">
+                                                            
+                                                            <td class="mdl-data-table__cell--non-numeric">{{building}}</td>
+                                                            <td class="mdl-data-table__cell--non-numeric">{{revenue}}</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                          </div>
+
+                                    </div>
+
+                                    <div class="row">
+
+                                   <div class="col-md-6">
+                                    <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Revenue By Lab Tests</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filteropdReportModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+                                            <a class="" onclick="toggleBuildingTabl()" ><i class="fa fa-pie-chart"></i></a>
+                                            <a href="{% url 'lab_bill_report' %}" class=" pull-right" style="padding-top: 5px;" >
+                                                <i class="fa fa-eye"></i> 
+                                            </a>
+
+                                            </div>
+
+                                            <table class="mdl-data-table ml-table-bordered  " id="example4"> 
+                                                <thead>
+                                                    <tr>
+                                                        <th class="mdl-data-table__cell--non-numeric"> Test </th>
+                                                        <th class="mdl-data-table__cell--non-numeric"> Revenue </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for test,revenue in test_revenue_zip %}
+                                                        <tr class="odd gradeX">
+                                                            
+                                                            <td class="mdl-data-table__cell--non-numeric">{{test}}</td>
+                                                            <td class="mdl-data-table__cell--non-numeric">{{revenue}}</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                          </div>
+
+                                   <div class="col-md-6">
+                                    <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Revenue By Service</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filterWardRoomModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+
+                                            <a href="{% url 'service_bill_report' %}" class=" pull-right" style="padding-top: 5px;" >
+                                                <i class="fa fa-eye"></i> 
+                                            </a>
+                                            </div>
+
+                                            <table class="mdl-data-table ml-table-bordered  " id="example4"> 
+                                                <thead>
+                                                    <tr>
+                                                        <th class="mdl-data-table__cell--non-numeric"> Service </th>
+                                                        <th class="mdl-data-table__cell--non-numeric"> Revenue </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for building,revenue in service_revenue_zip %}
+                                                        <tr class="odd gradeX">
+                                                            
+                                                            <td class="mdl-data-table__cell--non-numeric">{{building}}</td>
+                                                            <td class="mdl-data-table__cell--non-numeric">{{revenue}}</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                          </div>
+
+                                                
+                                    </div>
+
+                                </div>                            
+                        </div>
+{% endblock %}
+{% block scripts %}
+     <!-- widget js-->
+     <script src="../assets/js/pages/widget/widget-data.js" ></script>
+    <!-- Material -->
+    <script>
+
+        function toggleUsedServiceTable(){
+          document.getElementById('used-service-table-id').style.display = 'block';
+          document.getElementById('used-service-bar-chart-id').style.display = 'none';          
+          
+        }
+
+        function toggleUsedServiceBarChart(){
+          document.getElementById('used-service-table-id').style.display = 'none';
+          document.getElementById('used-service-bar-chart-id').style.display = 'block';          
+          
+        }
+
+        function toggleDispensarySupplyBarChart(){
+          document.getElementById('dispensary-supplied-drug-table-id').style.display = 'none';
+          document.getElementById('dispensary-supplied-drug-bar-chart-id').style.display = 'block';          
+          document.getElementById('dispensary-supplied-drug-pie-chart-id').style.display = 'none';
+          
+        }
+        function toggleDispensarySupplyPieChart(){
+          document.getElementById('dispensary-supplied-drug-table-id').style.display = 'none';
+          document.getElementById('dispensary-supplied-drug-bar-chart-id').style.display = 'none';          
+          document.getElementById('dispensary-supplied-drug-pie-chart-id').style.display = 'block';
+          
+        }
+        function toggleDispensarySupplyTable(){
+          document.getElementById('dispensary-supplied-drug-table-id').style.display = 'block';
+          document.getElementById('dispensary-supplied-drug-bar-chart-id').style.display = 'none';          
+          document.getElementById('dispensary-supplied-drug-pie-chart-id').style.display = 'none';
+          
+        }
+
+        function togglePaymentStatusTable(){
+          document.getElementById('payment-status-table-id').style.display = 'block';
+          document.getElementById('payment-status-doughnut-chart-id').style.display = 'none';          
+          document.getElementById('payment-status-pie-chart-id').style.display = 'none';
+        }
+        function togglePaymentStatusPieChart(){
+          document.getElementById('payment-status-table-id').style.display = 'none';
+          document.getElementById('payment-status-doughnut-chart-id').style.display = 'none';          
+          document.getElementById('payment-status-pie-chart-id').style.display = 'block';
+        }
+        function togglePaymentStatusDoughnutChart(){
+          document.getElementById('payment-status-table-id').style.display = 'none';
+          document.getElementById('payment-status-doughnut-chart-id').style.display = 'block';          
+          document.getElementById('payment-status-pie-chart-id').style.display = 'none';
+        }
+ 
+         function toggleDischargeTable(){
+          document.getElementById('discharge-table-id').style.display = 'block';
+          document.getElementById('discharge-doughnut-chart-id').style.display = 'none';          
+        }
+         function toggleDischargeDoughnutChart(){
+          document.getElementById('discharge-table-id').style.display = 'none';
+          document.getElementById('discharge-doughnut-chart-id').style.display = 'block';          
+        }
+
+         function toggleOccupancyTable(){
+          document.getElementById('occupancy-table-id').style.display = 'block';
+          document.getElementById('occupancy-doughnut-chart-id').style.display = 'none';          
+        }
+         function toggleOccupancyDoughnutChart(){
+          document.getElementById('occupancy-table-id').style.display = 'none';
+          document.getElementById('occupancy-doughnut-chart-id').style.display = 'block';          
+        }
+ 
+        function toggleBuildingTable(){
+          document.getElementById('building-table-id').style.display = 'block';
+          document.getElementById('building-bar-chart-id').style.display = 'none';          
+        }
+
+        function toggleBuildingBarChart(){
+          document.getElementById('building-table-id').style.display = 'none';
+          document.getElementById('building-bar-chart-id').style.display = 'block';          
+        }
+ 
+    </script>
+ 
+{% endblock %}

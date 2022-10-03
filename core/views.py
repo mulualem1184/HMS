@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.shortcuts import get_list_or_404, get_object_or_404
 from core.models import * 
 from outpatient_app.models import TeamSetting
-
+from billing_app.models import PatientStayDuration, InpatientDischargeSummary
 class IndexView(View):
 
     def get(self, *args, **kwargs):
@@ -52,7 +52,7 @@ class LoginView(View):
             elif user.employee.designation.name == 'Card Room':
                 return redirect('patient_registration')
             elif user.employee.designation.name == 'Radiology':
-                return redirect('order_list')
+                return redirect('radiology:order_list')
             elif user.employee.designation.name == 'Pharmacy':
                 return redirect('inpatient_prescription_list')
             elif user.employee.designation.name == 'Laboratory':
@@ -61,6 +61,16 @@ class LoginView(View):
                 return redirect('admin_dashboard')
             elif user.employee.designation.name == 'Pharmacy Head':
                 return redirect('pharmacy_dashboard')
+            elif user.employee.designation.name == 'Laboratory Head':
+                return redirect('pharmacy_dashboard')
+            elif user.employee.designation.name == 'Medical Director':
+                return redirect('drug_request_second_approval')
+            elif user.employee.designation.name == 'Stock Management':
+                return redirect('request_list_from_stock')
+            elif user.employee.designation.name == 'Finance Personnel':
+                return redirect('cashier_list')
+
+                
 
                 #return redirect('core:index')
         messages.error(self.request, 'Wrong email or password')
@@ -86,24 +96,34 @@ class PatientHistory(View):
 class PatientHistory2(View):
 
     def get(self, *args, **kwargs):
+        patient = get_object_or_404(Patient, id=kwargs['id'])
+        stay_duration = PatientStayDuration.objects.filter(patient=patient).exclude(leave_date__isnull=True)
+        summary_array = []
+        for duration in stay_duration:
+            summary = InpatientDischargeSummary.objects.filter(stay_duration=duration).last()
+            summary_array.append(summary)
+
+        stay_duration_zip = zip(stay_duration, summary_array)    
         return render(self.request, 'core/patient_history.html', {
-            
+            'stay_duration_zip':stay_duration_zip,            
         })
 class PatientVisitDetail(View):
 
     def get(self, *args, **kwargs):
         patient = get_object_or_404(Patient, id=kwargs['id'])
+        """
         lvs = PatientVitalSign.objects.filter(patient=patient).last()
         fam_history = FamilyHistory.objects.filter(patient=patient)
-        appointments = PatientAppointment.objects.all()
+        #appointments = PatientAppointment.objects.all()
         lab_tests = None
         latest_order:Order = Order.objects.filter(patient=patient).last()
         if latest_order:
             lab_tests = latest_order.test_set.all()
+        """
         return render(self.request, 'core/patient_visit_detail.html', {
             'patient': patient,
-            'vital_sign': lvs,
-            'fam_history': fam_history,
-            'appts': appointments,
-            'tests': lab_tests,
+            #'vital_sign': lvs,
+            #'fam_history': fam_history,
+            #'appts': appointments,
+            #'tests': lab_tests,
         })

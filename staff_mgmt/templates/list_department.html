@@ -44,6 +44,11 @@
                                                 <li>
                                                     <a href="{% url 'staff:remove_department' dept.id %}">Remove</a>
                                                 </li>
+                                                {% if user.is_staff %} <!-- only staff has permission to update dept head -->
+                                                    <li>
+                                                        <a href="{% url 'staff:update_department_head' dept.id %}">Update Department Head</a>
+                                                    </li>
+                                                {% endif %}
                                                 <li class="divider"></li>
                                                 </li>
                                             </ul>

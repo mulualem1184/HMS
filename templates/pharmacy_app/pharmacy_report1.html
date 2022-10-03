@@ -1,0 +1,671 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} OPD Report {% endblock %}
+{% block style %}
+<style>
+    #residential-owners {
+  background-color: #ebeff5;
+}
+
+
+</style>
+
+{% endblock %}
+{% block page_content %}
+{% load crispy_forms_tags %}
+
+{% include "pharmacy_app/partials/filter_alpha_drug.html" %}
+{% include "pharmacy_app/partials/filter_drug_supplied.html" %}
+{% include "pharmacy_app/partials/filter_daily_prescription.html" %}
+{% include "pharmacy_app/partials/filter_prescription.html" %}
+<head>
+    <script type="text/javascript" src="{% static "fusioncharts/fusioncharts.js" %}"></script>
+    <script type="text/javascript" src="{% static "fusioncharts/fusioncharts.charts.js" %}"></script>
+    <script type="text/javascript" src="{% static "fusioncharts/themes/fusioncharts.theme.fusion.js" %}"></script>
+
+</head>
+
+            <div class="row">
+                        <div class="panel tab-border card-box col-md-12" >
+                        <header class="panel-heading panel-heading-gray custom-tab ">
+                            <ul class="nav nav-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active show" href="#gg-opd-tab" data-toggle="tab"> Drug Reports</a></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#prescription-tab" data-toggle="tab">Prescription</a></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#dispensary-tab" data-toggle="tab">Dispensary</a></li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#frequent-tab" data-toggle="tab">Revenue</a></li>
+
+                            </ul>
+                        </header>
+<!--
+                        <div class="row" style="padding-top: 10px;">
+                            <div class="col-md-4"></div>
+                            <div class="col-md-2">
+                                <div class="overview-panel ">
+                                        <header class="center font-bold">Total Visits</header>
+
+                                    <div class="symbol center">
+                                        <i class="fa fa-user"></i>
+                                    </div>
+                                    <div class="value white center">
+                                        <p class="sbold addr-font-h1 center" data-counter="counterup" data-value="{{total_visit}}">{{total_visit}}</p>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filteropdReportModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+-->
+                        <div class="panel-body">
+                            <div class="tab-content">
+                                <div class="tab-pane active fontawesome-demo" id="gg-opd-tab">
+                                  <div class="row">
+
+                                   <div class="col-md-6" style="display: none" id="inventory-chart-id">
+                                        <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Alpha Drug List</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filterAlphaDrugModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+                                            <a class="" onclick="toggleInventoryBarChart()" ><i class="fa fa-bar-chart"></i></a>
+                                            <a class="" onclick="toggleInventoryTable()" ><i class="fa fa-table"></i></a>
+
+                                            </div>
+
+                                            <div id="myFirstchart-container">{{ inventory_pie_chart|safe }}</div>
+                                        </div>
+                                    </div>
+
+                                   <div class="col-md-6" style="display: none" id="inventory-bar-chart-id">
+                                        <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Alpha Drug List</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filterAlphaDrugModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+                                            <a class="" onclick="toggleInventoryChart()" ><i class="fa fa-pie-chart"></i></a>
+                                            <a class="" onclick="toggleInventoryTable()" ><i class="fa fa-table"></i></a>
+
+                                            </div>
+
+                                            <div id="inventory-bar-chart-container">{{ inventory_bar_chart|safe }}</div>
+                                        </div>
+                                    </div>
+
+
+                                      <div class="col-md-6" id="inventory-table-id">
+                                <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Alpha Drug List</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filterAlphaDrugModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+                                            <a class="" onclick="toggleInventoryBarChart()" ><i class="fa fa-bar-chart"></i></a>
+                                            <a class="" onclick="toggleInventoryChart()" ><i class="fa fa-pie-chart"></i></a>
+
+                                            </div>
+
+                                        <table class="mdl-data-table ml-table-bordered  " id="example4">
+                                            <thead>
+                                                <tr>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Drug </th>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Amount </th>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Unit Price </th>
+                                               </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for drug,amount,drug_price in inventory_zip %}
+                                                    <tr class="odd gradeX">
+                                                        <td class="mdl-data-table__cell--non-numeric">{{drug}}</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{amount}}</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{drug_price}}</td>
+
+                                                    </tr>
+                                                    {% endfor %}
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                      </div>
+
+                                   <div class="col-md-6" style="display: none" id="supplied-drug-pie-chart-id">
+                                        <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Supplied Drug List</header>
+                                            <a class="btn btn-primary" data-toggle="modal" data-target="#filterDrugSuppliedModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </a>
+                                            <a href="{% url 'supplied_drug_report' %}" class=" pull-right" style="padding-top: 5px;" >
+                                                <i class="fa fa-eye"></i> 
+                                            </a>
+
+                                            <a class="" onclick="toggleSupplyBarChart()" ><i class="fa fa-bar-chart"></i></a>
+                                            <a class="" onclick="toggleSupplyTable()" ><i class="fa fa-table"></i></a>
+
+                                            </div>
+
+                                            <div id="supplied_drug_pie_chart_container">{{ supply_pie_chart|safe }}</div>
+                                        </div>
+                                    </div>
+
+                                   <div class="col-md-6" style="display: none" id="supplied-drug-bar-chart-id">
+                                        <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Supplied Drug List</header>
+                                            <a class="btn btn-primary" data-toggle="modal" data-target="#filterDrugSuppliedModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </a>
+                                            <a href="{% url 'supplied_drug_report' %}" class=" pull-right" style="padding-top: 5px;" >
+                                                <i class="fa fa-eye"></i> 
+                                            </a>
+                                            <a class="" onclick="toggleSupplyPieChart()" ><i class="fa fa-pie-chart"></i></a>
+                                            <a class="" onclick="toggleSupplyTable()" ><i class="fa fa-table"></i></a>
+
+                                            </div>
+
+                                            <div id="supplied_drug_bar_chart_container">{{ supply_bar_chart|safe }}</div>
+                                        </div>
+                                    </div>
+
+                                      <div class="col-md-6" id="supplied_drug_table_id">
+                                <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Supplied Drug List</header>
+                                            <a class="btn btn-primary" data-toggle="modal" data-target="#filterDrugSuppliedModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </a>
+                                            <a href="{% url 'supplied_drug_report' %}" class=" pull-right" style="padding-top: 5px;" >
+                                                <i class="fa fa-eye"></i> 
+                                            </a>
+                                            <a class="" onclick="toggleSupplyPieChart()" ><i class="fa fa-pie-chart"></i></a>
+                                            <a class="" onclick="toggleSupplyBarChart()" ><i class="fa fa-bar-chart"></i></a>
+
+                                            </div>
+                                        <table class="mdl-data-table ml-table-bordered  " id="example4">
+                                            <thead>
+                                                <tr>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Drug </th>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Amount </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for drug,amount in supply_zip %}
+                                                    <tr class="odd gradeX">
+                                                        <td class="mdl-data-table__cell--non-numeric">{{drug}}</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{amount}}</td>
+
+                                                    </tr>
+                                                    {% endfor %}
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                      </div>
+
+                                  </div>
+
+                                  <div class="row">
+                                      <div class="col-md-6">
+                                <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Drug Refill Log</header>
+
+                                            </div>
+                                        <table class="mdl-data-table ml-table-bordered  " id="example4">
+                                            <thead>
+                                                <tr>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Drug </th>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Amount Needed </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for drug,amount in alert_zip %}
+                                                    <tr class="odd gradeX">
+                                                        <td class="mdl-data-table__cell--non-numeric">{{drug}}</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{amount}}</td>
+
+                                                    </tr>
+                                                {% endfor %}
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                      </div>
+
+                                   <div class="col-md-6" style="display: none" id="dispensary-supplied-drug-pie-chart-id">
+                                        <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Supplies To Dispensary</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filterAlphaDrugModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+                                            <a href="{% url 'dispensary_supply_report' %}" class="pull-right" >
+                                                <i class="fa fa-eye"></i> 
+                                            </a>
+                                            <a class="" onclick="toggleDispensarySupplyBarChart()" ><i class="fa fa-bar-chart"></i></a>
+                                            <a class="" onclick="toggleDispensarySupplyTable()" ><i class="fa fa-table"></i></a>
+
+                                            </div>
+
+                                            <div id="dispensary_supplied_drug_pie_chart_container">{{ dispensary_supply_pie_chart|safe }}</div>
+                                        </div>
+                                    </div>
+
+                                   <div class="col-md-6" style="display: none" id="dispensary-supplied-drug-bar-chart-id">
+                                        <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Supplies To Dispensary</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filterAlphaDrugModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+                                            <a href="{% url 'dispensary_supply_report' %}" class="pull-right" >
+                                                <i class="fa fa-eye"></i> 
+                                            </a>
+                                            <a class="" onclick="toggleDispensarySupplyPieChart()" ><i class="fa fa-pie-chart"></i></a>
+                                            <a class="" onclick="toggleDispensarySupplyTable()" ><i class="fa fa-table"></i></a>
+
+                                            </div>
+                                    
+                                            <div id="dispensary_supplied_drug_bar_chart_container">{{ dispensary_supply_bar_chart|safe }}</div>
+                                        </div>
+                                    </div>
+
+                                      <div class="col-md-6" id="dispensary-supplied-drug-table-id">
+                                <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Supplies To Dispensary</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filterAlphaDrugModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+                                            <a href="{% url 'dispensary_supply_report' %}" class="pull-right" >
+                                                <i class="fa fa-eye"></i> 
+                                            </a>
+                                            <a class="" onclick="toggleDispensarySupplyPieChart()" ><i class="fa fa-pie-chart"></i></a>
+                                            <a class="" onclick="toggleDispensarySupplyBarChart()" ><i class="fa fa-bar-chart"></i></a>
+
+                                            </div>
+                                        <table class="mdl-data-table ml-table-bordered  " id="example4">
+                                            <thead>
+                                                <tr>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Drug </th>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Amount </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for drug,amount in dispensary_supply_zip %}
+                                                    <tr class="odd gradeX">
+                                                        <td class="mdl-data-table__cell--non-numeric">{{drug}}</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{amount}}</td>
+
+                                                    </tr>
+                                                    {% endfor %}
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                      </div>
+
+
+
+                                  </div>
+
+                                </div>
+                                <div class="tab-pane fontawesome-demo" id="prescription-tab">
+                                    <div class="row">
+                                      <div class="col-md-6">
+                                <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Prescriptions</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filterPrescriptionModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+                                            <a href="{% url 'prescription_list_report' %}" class="pull-right" >
+                                                <i class="fa fa-eye"></i> 
+                                            </a>
+
+                                            </div>
+                                        <table class="mdl-data-table ml-table-bordered  " id="example4">
+                                            <thead>
+                                                <tr>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Category </th>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Prescription Amount </th>
+                                                    
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                    <tr class="odd gradeX">
+                                                        <td class="mdl-data-table__cell--non-numeric">OPD Prescriptions</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{opd_prescription}}</td>
+
+                                                    </tr>
+                                                    <tr class="odd gradeX">
+                                                        <td class="mdl-data-table__cell--non-numeric">IPD Prescriptions</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{ward_prescription}}</td>
+
+                                                    </tr>
+                                                    <tr class="odd gradeX">
+                                                        <td class="mdl-data-table__cell--non-numeric">Total Prescriptions</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{total_prescription}}</td>
+
+                                                    </tr>
+                                                    
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                      </div>
+                                      <div class="col-md-6">
+                                <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Daily Prescription</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filterPrescriptionModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+
+                                            </div>
+                                        <table class="mdl-data-table ml-table-bordered  " id="example4">
+                                            <thead>
+                                                <tr>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Drug </th>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Prescribed At </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for p in prescriptions_today %}
+                                                    <tr class="odd gradeX">
+                                                        <td class="mdl-data-table__cell--non-numeric">{{p.drug}} for {{p.patient}}</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{p.registered_on}}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                      </div>
+
+
+                                    </div>
+                                    <div class="row">
+                                      <div class="col-md-6">
+                                <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Poly Pharmacy Report</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filterPrescriptionModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+
+                                            </div>
+                                        <table class="mdl-data-table ml-table-bordered  " id="example4">
+                                            <thead>
+                                                <tr>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Patient </th>
+                                                    <th class="mdl-data-table__cell--non-numeric"> # Of Active Drugs </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for patient, amount in poly_pharmacy_zip %}
+                                                    <tr class="odd gradeX">
+                                                        <td class="mdl-data-table__cell--non-numeric">{{patient}}</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{amount}}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                      </div>
+                                        
+                                    </div>
+                                        
+                                </div>
+                            <div class="tab-pane fontawesome-demo" id="frequent-tab">
+                                    <div class="row">
+
+                                   <div class="col-md-6">
+                                    <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                                <div class="card-head">
+                                                    <header>Today's Activity</header>
+                                                <button class="btn btn-primary" data-toggle="modal" data-target="#filterPrescriptionModal">
+                                                    <i class="fa fa-filter"></i> 
+                                                </button>
+
+                                                </div>
+                                            <table class="mdl-data-table ml-table-bordered  " id="example4">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="mdl-data-table__cell--non-numeric"> Category </th>
+                                                        <th class="mdl-data-table__cell--non-numeric"> # Amount </th>
+                                                        <th class="mdl-data-table__cell--non-numeric"> View Detail </th>
+
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                        <tr class="odd gradeX">
+                                                            <td class="mdl-data-table__cell--non-numeric">Today's Sale</td>
+                                                            <td class="mdl-data-table__cell--non-numeric">{{sale_amount}}</td>
+                                                            <td class="mdl-data-table__cell--non-numeric"><a href="{% url 'prescription_list_report' %}"> <i class="fa fa-eye"></i></a></td>
+
+                                                        </tr>
+                                                        <tr class="odd gradeX">
+                                                            <td class="mdl-data-table__cell--non-numeric">Today's Revenue</td>
+                                                            <td class="mdl-data-table__cell--non-numeric">{{sale_sum}}</td>
+                                                            <td class="mdl-data-table__cell--non-numeric"><a href="{% url 'prescription_list_report' %}"> <i class="fa fa-eye"></i></a></td>
+                                                        </tr>
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                          </div>
+
+                                   <div class="col-md-6">
+                                    <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                                <div class="card-head">
+                                                    <header>Revenue By Dispensary</header>
+                                                <button class="btn btn-primary" data-toggle="modal" data-target="#filterPrescriptionModal">
+                                                    <i class="fa fa-filter"></i> 
+                                                </button>
+                                            <a href="{% url 'drug_bill_report' %}" class="pull-right" >
+                                                <i class="fa fa-eye"></i> 
+                                            </a>
+
+
+                                                </div>
+                                            <table class="mdl-data-table ml-table-bordered  " id="example4">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="mdl-data-table__cell--non-numeric"> Patient </th>
+                                                        <th class="mdl-data-table__cell--non-numeric"> # Total Revenue </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for dispensary, revenue in dispensaries_by_revenue %}
+                                                        <tr class="odd gradeX">
+                                                            <td class="mdl-data-table__cell--non-numeric">{{dispensary}}</td>
+                                                            <td class="mdl-data-table__cell--non-numeric">{{revenue}} Birr</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                          </div>
+
+
+                                    </div>
+                                    <div class="row">
+                                   <div class="col-md-6">
+                                    <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                                <div class="card-head">
+                                                    <header>Revenue By Patient</header>
+                                                <button class="btn btn-primary" data-toggle="modal" data-target="#filterPrescriptionModal">
+                                                    <i class="fa fa-filter"></i> 
+                                                </button>
+
+                                                </div>
+                                            <table class="mdl-data-table ml-table-bordered  " id="example4">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="mdl-data-table__cell--non-numeric"> Patient </th>
+                                                        <th class="mdl-data-table__cell--non-numeric"> # Total Drugs </th>
+                                                        <th class="mdl-data-table__cell--non-numeric"> # Total Cost </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for patient, amount,cost in top_customers_zip %}
+                                                        <tr class="odd gradeX">
+                                                            <td class="mdl-data-table__cell--non-numeric">{{patient}}</td>
+                                                            <td class="mdl-data-table__cell--non-numeric">{{amount}}</td>
+                                                            <td class="mdl-data-table__cell--non-numeric">{{cost}} Birr</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                          </div>
+                                        
+                                    </div>
+                            </div>
+
+                            <div class="tab-pane fontawesome-demo" id="dispensary-tab">
+                                    <div class="row">
+                                   <div class="col-md-6">
+                                    <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                                <div class="card-head">
+                                                    <header>Dispensaries</header>
+                                                <button class="btn btn-primary" data-toggle="modal" data-target="#filterPrescriptionModal">
+                                                    <i class="fa fa-filter"></i> 
+                                                </button>
+
+                                                </div>
+                                            <table class="mdl-data-table ml-table-bordered  " id="example4">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="mdl-data-table__cell--non-numeric"> Dispensary </th>
+                                                        <th class="mdl-data-table__cell--non-numeric"> # Pharmacist </th>
+                                                        <th class="mdl-data-table__cell--non-numeric"> # Cashier </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for dispensary, pharmacist_amount,cashier_amount in dispensary_zip %}
+                                                        <tr class="odd gradeX">
+                                                            <td class="mdl-data-table__cell--non-numeric">{{dispensary}}</td>
+                                                            <td class="mdl-data-table__cell--non-numeric">{{pharmacist_amount}}</td>
+                                                            <td class="mdl-data-table__cell--non-numeric">{{cashier_amount}}</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        </div>
+
+                                   <div class="col-md-6">
+                                    <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                                <div class="card-head">
+                                                    <header>Sale By Dispensary</header>
+                                                <button class="btn btn-primary" data-toggle="modal" data-target="#filterPrescriptionModal">
+                                                    <i class="fa fa-filter"></i> 
+                                                </button>
+
+                                                </div>
+                                            <table class="mdl-data-table ml-table-bordered  " id="example4">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="mdl-data-table__cell--non-numeric"> Dispensary </th>
+                                                        <th class="mdl-data-table__cell--non-numeric"> Amount </th>
+                                                        <th class="mdl-data-table__cell--non-numeric"> Amount </th>
+
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for dispensary, sold_amount in dispensaries_by_sale %}
+                                                        <tr class="odd gradeX">
+                                                            <td class="mdl-data-table__cell--non-numeric">{{dispensary}}</td>
+                                                            <td class="mdl-data-table__cell--non-numeric">{{sold_amount}}</td>
+<td>      <button  id='button-{{row}}' class="btn btn-primary btn-circle pull-right" hx-get="{% url 'pharmacy_report1' %}?id={{ dispensary.id }}" hx-trigger='click' hx-target='#drug-request-create'  hx-swap='beforeend'> <i class="fa fa-eye"></i> </button></td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="row">
+                                        {% include "pharmacy_app/partials/pharmacy_report1_partial.html" %}
+
+                                    </div>
+                            </div>
+
+                            </div>
+                        </div>
+{% endblock %}
+{% block scripts %}
+     <!-- widget js-->
+     <script src="../assets/js/pages/widget/widget-data.js" ></script>
+    <!-- Material -->
+    <script>
+
+        function toggleInventoryChart(){
+          document.getElementById('inventory-chart-id').style.display = 'block';
+          document.getElementById('inventory-table-id').style.display = 'none';          
+          document.getElementById('inventory-bar-chart-id').style.display = 'none';
+          
+        }
+        function toggleInventoryBarChart(){
+          document.getElementById('inventory-bar-chart-id').style.display = 'block';
+          document.getElementById('inventory-table-id').style.display = 'none';          
+          document.getElementById('inventory-chart-id').style.display = 'none';          
+          
+        }
+
+        function toggleSupplyTable(){
+          document.getElementById('supplied_drug_table_id').style.display = 'block';
+          document.getElementById('supplied-drug-bar-chart-id').style.display = 'none';          
+          document.getElementById('supplied-drug-pie-chart-id').style.display = 'none';
+          
+        }
+
+
+        function toggleSupplyPieChart(){
+          document.getElementById('supplied_drug_table_id').style.display = 'none';
+          document.getElementById('supplied-drug-bar-chart-id').style.display = 'none';          
+          document.getElementById('supplied-drug-pie-chart-id').style.display = 'block';
+          
+        }
+        function toggleSupplyBarChart(){
+          document.getElementById('supplied_drug_table_id').style.display = 'none';
+          document.getElementById('supplied-drug-bar-chart-id').style.display = 'block';          
+          document.getElementById('supplied-drug-pie-chart-id').style.display = 'none';
+          
+        }
+
+        function toggleDispensarySupplyBarChart(){
+          document.getElementById('dispensary-supplied-drug-table-id').style.display = 'none';
+          document.getElementById('dispensary-supplied-drug-bar-chart-id').style.display = 'block';          
+          document.getElementById('dispensary-supplied-drug-pie-chart-id').style.display = 'none';
+          
+        }
+        function toggleDispensarySupplyPieChart(){
+          document.getElementById('dispensary-supplied-drug-table-id').style.display = 'none';
+          document.getElementById('dispensary-supplied-drug-bar-chart-id').style.display = 'none';          
+          document.getElementById('dispensary-supplied-drug-pie-chart-id').style.display = 'block';
+          
+        }
+        function toggleDispensarySupplyTable(){
+          document.getElementById('dispensary-supplied-drug-table-id').style.display = 'block';
+          document.getElementById('dispensary-supplied-drug-bar-chart-id').style.display = 'none';          
+          document.getElementById('dispensary-supplied-drug-pie-chart-id').style.display = 'none';
+          
+        }
+
+ 
+    </script>
+ 
+{% endblock %}
+
+
+| also times doctor cant find drugs

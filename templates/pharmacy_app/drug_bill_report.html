@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+    <link href="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"/>
+{% endblock %}
+{% block title %} Drug Bill Report {% endblock %}
+
+{% block page_content %}
+{% include "pharmacy_app/partials/filter_drug_bill.html" %}
+
+    <div class="row">
+        <div class="col-md-12">
+        <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 650px;width: 1150px;">
+                <div class="card-head">
+                    <header>Dispensed Drugs</header>
+                <button class="btn btn-primary" data-toggle="modal" data-target="#filterDrugBillModal">
+                    <i class="fa fa-filter"></i> 
+                </button>
+                    <button class="btn btn-primary" onclick="$('#drug-bill-report').printElement()">
+                        <i class="fa fa-print"></i> 
+                    </button>
+
+                </div>
+                
+                    <table id="drug-bill-report" class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded">
+                        <thead>
+                            <tr class="gradeX odd">
+                                <th class="mdl-data-table__cell--non-numeric">Date/Time</th>
+                                <th class="mdl-data-table__cell--non-numeric">Dispensary</th>
+                                <th class="mdl-data-table__cell--non-numeric">Patient</th>
+                                <th class="mdl-data-table__cell--non-numeric">Dispensed Drug</th>
+                                <th class="mdl-data-table__cell--non-numeric">Quantity</th>
+                                <th class="mdl-data-table__cell--non-numeric">Unit Price</th>
+                                <th class="mdl-data-table__cell--non-numeric">Discount</th>
+                                <th class="mdl-data-table__cell--non-numeric">Insurance</th>
+                                <th class="mdl-data-table__cell--non-numeric">Free</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for bill in bill_list %}
+                                <tr>
+                                    <td class="mdl-data-table__cell--non-numeric">{{bill.registered_on}}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{bill.dispensary}}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{bill.bill_no.patient}}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{bill.bill_no.drug}}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{bill.bill_no.quantity}}</td>
+                                    {% if bill.bill_no.discount == False %}
+                                        {% if bill.bill_no.free == True %}
+                                        <td class="mdl-data-table__cell--non-numeric">0</td>
+                                        {% else %}
+                                        <td class="mdl-data-table__cell--non-numeric">{{bill.bill_no.selling_price.selling_price}}</td>
+                                        {% endif %}
+                                        <td class="mdl-data-table__cell--non-numeric">No</td>
+                                    {% else %}
+                                    <td class="mdl-data-table__cell--non-numeric">{{bill.bill_no.selling_price.discounted_price}}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">No</td>
+                                    {% endif %}
+                                    {% if bill.bill_no.insurance == True  %}
+                                    <td class="mdl-data-table__cell--non-numeric">yes</td>
+                                    {% else %}
+                                    <td class="mdl-data-table__cell--non-numeric">No</td>
+                                    {% endif %}
+                                    {% if bill.bill_no.free == True  %}
+                                    <td class="mdl-data-table__cell--non-numeric">yes</td>
+                                    {% else %}
+                                    <td class="mdl-data-table__cell--non-numeric">No</td>
+                                    {% endif %}
+
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <!-- data tables -->
+{% endblock %}

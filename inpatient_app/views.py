@@ -9,6 +9,7 @@ from staff_mgmt.forms import (ChangePasswordForm, DepartmentForm,
 							  EmployeeForm, FilterScheduleForm, LeaveForm, ResetPasswordForm,
 							  UpdateAttendanceForm, UserForm, WorkShiftForm)
 from notification.models import notify
+
 from staff_mgmt.utils import TimeOverlapError, generate_random_color, get_time_difference
 from django.urls import reverse
 
@@ -24,6 +25,14 @@ from django.db.models import Sum
 from datetime import datetime
 from datetime import  timedelta
 import itertools
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.renderers import TemplateHTMLRenderer
+from collections import OrderedDict
+from .fusioncharts import FusionCharts
+
+
 # Create your views here.
 def HospitalStructure(request):
 	"""
@@ -195,14 +204,19 @@ def PatientListForDoctor(request):
 
 def AllocatePatient(request,pk):
 	patient = Patient.objects.get(id=pk)
-	
-	unallocated_beds = Bed.objects.filter(patient__isnull=True).order_by('category')
+	filtered_category = int(request.GET.get('category','0')) or 'None'
+	if filtered_category=='None':	
+		unallocated_beds = Bed.objects.filter(patient__isnull=True).order_by('category')
+	else:
+		unallocated_beds = Bed.objects.filter(patient__isnull=True, category=BedCategory.objects.get(id=filtered_category))
+
 	for b in unallocated_beds:
 		print(b)
 	bed_form = BedForm()
+
 	bed_form.fields['bed'].queryset = unallocated_beds
 	bed_release_date = BedReleaseDate.objects.filter(status='active')
-
+	category_list = BedCategory.objects.all()
 	if request.method == 'POST':
 		bed_form = BedForm(request.POST)
 		if bed_form.is_valid():
@@ -232,8 +246,12 @@ def AllocatePatient(request,pk):
 			return redirect('patient_list')
 		else:
 			messages.error(request,'Fill Form!')
+
+
 	context = {'bed_form':bed_form, 'unallocated_beds':unallocated_beds,
 				'bed_release_date':bed_release_date,
+				'category_list':category_list,
+
 			}
 	return render(request,'inpatient_app/allocate_patient.html',context)
 
@@ -852,15 +870,19 @@ def AssignInpatient(request):
 
 def InpatientPrescription(request,patient_id):
 	patient = Patient.objects.get(id=patient_id)
-	stay_duration = PatientStayDuration.objects.get(patient=patient, leave_date__isnull=True)
+	stay_duration = PatientStayDuration.objects.filter(patient=patient, leave_date__isnull=True).last()
 	prescription_form = InpatientPrescriptionForm()
 	if request.method == 'POST':
 		prescription_form = InpatientPrescriptionForm(request.POST)
+		info_form = PrescriptionInfoForm(request.POST)
 		if prescription_form.is_valid():
 			prescription_model = prescription_form.save(commit=False)
 			prescription_model.patient = Patient.objects.get(id=patient_id)
-			prescription_model.inpatient = 'true'
-			print(prescription_model.drug, '\n',prescription_model.patient)
+			prescription_model.department = 1
+			true_string = 'true'
+			prescription_model.dispensed = true_string
+			prescription_model.registered_on = datetime.now()
+
 
 			"""			
 			drug_bill = InpatientDrugBillDetail()
@@ -1155,7 +1177,7 @@ def AssignNurseToTeam(request):
 
 def NurseProgressNote(request, patient_id):
 	patient = Patient.objects.get(id=patient_id)
-	stay_duration = PatientStayDuration.objects.get(patient=patient, leave_date__isnull=True)
+	stay_duration = PatientStayDuration.objects.filter(patient=patient, leave_date__isnull=True).last()
 	try:
 		instruction = InpatientDoctorOrder.objects.get(patient=patient, view_status='not_seen')
 		instruction.view_status = 'seen'
@@ -1189,45 +1211,80 @@ def NurseProgressNote(request, patient_id):
 	return render(request, 'inpatient_app/nurse_progress_note.html', context)
 
 
+
+
 def DrugPrescriptionPharmacistFormPage(request, prescription_id):
 #	patient = Patient.objects.get(id=patient_id)
 #	stay_duration = PatientStayDuration.objects.get(patient=patient, leave_date__isnull=True)
 
 #	patient_medication = InpatientMedication.objects.filter(patient=patient, stay_duration=stay_duration)
-	prescription_model = DrugPrescription.objects.get(id=prescription_id)
-	pharmacist_form = DrugPrescriptionPharmacistForm()
-	if request.method == 'POST':
-		pharmacist_form = DrugPrescriptionPharmacistForm(request.POST)
-		if pharmacist_form.is_valid():
-			prescription_form = pharmacist_form.save(commit=False)
-			prescription_model.units_per_take = prescription_form.units_per_take
-			prescription_model.frequency = prescription_form.frequency
-			prescription_model.frequency_unit = prescription_form.frequency_unit
-			prescription_model.duration_amount = prescription_form.duration_amount
-			prescription_model.duration_unit = prescription_form.duration_unit
+	prescription = DrugPrescription.objects.get(id=prescription_id)
 
-			drug_bill = InpatientDrugBillDetail()
 
-			inpatient_bill = InpatientBillRelation.objects.get(patient=prescription_model.patient, is_active='active')
-			drug_bill.bill = inpatient_bill.bill
-			drug_bill.drug = prescription_model.drug
-			drug_bill.patient = prescription_model.patient
-			drug_price = DrugPrice.objects.get(drug=prescription_model.drug, active='active')
-			drug_bill.registered_on = datetime.now()
+	nedded_unit = 0
+	if prescription.info.duration_unit == 'months':
+		da = prescription.info.duration
+		fq = int(prescription.info.frequency)
+		nedded_unit = da * fq * 30 
+	elif prescription.info.duration_unit == 'weeks':
+		da = prescription.info.duration
+		fq = int(prescription.info.frequency)
+		nedded_unit = da * fq * 7
+	else:
+		da = prescription.info.duration
+		fq = int(prescription.info.frequency)
+		nedded_unit = da * fq 	
+		print('needed unit is : ', nedded_unit,'\n', 'unit per take is ', prescription.info.units_per_take)
+	prescribed_drug_quantity = nedded_unit / int(prescription.info.drug.unit)
 
-			
-			da = prescription_model.duration_amount
-			fq = int(prescription_model.frequency)
-			drug_bill.quantity = da * fq * 30 
-			drug_bill.quantity = drug_bill.quantity / int(prescription_model.drug.unit)
-			drug_bill.drug_price = drug_price.selling_price * drug_bill.quantity
 
-			prescription_model.save()
-			drug_bill.save()
-			messages.success(request, ' Successfully Assigned!')
-			return redirect('pharmacist_administration_time_form', prescription_model.id)
-	context = {'pharmacist_form':pharmacist_form}
-	return render(request, 'inpatient_app/drug_prescription_pharmacist_form.html', context)
+	bill_detail = BillDetail()
+
+	inpatient_bill = InpatientBillRelation.objects.filter(patient=prescription.patient, is_active='active').last()
+	#drug_bill.bill = inpatient_bill.bill
+	bill_detail.drug = prescription.info.drug
+	bill_detail.patient = prescription.patient
+	bill_detail.registered_on = datetime.now()
+	payment_status = PatientPaymentStatus.objects.get(patient=prescription.patient,active=True)
+	price = DrugPrice.objects.get(drug=prescription.info.drug,active='active')
+	bill_detail.selling_price = price
+	if payment_status.payment_status=='Free':
+		bill_detail.free = True
+		bill_detail.discount = False
+		bill_detail.insurance = False
+		bill_detail.credit = False
+		bill_detail.selling_price = None
+
+	elif payment_status.payment_status == 'Insurance':
+		bill_detail.free = False
+		bill_detail.discount = False
+		bill_detail.insurance = True
+		bill_detail.credit = False
+
+	elif payment_status.payment_status == 'discount':
+		bill_detail.free = False
+		bill_detail.discount = True
+		bill_detail.insurance = False
+		bill_detail.credit = False
+
+	else:
+		bill_detail.free = False
+		bill_detail.discount = False
+		bill_detail.insurance = False
+		bill_detail.credit = False
+	bill_detail.department = 'Inpatient'
+	bill_detail.registered_on = datetime.now()
+	bill_detail.patient = prescription.patient
+	bill_detail.quantity = prescribed_drug_quantity
+
+	true_string = 'true'
+	prescription.dispensed = true_string
+	prescription.save()
+	bill_detail.save()
+	messages.success(request, ' Successful!')
+	return redirect('pharmacist_administration_time_form', prescription.id)
+#	context = {'pharmacist_form':pharmacist_form}
+#	return render(request, 'inpatient_app/drug_prescription_pharmacist_form.html', context)
 
 def PharmacistAdministrationTimeFormPage(request, prescription_id):
 	prescription_model = DrugPrescription.objects.get(id=prescription_id)
@@ -1248,7 +1305,13 @@ def PharmacistAdministrationTimeFormPage(request, prescription_id):
 
 def InpatientPrescriptionList(request):
 
-	prescription_list = DrugPrescription.objects.filter(inpatient='true',frequency__isnull=True)
+	prescriptions = DrugPrescription.objects.filter(department=1,frequency__isnull=True)
+	prescription_list = []
+	for p in prescriptions:
+		if InpatientAdministrationTime.objects.filter(drug_prescription__id =p.id).exists():
+			print('Do Nothing')
+		else:
+			prescription_list.append(p)
 	context = {'prescription_list':prescription_list}
 	return render(request, 'inpatient_app/inpatient_prescription_list.html', context)
 
@@ -1318,19 +1381,23 @@ def DoctorChartView(request, patient_id):
 
 #	chart.save()
 	
-	patient_medication = InpatientMedication.objects.filter(patient=patient)
+	patient_medication = InpatientMedication.objects.filter(patient=patient, drug_prescription__isnull=False)
 	administration_time = []
 	administration_times = []
 	time_gap_array = []
 	range_array = []
 	for medication in patient_medication:
 		print(medication.drug_prescription,'\n')
-		medication_time = InpatientAdministrationTime.objects.get(drug_prescription=medication.drug_prescription)
-		administration_time.append( medication_time)
-		administration_times.append(medication_time.first_time)
-		time_gap_array.append(medication_time)
-		range_array.append(range(1,medication.drug_prescription.frequency))
-		
+		medication_time = InpatientAdministrationTime.objects.filter(drug_prescription=medication.drug_prescription).last()
+		if medication_time:
+			administration_time.append( medication_time)
+			administration_times.append(medication_time.first_time)
+			time_gap_array.append(medication_time)
+			if medication.drug_prescription.info:
+				range_array.append(range(1,medication.drug_prescription.info.frequency))
+			else:
+				range_array.append(range(1,medication.drug_prescription.frequency))
+
 	frequency = [1,2,3,4]
 	for time in administration_times:
 		print('yea yea','\n',time,'\n')
@@ -1339,7 +1406,7 @@ def DoctorChartView(request, patient_id):
 
 	medication_zip = zip(patient_medication,time_gap_array, range_array)	
 
-	stay_duration = PatientStayDuration.objects.get(patient=patient, leave_date__isnull=True)
+	stay_duration = PatientStayDuration.objects.filter(patient=patient, leave_date__isnull=True).last()
 
 	vital_form = VitalSignForm()
 	progress_chart_form = NurseProgressChartForm()
@@ -1350,7 +1417,7 @@ def DoctorChartView(request, patient_id):
 			chart_model.patient = patient
 
 			chart_model.nurse = Employee.objects.get(user_profile=request.user, designation__name='Doctor')
-			chart_model.ward_team_bed = WardTeamBed.objects.get(team__ward_service_provider=chart_model.nurse)
+			chart_model.ward_team_bed = WardTeamBed.objects.filter(team__ward_service_provider=chart_model.nurse).last()
 			chart_model.stay_duration = stay_duration
 			chart_model.view_status = 'not_seen'
 			chart_model.registered_on = datetime.now()
@@ -1436,21 +1503,30 @@ def NurseChartView(request, patient_id):
 
 #	chart.save()
 	
-	patient_medication = InpatientMedication.objects.filter(patient=patient)
+	patient_medication = InpatientMedication.objects.filter(patient=patient, drug_prescription__isnull=False)
 	administration_time = []
 	administration_times = []
 	time_gap_array = []
 	range_array = []
+	"""
 	for medication in patient_medication:
 #		print(medication.drug_prescription,'\n')
-		"""
-		#try:
-		""" 
+ 
 		medication_time = InpatientAdministrationTime.objects.get(drug_prescription=medication.drug_prescription)
 		administration_time.append( medication_time)
 		administration_times.append(medication_time.first_time)
 		time_gap_array.append(medication_time)
 		range_array.append(range(1,medication.drug_prescription.frequency))
+	"""
+	for medication in patient_medication:
+		print(medication.drug_prescription,'\n')
+		medication_time = InpatientAdministrationTime.objects.filter(drug_prescription=medication.drug_prescription, drug_prescription__info__isnull=False).last()
+		if medication_time:
+			administration_time.append( medication_time)
+			administration_times.append(medication_time.first_time)
+			time_gap_array.append(medication_time)
+			range_array.append(range(1,medication.drug_prescription.info.frequency))
+
 		"""
 		if medication.drug_prescription.frequency > 1:
 			for i in range(1,medication.drug_prescription.frequency):
@@ -1479,7 +1555,7 @@ def NurseChartView(request, patient_id):
 
 	medication_zip = zip(patient_medication,time_gap_array, range_array)	
 
-	stay_duration = PatientStayDuration.objects.get(patient=patient, leave_date__isnull=True)
+	stay_duration = PatientStayDuration.objects.filter(patient=patient, leave_date__isnull=True).last()
 	vital_form = VitalSignForm()
 
 	progress_chart_form = NurseProgressChartForm()
@@ -1489,7 +1565,7 @@ def NurseChartView(request, patient_id):
 			chart_model = progress_chart_form.save(commit=False)
 			chart_model.patient = patient
 
-			chart_model.nurse = Employee.objects.get(user_profile=request.user, designation__name='Nurse')
+			chart_model.nurse = Employee.objects.filter(user_profile=request.user, designation__name='Nurse').last()
 			chart_model.ward_team_bed = WardTeamBed.objects.get(nurse_team__nurse=chart_model.nurse, bed__patient=patient)
 			chart_model.stay_duration = stay_duration
 			chart_model.view_status = 'not_seen'
@@ -1698,17 +1774,17 @@ def MedicalAdministrationDetail(request, patient_id):
 	for medication in medication_list:
 		administration_time_array.append(InpatientAdministrationTime.objects.get(drug_prescription=medication.drug_prescription))
 	"""
-	patient_medication = InpatientMedication.objects.filter(patient=patient)
+	patient_medication = InpatientMedication.objects.filter(patient=patient, drug_prescription__info__isnull=False)
 	administration_time = []
 	administration_times = []
 	time_gap_array = []
 	range_array = []
 	for medication in patient_medication:
-		medication_time = InpatientAdministrationTime.objects.get(drug_prescription=medication.drug_prescription)
+		medication_time = InpatientAdministrationTime.objects.get(drug_prescription=medication.drug_prescription, drug_prescription__info__isnull=False)
 		administration_time.append( medication_time)
 		administration_times.append(medication_time.first_time)
 		time_gap_array.append(medication_time)
-		range_array.append(range(1,medication.drug_prescription.frequency))
+		range_array.append(range(1,medication.drug_prescription.info.frequency))
 
 	frequency = [1,2,3,4]
 	for time in administration_times:
@@ -1748,7 +1824,7 @@ def MarkInstructionAsDoneForDoctor(request, instruction_id):
 
 def DoctorInstructionFormPage(request, patient_id):
 	patient = Patient.objects.get(id=patient_id)
-	stay_duration = PatientStayDuration.objects.get(patient=patient, leave_date__isnull=True)
+	stay_duration = PatientStayDuration.objects.filter(patient=patient, leave_date__isnull=True).last()
 
 	try:
 		progress_chart = NurseProgressChart.objects.get(patient=patient, view_status='not_seen')
@@ -1775,6 +1851,10 @@ def DoctorInstructionFormPage(request, patient_id):
 	return render(request, 'inpatient_app/doctor_instruction_form.html', context)
 
 def DischargeSummaryFormPage(request, patient_id):
+	for price in RoomPrice.objects.all():
+		price.active=True
+		price.save()
+		print('11 ')
 	patient = Patient.objects.get(id=patient_id)
 	stay_duration = PatientStayDuration.objects.get(patient=patient, leave_date__isnull=True)
 
@@ -1803,11 +1883,49 @@ def DischargeInpatient(request, patient_id):
 	stay_duration.leave_date = datetime.now()
 
 	duration_amount = int(stay_duration.leave_date.day) - int( stay_duration.admission_date.day)
+	"""
 	room_price = RoomPrice.objects.get(room = stay_duration.room)
 
 	room_bill = InpatientRoomBillDetail.objects.get(patient=patient, active='active')
 #	room_bill.active = 'not_active'
 	room_bill.room_price = room_price.room_price * duration_amount
+	"""
+	room_bill = RoomBillDetail()
+	room_bill.room = stay_duration.room
+	room_bill.patient = stay_duration.patient
+	room_bill.registered_on = datetime.now()
+	payment_status = PatientPaymentStatus.objects.get(patient=patient,active=True)
+	try:
+		price = RoomPrice.objects.get(room=stay_duration.room,active=True)
+	except:
+		messages.error(request,'Room Price Has Not Been Assigned')
+		return redirect('doctor_chart_view', patient.id)
+	room_bill.room_price = price
+	if payment_status.payment_status=='Free':
+		room_bill.free = True
+		room_bill.discount = False
+		room_bill.insurance = False
+		room_bill.credit = False
+		room_bill.price = None
+
+	elif payment_status.payment_status == 'Insurance':
+		room_bill.free = False
+		room_bill.discount = False
+		room_bill.insurance = True
+		room_bill.credit = False
+
+	elif payment_status.payment_status == 'discount':
+		room_bill.free = False
+		room_bill.discount = True
+		room_bill.insurance = False
+		room_bill.credit = False
+
+	else:
+		room_bill.free = False
+		room_bill.discount = False
+		room_bill.insurance = False
+		room_bill.credit = False
+
 	inpatient_reason = InpatientReason.objects.get(patient=patient, status='active')
 	inpatient_reason.status ='not_active'	
 
@@ -1818,6 +1936,7 @@ def DischargeInpatient(request, patient_id):
 	priority_level = AdmissionPriorityLevel.objects.get(patient=patient, status='active')	
 	priority_level.status = 'not_active'
 
+	room_bill.save()
 	priority_level.save()
 	bed_release_date.save()
 	print('\n', 'Successful 111','\n')
@@ -2125,3 +2244,478 @@ def DurationMedication(request, stay_duration_id):
 
 
 #def 
+def InpatientReport(request):
+# Chart data is passed to the `dataSource` parameter, like a dictionary in the form of key-value pairs.
+	dataSource = OrderedDict()
+	admission_chart = OrderedDict()
+	used_service_chart = OrderedDict()
+	payment_status_chart = OrderedDict()
+	discharge_chart = OrderedDict()
+
+# The `chartConfig` dict contains key-value pairs of data for chart attribute
+	chartConfig = OrderedDict()
+	chartConfig["caption"] = "Drugs Sold Today"
+	chartConfig["subCaption"] = "In Birr"
+	chartConfig["xAxisName"] = "Country"
+	chartConfig["yAxisName"] = "Reserves (MMbbl)"
+	chartConfig["numberSuffix"] = " Birr"
+	chartConfig["theme"] = "fusion"
+	chartConfig["numVisiblePlot"] = "8",
+	chartConfig["flatScrollBars"] = "1",
+	chartConfig["scrollheight"] = "1",
+	chartConfig["type"] = "pie2d",
+
+	dataSource["chart"] = chartConfig
+	dataSource["data"] = []
+
+	admission_chart["chart"] = chartConfig
+	admission_chart["chart"] = {
+		"caption":'Patients Admitted From',
+		"subCaption":'In Unit',
+		"numberSuffix":'Patients',
+		'theme':'fusion',
+	}
+
+	used_service_chart["chart"] = chartConfig
+	used_service_chart["chart"] = {
+		"caption":'Total Used Resource By Patient',
+		"subCaption":'In Unit',
+		"numberSuffix":'Patients',
+		'theme':'fusion',
+		'yAxisName':'Number Of Patients',
+	}
+	used_service_chart["data"] = []
+
+
+	payment_status_chart["chart"] = chartConfig
+	payment_status_chart["chart"] = {
+		"caption":'Admission By Payment status',
+		"subCaption":'In Unit',
+		"numberSuffix":'Patients',
+		'theme':'fusion',
+		'yAxisName':'Number Of Patients',
+	}
+	payment_status_chart["data"] = []
+
+	discharge_chart["chart"] = chartConfig
+	discharge_chart["chart"] = {
+		"caption":'Patients By Discharge Condition',
+		"subCaption":'In Unit',
+		"numberSuffix":'Patients',
+		'theme':'fusion',
+		'yAxisName':'Number Of Patients',
+	}
+	discharge_chart["data"] = []
+
+	admission_chart["data"] = []
+	
+	start_date = datetime.strptime(request.GET.get('start_date') or '1970-01-01', '%Y-%m-%d')
+	end_date = datetime.strptime(request.GET.get('end_date') or str(datetime.now().date()),  '%Y-%m-%d')
+
+	admission_amount = PatientStayDuration.objects.filter(admission_date__range=['2020-01-01','2024-01-01'],patient__isnull=False)
+
+	allocated_beds = Bed.objects.filter(patient__isnull=False).count()
+	unallocated_beds = Bed.objects.filter(patient__isnull=True).count()
+	bed_usage = []
+	bed_array = []
+	for bed in Bed.objects.all():
+		bed_duration = PatientStayDuration.objects.filter(room=bed)
+		if bed_duration:
+			if bed_duration.count()>1:
+				bed_usage.append(bed_duration.count())
+				bed_array.append(bed)
+	bed_zip = zip(bed_usage,bed_array)
+	patients = []
+	for duration in admission_amount:
+		patients.append(duration.patient)
+
+	count1= 0
+	total_stay = 0
+	for patient in patients:
+		durations = PatientStayDuration.objects.filter(patient=patient,admission_date__range=['2020-01-01','2024-01-01'], leave_date__isnull=False)
+		if durations:
+			count = 0
+			total_stay_length = 0
+			for d in durations:
+				count = count + 1
+				stay_length = d.admission_date.day - d.leave_date.day
+				total_stay_length = stay_length + total_stay_length
+			patient_stay = total_stay_length / count
+			total_stay = total_stay + patient_stay
+			count1 = count1 + 1
+	average_stay_length = total_stay/count1
+
+	medications = InpatientMedication.objects.filter(patient__isnull=False)
+	average_medication = medications.count()/admission_amount.count()
+
+	lab_tests = InpatientLabOrder.objects.filter(patient__isnull=False)
+	average_lab_test = lab_tests.count() / admission_amount.count()
+	print(average_lab_test,'ll')
+	#xray_tests = InpatientLabOrder.objects.filter(patient__isnull=False)
+	average_xray_test = average_lab_test
+
+	emergency_admitted = InpatientAdmissionAssessment.objects.filter(admitted_from='Emergency Department').count()
+	admission_chart["data"].append({"label": 'Admitted From Emergency ', "value": emergency_admitted})
+
+	opd_admitted = admission_amount.count() - emergency_admitted
+	admission_chart["data"].append({"label": 'Admitted From OPD', "value": opd_admitted})
+
+	total_discharge = InpatientDischargeSummary.objects.filter(patient__isnull=False, discharge_condition__isnull=False).count()
+	completed_discharge = InpatientDischargeSummary.objects.filter(patient__isnull=False, discharge_condition='Completed Treatment').count()
+	discharge_chart["data"].append({"label": "Completed Treatment", "value": completed_discharge})
+	incomplete_discharge = InpatientDischargeSummary.objects.filter(patient__isnull=False, discharge_condition='Treatment Not Completed').count()
+	discharge_chart["data"].append({"label": "Not Completed Treatment", "value": incomplete_discharge})
+	dead_discharge = InpatientDischargeSummary.objects.filter(patient__isnull=False, discharge_condition='Died').count()
+	discharge_chart["data"].append({"label": "Died", "value": dead_discharge})
+
+	taken_medication = InpatientMedication.objects.filter(stay_duration__isnull=False).values('stay_duration__id').distinct().count()
+	used_service_chart["data"].append({"label": "Taken Medication", "value": taken_medication})
+
+	taken_lab_test = InpatientLabOrder.objects.filter(stay_duration__isnull=False).values('stay_duration__id').distinct().count()
+	used_service_chart["data"].append({"label": "Taken Lab Test", "value": taken_lab_test})
+
+	#rad_test = OutpatientRadiologyResult.objects.filter(visit__isnull=False).values('visit__id').distinct().count()
+	taken_rad_test = 2
+	used_service_chart["data"].append({"label": "Taken Rad Test", "value": taken_rad_test})
+
+	ps = PatientPaymentStatus.objects.first()
+
+	payment_statuses = ['Insurance','Free','Discount','Default']
+
+	payment_status_chart["data"].append({"label": 'Insurance', "value": ps.insurancePatientAmount})
+	payment_status_chart["data"].append({"label": 'Free', "value": ps.freePatientAmount})
+	payment_status_chart["data"].append({"label": 'Discount', "value": ps.discountPatientAmount})
+	payment_status_chart["data"].append({"label": 'Default', "value": ps.defaultPatientAmount})
+	print('dksksksssssssssssss:  sss: ', ps.insurancePatientAmount)
+	building_list = HospitalUnit.objects.all()
+	ward_list = Ward.objects.all()
+
+	service_labels = []
+	service_numbers = []
+	for service in Service.objects.all():
+		service_bill = ServiceBillDetail.objects.filter(service=service)
+		service_labels.append(str(service))
+
+		if service_bill:
+			service_numbers.append(service_bill.count())
+			used_service_chart["data"].append({"label": str(service), "value": str(service_bill.count())})
+		else:
+			service_numbers.append(0)
+			used_service_chart["data"].append({"label": str(service), "value": 0})
+
+	service_zip =zip(service_labels,service_numbers)
+
+	age = []
+	for i in range(1,120):
+		age.append(i)
+	#for age in age:
+	#	print(age,'\n')
+
+	age_array = age
+
+	bed_list = Bed.objects.all()
+	sex = ['MALE','FEMALE']
+
+	"""
+	building_list = []
+	building_revenue = []
+	for b in HospitalUnit.objects.all():
+		building_drugs = InpatientMedication.objects.filter(stay_duration__room__ward__hospital_unit=b)
+		drug_sum = 0
+		if building_drugs:
+			for d in building_drugs:
+				price = DrugPrice.objects.get(drug=d.drug_prescription.drug,active='active')
+				drug_sum = drug_sum + price.selling_price
+		room_sum = 0
+		room_stays = InpatientRoomBillDetail.objects.filter(room__ward__hospital_unit=b)
+		if room_stays:
+			for d in room_stays:
+				price = RoomPrice.objects.filter(room=d.room).last()
+				room_sum = room_sum + price.room_price
+
+		building_list.append(b)
+		building_revenue.append(drug_sum + room_sum)
+
+	building_revenue_zip = zip(building_list,building_revenue)
+
+	drug_list3 = []
+	drug_revenue = []
+	for d in Dosage.objects.all():
+		building_drugs = InpatientMedication.objects.filter(drug_prescription__drug=d)
+		drug_sum = 0
+		if building_drugs:
+			for b in building_drugs:
+				price = DrugPrice.objects.get(drug=b.drug_prescription.drug,active='active')
+				drug_sum = drug_sum + price.selling_price
+		drug_list3.append(d)
+		drug_revenue.append(drug_sum)
+	drug_revenue_zip = zip(drug_list3,drug_revenue)
+
+	test_list = []
+	test_revenue = []
+	for t in LaboratoryTestType.objects.all():
+		performed_tests = OutpatientLabResult.objects.filter(lab_result__result_type__test_type=t)
+		test_sum = 0
+		if performed_tests:
+			for d in performed_tests:
+				price = LaboratoryTestPrice.objects.get(test_type=d.lab_result.result_type.test_type,active=True)
+				test_sum = test_sum + price.price
+	test_list.append(t)
+	test_revenue.append(test_sum)
+	test_revenue_zip = zip(test_list,test_revenue)
+
+	service_list = []
+	service_revenue = []
+	for s in Service.objects.all():
+		services = ServiceBillDetail.objects.filter(service=s, service_price__isnull=False)
+		service_sum = 0
+		if services:
+			for d in services:
+				service_sum = service_sum + d.service_price
+	service_list.append(s)
+	service_revenue.append(service_sum)
+	service_revenue_zip = zip(service_list,service_revenue)
+	"""
+
+	total_service_bill = ServiceBillDetail.objects.filter(service_price__isnull=False,registered_on__range=[start_date,end_date])
+	service_list = []
+	service_revenue = []
+	for s in Service.objects.all():
+		services = total_service_bill.filter(service=s, service_price__isnull=False)
+		service_sum = 0
+		if services:
+			for d in services:
+				service_sum = service_sum + d.service_price
+		service_list.append(s)
+		service_revenue.append(service_sum)
+	service_revenue_zip = zip(service_list,service_revenue)
+
+
+	drug_list3 = []
+	drug_revenue = []
+	total_drug_bill = BillDetail.objects.filter(selling_price__isnull=False,registered_on__range=[start_date,end_date])
+	drug_sum = 0
+	for drug in Dosage.objects.all():
+		drug_bills = total_drug_bill.filter(drug=drug)
+		if drug_bills:
+			for bill in drug_bills:
+				if bill.discount ==True:
+					drug_sum = drug_sum + (bill.quantity * bill.selling_price.discounted_price)
+				else:
+					drug_sum = drug_sum + (bill.quantity * bill.selling_price.selling_price)
+
+		drug_list3.append(drug)
+		drug_revenue.append(drug_sum)
+	drug_revenue_zip = zip(drug_list3,drug_revenue)
+
+	test_list = []
+	test_revenue = []
+	total_lab_bill = LabBillDetail.objects.filter(registered_on__range=[start_date,end_date])
+	lab_sum = 0
+	for section in LaboratorySection.objects.all():
+		lab_bills = total_lab_bill.filter(test__section=section)
+		if lab_bills:
+			for bill in lab_bills:
+				if bill.discount ==True:
+					lab_sum = lab_sum + bill.test_price.discounted_price
+				else:
+					lab_sum = lab_sum + bill.test_price.price
+
+		test_list.append(section)
+		test_revenue.append(lab_sum)
+	test_revenue_zip = zip(test_list,test_revenue)
+
+	total_revenue = lab_sum + drug_sum + service_sum
+
+	admission_chart = FusionCharts("pie2d", "admission_chart", "500", "300", "admission_pie_container", "json", admission_chart)
+	used_service_chart = FusionCharts("column2d", "used_service_chart", "500", "300", "used_service_bar_container", "json", used_service_chart)
+	payment_status_chart = FusionCharts("doughnut2d", "payment_status_chart", "500", "300", "payment_status_pie_container", "json", payment_status_chart)
+	discharge_chart = FusionCharts("doughnut2d", "discharge_chart", "1000", "500", "discharge_doughnut_container", "json", discharge_chart)
+
+	context = {'allocated_beds':allocated_beds,
+				'unallocated_beds':unallocated_beds,
+				'total_beds':Bed.objects.all().count(),
+				
+				'emergency_admitted':emergency_admitted,
+				'opd_admitted':opd_admitted,
+				'total_admitted':opd_admitted + 2,
+				'admission_chart':admission_chart.render(),
+
+				'average_stay_length':average_stay_length,
+				'average_medication':average_medication,
+				'average_lab_test':average_lab_test,
+				'average_xray_test':average_xray_test,
+
+				'total_discharge':total_discharge,
+				'completed_discharge':completed_discharge,
+				'incomplete_discharge':incomplete_discharge,
+				'dead_discharge':dead_discharge,
+				'discharge_chart':discharge_chart.render(),
+				
+				'taken_medication':taken_medication,
+				'taken_lab_test':taken_lab_test,
+				'taken_rad_test':taken_rad_test,
+				'used_service_chart':used_service_chart.render(),
+
+				'payment_statuses':payment_statuses,
+				'ipa':ps.insurancePatientAmount,
+				'dpa':ps.discountPatientAmount,
+				'fpa':ps.freePatientAmount,
+				'dfpa':ps.defaultPatientAmount,
+				'payment_status_chart':payment_status_chart.render(),
+
+				'building_list':building_list,
+				'ward_list':ward_list,
+
+				'service_zip':service_zip,
+
+				'age_array':age_array,
+				'bed_list':bed_list,
+				'sex':sex,
+				'bed_list':bed_list,
+				'bed_zip':bed_zip,
+
+				'total_revenue':total_revenue,
+				'drug_revenue_zip':drug_revenue_zip,
+				'test_revenue_zip':test_revenue_zip,
+				'service_revenue_zip':service_revenue_zip,
+	}	
+	return render(request, 'inpatient_app/inpatient_report.html',context)
+
+def InpatientReportChart(request):
+	return render(request, 'inpatient_app/inpatient_report_chart.html')
+
+class InpatientReportChartData(APIView):
+	authentication_classes = []
+	permission_classes = []
+
+	def get(self, request, format=None, *args, **kwargs):
+
+		filtered_date = request.GET.get('date','0') or None
+		print(filtered_date)
+		admission_date = []
+		admission = []
+		a= []
+		b=[]
+		stay_duration = PatientStayDuration.objects.filter(patient__isnull=False)
+		for duration in stay_duration:
+			if duration.admission_date.day in a:
+				print('dd')
+			else:
+				a.append(duration.admission_date.day)
+		for a in a:
+			s_dur = PatientStayDuration.objects.filter(patient__isnull=False,admission_date__day=a)
+			s_dur_date = s_dur.last()
+			admission_date.append(s_dur_date.admission_date.date())
+			print(s_dur_date.admission_date.date,'ssss')
+			admission.append(s_dur.count())
+			ward_admission_zip = zip(admission,admission_date)
+
+		emergency_admitted = InpatientAdmissionAssessment.objects.filter(admitted_from='Emergency Department')
+		total_admitted = []
+		admitted_labels = ["OPD","Emergency"]	
+		total_admitted.append(stay_duration.count()- emergency_admitted.count())
+		total_admitted.append(emergency_admitted.count())
+
+
+		count1= 0
+		total_stay = 0
+		for patient in Patient.objects.all():
+			durations = PatientStayDuration.objects.filter(patient=patient,admission_date__range=['2020-01-01','2024-01-01'], leave_date__isnull=False)
+			if durations:
+				count = 0
+				total_stay_length = 0
+				for d in durations:
+					count = count + 1
+					stay_length = d.admission_date.day - d.leave_date.day
+					total_stay_length = stay_length + total_stay_length
+				patient_stay = total_stay_length / count
+				total_stay = total_stay + patient_stay
+				count1 = count1 + 1
+		average_stay_length = total_stay/count1
+
+		medications = InpatientMedication.objects.filter(patient__isnull=False)
+		average_medication = medications.count()/stay_duration.count()
+
+		lab_tests = InpatientLabOrder.objects.filter(patient__isnull=False)
+		average_lab_test = lab_tests.count() / stay_duration.count()
+		print(average_lab_test,'ll')
+		#xray_tests = InpatientLabOrder.objects.filter(patient__isnull=False)
+		average_xray_test = average_lab_test
+
+		average_usage_labels = ['Stay Length','Medication Rate','Lab Test Rate','Rad Test Rate']
+		average_usage_numbers = []
+		average_usage_numbers.append(average_stay_length)
+		average_usage_numbers.append(average_medication)
+		average_usage_numbers.append(average_lab_test)
+		average_usage_numbers.append(average_xray_test)
+
+		taken_medication = InpatientMedication.objects.filter(stay_duration__isnull=False).values('stay_duration__id').distinct().count()
+		taken_lab_test = InpatientLabOrder.objects.filter(stay_duration__isnull=False).values('stay_duration__id').distinct().count()
+		#rad_test = OutpatientRadiologyResult.objects.filter(visit__isnull=False).values('visit__id').distinct().count()
+		taken_rad_test = 2
+		service_labels = []
+		service_numbers = []
+		for service in Service.objects.all():
+			service_bill = ServiceBillDetail.objects.filter(service=service)
+			service_labels.append(str(service))
+			if service_bill:
+				service_numbers.append(service_bill.count())
+			else:
+				service_numbers.append(1)
+
+
+		total_usage_labels = ['Taken Medication','Taken Lab Test','Taken Rad Test']
+		total_usage_numbers = []
+		total_usage_numbers.append(taken_medication)
+		total_usage_numbers.append(taken_lab_test)
+		total_usage_numbers.append(taken_rad_test)
+		for label in service_labels:
+			total_usage_labels.append(label)
+		for number in service_numbers:
+			total_usage_numbers.append(number)
+
+		payment_status_labels = ['Insurance','Free','Credit','Default']
+		payment_status_numbers = [2,3,1,8]
+
+		data = {'labels':admission_date,
+				'numbers':admission,
+				'admitted_from_labels':admitted_labels,
+				'admitted_from_numbers':total_admitted,
+
+				'average_usage_labels':average_usage_labels,
+				'average_usage_numbers':average_usage_numbers,
+
+				'total_usage_labels':total_usage_labels,
+				'total_usage_numbers':total_usage_numbers,
+
+				'payment_status_labels':payment_status_labels,
+				'payment_status_numbers':payment_status_numbers,
+
+				}
+		return Response(data)
+		return redirect('inpatient_report_chart')
+
+
+
+def InpatientReportChartTwo(request):
+	return render(request, 'inpatient_app/inpatient_report_chart_two.html')
+
+class InpatientReportChartDataTwo(APIView):
+	authentication_classes = []
+	permission_classes = []
+
+	def get(self, request, format=None, *args, **kwargs):
+
+		allocated_beds = Bed.objects.filter(patient__isnull=False).count()
+		unallocated_beds = Bed.objects.filter(patient__isnull=True).count()
+		all_beds = Bed.objects.all().count()
+		room_occupancy_labels = ['Current Patients','Free Beds']
+		room_occupancy_numbers = []
+		room_occupancy_numbers.append(allocated_beds)
+		room_occupancy_numbers.append(unallocated_beds)
+		data = {'room_occupancy_labels':room_occupancy_labels,
+				'room_occupancy_numbers':room_occupancy_numbers,
+				}
+		return Response(data)
+

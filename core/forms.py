@@ -17,6 +17,8 @@ class VitalSignForm(forms.ModelForm):
         fields = [
             'pulse_rate', 'temperature', 'temperature_unit',
             'systolic_blood_pressure', 'diastolic_blood_pressure', 
+            'oxygen_saturation','blood_glucose_level',
+            'glucose_level_unit'
         ]
         widgets = {            
             'pulse_rate': forms.NumberInput(attrs={
@@ -31,10 +33,19 @@ class VitalSignForm(forms.ModelForm):
             'diastolic_blood_pressure': forms.NumberInput(attrs={
                 'class' : 'form-control forms',
             }),
-
+            'oxygen_saturation': forms.NumberInput(attrs={
+                'class' : 'form-control forms',
+            }),
+            'blood_glucose_level': forms.NumberInput(attrs={
+                'class' : 'form-control forms',
+            }),
+            'glucose_level_unit': forms.Select(attrs={
+                'class' : 'form-control select2',
+            }),
             'temperature_unit': forms.Select(attrs={
                 'class' : 'form-control select2',
             }),
+
         }
 
 

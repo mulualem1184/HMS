@@ -82,33 +82,34 @@ def DrugSupplySignal(sender, **kwargs):
 
 @receiver(post_save, sender=DrugSupply)
 def DrugSupplySignal(sender, **kwargs):
-	instance : DrugSupply = kwargs.get('instance')
-	procurement = Procurement.objects.get(procurement_no=instance.batch.procurement.procurement_no)
-	
-	procurement_details = ProcurementDetail.objects.filter(procurement_no=procurement)
-	
-	drug_supply = DrugSupply.objects.filter(batch__procurement=procurement)
-	procurement_quantity = procurement_details.aggregate(Sum('quantity'))
-	procurement_quantity = procurement_quantity['quantity__sum']
-	drug_supply_quantity = drug_supply.aggregate(Sum('supplied_quantity'))
-	drug_supply_quantity = drug_supply_quantity['supplied_quantity__sum']
-	if procurement_quantity - drug_supply_quantity  == 0:
-		procurement.status='recieved'
-		procurement.save()
-	
-	remaining_quantity = 0
-	supplied_quantity = 0
-	total_remaining_quantity = 0
-	for procurement_detail in procurement_details:
+	if 1>2:
+		instance : DrugSupply = kwargs.get('instance')
+		procurement = Procurement.objects.get(procurement_no=instance.batch.procurement.procurement_no)
+		
+		procurement_details = ProcurementDetail.objects.filter(procurement_no=procurement)
+		
 		drug_supply = DrugSupply.objects.filter(batch__procurement=procurement)
-		for drug_supply in drug_supply:
-			supplied_quantity = supplied_quantity + drug_supply.supplied_quantity
-		remaining_quantity = procurement_detail.quantity - supplied_quantity
-		print(procurement_detail.drug,'\n' ,'ordered quantity: ', procurement_detail.quantity, '\n',
-		'supplied_quantity: ',supplied_quantity,'\n','remainng quantity : ', remaining_quantity,'\n')
-		supplied_quantity = 0		
-		total_remaining_quantity = total_remaining_quantity + remaining_quantity
-		print(total_remaining_quantity,'\n')
+		procurement_quantity = procurement_details.aggregate(Sum('quantity'))
+		procurement_quantity = procurement_quantity['quantity__sum']
+		drug_supply_quantity = drug_supply.aggregate(Sum('supplied_quantity'))
+		drug_supply_quantity = drug_supply_quantity['supplied_quantity__sum']
+		if procurement_quantity - drug_supply_quantity  == 0:
+			procurement.status='recieved'
+			procurement.save()
+		
+		remaining_quantity = 0
+		supplied_quantity = 0
+		total_remaining_quantity = 0
+		for procurement_detail in procurement_details:
+			drug_supply = DrugSupply.objects.filter(batch__procurement=procurement)
+			for drug_supply in drug_supply:
+				supplied_quantity = supplied_quantity + drug_supply.supplied_quantity
+			remaining_quantity = procurement_detail.quantity - supplied_quantity
+			print(procurement_detail.drug,'\n' ,'ordered quantity: ', procurement_detail.quantity, '\n',
+			'supplied_quantity: ',supplied_quantity,'\n','remainng quantity : ', remaining_quantity,'\n')
+			supplied_quantity = 0		
+			total_remaining_quantity = total_remaining_quantity + remaining_quantity
+			print(total_remaining_quantity,'\n')
 	"""	
 		if total_remaining_quantity == 0:
 			procurement.status = 'recieved'

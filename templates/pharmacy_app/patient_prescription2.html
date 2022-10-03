@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Fill Prescription Form {% endblock %}
+{% block style %} 
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block page_content %}
+  
+
+              <div class="col-md-12">
+                                <ul class="nav nav-tabs">
+                  <li class="nav-item"><a class="nav-link active show"
+                    href="#tab1" data-toggle="tab">Prescription</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#tab2"
+                    data-toggle="tab">Full Prescription</a></li>
+                </ul>
+              
+                                <div class="tab-content">
+                                    <div class="tab-pane active fontawesome-demo" id="tab1">
+            <div class="card-body " id="bar-parent1">
+              
+     
+    <form method="post">
+    {% csrf_token %}
+    
+    <div class="form-row" >
+
+ 
+      <div class="form-group col-md-6 mb-0">
+        {{ prescription_form.info|as_crispy_field }}
+      </div>
+      <div class="form-group col-md-6 mb-0">
+        {{ prescription_form.diagnosis|as_crispy_field }}
+      </div>
+      
+    </div>
+    
+    <div class="form-row">   
+     <div class= " form-group col-md-12 mb-0">
+    {{prescription_form.comments|as_crispy_field}}
+      </div>
+    </div>
+    <div class="form-row" style="padding-top: 10px;">
+    <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+  </form>
+
+        </div>
+      </div>
+
+                                    <div class="tab-pane fontawesome-demo" id="tab2">
+            <div class="card-body " >
+              
+     
+    <form method="post" action="{% url 'save_prescription' patient.id %}">
+    {% csrf_token %}
+    
+    <div class="form-row" > 
+      <div class="form-group col-md-6 ">
+        {{ info_form.drug|as_crispy_field }}
+      </div>
+      <div class="form-group col-md-6 mb-0">
+        {{ info_form.units_per_take|as_crispy_field }}
+      </div>
+      
+    </div>
+    
+    <div class="form-row" > 
+      <div class="form-group col-md-6 mb-0">
+        {{ info_form.frequency|as_crispy_field }}
+      </div>
+      <div class="form-group col-md-6 mb-0">
+        {{ info_form.frequency_unit|as_crispy_field }}
+      </div>
+      
+    </div>
+
+    <div class="form-row" > 
+      <div class="form-group col-md-6 mb-0">
+        {{ info_form.duration|as_crispy_field }}
+      </div>
+      <div class="form-group col-md-6 mb-0">
+        {{ info_form.duration_unit|as_crispy_field }}
+      </div>
+      
+    </div>
+
+    <div class="form-row">   
+     <div class= " form-group col-md-6 mb-0">
+    {{prescription_form.diagnosis|as_crispy_field}}
+      </div>
+     <div class= " form-group col-md-6 mb-0">
+    {{prescription_form.comments|as_crispy_field}}
+      </div>
+    </div>
+    <div class="form-row" style="padding-top: 10px;">
+    <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+  </form>
+
+        </div>
+      </div>
+
+
+  </div>
+    {% block scripts %}
+  
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>        
+
+        
+    {% endblock %}
+
+{% endblock %}
+
+ 

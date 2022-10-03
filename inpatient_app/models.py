@@ -36,6 +36,18 @@ class Bed(models.Model):
 		if self.patient:
 			return  str(self.patient.full_name) + " in " + str(self.category)
 
+	@property
+	def bed_with_patient(self):
+		bed = Bed.objects.filter(patient__isnull=False)
+		return  str(bed.count())
+
+	@property
+	def return_ward_patients(self):
+		beds = Bed.objects.filter(patient__isnull=False)
+		patients = []
+		for bed in beds:
+			patients.append(bed.patient)
+		return patients
 	"""
 	@property
 	def bed_release_date(self):
@@ -88,6 +100,8 @@ class PatientStayDurationPrediction(models.Model):
 class RoomPrice(models.Model):
 	room = models.ForeignKey(Bed, on_delete=models.CASCADE)	
 	room_price = models.IntegerField(blank=True, null=True)
+	active = models.BooleanField(default=True)
+
 	def __str__(self):
 		return str(self.room_price) + " birr"
 

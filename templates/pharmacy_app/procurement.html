@@ -11,8 +11,9 @@
             <div class="card-head">
                 <header>Procurement</header>
                 <div class="pull-right" style="padding-right: 16px;">
-                    <a type="button" data-toggle="modal" data-target="#addTestModalCenter2"> Add Procurement
-                </a>
+                    <!--<a type="button" data-toggle="modal" data-target="#addTestModalCenter2"> Add Procurement
+                </a>-->
+                <a href="{% url 'create_procurement' %}">Add Procurement</a>
                 </div>
             
             </div>
@@ -36,7 +37,7 @@
                            <tr> 
 
                               <td class="mdl-data-table__cell--non-numeric">
-                                    <a href="{% url 'procurement_detail' procurement.procurement_no %}">{{procurement}} </a>
+                                    <a href="{% url 'procurement_detail' procurement.procurement_no 1 %}">{{procurement}} </a>
                               </td>
 
                               {% if status %}

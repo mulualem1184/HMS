@@ -1,0 +1,115 @@
+
+
+{% extends "base.html" %}
+{% load mathfilters %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %} Drug Request Form {% endblock %}
+{% block style %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
+
+  <style type="text/css">
+    .hidden {
+      display: none
+    }
+  </style>
+
+{% endblock %}
+
+{% block page_content %}
+  
+    <div class="" style="width: 100%;">
+        <div class="card card-box">
+            <div class="card-head">
+                <header>Request Drugs</header>
+                <button id = "panel-button2" 
+                       class = "mdl-button mdl-js-button mdl-button--icon pull-right" 
+                       data-upgraded = ",MaterialButton">
+                       <i class = "material-icons">more_vert</i>
+                    </button>
+                    <ul class = "mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+                       data-mdl-for = "panel-button2">
+                       <li class = "mdl-menu__item"><i class="material-icons">assistant_photo</i>Action</li>
+                       <li class = "mdl-menu__item"><i class="material-icons">print</i>Another action</li>
+                       <li class = "mdl-menu__item"><i class="material-icons">favorite</i>Something else here</li>
+                    </ul>
+            </div>
+            <div class="card-body " id="bar-parent1">
+       
+    <h4 class=" card-body"><b>   </b></h4>
+            {% csrf_token %}
+
+                 <table class="mdl-data-table ml-table-bordered  " id="example4">
+                    <thead>
+                        <tr>   
+                                                   
+                            <th class="mdl-data-table__cell--non-numeric">Row&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Drug &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            <tr>
+              <td class="mdl-data-table__cell--non-numeric">{% include "pharmacy_app/partials/drug_request_form.html" %}</td>
+            </tr>                     
+            <tr>
+              <td class="mdl-data-table__cell--non-numeric"><div id='drug-request-create'></div></td>
+            </tr>
+           
+
+          </tbody>
+
+                </table>
+                                <div style="padding-top: 1%;">
+                <a  class="btn btn-circle btn-primary" href="{% url 'pharmacist_drug_request' 1 %}">
+                                Save 
+                </a>
+                </div>
+
+<!--        <form action="" method="POST" hx-post='.'>
+        
+        <div class="form-group" style="width: 33%">
+        {% csrf_token %}
+          
+        {{request_form.drug}}
+
+          {{request_formset.management_form}}
+          <div id='additional-form-list'>
+            {% for form in request_formset %}
+            <div class="form-row col-md-4" >
+              <div class="additional-form form-group col-md-2">
+                {{form.drug|as_crispy_field}}
+               
+                {{form.quantity|as_crispy_field}}
+               
+              </div>
+
+            </div>
+            {% endfor %}
+            
+
+          </div>
+      
+          <div id="empty-form"  >
+          {{request_formset.empty_form.as_table}}
+          </div>
+
+        <div class="form-row"  style="padding-top: 15px;">
+          <div class="form-group" style="padding-right: 15px;">
+            <button type="submit" class="btn btn-primary btn-circle">Request</button>                
+          </div>
+          <div class="form-group">  
+            <button id="add-more" class="btn btn-circle btn-primary"  type="button"><i class="fa fa-plus">  Add </i></button>
+          </div>
+</div>
+            </form>
+          -->
+
+    
+    {% block scripts %}
+  <script src="https://unpkg.com/htmx.org@1.8.0"></script>
+   
+    {% endblock %}
+
+{% endblock %}
+

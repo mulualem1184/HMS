@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+{% endblock %}
+{% block title %} Queue {% endblock %}
+
+{% block page_content %}
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6">
+                            <div class="card  card-box" style="background-color: #eef1f5; height: 300px;">
+                                <div class="card-head">
+                                    <header>Drug</header>
+                                </div>
+                                <div class="card-body " id="bar-parent">
+                                    <div class="row">
+                                        <div class="col-md-4 col-sm-3 col-xs-3">
+                                            <ul class="nav nav-tabs tabs-left">
+                                                <li class="nav-item">
+                                                    <a href="#lab-test-tab" data-toggle="tab" class="active"> Lab Test Type </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                    <a href="#drug-related-info-tab" data-toggle="tab"> Section </a>
+                                                </li>
+                                                
+                                                <li class="nav-item">
+                                                    <a href="#contraindication-tab" data-toggle="tab"> Lab Test Price</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-8 col-sm-9 col-xs-9">
+                                            <div class="tab-content">
+                                                <div class="tab-pane active" id="lab-test-tab">
+                                                    <p>Create A Lab Test Type</p>
+                                                            <a href="{% url 'create_lab_test_type' %}">
+                                                                    Lab test type
+                                                                </a>
+                                                </div>
+                                                <div class="tab-pane fade" id="contraindication-tab">
+                                                    <p>Doming conclusionemque sed ex, invenire ocurreret dissentiet his no. Ius cu novum assueverit, eam ex dolor molestiae theophrastus. Ex sed alii dolorum, et vis impetus expetendis dissentiunt. Vim ad soluta admodum tibique, inermis salutandi at mei, mutat nominati eos id. Id aeque iudico sit, eros adolescens est te.
+                                                        <a href="{% url 'contraindication_drug_form' %}">Add</a>
+                                                    </p>
+                                                </div>
+                                                <div class="tab-pane fade" id="drug-related-info-tab">
+                                                    <p>Most of its text is made up from sections 1.10.32–3 of Cicero's De finibus bonorum et malorum (On the Boundaries of Goods and Evils; finibus may also be translated as purposes).
+                                                        <a href="{% url 'drug_related_info' %}">Add</a>
+                                                    </p>
+                                                </div>
+                                                <div class="tab-pane fade" id="drug-threshold-tab">
+                                                    <p>Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo.
+                                                        <a href="{% url 'threshold' %}">Add</a>
+                                                    </p>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+{% endblock %}
+
+{% block scripts %}
+    <!-- data tables -->
+{% endblock %}
+
+        <a href="{% url 'add_sample_type' %}">
+            <li>Sample type</li>
+        </a>

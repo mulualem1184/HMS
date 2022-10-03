@@ -58,7 +58,7 @@
 
 
         <div class="form-row">
-          <div class="form-group col-md-2 " >
+          <div class="form-group col-md-2 ">
             <div style="">
             <p>Full Name:</p>
             </div>
@@ -83,36 +83,54 @@
                 
 
               <div class="form-group col-md-2 mb-0">
-              {{patient_form.dob|as_crispy_field}}      
+                        <label for="birth_date" > Date Of Birth</label>
+                            <input type="date" name="birth_date" id="birth_date" class="form-control">
               </div>
         </div>
       <div class="form-row">
           <div class="form-group col-md-2" >
-            <p>Job and Address</p>
+            <p>Address</p>
           </div>
-
-        <div class="form-group col-md-2">
-        
-		{{patient_form.occupation|as_crispy_field}}
-        </div>
-              <div class="form-group col-md-2 mb-0">
-              {{patient_form.address|as_crispy_field}}      
+              <div class="form-group col-md-1 mb-0">
+                {{patient_form.sub_city|as_crispy_field}}      
+              </div>
+              <div class="form-group col-md-1 mb-0">
+                {{patient_form.kebele|as_crispy_field}}      
+              </div>
+              <div class="form-group col-md-1 mb-0">
+                {{patient_form.wereda|as_crispy_field}}      
+              </div>
+              <div class="form-group col-md-1 mb-0">
+                {{patient_form.region|as_crispy_field}}      
               </div>
 
       </div>
+
         <div class="form-row">
           <div class="form-group col-md-2" >
-            <p>Phone Number</p>
+            <p>Occupation & Payment:</p>
           </div>
+              <div class="form-group col-md-2">              
+                {{patient_form.occupation|as_crispy_field}}
+              </div>
 
-        <div class="form-group col-md-2">
-          {{patient_form.phone_number|as_crispy_field}}
-        </div>
-        <div class="form-group col-md-2">
-          {{payment_status_form.payment_status|as_crispy_field}}
-        </div>
+            <div class="form-group col-md-2">
+              {{payment_status_form.payment_status|as_crispy_field}}
+            </div>
 
     	</div>
+  
+      <div class="form-row">
+          <div class="form-group col-md-2" >
+            <p>Phone Number:</p>
+          </div>
+
+        <div class="form-group col-md-4">
+          {{patient_form.phone_number|as_crispy_field}}
+        </div>
+
+      </div>
+
         <div style="width: 100%">
    
         <button type="submit" class="btn-info btn" > Register</button> 

@@ -1,24 +1,28 @@
-from notification.models import notify
 from typing import Sequence
+from datetime import datetime
 
 from django import forms
-from django.urls import reverse
 from django.contrib import messages
 from django.contrib.auth import get_user
 from django.contrib.auth.decorators import login_required
+from django.db.models.query import QuerySet
 from django.forms import modelformset_factory
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import View
+from notification.models import notify
+from .utils import GeneralReport
 
-from .forms import (LaboratoryTestForm, OrderForm, ReferredTestResultForm,
-                    ResultEntryForm, SpecimenForm)
+from .forms import (LaboratoryTestForm, LabTestResultTypeForm, LabTestTypeForm, NormalRangeForm,
+                    OrderForm, ReferredTestResultForm, ResultEntryForm,
+                    SampleTypeForm, SpecimenForm)
 from .models import (LaboratorySection, LaboratoryTest, LaboratoryTestResult,
-                     LaboratoryTestResultType, LaboratoryTestType, NormalRange, Order,
-                     Patient, ReferredTestResult, Specimen)
-from datetime import datetime
-
-from outpatient_app.models import OutpatientLabResult, PatientVisit
+                     LaboratoryTestResultType, LaboratoryTestType, NormalRange,
+                     Order, Patient, ReferredTestResult, Specimen,
+                     TestResultChoice, Laboratory, LabEmployee, )
+from outpatient_app.models import PatientVisit, OutpatientLabResult
+from staff_mgmt.models import Employee
 @method_decorator(login_required, 'dispatch')
 class CreateOrder(View):
     # creates laboratory orders
@@ -410,6 +414,7 @@ class EnterTestResult(View):
             }
         )
 
+
     def post(self, *args, **kwargs):
         # for every expected input of a test in LaboratoryTestResultType
         # data provided in the POST data will be its value and a 
@@ -433,23 +438,24 @@ class EnterTestResult(View):
                             if req_result.input_type == 'BOOL':
                                 result_value = 'off'
                         test_result = LaboratoryTestResult(test=test, reported_by=logged_in_user, result_type=req_result, value=result_value)
+                        #test_result.save()
                         lab_history = OutpatientLabResult()
                         patient = test_result.test.order.patient
                         lab_history.patient = patient
-                        lab_history.visit = PatientVisit.objects.filter(patient = patient).exclude(visit_status='Ended').last()
+                        lab_history.visit = PatientVisit.objects.get(patient =patient, id__isnull=False, visit_status='Pending')
                         lab_history.lab_result = test_result 
                         #medication_history.doctor = 
                         lab_history.registered_on = datetime.now()
 
                         test_result.save()
                         lab_history.save()
+
                         # check if test was referred and save lab info
                         if test.referred:
                             _form = ReferredTestResultForm(self.request.POST)
                             if _form.is_valid():
                                 referral_info = ReferredTestResult(lab_name=_form.fields['lab_name'], test=test)
-                                referral_info.save()
-            # check if all the required result inputs are entered
+                                referral_info.save()            # check if all the required result inputs are entered
             # if all are entered test status will be changed to 'COMPLETED'
             test_results = LaboratoryTestResult.objects.filter(test=test)
             if len(result_types) == len(test_results):
@@ -714,3 +720,247 @@ class FilterTestsBySection(View):
             'test_set': test_set,
             'active_link': 'lab'
         })
+
+
+class AddSampleType(View):
+
+    def get(self, *args, **kwargs):
+        return render(self.request, 'lis/add_sample_type.html', {
+            'form': SampleTypeForm()
+        })
+
+    def post(self, *args, **kwargs):
+        form = SampleTypeForm(data=self.request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(self.request, 'Sample type added')
+            return redirect('site_config:site_settings')
+        else:
+            messages.error(self.request, 'Error while creating sample type')
+            return render(self.request, 'lis/add_sample_type.html', {
+                'form': SampleTypeForm()
+            })
+
+
+class CreateLabTestType(View):
+
+    def get(self, *args, **kwargs):
+        form = LabTestTypeForm()
+        test_type_list = LaboratoryTestType.objects.all()
+        return render(self.request, 'lis/lab_test_type_form.html', {
+            'form': form,
+            'test_type_list': test_type_list
+        })
+
+    def post(self, *args, **kwargs):
+        form = LabTestTypeForm(data=self.request.POST)
+        if form.is_valid():
+            test_type:LaboratoryTestType = form.save()
+            messages.success(self.request, 'Laboratory test type added.')
+            return redirect('edit_lab_test_result_type', test_type.id)
+        messages.error(self.request, 'Error while creating test type')
+        return render(self.request, 'lis/lab_test_type_form.html', {
+            'form': form,
+        })
+
+
+class EditLabTestType(View):
+
+    def get(self, *args, **kwargs):
+        id = kwargs['id']
+        obj = get_object_or_404(LaboratoryTestType, id=id)
+        form = LabTestTypeForm(instance=obj)
+        test_type_list = LaboratoryTestType.objects.all()
+        return render(self.request, 'lis/lab_test_type_form.html', {
+            'form': form,
+            'test_type_list': test_type_list
+        })
+
+    def post(self, *args, **kwargs):
+        id = kwargs['id']
+        obj = get_object_or_404(LaboratoryTestType, id=id)
+        form = LabTestTypeForm(data=self.request.POST, instance=obj)
+        if form.is_valid():
+            form.save()
+            messages.success(self.request, 'Laboratory test type edited successfully.')
+            return redirect('create_lab_test_type')
+        messages.error(self.request, 'Error while editing test type')
+        return render(self.request, 'lis/lab_test_type_form.html', {
+            'form': form,
+        })
+
+
+class RemoveLabTestType(View):
+
+    def get(self, *args, **kwargs):
+        id = kwargs['id']
+        obj = get_object_or_404(LaboratoryTestType, id=id)
+        obj.delete()
+        messages.success(self.request, 'Test type has been removed')
+        return redirect('create_lab_test_type')
+
+
+class EditLabTestResultType(View):
+
+    def get(self, *args, **kwargs):
+        test_type_id = kwargs['id']
+        test_type = get_object_or_404(LaboratoryTestType, id=test_type_id)
+        rt_list = LaboratoryTestResultType.objects.filter(test_type=test_type)
+        rt_form = LabTestResultTypeForm()
+        normal_range_form = NormalRangeForm()
+        return render(self.request, 'lis/edit_result_type.html', {
+            'rt_list': rt_list,
+            'test_type': test_type,
+            'rt_form': rt_form,
+            'normal_range_form': normal_range_form,
+        })
+
+    def post(self, *args, **kwargs):
+        choice_list = []
+        test_type_id = kwargs['id']
+        test_type = get_object_or_404(LaboratoryTestType, id=test_type_id)
+        rt_list = LaboratoryTestResultType.objects.filter(test_type=test_type)
+        rt_form = LabTestResultTypeForm(data=self.request.POST)
+        if rt_form.is_valid():
+            rt:LaboratoryTestResultType = rt_form.save(commit=False)
+            rt.test_type = test_type
+            if rt.input_type == 'CHOICE':
+                choice_list = set(self.request.POST.getlist('choice_name'))
+                if not any(choice_list):
+                    messages.error(self.request, 'No choices provided for expected result field')
+                    return render(self.request, 'lis/edit_result_type.html', {
+                        'rt_list': rt_list,
+                        'test_type': test_type,
+                        'rt_form': rt_form,
+                        'no_choice_error': True,
+                        'normal_range_form': NormalRangeForm(),
+                    })
+            rt.save()
+            if choice_list:
+                for c in choice_list:
+                    TestResultChoice.objects.create(test_result_type=rt, choice=c)
+            messages.success(self.request, 'Added successfully')
+            return redirect('edit_lab_test_result_type', test_type_id)
+        messages.error(self.request, 'Error while adding')
+        return render(self.request, 'lis/edit_result_type.html', {
+            'rt_list': rt_list,
+            'test_type': test_type,
+            'rt_form': rt_form,
+            'normal_range_form': NormalRangeForm(),
+        })
+
+
+class RemoveResultType(View):
+
+    def get(self, *args, **kwargs):
+        obj = get_object_or_404(LaboratoryTestResultType, id=kwargs['id'])
+        obj.delete()
+        messages.success(self.request, 'Result type deleted.')
+        return redirect('edit_lab_test_result_type', obj.test_type.id)
+
+
+class AddNormalRange(View):
+
+    def post(self, *args, **kwargs):
+        id = kwargs['id'] # id of result_type instance of LaboratoryTestResultType
+        obj = get_object_or_404(LaboratoryTestResultType, id=id)
+        _form = NormalRangeForm(data=self.request.POST)
+        if _form.is_valid():
+            nr:NormalRange = _form.save(commit=False)
+            nr.test_result_type = obj
+            try:
+                nr.save()
+            except ValueError as e:
+                messages.error(self.request, str(e))
+                return redirect('edit_lab_test_result_type', obj.id)
+            messages.success(self.request, 'Normal range added')
+            return redirect('edit_lab_test_result_type', obj.test_type.id)
+        messages.error(self.request, 'Error while setting normal range')
+        return redirect('edit_lab_test_result_type', obj.id)
+
+
+class ReportPage(View):
+
+    def get(self, *args, **kwargs):
+        # lab_test_nos = []
+        # lab_section_data = []
+        g_report_list = []
+        total_no_tests = 0
+        total_no_patients = 0
+        total_price = 0
+        total_avg_per_day = 0
+        test_type_list = LaboratoryTestType.objects.all()
+        start_date = datetime.strptime(self.request.GET.get('start_date') or '1970-01-01', '%Y-%m-%d')
+        end_date = datetime.strptime(self.request.GET.get('end_date') or str(datetime.now().date()),  '%Y-%m-%d')
+        lab_section = int(self.request.GET.get('lab_section', '0'))
+        if lab_section:
+            test_type_list = test_type_list.filter(section__id=lab_section)
+        for tt in test_type_list:
+            gp = GeneralReport(tt, start_date, end_date)
+            g_report_list.append(gp)
+            total_no_tests += gp.total_no_tests
+            total_no_patients += gp.no_patient
+            total_price += gp.total_price
+            total_avg_per_day += gp.avg_per_day
+        
+        # for ltt in test_type_list:
+        #     test_list:Sequence[LaboratoryTest] = LaboratoryTest.objects.filter(test_type=ltt, status='COMPLETED')
+        #     if lab_section:
+        #         test_list = test_list.filter(test_type__section__id=lab_section)
+        #     if start_date:
+        #         test_list = [x for x in test_list if (x.ordered_at.date() > start_date) and (x.ordered_at.date() < end_date)]
+        #     test_count = test_list.count() if isinstance(test_list, QuerySet) else len(test_list)
+        #     if test_count:
+        #         lab_test_nos.append((ltt, test_count, test_count*ltt.price))
+        # for ls in LaboratorySection.objects.all():
+        #     section_tests = LaboratoryTest.objects.filter(test_type__section=ls)
+        #     lab_section_data.append((ls, section_tests.count()))
+        return render(self.request, 'lis/report.html', {
+            # 'lab_test_nos': lab_test_nos,
+            # 'lab_section_data': lab_section_data,
+            # 'test_type_list': test_type_list,
+            'lab_sections': LaboratorySection.objects.all(),
+            'general_report_list': g_report_list,
+            'total_no_tests': total_no_tests,
+            'total_no_patients': total_no_patients,
+            'total_price': total_price,
+            'total_avg_per_day': total_avg_per_day,
+        })
+
+
+def LaboratoryList(request):
+    lab_list = Laboratory.objects.all()
+
+    assigned_emps = LabEmployee.objects.filter(active=True)
+    all_emps = Employee.objects.filter(designation__name='Laboratory')
+    unassigned_emps = []
+    for a in all_emps:
+        if LabEmployee.objects.filter(active=True, laboratorist__id =a.id).exists():
+            print('Do Nothing')
+        else:
+            unassigned_emps.append(a.id)
+    assign_form = AssignLabEmployeeForm()
+    assign_form.fields["laboratorist"].queryset = Employee.objects.filter(id__in=unassigned_emps) 
+
+    return render(self.request, 'lis/laboratory_list.html', {
+            'lab_list': lab_list,
+            'assign_form': assign_form,
+
+        })
+
+def AssignLabEmployee(request, lab_id):
+    lab = Laboratory.objects.get(id=lab_id)
+    if request.method == 'POST':
+        assign_form = AssignLabEmployeeForm(request.POST)
+        if assign_form.is_valid():
+            lab_employee = assign_form.save(commit=False)
+            lab_employee.laboratory = lab
+            lab_employee.active = True
+            lab_employee.save()
+
+            messages.success(request,'Successful!')
+            return redirect('laboratory_list')
+        else:
+            messages.error(request,str(assign_form.errors))
+            return redirect('laboratory_list')
+            #elif user.employee.designation.name == 'Laboratory Head':

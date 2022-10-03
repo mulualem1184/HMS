@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+    <link href="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"/>
+{% endblock %}
+{% block title %} Dispensary Supplied Report {% endblock %}
+
+{% block page_content %}
+{% include "pharmacy_app/partials/filter_dispensary_supply.html" %}
+
+    <div class="row">
+        <div class="col-md-12">
+        <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 650px;width: 1150px;">
+                <div class="card-head">
+                    <header>Dispensary Supplied Drugs</header>
+                <button class="btn btn-primary" data-toggle="modal" data-target="#filterDispesnarySupplyModal">
+                    <i class="fa fa-filter"></i> 
+                </button>
+
+                </div>
+                
+                    <table id="example1" class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded">
+                        <thead>
+                            <tr class="gradeX odd">
+                                <th class="mdl-data-table__cell--non-numeric">Date</th>
+                                <th class="mdl-data-table__cell--non-numeric">Supplied Drug</th>
+                                <th class="mdl-data-table__cell--non-numeric">Supplied Amount</th>
+                                <th class="mdl-data-table__cell--non-numeric">Dispensary</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for supply in supplied_list %}
+                                <tr>
+                                    <td class="mdl-data-table__cell--non-numeric">{{supply.registered_on}}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{supply.drug}}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{supply.quantity}}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{supply.dispensary}}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <!-- data tables -->
+{% endblock %}

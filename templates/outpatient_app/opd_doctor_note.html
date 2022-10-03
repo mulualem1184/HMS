@@ -6,10 +6,50 @@
 
 {% include "inpatient_app/partials/inpatient_medication_info.html" %}
 {% include "inpatient_app/partials/admission_info.html" %}
+{% include "outpatient_app/partials/opd_patient_info_for_doctor.html" %}
 
 
     <div class="row col-md-12">
-       
+
+
+                    <div class="profile-sidebar col-md-4" style="height: 305px;">
+                <div class="card " style="background-color: white" >
+                    <div class="card-body no-padding height-9">
+                        <div class="row">
+                            <div class="profile-userpic">
+                                                        <img src="{% static 'img/male-patient.jpg' %}" alt="User Image" class="patientimage" />
+                            </div>
+                        </div>
+                        <div class="profile-usertitle">
+                            <div class="profile-usertitle-name">{{patient.full_name}} </div>
+                        </div>
+                        <ul class="list-group list-group-unbordered">
+                            <li class="list-group-item">
+                                <b>First Name </b>
+                                <div class="profile-desc-item pull-right"> {{ patient.first_name }}</div>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Last Name</b>
+                                <div class="profile-desc-item pull-right"> {{ patient.last_name}}</div>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Gender</b>
+                                <div class="profile-desc-item pull-right"> {{ patient.sex }}</div>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Age</b>
+                                <div class="profile-desc-item pull-right"> {{ patient.age }}</div>
+                            </li>
+
+                        </ul>
+                        <!-- END SIDEBAR USER TITLE -->
+                        <!-- SIDEBAR BUTTONS -->
+                        <!-- END SIDEBAR BUTTONS -->
+                    </div>
+                </div>
+            </div>
+        
+       <!--
         <div class="col-md-6">
             <div class="card card-box">
                 <div class="card-head">
@@ -30,13 +70,13 @@
                         </div>
                         <div style="padding-left: 90px; padding-top: 5px; font-weight: bolder;">
                             <p style="font-weight: bolder;">Patient Info </p>
-<!--                                <li><a href="" data-toggle='modal' data-target="#room-queue-modal">Patient Medication </a></li>
+--><!--                                <li><a href="" data-toggle='modal' data-target="#room-queue-modal">Patient Medication </a></li>
                                 <li><a href="" data-toggle='modal' data-target="#admission-info-id">Admission Info </a></li>
                                 <li><a href="" data-toggle='modal' data-target="#care-plan-info-id">Care Plan </a></li>
                                 <li><a href="" data-toggle='modal' data-target="#vital-sign-modal">Check Vital Sign </a></li>
                                 <li><a href="" data-toggle='modal' data-target="#allergy-info-modal">Patient Allergies </a></li>
                                 <li><a href="" data-toggle='modal' data-target="#habit-info-modal">Patient Habits </a></li>
--->
+--><!--
                                     <ul><li> <a id="addNoteCard" onclick="toggleServiceForm()" style="color: #3366BB">Additional Services </a></li>
                                         
                                     <li><a href="{% url 'order-for-patient' patient.id %}">Make Lab Order</a></li>
@@ -54,7 +94,7 @@
                     </div>
                 </div>
             </div>
-        </div>        
+        </div> -->       
             <!-- BEGIN PROFILE SIDEBAR -->
        <!--     <div class="profile-sidebar">
                                 <div class="card-body col-md-12" id="line-parent">
@@ -110,28 +150,128 @@
             </div>
           
 
+-->
+        <div class="col-md-3" style="padding-left: 20px; padding-top: 0px; ">
+            
+                <div style="padding-left: 40px;"  >
+                    <header class="font-weight font-bold">Actions</header>
+                    </div>
+                    <div class="card-body"  style="background-color: white;height: 358px;">
+                                    <ul class="list-group list-group-unbordered"><li class="list-group-item"> <a id="addNoteCard" onclick="toggleServiceForm() " style="color: #3366BB;">Additional Services </a></li>
+                                    <li class="list-group-item"><a href="{% url 'order-for-patient' patient.id %}" >Make Lab Order</a></li>
+                                    <li class="list-group-item">  <a href="{% url 'radiology:xray_order' patient.id %}">Order X-Ray</a></li>
+                                    <li class="list-group-item"><a id="addInterventionCard" onclick="toggleInterventionForm()" style="color: #3366BB;">Add Intervention</a></li>
+                                    <li class="list-group-item"><a id="addNoteCard" onclick="toggleNoteForm()" style="color: #3366BB;">Medical Note</a></li>
+                                    <li class="list-group-item">  <a href="{% url 'prescription_form' patient.id %}">Prescribe Drugs</a></li>
+                                    <li class="list-group-item">  <a href="{% url 'opd_investigation' patient.id %}">Additional Investigation</a></li>
 
-        <div class="col-md-3" style="padding-left: 20px; height: 380px;">
-            <div class="card card-box ">
-                <div class="card-head">
-                    <header>Actions</header>
-                                    <ul><li> <a id="addNoteCard" onclick="toggleServiceForm()">Additional Services </a></li>
-                                    <li><a href="{% url 'order-for-patient' patient.id %}">Make Lab Order</a></li>
-                                    <li>  <a href="{% url 'radiology:xray_order' patient.id %}">Order X-Ray</a></li>
-                                    <li><a id="addInterventionCard" onclick="toggleInterventionForm()">Add Intervention</a></li>
-                                    <li><a id="addNoteCard" onclick="toggleNoteForm()">Medical Note</a></li>
-                                    <li>  <a href="{% url 'prescription_form' patient.id %}">Prescribe Drugs</a></li>
-                                    <li>  <a href="{% url 'radiology:xray_order' patient.id %}">Order X-Ray</a></li>
-                                    <li><a href="{% url 'discharge_summary_form' patient.id %}" style="color:red;">Discharge Patient</a></li>
-
+                                    <li class="list-group-item"><a href="{% url 'discharge_outpatient_form' patient.id %}" style="color:red;">Discharge Patient</a></li>
+                                     
                                 </ul>
                 </div>
                 
-            </div>
+            
         </div>
-    -->
-        <div class="col-md-5">
-            <div class="card card-box" id="intervention-form-id" style="display: none; height: 390px;">
+    
+
+            <div class="profile-sidebar col-md-4">
+                <div class="card " style="background-color: white">
+                    <div class="card-body no-padding height-9">
+                        <div class="profile-usertitle">
+                            <div class="profile-usertitle-name">Medical Info <a href="" data-toggle='modal' data-target="#opd-info-modal"><i class="fa fa-eye"></i> </a></div>
+                        </div>
+                        <ul class="list-group list-group-unbordered">
+                            <li class="list-group-item">
+                                <b> Chief Compliant </b>
+                                <div class="profile-desc-item pull-right"><a id="addNoteCard" onclick="toggleChiefComplaint()"></a></div>
+                            </li>
+
+                            <li class="list-group-item">
+                                <b> Vital Signs </b>
+                                <div class="profile-desc-item pull-right"> <a id="addNoteCard" onclick="toggleVitalSign()"></a> Add Vital Sign</div>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Pre Treatment </b>
+                                <div class="profile-desc-item pull-right"><a id="addNoteCard" onclick="togglePreTreatment()"></a> </div>
+                            </li>
+                            <li class="list-group-item">
+                                <b>Illness Mechanism </b>
+                                <div class="profile-desc-item pull-right"> <a id="addNoteCard" onclick="toggleIllnessMechanism()"></a></div>
+                            </li>
+
+                        </ul>
+                        <!-- END SIDEBAR USER TITLE -->
+                        <!-- SIDEBAR BUTTONS -->
+                        <!-- END SIDEBAR BUTTONS -->
+                    </div>
+                </div>
+            </div>
+        <div class="col-md-4">
+            <div class="card card-box" id="chief-complaint-id" style="display: none; height: 255px;" >            
+                <div class="card-body">
+                                        <h4 class="font-bold">Complaint</h4>                                        
+                    <hr>
+
+                                    <div class="form-group col-md-12">  
+                                      {{complaint.complaint}}
+                                    </div>
+                                    
+                                                                                                                                   
+                    
+                </div>
+            </div>
+            <div class="card card-box" id="vital-sign-id" style="display: none; height: 255px;" >            
+                <div class="card-body">
+                <div class="post-box">
+                    <h4 class="font-bold">Patient Vital Signs</h4>                                        
+                    <hr>
+                    <h5 class="font-bold">Heart Beat <span  class="pull-right">{{vital_sign.pulse_rate}}</span></h5>
+                    <h5 class="font-bold">Diastolic Blood Pressure<span class="pull-right">{{vital_sign.diastolic_blood_pressure}}</span></h5>
+                    <h5 class="font-bold">Systolic Blood Pressure<span class="pull-right">{{vital_sign.systolic_blood_pressure}}</span></h5>
+                    <h5 class="font-bold">Temperature<span class="pull-right">{{vital_sign.temperature}} {{vital_sign.temperature_unit}}</span></h5>
+                    
+                    <h5 class="font-bold">Recorded On:</b> <span class=""><b>{{vital_sign.registered_on}}</b></span></h5>
+                    <br>
+                </div>
+                </div>
+                                   
+                                    
+                  
+                
+            </div>
+            <div class="card card-box" id="pre-treatment-id" style="display: none; height: 255px;" >            
+                <div class="card-body">
+                                        <h4 class="font-bold">Pre Hospital Care</h4>                                        
+                    <hr>
+
+                                    <div class="form-group col-md-12">  
+                                      {{arrival_detail.pre_hospital_care}}
+                                    </div>
+                                    
+                                                                                                                                                       
+                </div>
+            </div>
+            <div class="card card-box" id="injury_mechanism-id" style="display: none; height: 255px;" >            
+                <div class="card-body">
+                                                            <h4 class="font-bold">Illness Mechanism</h4>                                        
+                    <hr>
+
+                                    <div class="form-group col-md-12">  
+                                      {{arrival_detail.injury_mechanism}}
+                                    </div>
+                                    
+                                                                                                                                                       
+                </div>
+            </div>
+
+        </div>
+
+        
+
+    </div>
+<div class="row">
+<div class="col-md-4">
+            <div class="card card-box" id="intervention-form-id" style="display: none; height: 400px; ">
                 
                 <div class="card-body" >
                     <form action="" method="POST">
@@ -153,7 +293,7 @@
                 </div>
             </div>
 
-            <div class="card card-box" id="medical-note-form-id" style="display: none">            
+            <div class="card card-box" id="medical-note-form-id" style="display: none; height: 400px; " >            
                 <div class="card-body">
                     <form action="{% url 'save_outpatient_note' patient.id %}" method="POST">
                             {% csrf_token %}
@@ -166,7 +306,7 @@
                 </div>
             </div>
 
-            <div class="card card-box" id="service-form-id" style="display: none">
+            <div class="card card-box" id="service-form-id" style="display: none;height: 400px;" >
                 <div class="card-body" >
                     <form action="{% url 'save_service_bill' patient.id %}" method="POST">
                             {% csrf_token %}
@@ -180,7 +320,8 @@
             </div>
             
         </div>
-    </div>
+
+</div>
 
 <hr>
 <div class="row">
@@ -206,7 +347,7 @@
                                                                 <tr>
                                                                     <th class="mdl-data-table__cell--non-numeric"> Order </th>
                                                                     <th class="mdl-data-table__cell--non-numeric"> Result Type </th>
-                                                                    <th class="mdl-data-table__cell--non-numeric"> Value </th>
+                                                                    <th class="mdl-data-table__cell--non-numeric"> View </th>
 
                                                                 </tr>
                                                             </thead>
@@ -216,7 +357,10 @@
                                                                     
                                                                     <td class="mdl-data-table__cell--non-numeric">{{result.lab_result.test.order}}</td>
                                                                     <td class="mdl-data-table__cell--non-numeric">{{result.lab_result.result_type}}</td>
-                                                                    <td class="mdl-data-table__cell--non-numeric">{{result.lab_result.value}}</td>
+                                                                    <td class="mdl-data-table__cell--non-numeric">  <a href="{% url 'view-order' result.lab_result.id %}">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                                                    </td>
 
                                                                 </tr>
                                                                 {% endfor %}
@@ -224,6 +368,32 @@
                                                             </tbody>
                                                         </table>
                                 </div>
+                                <div class="tab-pane fontawesome-demo" id="Xray-tab">
+                                                        <table class="mdl-data-table ml-table-bordered  " id="example4">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th class="mdl-data-table__cell--non-numeric"> Order </th>
+                                                                    <th class="mdl-data-table__cell--non-numeric"> View </th>
+
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                            {% for result in rad_result_list %}
+                                                                <tr class="odd gradeX">
+                                                                    
+                                                                    <td class="mdl-data-table__cell--non-numeric">{{result.result.order.id}}</td>
+                                                                    <td class="mdl-data-table__cell--non-numeric">  <a href="{% url 'radiology:view_report' result.result.order.id %}">
+                                        <i class="fa fa-eye"></i>
+                                    </a>
+                                                                    </td>
+
+                                                                </tr>
+                                                                {% endfor %}
+
+                                                            </tbody>
+                                                        </table>
+                                </div>
+
                                 <div class="tab-pane fontawesome-demo" id="drug-tab">
                                                         <table class="mdl-data-table ml-table-bordered  " id="example4">
                                                             <thead>
@@ -280,15 +450,53 @@
 
         function toggleInterventionForm (){
           document.getElementById('intervention-form-id').style.display = 'block';
+          document.getElementById('service-form-id').style.display = 'none';          
+          document.getElementById('medical-note-form-id').style.display = 'none';          
           
         }
 
         function toggleNoteForm (){
           document.getElementById('medical-note-form-id').style.display = 'block';          
+          document.getElementById('intervention-form-id').style.display = 'none';
+          document.getElementById('service-form-id').style.display = 'none';          
+
         }
 
         function toggleServiceForm (){
           document.getElementById('service-form-id').style.display = 'block';          
+          document.getElementById('medical-note-form-id').style.display = 'none';          
+          document.getElementById('intervention-form-id').style.display = 'none';
+
+        }
+
+        function toggleChiefComplaint (){
+          document.getElementById('chief-complaint-id').style.display = 'block';          
+          document.getElementById('pre-treatment-id').style.display = 'none';          
+          document.getElementById('vital-sign-id').style.display = 'none';          
+          document.getElementById('injury_mechanism-id').style.display = 'none';
+
+        }
+
+        function toggleVitalSign (){
+          document.getElementById('vital-sign-id').style.display = 'block';          
+          document.getElementById('chief-complaint-id').style.display = 'none';          
+          document.getElementById('pre-treatment-id').style.display = 'none';          
+          document.getElementById('injury_mechanism-id').style.display = 'none';
+
+        }
+
+        function togglePreTreatment (){
+          document.getElementById('pre-treatment-id').style.display = 'block';          
+          document.getElementById('vital-sign-id').style.display = 'none';          
+          document.getElementById('chief-complaint-id').style.display = 'none';          
+          document.getElementById('injury_mechanism-id').style.display = 'none';
+        }
+        function toggleIllnessMechanism (){
+          document.getElementById('injury_mechanism-id').style.display = 'block';          
+          document.getElementById('pre-treatment-id').style.display = 'none';          
+          document.getElementById('vital-sign-id').style.display = 'none';          
+          document.getElementById('chief-complaint-id').style.display = 'none';          
+
         }
 
     </script>
@@ -296,3 +504,28 @@
     {% endblock %}
 
 {% endblock %}
+onclick="toggleServiceForm()"
+
+<!--
+        function toggleServiceForm (){
+          document.getElementById('service-form-id').style.display = 'block';          
+        }
+
+
+            <div class="card card-box" id="service-form-id" style="display: none">
+                <div class="card-body" >
+                    <form action="{% url 'save_service_bill' patient.id %}" method="POST">
+                            {% csrf_token %}
+                                    <div class="form-group col-md-12">  
+                                      {{service_form.service|as_crispy_field}}
+                                    </div>
+                                    
+                                    <button class="form-group btn btn-primary" type="submit" > Save</button>                                                                                                            
+                    </form>
+                </div>
+            </div>
+-->
+<!--
+
+
+    -->

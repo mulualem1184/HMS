@@ -5,15 +5,22 @@ from . import views
 from .views import *
 
 urlpatterns = [
+ 	path('my_first_chart/', myFirstChart, name="my_first_chart"),
+
  	path('admin_settings/', AdminSetting, name="admin_settings"),
  	path('admin_settings2/', AdminSetting2, name="admin_settings2"),
  	path('admin_dashboard/', AdminDashboard, name="admin_dashboard"),
+ 	path('general_report/', GeneralReport, name="general_report"),
+
  	path('pharmacy_dashboard/', PharmacyDashboard, name="pharmacy_dashboard"),
+
+ 	path('laboratory_dashboard/', LaboratoryDashboard, name="laboratory_dashboard"),
 
  	path('change_team_setting/', ChangeTeamSetting, name="change_team_setting"),
  	path('create_staff_team/', CreateStaffTeam, name="create_staff_team"),
 
  	path('pharmacy_settings/', PharmacySettings, name="pharmacy_settings"),
+ 	path('lab_settings/', LabSettings, name="lab_settings"),
 
  	path('patient_registration/', views.PatientRegistration, name="patient_registration"),
  	path('enter_insurance_detail/<int:patient_id>', views.EnterInsuranceDetail, name="enter_insurance_detail"),
@@ -29,6 +36,10 @@ urlpatterns = [
 	path('change_queue_order/<int:pk>/<int:room_pk>',ChangeQueueOrder , name="change_queue_order"),
 	path('doctor_queue/',DoctorQueue , name="doctor_queue"),
 	path('outpatient_medical_note/<int:patient_id>/',OutpatientMedicalNotePage , name="outpatient_medical_note"),
+
+	path('opd_investigation/<int:patient_id>/',OpdInvestigation, name="opd_investigation"),
+	path('save_response_form/<int:patient_id>/',SavePatientResponseForm, name="save_response_form"),
+
 	path('save_outpatient_note/<int:patient_id>/',SaveOutpatientNote, name="save_outpatient_note"),
 	path('save_service_bill/<int:patient_id>/',SaveServiceBill, name="save_service_bill"),
 
@@ -51,6 +62,16 @@ urlpatterns = [
 	path('patient_habit_form/<int:patient_id>/', PatientHabitFormPage, name="patient_habit_form"),
 	path('discharge_outpatient_form/<int:patient_id>/', DischargeOutpatientFormPage, name="discharge_outpatient_form"),
 	path('discharge_outpatient/<int:patient_id>/', DischargeOutpatient, name="discharge_outpatient"),
+	path('add_follow_up/<int:patient_id>/', AddFollowUp, name="add_follow_up"),
 
-  
+	path('opd_report', OPDReport, name="opd_report"),
+
+    path('visit_report_chart/', VisitReportChart, name = 'visit_report_chart'),
+    path('api/visit_report_chart_data/data', VisitReportChartData.as_view()),
+
+	path('employee_list_report', EmployeeListReport, name = 'employee_list_report'),
+	path('lab_bill_report', LabBillReport, name = 'lab_bill_report'),
+	path('visiting_card_bill_report', VisitingCardBillReport, name = 'visiting_card_bill_report'),
+	path('service_bill_report', ServiceBillReport, name = 'service_bill_report'),
+
 ]

@@ -1,8 +1,9 @@
 from django import forms
-from django.db.models.base import Model
-from django.forms import ModelForm, fields, widgets
+from django.forms import ModelForm
 from django.forms.forms import Form
-from .models import Order, LaboratoryTest, ReferredTestResult, Specimen
+
+from .models import (LaboratoryTest, LaboratoryTestResultType, LaboratoryTestType, NormalRange, Order,
+                     ReferredTestResult, SampleType, Specimen, LabEmployee)
 
 
 class SpecimenForm(ModelForm):
@@ -92,3 +93,114 @@ class ReferredTestResultForm(ModelForm):
                 'placeholder': 'Laboratory/Hospital Name'
             })
         }
+
+
+class LabTestTypeForm(ModelForm):
+
+    class Meta:
+        model = LaboratoryTestType
+        fields = [
+            'section', 'name', 'price',
+            'tat', 'is_available',
+        ]
+        widgets = {
+            'section': forms.Select(attrs={
+                'class': 'form-control',
+            }),
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Name of Test type'
+            }),
+            'price': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': '0',
+                'placeholder': 'Price in ETB'
+            }),
+            'tat': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': '0',
+                'placeholder': 'amount of time it takes to complete this test in hours'
+            }),
+            'is_available': forms.Select(attrs={
+                'class': 'form-control',
+            }),
+        }
+
+
+class SampleTypeForm(ModelForm):
+
+    class Meta:
+        model = SampleType
+        exclude = []
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Name of the type of sample'
+            })
+        }
+
+
+class LabTestResultTypeForm(ModelForm):
+
+    class Meta:
+        model = LaboratoryTestResultType
+        fields = [
+            'name', 'input_type'
+        ]
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+            }),
+            'input_type': forms.Select(attrs={
+                'class': 'form-control',
+                'onchange': 'displayChoices()',
+            })
+        }
+
+    
+class NormalRangeForm(ModelForm):
+
+    class Meta:
+        model = NormalRange
+        fields = [
+            'sex', 'min_age', 'max_age', 
+            'min_value', 'max_value',
+            'm_unit',
+        ]
+        widgets = {
+            'sex': forms.Select(attrs={
+                'class': 'form-control',
+            }),
+            'min_age': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': 0,
+                'placeholder': 'Minimum age for the normal range'
+            }),
+            'max_age': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': 1,
+                'placeholder': 'Maximum age for the normal range'
+            }),
+            'min_value': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Minimum value for the normal range'
+            }),
+            'max_value': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Maximum value for the normal range'
+            }),
+            'm_unit': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Measurment unit of the set normal range'
+            }),
+        }
+
+class AssignLabEmployeeForm(forms.ModelForm):
+    class Meta:
+        model = LabEmployee
+        fields = ['laboratorist']
+        widgets = {         
+            'laboratorist': forms.Select(attrs={
+            'class' : 'select2 form-control',
+                }),
+            }

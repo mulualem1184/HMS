@@ -1,0 +1,432 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} OPD Report {% endblock %}
+{% block page_content %}
+{% load crispy_forms_tags %}
+
+{% include "inpatient_app/partials/filter_ward_admission.html" %}
+{% include "inpatient_app/partials/filter_ward_room.html" %}
+{% include "inpatient_app/partials/filter_ipd_report.html" %}
+
+
+            <div class="row">
+                        <div class="panel tab-border card-box col-md-12" >
+                        <header class="panel-heading panel-heading-gray custom-tab ">
+                            <ul class="nav nav-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active show" href="#ipd-tab" data-toggle="tab"> General </a></li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#discharge-tab" data-toggle="tab">Employee Report</a></li>
+                            </ul>
+                        </header>
+
+                        <div class="row" style="padding-top: 10px;">
+                            <div class="col-md-5"></div>
+                            <div class="col-md-2 ">
+                                <div class="overview-panel ">
+                                        <header class="center font-bold">Total Patients</header>
+
+                                    <div class="symbol center">
+                                        <i class="fa fa-user"></i>
+                                    </div>
+                                    <div class="value white center">
+                                        <p class="sbold addr-font-h1 center" data-counter="counterup" data-value="{{total_admitted}}">{{patient_amount}}</p>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filteripdReportModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3"></div>
+                            <div class="col-md-2">
+                                    <button class="btn btn-primary btn-circle"><a href="{% url 'inpatient_report_chart'  %}" style="color: white"> Chart</a> </button>
+                                    
+                            </div>
+                        </div>
+
+                        <div class="panel-body">
+                            <div class="tab-content">
+                                <div class="tab-pane active fontawesome-demo" id="ipd-tab">
+                                  <div class="row">  
+
+                                   <div class="col-md-6">
+                                    <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                                <div class="card-head">
+                                                    <header>Patients</header>
+                                                <button class="btn btn-primary" data-toggle="modal" data-target="#filterWardAdmissionModal">
+                                                    <i class="fa fa-filter"></i> 
+                                                </button>
+                                                <a href=""> <i class="fa fa-eye"></i></a>
+
+                                                </div>
+                                            <table class="mdl-data-table ml-table-bordered  " id="example4">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="mdl-data-table__cell--non-numeric">Category </th>
+                                                        <th class="mdl-data-table__cell--non-numeric"> Amount </th>
+                                                        <th class="mdl-data-table__cell--non-numeric"> View  </th>
+
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                        <tr class="odd gradeX">
+                                                            
+                                                            <td class="mdl-data-table__cell--non-numeric">Total Patients</td>
+                                                            <td class="mdl-data-table__cell--non-numeric">{{patient_amount}}</td>
+
+                                                        </tr>
+
+                                                        <tr class="odd gradeX">
+                                                            
+                                                            <td class="mdl-data-table__cell--non-numeric">Today's Patient</td>
+                                                            <td class="mdl-data-table__cell--non-numeric">{{today_patient_amount}}</td>
+<td>      <button  id='button-{{row}}' class="btn btn-primary btn-circle pull-right" hx-get="{% url 'general_report' %}?id=45" hx-trigger='click' hx-target='#drug-request-create'  hx-swap='beforeend'> <i class="fa fa-eye"></i> </button></td>
+
+                                                        </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                          </div>
+
+{% include "outpatient_app/partials/patient_table_partial.html" %}
+                                  </div>
+                                  <div class="row">
+                                   <div class="col-md-6">
+                                    <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                                <div class="card-head">
+                                                    <header>Total Service Usage</header>
+                                                <button class="btn btn-primary" data-toggle="modal" data-target="#filterWardAdmissionModal">
+                                                    <i class="fa fa-filter"></i> 
+                                                </button>
+
+                                                </div>
+
+                                                  <table class="mdl-data-table ml-table-bordered  " id="example4">
+                                            <thead>
+                                                <tr>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Category </th>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Amount </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                    {% for service, amount in service_zip  %}
+                                                    <tr class="odd gradeX">                                                    
+                                                        <td class="mdl-data-table__cell--non-numeric">Total Employees</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{employee_amount}}</td>
+                                                    </tr>
+                                                    <tr class="odd gradeX">                                                    
+                                                        <td class="mdl-data-table__cell--non-numeric">Employees Hired This Month</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{today_employee_amount}}</td>
+                                                    </tr>
+
+                                                    {% endfor %}
+                                            </tbody>
+                                        </table>
+                                        </div>
+                                          </div>
+
+                                   <div class="col-md-6">
+                                    <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                                <div class="card-head">
+                                                    <header>Admission By Payment Status</header>
+                                                <!--<button class="btn btn-primary" data-toggle="modal" data-target="#filterWardAdmissionModal">
+                                                    <i class="fa fa-filter"></i> 
+                                                </button>-->
+
+                                                </div>
+
+                                      <table class="mdl-data-table ml-table-bordered  " id="example4">
+                                            <thead>
+                                                <tr>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Category </th>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Amount </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                    <tr class="odd gradeX">
+                                                        
+                                                        <td class="mdl-data-table__cell--non-numeric">Insurance</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">2</td>
+                                                    </tr>
+                                                    <tr class="odd gradeX">
+                                                        
+                                                        <td class="mdl-data-table__cell--non-numeric">Free</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">3</td>
+                                                    </tr>
+                                                    <tr class="odd gradeX">
+                                                        
+                                                        <td class="mdl-data-table__cell--non-numeric">Discount</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">1</td>
+                                                    </tr>
+                                                    <tr class="odd gradeX">
+                                                        
+                                                        <td class="mdl-data-table__cell--non-numeric">Default</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">8</td>
+                                                    </tr>
+
+                                            </tbody>
+                                        </table>
+                                        </div>
+                                          </div>
+
+
+                                  </div>
+                                </div>
+                                <div class="tab-pane fontawesome-demo" id="discharge-tab">
+
+                                   <div class="col-md-10">
+                                    <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 1200px;">
+                                                <div class="card-head">
+                                                    <header>Discharges</header>
+                                                <button class="btn btn-primary" data-toggle="modal" data-target="#filterWardAdmissionModal">
+                                                    <i class="fa fa-filter"></i> 
+                                                </button>
+
+                                               <button class="btn btn-primary btn-circle"><a href="{% url 'inpatient_report_chart_two'  %}" style="color: white"> Chart</a> </button>
+
+                                                </div>
+
+                                        <table class="mdl-data-table ml-table-bordered  " id="example4">
+                                            <thead>
+                                                <tr>
+                                                    <th class="mdl-data-table__cell--non-numeric">Category </th>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Amount </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                    <tr class="odd gradeX">
+                                                        
+                                                        <td class="mdl-data-table__cell--non-numeric">Patients Who completed Treatment</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{completed_discharge}}</td>
+
+                                                    </tr>
+                                                    <tr class="odd gradeX">
+                                                        
+                                                        <td class="mdl-data-table__cell--non-numeric">Patients Who Have Not Completed Treatment</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{incomplete_discharge}}</td>
+                                                    </tr>
+                                                    <tr class="odd gradeX">
+                                                        
+                                                        <td class="mdl-data-table__cell--non-numeric">Patients Who Have Died</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{dead_discharge}}</td>
+                                                    </tr>
+                                                    <tr class="odd gradeX">
+                                                        
+                                                        <td class="mdl-data-table__cell--non-numeric">Total Discharges</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{total_discharge}}</td>
+                                                    </tr>
+
+                                            </tbody>
+                                        </table>
+                                        </div>
+                                          </div>
+
+
+                                </div>
+
+
+                                <div class="tab-pane fontawesome-demo" id="bed-tab">
+
+                                   <div class="col-md-6">
+                                    <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 1200px;">
+                                                <div class="card-head">
+                                                    <header>Bed Occupancy</header>
+                                                <button class="btn btn-primary" data-toggle="modal" data-target="#filterWardRoomModal">
+                                                    <i class="fa fa-filter"></i> 
+                                                </button>
+
+                                                </div>
+
+                                        <table class="mdl-data-table ml-table-bordered  " id="example4">
+                                            <thead>
+                                                <tr>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Category </th>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Amount </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                    <tr class="odd gradeX">
+                                                        
+                                                        <td class="mdl-data-table__cell--non-numeric">Total Beds</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{total_beds}}</td>
+
+                                                    </tr>
+                                                    <tr class="odd gradeX">
+                                                        
+                                                        <td class="mdl-data-table__cell--non-numeric">Current Patients</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{allocated_beds}}</td>
+
+                                                    </tr>
+                                                    <tr class="odd gradeX">
+                                                        
+                                                        <td class="mdl-data-table__cell--non-numeric">Free Beds</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{unallocated_beds}}</td>
+                                                    </tr>
+                                            </tbody>
+                                        </table>
+                                        </div>
+                                          </div>
+
+                                   <div class="col-md-6">
+                                    <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 1200px;">
+                                                <div class="card-head">
+                                                    <header>Beds By Usage</header>
+                                                <button class="btn btn-primary" data-toggle="modal" data-target="#filterWardRoomModal">
+                                                    <i class="fa fa-filter"></i> 
+                                                </button>
+
+                                                </div>
+
+                                        <table class="mdl-data-table ml-table-bordered  " id="example4">
+                                            <thead>
+                                                <tr>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Category </th>
+                                                    <th class="mdl-data-table__cell--non-numeric"> Amount </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for bed,usage_amount  in room_zip %}
+                                                    <tr class="odd gradeX">
+                                                        
+                                                        <td class="mdl-data-table__cell--non-numeric">Total Beds</td>
+                                                        <td class="mdl-data-table__cell--non-numeric">{{total_beds}}</td>
+
+                                                    </tr>
+                                                    {% endfor %}
+                                            </tbody>
+                                        </table>
+                                        </div>
+                                          </div>
+
+                                        
+                                </div>
+                                <div class="tab-pane fontawesome-demo" id="revenue-tab">
+                                <div class="row">
+                                   <div class="col-md-6">
+                                    <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Revenue By Building Unit</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filterWardRoomModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+
+                                            </div>
+
+                                            <table class="mdl-data-table ml-table-bordered  " id="example4"> 
+                                                <thead>
+                                                    <tr>
+                                                        <th class="mdl-data-table__cell--non-numeric"> Building </th>
+                                                        <th class="mdl-data-table__cell--non-numeric"> Amount </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for building,revenue in building_revenue_zip %}
+                                                        <tr class="odd gradeX">
+                                                            
+                                                            <td class="mdl-data-table__cell--non-numeric">{{building}}</td>
+                                                            <td class="mdl-data-table__cell--non-numeric">{{revenue}}</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                   <div class="col-md-6">
+                                    <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Revenue By Drug Unit</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filterWardRoomModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+
+                                            </div>
+
+                                            <table class="mdl-data-table ml-table-bordered  " id="example4"> 
+                                                <thead>
+                                                    <tr>
+                                                        <th class="mdl-data-table__cell--non-numeric"> Drug </th>
+                                                        <th class="mdl-data-table__cell--non-numeric"> Revenue </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for building,revenue in drug_revenue_zip %}
+                                                        <tr class="odd gradeX">
+                                                            
+                                                            <td class="mdl-data-table__cell--non-numeric">{{building}}</td>
+                                                            <td class="mdl-data-table__cell--non-numeric">{{revenue}}</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                          </div>                                                                    
+                                </div>
+
+                                <div class="row">
+                                   <div class="col-md-6">
+                                    <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Revenue By Tests</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filterWardRoomModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+
+                                            </div>
+
+                                            <table class="mdl-data-table ml-table-bordered  " id="example4"> 
+                                                <thead>
+                                                    <tr>
+                                                        <th class="mdl-data-table__cell--non-numeric"> Test </th>
+                                                        <th class="mdl-data-table__cell--non-numeric"> Revenue </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for building,revenue in test_revenue_zip %}
+                                                        <tr class="odd gradeX">
+                                                            
+                                                            <td class="mdl-data-table__cell--non-numeric">{{building}}</td>
+                                                            <td class="mdl-data-table__cell--non-numeric">{{revenue}}</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                          </div>
+                                    
+                                   <div class="col-md-6">
+                                    <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 315px;width: 515px;">
+                                            <div class="card-head">
+                                                <header>Revenue By Service</header>
+                                            <button class="btn btn-primary" data-toggle="modal" data-target="#filterWardRoomModal">
+                                                <i class="fa fa-filter"></i> 
+                                            </button>
+
+                                            </div>
+
+                                            <table class="mdl-data-table ml-table-bordered  " id="example4"> 
+                                                <thead>
+                                                    <tr>
+                                                        <th class="mdl-data-table__cell--non-numeric"> Service </th>
+                                                        <th class="mdl-data-table__cell--non-numeric"> Revenue </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for building,revenue in service_revenue_zip %}
+                                                        <tr class="odd gradeX">
+                                                            
+                                                            <td class="mdl-data-table__cell--non-numeric">{{building}}</td>
+                                                            <td class="mdl-data-table__cell--non-numeric">{{revenue}}</td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                          </div>
+
+                                </div>
+                            </div>
+                        </div>
+{% endblock %}

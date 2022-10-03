@@ -2,315 +2,100 @@
 {% load static %}
 {% block style %}
     <link href="../assets/plugins/morris/morris.css" rel="stylesheet" type="text/css" />
+    <style>
+        .quick-launch-container {
+            display: inline-block;
+            margin-left: 5px;
+            padding-left: 5px;
+            margin-right: 7px;
+            border: black;
+            border-width: 10px;
+        }
+        .quick-launch-label {
+            display: block;
+            color: black;
+            font-weight: bold;
+        }
+        fieldset {
+            padding-bottom: 10px;
+            width: 600px; 
+            border: 2px solid; 
+            border-radius: 5px; 
+            border-color: #0a7e37;
+        }
+        legend {
+            color: black;
+            width: max-content;
+        }
+    </style>
 
 {% endblock %}
 {% block title %} Queue {% endblock %}
 
 {% block page_content %}
+<head>
+    <script type="text/javascript" src="{% static "fusioncharts/fusioncharts.js" %}"></script>
+    <script type="text/javascript" src="{% static "fusioncharts/fusioncharts.charts.js" %}"></script>
+    <script type="text/javascript" src="{% static "fusioncharts/themes/fusioncharts.theme.fusion.js" %}"></script>
+</head>
 
-					<div class="state-overview">
-						          <div class="row">
-                    <div class="col-xl-6 col-md-12">
-                         <div class="card">
-                             <div class="card-block">
-                                 <div class="row text-center p-t-10">
-                                  <div class="col-sm-4 col-6">
-                                      <h4 class="margin-0">$ 209 </h4>
-                                      <p class="text-muted"> Today's Income</p>
-                                  </div>
-                                  <div class="col-sm-4 col-6">
-                                      <h4 class="margin-0">$ 837 </h4>
-                                      <p class="text-muted">This Week's Income</p>
-                                  </div>
-                                  <div class="col-sm-4 col-6">
-                                      <h4 class="margin-0">$ 3410 </h4>
-                                      <p class="text-muted">This Month's Income</p>
-                                  </div>
-                              </div>
-                                 <div id="area_line_chart" style="height: 200px; margin:30px"></div>
-                                 <div class="row justify-content-center text-center b-t-default m-t-15 p-t-20">
-                                     <div class="col-3 b-r-default">
-                                         <h5>75%</h5>
-                                         <p class="text-muted m-b-0">Satisfied</p>
-                                     </div>
-                                     <div class="col-3 b-r-default">
-                                         <h5>16%</h5>
-                                         <p class="text-muted m-b-0">Unsatisfied</p>
-                                     </div>
-                                     <div class="col-3">
-                                         <h5>9%</h5>
-                                         <p class="text-muted m-b-0">NA</p>
-                                     </div>
-                                 </div>
-                             </div>
-                         </div>
-                     </div>
-                     <div class="col-xl-6 col-md-12">
-                         <div class="card">
-                             <div class="card-block">
-                             <div class="row text-center p-t-10">
-                                  <div class="col-sm-4 col-6">
-                                      <h4 class="margin-0">$ 209 </h4>
-                                      <p class="text-muted"> Today's Income</p>
-                                  </div>
-                                  <div class="col-sm-4 col-6">
-                                      <h4 class="margin-0">$ 837 </h4>
-                                      <p class="text-muted">This Week's Income</p>
-                                  </div>
-                                  <div class="col-sm-4 col-6">
-                                      <h4 class="margin-0">$ 3410 </h4>
-                                      <p class="text-muted">This Month's Income</p>
-                                  </div>
-                              </div>
-                                 <div id="bar-example" style="height: 200px; margin:30px"></div>
-                             </div>
-                               <div class="row justify-content-center text-center b-t-default m-t-15 p-t-20">
-                                   <div class="col-3 b-r-default">
-                                       <h5>75%</h5>
-                                       <p class="text-muted m-b-0">Satisfied</p>
-                                   </div>
-                                   <div class="col-3 b-r-default">
-                                       <h5>16%</h5>
-                                       <p class="text-muted m-b-0">Unsatisfied</p>
-                                   </div>
-                                   <div class="col-3">
-                                       <h5>9%</h5>
-                                       <p class="text-muted m-b-0">NA</p>
-                                   </div>
-                               </div>
-                         </div>
-                     </div>
-                   </div>
+    <div class="row">
+        <div class="col-md-12">
+            <fieldset>
+                <legend>Quick Launch</legend>
+                <a href="{% url 'pharmacy_settings' %}">
+                    <div class="quick-launch-container">
+                        <span class="info-box-icon push-bottom bg-primary " style="display: block;">
+                            <i class="fa fa-info"></i>
+                        </span>
+                        <span class="quick-launch-label">Record Info</span>
+                    </div>
+                </a>
+                <a href="{% url 'procurement' %}">
+                    <div class="quick-launch-container">
+                        <span class="info-box-icon push-bottom bg-primary " style="display: block;">
+                            <i class="fa fa-user-times"></i>
+                        </span>
+                        <span class="quick-launch-label">Procurement</span>
+                    </div>
+                </a>
+                <a href="{% url 'pharmacy_report1' %}">
+                    <div class="quick-launch-container">
+                        <span class="info-box-icon push-bottom bg-primary " style="display: block;">
+                            <i class="fa fa-calendar"></i>
+                        </span>
+                        <span class="quick-launch-label">Reports</span>
+                    </div>
+                </a>
+                <a href="">
+                    <div class="quick-launch-container">
+                        <span class="info-box-icon push-bottom bg-primary " style="display: block;">
+                            <i class="fa fa-users"></i>
+                        </span>
+                        <span class="quick-launch-label">Supply Drugs</span>
+                    </div>
+                </a>
+                <a href="{% url 'drug_request_first_approval' %}">
+                    <div class="quick-launch-container">
+                        <span class="info-box-icon push-bottom bg-primary " style="display: block;">
+                            <i class="fa fa-users"></i>
+                        </span>
+                        <span class="quick-launch-label"> Requests</span>
+                    </div>
+                </a>
+                
+            </fieldset>
+        </div>
+    </div>
+<br>
 
-                    <div class="row">
-						<div class="col-lg-8 col-md-12 col-sm-12 col-12">
-                                  <div class="card-box ">
-                               <div class="card-head">
-                                   <header>Patient Review</header>
-                                   <div class="tools">
-                                       <a class="fa fa-repeat btn-color box-refresh" href="javascript:;"></a>
-                                    <a class="t-collapse btn-color fa fa-chevron-down" href="javascript:;"></a>
-                                    <a class="t-close btn-color fa fa-times" href="javascript:;"></a>
-                                   </div>
-                               </div>
-                               <div class="card-body ">
-                                      <ul id="reviewWindow" class="docListWindow small-slimscroll-style">
-                                          <li>
-                                          	<div class="row">
-                                           	<div class="col-md-8 col-sm-8">
-                                                <div class="prog-avatar">
-                                                    <img src="../assets/img/user/user1.jpg" alt="" width="40" height="40">
-                                                </div>
-                                                <div class="details">
-                                                    <div class="title">
-                                                        <a href="#">Rajesh Mishra</a> 
-                                                        <p class="rating-text">Awesome!!! Highly recommend</p>
-                                                    </div>
-                                                </div>
-                                               </div>
-                                               <div class="col-md-4 col-sm-4 rating-style">
-                                                <i class="material-icons">star</i>
-                                                <i class="material-icons">star</i>
-                                                <i class="material-icons">star</i>
-                                                <i class="material-icons">star_half</i>
-                                                <i class="material-icons">star_border</i>
-                                               </div>
-                                              </div>
-                                          </li>
-                                          <li>
-                                              <div class="row">
-                                           	<div class="col-md-8 col-sm-8">
-                                                <div class="prog-avatar">
-                                                    <img src="../assets/img/user/user2.jpg" alt="" width="40" height="40">
-                                                </div>
-                                                <div class="details">
-                                                    <div class="title">
-                                                        <a href="#">Sarah Smith</a> 
-                                                        <p class="rating-text">Very bad service :(</p>
-                                                    </div>
-                                                </div>
-                                               </div>
-                                               <div class="col-md-4 col-sm-4 rating-style">
-                                                <i class="material-icons">star</i>
-                                                <i class="material-icons">star_half</i>
-                                                <i class="material-icons">star_border</i>
-                                                <i class="material-icons">star_border</i>
-                                                <i class="material-icons">star_border</i>
-                                               </div>
-                                              </div>
-                                          </li>
-                                          <li>
-                                              <div class="row">
-                                           	<div class="col-md-8 col-sm-8">
-                                                <div class="prog-avatar">
-                                                    <img src="../assets/img/user/user3.jpg" alt="" width="40" height="40">
-                                                </div>
-                                                <div class="details">
-                                                    <div class="title">
-                                                        <a href="#">John Simensh</a> 
-                                                        <p class="rating-text"> Staff was good nd i'll come again</p>
-                                                    </div>
-                                                </div>
-                                               </div>
-                                               <div class="col-md-4 col-sm-4 rating-style">
-                                                <i class="material-icons">star</i>
-                                                <i class="material-icons">star</i>
-                                                <i class="material-icons">star</i>
-                                                <i class="material-icons">star</i>
-                                                <i class="material-icons">star</i>
-                                               </div>
-                                              </div>
-                                          </li>
-                                          <li>
-                                              <div class="row">
-                                           	<div class="col-md-8 col-sm-8">
-                                                <div class="prog-avatar">
-                                                    <img src="../assets/img/user/user4.jpg" alt="" width="40" height="40">
-                                                </div>
-                                                <div class="details">
-                                                    <div class="title">
-                                                        <a href="#">Priya Sarma</a> 
-                                                        <p class="rating-text">The price I received was good value.</p>
-                                                    </div>
-                                                </div>
-                                               </div>
-                                               <div class="col-md-4 col-sm-4 rating-style">
-                                                <i class="material-icons">star</i>
-                                                <i class="material-icons">star</i>
-                                                <i class="material-icons">star</i>
-                                                <i class="material-icons">star</i>
-                                                <i class="material-icons">star_half</i>
-                                               </div>
-                                              </div>
-                                          </li>
-                                          <li>
-                                              <div class="row">
-                                           	<div class="col-md-8 col-sm-8">
-                                                <div class="prog-avatar">
-                                                    <img src="../assets/img/user/user5.jpg" alt="" width="40" height="40">
-                                                </div>
-                                                <div class="details">
-                                                    <div class="title">
-                                                        <a href="#">Serlin Ponting</a> 
-                                                        <p class="rating-text">Not Satisfy !!!1</p>
-                                                    </div>
-                                                </div>
-                                               </div>
-                                               <div class="col-md-4 col-sm-4 rating-style">
-                                                <i class="material-icons">star</i>
-                                                <i class="material-icons">star_border</i>
-                                                <i class="material-icons">star_border</i>
-                                                <i class="material-icons">star_border</i>
-                                                <i class="material-icons">star_border</i>
-                                               </div>
-                                              </div>
-                                          </li>
-                                          <li>
-                                              <div class="row">
-                                           	<div class="col-md-8 col-sm-8">
-                                                <div class="prog-avatar">
-                                                    <img src="../assets/img/user/user6.jpg" alt="" width="40" height="40">
-                                                </div>
-                                                <div class="details">
-                                                    <div class="title">
-                                                        <a href="#">Priyank Jain</a> 
-                                                        <p class="rating-text">Good....</p>
-                                                    </div>
-                                                </div>
-                                               </div>
-                                               <div class="col-md-4 col-sm-4 rating-style">
-                                                <i class="material-icons">star</i>
-                                                <i class="material-icons">star</i>
-                                                <i class="material-icons">star</i>
-                                                <i class="material-icons">star_half</i>
-                                                <i class="material-icons">star_border</i>
-                                               </div>
-                                              </div>
-                                          </li>
-                                      </ul>
-                                      <div class="full-width text-center p-t-10" >
-										<a href="#" class="btn purple btn-outline btn-circle margin-0">View All</a>
-									</div>
-                               </div>
-                           </div>
-						</div>
+                                   <div class="col-md-11">
+                                    <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 600px;width: 1050px;">
+        <div id="myFirstchart-container">{{ output|safe }}</div>
+        </div>
+        </div>
 
-						<div class="col-lg-4 col-md-12 col-sm-12 col-12">
-                            <div class="card-box">
-                                <div class="card-head">
-                                    <header>Todo List</header>
-                                    <button id = "panel-button" 
-			                           class = "mdl-button mdl-js-button mdl-button--icon pull-right" 
-			                           data-upgraded = ",MaterialButton">
-			                           <i class = "material-icons">more_vert</i>
-			                        </button>
-			                        <ul class = "mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
-			                           data-mdl-for = "panel-button">
-			                           <li class = "mdl-menu__item"><i class="material-icons">assistant_photo</i>Action</li>
-			                           <li class = "mdl-menu__item"><i class="material-icons">print</i>Another action</li>
-			                           <li class = "mdl-menu__item"><i class="material-icons">favorite</i>Something else here</li>
-			                        </ul>
-                                </div>
-                                <div class="card-body ">
-                                	<ul class="to-do-list ui-sortable" id="sortable-todo">
-                                           <li class="clearfix">
-                                               <div class="todo-check pull-left">
-                                                   <input type="checkbox" value="None" id="todo-check1">
-                                                   <label for="todo-check1"></label>
-                                               </div>
-                                               <p class="todo-title">Visit patient on home
-                                               </p>
-                                               <div class="todo-actionlist pull-right clearfix">
-                                                   <a href="#" class="todo-remove"><i class="fa fa-times"></i></a>
-                                               </div>
-                                           </li>
-                                           <li class="clearfix">
-                                               <div class="todo-check pull-left">
-                                                   <input type="checkbox" value="None" id="todo-check2">
-                                                   <label for="todo-check2"></label>
-                                               </div>
-                                               <p class="todo-title">Announcement for holiday
-                                               </p>
-                                               <div class="todo-actionlist pull-right clearfix">
-                                                   <a href="#" class="todo-remove"><i class="fa fa-times"></i></a>
-                                               </div>
-                                           </li>
-                                           <li class="clearfix">
-                                               <div class="todo-check pull-left">
-                                                   <input type="checkbox" value="None" id="todo-check3">
-                                                   <label for="todo-check3"></label>
-                                               </div>
-                                               <p class="todo-title">call bus driver</p>
-                                               <div class="todo-actionlist pull-right clearfix">
-                                                   <a href="#" class="todo-remove"><i class="fa fa-times"></i></a>
-                                               </div>
-                                           </li>
-                                           <li class="clearfix">
-                                               <div class="todo-check pull-left">
-                                                   <input type="checkbox" value="None" id="todo-check4">
-                                                   <label for="todo-check4"></label>
-                                               </div>
-                                               <p class="todo-title">Operation on morning</p>
-                                               <div class="todo-actionlist pull-right clearfix">
-                                                   <a href="#" class="todo-remove"><i class="fa fa-times"></i></a>
-                                               </div>
-                                           </li>
-                                           <li class="clearfix">
-                                               <div class="todo-check pull-left">
-                                                   <input type="checkbox" value="None" id="todo-check5">
-                                                   <label for="todo-check5"></label>
-                                               </div>
-                                               <p class="todo-title">Pay to staff
-                                               </p>
-                                               <div class="todo-actionlist pull-right clearfix">
-                                                   <a href="#" class="todo-remove"><i class="fa fa-times"></i></a>
-                                               </div>
-                                           </li>
-                                       </ul>
-                                </div>
-                            </div>
-                        </div>
-					</div>
+
 
 {% endblock %}
 

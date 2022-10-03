@@ -21,12 +21,15 @@
                         </thead>
                         <tbody>               
                             {% for unallocated_drug in unallocated_drugs %}
+                            {% if unallocated_drug.quantity == 0 %}
+                            {%else%}
                             <tr>
                                 <td style="">{{unallocated_drug.drug}}</td>
                                 <td>{{unallocated_drug.quantity}}</td>
-                            </tr>                                             
+                            </tr> 
+                            {% endif %}                                            
                              {% endfor %}
-             
+                            
                         </tbody>
                         </table>
             </div>

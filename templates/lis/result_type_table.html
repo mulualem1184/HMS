@@ -1,0 +1,30 @@
+<table class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded">
+    <thead>
+        <tr>
+            <th class="mdl-data-table__cell--non-numeric">#</th>
+            <th class="mdl-data-table__cell--non-numeric">Name</th>
+            <th class="mdl-data-table__cell--non-numeric">Input type</th>
+            <th class="mdl-data-table__cell--non-numeric">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for rt in rt_list %}
+            {% include 'lis/add_normal_range_modal.html' %}
+            <tr>
+                <td class="mdl-data-table__cell--non-numeric"> {{ forloop.counter }} </td>
+                <td class="mdl-data-table__cell--non-numeric"> {{ rt.name }} </td>
+                <td class="mdl-data-table__cell--non-numeric"> {{ rt.input_type }} </td>
+                <td class="mdl-data-table__cell--non-numeric">
+                    {% if rt.input_type == 'NUMBER' %}
+                        <a href="#" data-toggle="modal" data-target="#modal{{rt.id}}">
+                            <i class="fa fa-plus"></i>
+                        </a>
+                    {% endif %}
+                    <a href="{% url 'remove_lab_test_result_type' rt.id %}">
+                        <i class="fa fa-remove"></i>
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

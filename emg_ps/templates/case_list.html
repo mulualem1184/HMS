@@ -73,9 +73,8 @@
                     <td class="mdl-data-table__cell--non-numeric">
                         <div>
                             <div class="col-sm-">
-                                <a href="{% url 'emergency:edit_case' case.id %}">
-                                    <button type="button" class="btn btn-info btn-rounded btn-icon"> <i class="fa fa-eye"></i> </button>
-                                </a>
+                                         <a class="btn btn-info btn-rounded btn-icon" href="{% url 'prescription_form' case.patient.id %}"></li> <i class="fa fa-eye"></i> </a>
+                                
                                 <a href="#">
                                     <button type="button" class="btn btn-info btn-rounded btn-icon" data-toggle="modal" data-target="#textMessageModal"> 
                                         <i class="fa fa-bell"></i> 

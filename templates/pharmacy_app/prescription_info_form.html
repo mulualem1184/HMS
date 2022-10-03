@@ -1,0 +1,106 @@
+
+
+
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Fill Supply Form {% endblock %}
+{% load crispy_forms_tags %}
+{% block style %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css"> 
+
+{% endblock %}
+{% block page_content %}
+
+    <div class="" style="width: 100%;">
+        <div class="card card-box">
+            <div class="card-head">
+                <header>{{drug}}
+                </header>
+                  <div class="pull-right">
+                  <a id="addNoteCard" onclick="toggleInfoForm()"><i class="fa fa-plus"></i></a>
+                  </div>
+
+            </div>
+            <div class="card-body " id="bar-parent1">
+                    <table id="example1" class="mdl-data-table ml-table-bordered  " style="width:100%;">
+                        <thead>
+                            <tr>
+                                
+                                <th class="mdl-data-table__cell--non-numeric"> Frequency </th>
+                                <th class="mdl-data-table__cell--non-numeric"> Frequency Unit </th>   
+                                <th class="mdl-data-table__cell--non-numeric"> Duration </th>   
+                                <th class="mdl-data-table__cell--non-numeric"> Duration Unit </th>   
+                                <th class="mdl-data-table__cell--non-numeric">Units Per Take </th>   
+
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for info in prescription_info %}
+                                <tr>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ info.frequency }} </td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ info.frequency_unit}} </td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ info.duration }} </td>
+
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ info.duration_unit }} </td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ info.units_per_take }} </td>
+                                  
+                                  
+                               
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                                               </table>
+           
+             </div>
+
+        </div>
+    </div>
+            <div class="card card-box" id="info-form-id" style="display: none">
+                <div class="card-body" >
+
+                 <table class="mdl-data-table ml-table-bordered  " id="example4">
+                    <thead>
+                        <tr>   
+                                                   
+                            <th class="mdl-data-table__cell--non-numeric">Row&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Frequency &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Frequency Units&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Duration&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Duration Unit&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Units Per Take</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            <tr>
+              <td class="mdl-data-table__cell--non-numeric">{% include "pharmacy_app/partials/prescription_info_form_partial.html" %}</td>
+            </tr>                     
+            <tr>
+              <td class="mdl-data-table__cell--non-numeric"><div id='drug-request-create'></div></td>
+            </tr>
+           
+
+          </tbody>
+
+                </table>
+                                <div style="padding-top: 1%;">
+                <a  class="btn btn-circle btn-primary" href="">
+                                Save 
+                </a>
+                </div>
+
+
+                </div>
+            </div>
+
+{% block script %}
+<script>
+      function toggleInfoForm (){
+          document.getElementById('info-form-id').style.display = 'block';          
+
+        }
+
+</script>
+
+{% endblock %}
+
+
+{% endblock %}
+

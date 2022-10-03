@@ -1,4 +1,4 @@
-<div class="modal fade" id="patientHistoryModal{{x}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="patientHistoryModal{{duration.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content" style="color: black;">
             <div class="modal-header">
@@ -9,11 +9,10 @@
             </div>
             <div class="modal-body">
                 <div class="col-sm-10">
-                    <p> <b>Visit Date:</b> May 24 - 29</p>
-                    <p> <b>Visit Type:</b> IPD(Room 35 Building 2)</p>
-                    <p><b>Significant Findings:</b> Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                         Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur</p>
-                    <p><b>Discharge Summary:</b> in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla</p>
+                    <p> <b>Visit Date:</b>                                 {{duration.admission_date.date}} - {{duration.leave_date.date}}</p>                    
+                    <p> <b>Visited room:</b> {{duration.room}}</p>
+                    <p><b>Significant Findings:</b> {{summary.significant_findings}}</p>
+                    <p><b>Discharge Summary:</b> {{summary.summary}}</p>
                 </div>
             </div>
             <div class="modal-footer">

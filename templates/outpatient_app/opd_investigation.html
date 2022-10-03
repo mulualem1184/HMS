@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Fill Prescription Form {% endblock %}
+{% block style %} 
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block page_content %}
+  
+
+              <div class="col-md-12">
+                                <ul class="nav nav-tabs ">
+                  <li class="nav-item "><a class="nav-link active show"
+                    href="#tab1" data-toggle="tab">One</a></li>
+                  <li class="nav-item "><a class="nav-link" href="#tab2"
+                    data-toggle="tab">Two</a></li>
+                </ul>
+              
+                                <div class="tab-content">
+                                    <div class="tab-pane active fontawesome-demo" id="tab1">
+            <div class="card-body " id="bar-parent1">
+              
+     
+    <form method="post">
+    {% csrf_token %}
+    
+    <div class="form-row" >
+
+ 
+      <div class="form-group col-md-6 mb-0">
+        {{ question_form.question|as_crispy_field }}
+      </div>
+      
+    </div>
+    <div class="form-row" >
+
+ 
+      <div class="form-group col-md-6 mb-0">
+        {{ response_form2.response|as_crispy_field }}
+      </div>
+      
+    </div>
+    
+    <div class="form-row" style="padding-top: 10px;">
+    <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+  </form>
+
+        </div>
+      </div>
+
+                                    <div class="tab-pane fontawesome-demo" id="tab2">
+            <div class="card-body " >
+              
+     
+    <form method="post" action="{%  url 'save_response_form' patient.id %}">
+    {% csrf_token %}
+    
+    <div class="form-row" > 
+      <div class="form-group col-md-6 ">
+        {{ response_form.question|as_crispy_field }}
+      </div>
+      
+    </div>
+    
+    <div class="form-row" > 
+      <div class="form-group col-md-6 mb-0">
+        {{ response_form.response|as_crispy_field }}
+      </div>
+      
+    </div>
+    <div class="form-row" style="padding-top: 10px;">
+    <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+  </form>
+
+        </div>
+      </div>
+</div>
+</div>
+
+</div>
+  </div>
+    {% block scripts %}
+  
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>        
+
+        
+    {% endblock %}
+
+{% endblock %}
+
+ 

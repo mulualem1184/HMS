@@ -1,8 +1,11 @@
 {% extends "base.html" %}
 {% load static %}
+{% block title %}
+    Request Leave
+{% endblock %}
 {% block page_content %}
 <div class="row">
-    <div class="col-md-12 col-sm-12">
+    <div class="col-md-12 col-sm-12 col-lg-8">
         <div class="card card-box">
             <div class="card-head">
                 <header>Make Leave Request</header>
@@ -30,6 +33,16 @@
                         </div>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12 col-sm-12 col-lg-4">
+        <div class="card card-box">
+            <div class="card-head">
+                <header>Leave History</header>
+            </div>
+            <div class="card-body" id="bar-parent">
+                {% include "employee_leave_history_table.html" %}
             </div>
         </div>
     </div>

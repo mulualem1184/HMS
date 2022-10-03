@@ -4,6 +4,8 @@ from django.contrib.auth import get_user_model
 from core.models import * 
 from lis.models import LaboratoryTestResult
 from staff_mgmt.models import Employee
+from radiology.models import ImagingReport
+
 import datetime
 from django.utils import timezone
 from mptt.models import MPTTModel, TreeForeignKey
@@ -167,6 +169,14 @@ class Service(models.Model):
 
 		return PostA.objects.filter(company__pk=self.pk)
 	"""
+class ServicePrice(models.Model):
+
+	service = models.ForeignKey(Service,  on_delete= models.SET_NULL, null=True)
+	price = models.IntegerField(null=True, blank=True)
+	discounted_price = models.IntegerField(null=True, blank=True)
+	active = models.BooleanField(default=True)
+	effective_date = models.DateTimeField(null=True)
+
 class ServiceTeam(models.Model):
 	service = models.ForeignKey(Service,  on_delete= models.SET_NULL, null=True, related_name='team_set')
 	team = models.ForeignKey(OutpatientTeam,  on_delete= models.SET_NULL, null=True)	
@@ -208,6 +218,8 @@ class ServiceBuilding(models.Model):
 class ServiceRoom(models.Model):
 	building = models.ForeignKey(ServiceBuilding,  on_delete= models.SET_NULL, null=True)
 	room = models.CharField(max_length=5000, blank=True)
+	patient = models.ForeignKey(Patient,  on_delete= models.SET_NULL, null=True, blank=True)
+
 	def __str__(self):
 		return self.building.building_name + "  " + self.room
 
@@ -241,10 +253,12 @@ class PatientVisit(models.Model):
 	service_room = models.ForeignKey(ServiceRoom,  on_delete= models.SET_NULL, null=True)
 	visit_status = models.CharField(max_length=100,choices=Visit_status, null=True)
 	payment_status = models.CharField(null=True,blank=True, max_length=100, choices=payment_status)
+	registered_on = models.DateTimeField(null=True)
 
 #	visited_department = models.ForeignKey(Department)
 	def __str__(self):
 		return str(self.patient)
+
 class VisitQueue(models.Model):
 	visit = models.ForeignKey(PatientVisit, on_delete= models.SET_NULL, null=True)
 	queue_number = models.IntegerField(null=True,blank=True)
@@ -252,9 +266,24 @@ class VisitQueue(models.Model):
 #	def __str__(self):
 #		return self.visit.patient.first_name + " " + self.visit.patient.last_name + " in " + self.visit.service_room.room + ', Queue: ' +  str(self.queue_number)
 
+class FollowUp(models.Model):
+	"""
+	visiting_time: time when patient 
+	service_provider: staff member (doctor, councelor, etc..)
+	"""
+
+	patient = models.ForeignKey(Patient,  on_delete= models.SET_NULL, null=True)
+	visit = models.ForeignKey(PatientVisit,  on_delete= models.SET_NULL, null=True, blank=True)
+	appointment_time = models.DateTimeField(null=True)
+	ordered_by = models.ForeignKey(Employee, on_delete= models.SET_NULL, null=True)
+	registered_on = models.DateTimeField(null=True)
+
+#	visited_department = models.ForeignKey(Department)
+	def __str__(self):
+		return str(self.patient)
+
 
 class OutpatientIntervention(models.Model):
-
 	patient = models.ForeignKey(Patient,  on_delete= models.SET_NULL, null=True, blank=True)	
 	service_provider = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
 	intervention_cause = models.CharField( max_length = 1000, blank=True, null=True)
@@ -269,6 +298,22 @@ class OutpatientMedicalNote(models.Model):
 	note = models.CharField( max_length = 2000, blank=True, null=True)
 	service_provider = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
 	visit = models.ForeignKey(PatientVisit,  on_delete= models.SET_NULL, null=True, blank=True)
+	registered_on = models.DateTimeField(null=True)
+
+class QuestionForPatient(models.Model):
+	question = models.CharField( max_length = 2000, blank=True, null=True)
+	registered_by = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
+	registered_on = models.DateTimeField(null=True)
+
+	def __str__(self):
+		return self.question
+
+
+class OpdPatientResponse(models.Model):
+	response = models.CharField( max_length = 2000, blank=True, null=True)
+	question = models.ForeignKey(QuestionForPatient,  on_delete= models.SET_NULL, null=True, blank=True)
+	visit = models.ForeignKey(PatientVisit,  on_delete= models.SET_NULL, null=True, blank=True)
+	registered_by = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
 	registered_on = models.DateTimeField(null=True)
 
 class PatientAppointment(models.Model):
@@ -316,13 +361,21 @@ class OutpatientLabResult(models.Model):
 	doctor = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
 	registered_on = models.DateField(null=True, blank=True)
 
+class OutpatientRadiologyResult(models.Model):
+
+	patient = models.ForeignKey(Patient,  on_delete= models.SET_NULL, null=True, blank=True)
+	visit =  models.ForeignKey(PatientVisit, on_delete=models.CASCADE)	
+	result = models.ForeignKey(to=ImagingReport, on_delete=models.SET_NULL, null=True, blank=True)
+	doctor = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
+	registered_on = models.DateField(null=True, blank=True)
+
 class OutpatientDischargeSummary(models.Model):
 	patient = models.ForeignKey(Patient,  on_delete= models.SET_NULL, null=True, blank=True)
 	#discharge_condition = models.CharField(max_length=100,choices=discharge_conditions, null=True)
 	significant_findings = models.CharField(max_length=400, null=True)
-	summary = models.CharField(max_length=2000, null=True) 
+	summary = models.CharField(max_length=2000, null=True)
 	registered_on = models.DateField(null=True, blank=True)
-	visit =  models.ForeignKey(PatientVisit, on_delete=models.CASCADE, null=True)	
+	visit = models.ForeignKey(PatientVisit, on_delete=models.CASCADE, null=True)
 	discharged_by = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
 
 

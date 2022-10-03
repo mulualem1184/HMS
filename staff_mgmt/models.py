@@ -28,13 +28,13 @@ class Designation(models.Model):
     """
     name = models.CharField(max_length=100)
     department = models.ForeignKey(to=Department, on_delete=models.CASCADE)
-    staff_code = models.CharField(max_length=50)
+    staff_code = models.CharField(max_length=50, verbose_name='Designation Code')
 
     class Meta:
         unique_together = ('name', 'staff_code')
 
     def __str__(self) -> str:
-        return self.name + str(self.staff_code)
+        return self.name
 
 
 class Specialty(models.Model):
@@ -113,7 +113,7 @@ class Employee(models.Model):
     on_leave = models.BooleanField(default=False)
 
     def __str__(self) -> str:
-        return str(self.user_profile)
+        return f'{self.user_profile.full_name}-{str(self.user_profile)}'
 
     @property
     def department(self):
@@ -249,6 +249,37 @@ class StaffLeave(models.Model):
         return False
 
 
+class DepartmentHead(models.Model):
+    department = models.ForeignKey(to=Department, on_delete=models.CASCADE)
+    employee = models.ForeignKey(to=Employee, on_delete=models.CASCADE)
+    start_date = models.DateField(default=timezone.now)
+    end_date = models.DateField(null=True)
+    assigned_by = models.ForeignKey(to=USER, on_delete=models.SET_NULL, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.department} department head"
+
+    @staticmethod
+    def get_department_head(dept:Department) -> Employee:
+        lh = None
+        try:
+            lh:DepartmentHead = DepartmentHead.objects.filter(department=dept).last()
+        except: pass
+        if lh and not lh.end_date:
+            return lh.employee
+        return None
+
+    @staticmethod
+    def is_employee_department_head(employee:Employee) -> Department:
+        lh = None
+        try:
+            lh = DepartmentHead.objects.filter(employee=employee).last()
+        except: pass
+        if lh and not lh.end_date:
+            return lh.department
+        return None
+
+
 class AttendanceReport:
 
     def __init__(self, shift:WorkShift, from_date=None, end_date=None) -> None:
@@ -263,7 +294,6 @@ class AttendanceReport:
         self.total_employees:int = self.shift.employee_set.count()
         self.total_work_hours = sum([a.shift.work_hours for a in attendance_list])
         self.actual_work_hours = sum([a.work_hours for a in attendance_list])       
-
 class StaffTeam(models.Model):
     team_name = models.CharField(max_length=1000, blank=True)   
     department = models.ForeignKey(to=Department, on_delete=models.CASCADE)

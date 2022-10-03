@@ -47,9 +47,11 @@
 -->
 
 
-    <div class="row">
         <div class="col-md-12">
+    <div class="row">
+
             <!-- BEGIN PROFILE SIDEBAR -->
+            <div class="col-md-5">
             <div class="profile-sidebar">
                                 <div class="card-body col-sm-9" id="line-parent">
                                     <div class="panel-group accordion"  id="accordion3">
@@ -71,14 +73,6 @@
                                                     <ul class="list-group list-group-unbordered">
                                                         
                                                         <li class="list-group-item">
-                                                            <b>First Name </b>
-                                                            <div class="profile-desc-item pull-right"> {{ patient.first_name }}</div>
-                                                        </li>
-                                                        <li class="list-group-item">
-                                                            <b>Last Name </b>
-                                                            <div class="profile-desc-item pull-right"> {{ patient.last_name }}</div>
-                                                        </li>
-                                                        <li class="list-group-item">
                                                             <b>Gender </b>
                                                             <div class="profile-desc-item pull-right"> {{ patient.sex }}</div>
                                                         </li>
@@ -95,10 +89,47 @@
                                       </div>
                                 </div>
                             
-
+                            </div>
             </div>
             <!-- END BEGIN PROFILE SIDEBAR -->
             <!-- BEGIN PROFILE CONTENT -->
+
+        <div class="col-md-3" style="padding-left: 20px; padding-top: 12px;">
+            <div class="card card-box ">
+                <div class="card-head">
+                    <header>Actions</header>
+                </div>
+                <div class="card-body" id="bar-parent">
+                    <ul>
+                    <li><a href="" data-toggle='modal' data-target="#doctor-progress-note-modal">Write Progress Note </a></li>
+                    <li><a href="{% url 'nurse_independent_intervention_form'   patient.id %}">Make Intervention</a></li>
+                    <li><a href="{% url 'medical_administration_detail'   patient.id %}">Administer Drug</a></li>
+                    <li><a href="" data-toggle='modal' data-target="#nurse-vital-sign-form-modal">Fill Vital Sign </a></li>
+                    
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3" style="padding-left: 20px;padding-top: 12px;">
+            <div class="card card-box" >
+                <div class="card-head">
+                    <header>Patient Info</header>
+                </div>
+                <div class="card-body" id="bar-parent">
+                    <ul>
+        <li><a href="" data-toggle='modal' data-target="#room-queue-modal">Patient Medication </a></li>
+        <li><a href="" data-toggle='modal' data-target="#admission-info-id">Admission Info </a></li>
+        <li><a href="" data-toggle='modal' data-target="#care-plan-info-id">Care Plan </a></li>
+        <li><a href="" data-toggle='modal' data-target="#vital-sign-modal">Check Vital Sign </a></li>
+        <!--<li><a href="" data-toggle='modal' data-target="#allergy-info-modal">Patient Allergies </a></li>
+        <li><a href="" data-toggle='modal' data-target="#habit-info-modal">Patient Habits </a></li>
+ -->    
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
           
             <div class="profile-content">
                 <div class="row">
@@ -360,39 +391,7 @@
                     </div>
                     
                 </div>-->
-        <div class="col-sm-3" style="padding-left: 20px;">
-            <div class="card card-box ">
-                <div class="card-head">
-                    <header>Actions</header>
-                </div>
-                <div class="card-body" id="bar-parent">
-                    <ul>
-                    <li><a href="" data-toggle='modal' data-target="#doctor-progress-note-modal">Write Progress Note </a></li>
-                    <li><a href="{% url 'nurse_independent_intervention_form'   patient.id %}">Make Intervention</a></li>
-                    <li><a href="{% url 'medical_administration_detail'   patient.id %}">Administer Drug</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-3" style="padding-left: 20px;">
-            <div class="card card-box" >
-                <div class="card-head">
-                    <header>Patient Info</header>
-                </div>
-                <div class="card-body" id="bar-parent">
-                    <ul>
-        <li><a href="" data-toggle='modal' data-target="#room-queue-modal">Patient Medication </a></li>
-        <li><a href="" data-toggle='modal' data-target="#admission-info-id">Admission Info </a></li>
-        <li><a href="" data-toggle='modal' data-target="#care-plan-info-id">Care Plan </a></li>
-        <li><a href="" data-toggle='modal' data-target="#vital-sign-modal">Check Vital Sign </a></li>
-        <li><a href="" data-toggle='modal' data-target="#allergy-info-modal">Patient Allergies </a></li>
-        <li><a href="" data-toggle='modal' data-target="#habit-info-modal">Patient Habits </a></li>
-        <li><a href="" data-toggle='modal' data-target="#nurse-vital-sign-form-modal">Fill Vital Sign </a></li>
 
-                    </ul>
-                </div>
-            </div>
-        </div>
 
         </div>
 

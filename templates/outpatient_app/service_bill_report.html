@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+    <link href="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"/>
+{% endblock %}
+{% block title %} Service Report {% endblock %}
+
+{% block page_content %}
+{% include "outpatient_app/partials/filter_visiting_card_bill.html" %}
+
+    <div class="row">
+        <div class="col-md-12">
+        <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 650px;width: 1150px;">
+                <div class="card-head">
+                    <header>Service Payments</header>
+                <button class="btn btn-primary" data-toggle="modal" data-target="#filterVisitingCardBillModal">
+                    <i class="fa fa-filter"></i> 
+                </button>
+
+                </div>
+                
+                    <table id="example1" class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded">
+                        <thead>
+                            <tr class="gradeX odd">
+                                <th class="mdl-data-table__cell--non-numeric">Date/Time</th>
+                                <th class="mdl-data-table__cell--non-numeric">Patient</th>
+                                <th class="mdl-data-table__cell--non-numeric">Service</th>
+                                <th class="mdl-data-table__cell--non-numeric">Card Price</th>
+                                <th class="mdl-data-table__cell--non-numeric">Discount</th>
+                                <th class="mdl-data-table__cell--non-numeric">Insurance</th>
+                                <th class="mdl-data-table__cell--non-numeric">Free</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for bill in bill_list %}
+                                <tr>
+                                    <td class="mdl-data-table__cell--non-numeric">{{bill.registered_on}}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{bill.patient}}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{bill.service}}</td>
+                                    {% if bill.discount == True %}
+                                    <td class="mdl-data-table__cell--non-numeric">{{bill.service_price}}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">Yes</td>
+
+                                    {% else %}
+                                    <td class="mdl-data-table__cell--non-numeric">{{bill.service_price}}</td>
+                                    <td class="mdl-data-table__cell--non-numeric">No</td>
+                                    {% endif %}
+                                    <td class="mdl-data-table__cell--non-numeric">No</td>
+                                    <td class="mdl-data-table__cell--non-numeric">Yes</td>
+
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <!-- data tables -->
+{% endblock %}

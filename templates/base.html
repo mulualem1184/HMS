@@ -50,7 +50,7 @@
                       <img alt="" src="{% static 'img/logo.png' %}">
                     {% endif %}
                               
-                              <span class="logo-default" > {{ site_config.name }} </span> 
+                     <span class="logo-default" > {{ site_config.name }} </span> 
                     </a>
             </div>                <!-- logo end -->
 				{% block navbar %}
@@ -547,9 +547,107 @@
                                             <span class="title">Procurement</span>
                                         </a>
                                     </li>
+                                    <li class="nav-item  ">
+                                        <a href="{% url 'pharmacy_report'  %}" class="nav-link ">
+                                            <span class="title">Reports</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item  ">
+                                        <a href="{% url 'dispensary_list'  %}" class="nav-link ">
+                                            <span class="title">Dispensary List</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item  ">
+                                        <a href="{% url 'drug_request_first_approval'  %}" class="nav-link ">
+                                            <span class="title">Requests</span>
+                                        </a>
+                                    </li>
+
+
+
                                 </ul>
                             </li>
                             {% else %}
+                             {% endif %}
+                                {% if user.employee.designation.staff_code == '145' %}
+                            <li class="nav-item">
+                                <a href="#" class="nav-link nav-toggle">
+                                    <i class="fa fa-medkit"></i>
+                                    <span class="title">Stock Management</span>
+                                    <span class="arrow"></span>
+                                </a>
+                                <ul class="sub-menu">
+                                    
+                                    <li class="nav-item">
+                                        <a href="{% url 'request_list_from_stock' %}" class="nav-link ">
+                                            <span class="title">Stock Request</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{% url 'no_procurement_supply_form' %}" class="nav-link ">
+                                            <span class="title">Supply Drugs</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{% url 'procurement' %}" class="nav-link ">
+                                            <span class="title">Procurement</span>
+                                        </a>
+                                    </li>
+
+
+                                </ul>
+                            </li>
+                            {% else %}
+                             {% endif %}
+                                {% if user.employee.designation.staff_code == '74' %}
+                            <li class="nav-item {% if active_link == 'outpatient' %} open {% endif %}">
+                                <a href="#" class="nav-link nav-toggle">
+                                    <i class="fa fa-medkit"></i>
+                                    <span class="title">Requests</span>
+                                    <span class="arrow"></span>
+                                </a>
+                                <ul class="sub-menu {% if active_link == "lab" %} style="display: block;" {% endif %}">
+                                    
+                                    <li class="nav-item">
+                                        <a href="{% url 'drug_request_second_approval' %}" class="nav-link ">
+                                            <span class="title">Dashboard</span>
+                                        </a>
+                                    </li>
+
+
+                                </ul>
+                            </li>
+                            {% else %}
+                             {% endif %}
+
+                                {% if user.employee.designation.staff_code == '80' %}
+                            <li class="nav-item {% if active_link == 'outpatient' %} open {% endif %}">
+                                <a href="#" class="nav-link nav-toggle">
+                                    <i class="fa fa-medkit"></i>
+                                    <span class="title">Laboratory</span>
+                                    <span class="arrow"></span>
+                                </a>
+                                <ul class="sub-menu {% if active_link == "lab" %} style="display: block;" {% endif %}">
+                                    
+                                    <li class="nav-item">
+                                        <a href="{% url 'pharmacy_dashboard' %}" class="nav-link ">
+                                            <span class="title">Dashboard</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{% url 'lab_settings' %}" class="nav-link ">
+                                            <span class="title">Record Info</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item  ">
+                                        <a href="{% url 'procurement'  %}" class="nav-link ">
+                                            <span class="title">Procurement</span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                            {% else %}
+
                             {% endif %}
 
                             {% if user.employee.designation.staff_code == '2' %}
@@ -737,6 +835,10 @@
                                         <a href="{% url 'visiting_card_list'%} " class="nav-link "> <span class="title">Visiting Card List</span>
                                         </a>
                                     </li>
+                                    <li class="nav-item  ">
+                                        <a href="{% url 'lab_order_list'%} " class="nav-link "> <span class="title">Lab Order List</span>
+                                        </a>
+                                    </li>
                                                                          
                                 </ul>
                             </li>
@@ -758,7 +860,14 @@
                                         <a href="{% url 'inpatient_prescription_list' %} " class="nav-link"> <span class="title">Ward Prescription List</span>
                                         </a>
                                     </li>
-                                                                         
+                                    <li class="nav-item  ">
+                                        <a href="{% url 'pharmacist_drug_request' 1 %} " class="nav-link"> <span class="title">Make Drug Request</span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item  ">
+                                        <a href="{% url 'drug_allocation_to_dispensary' 1 %} " class="nav-link"> <span class="title">Allocate</span>
+                                        </a>
+                                    </li>
                                 </ul>
                             </li>
                             {% else %}
@@ -905,6 +1014,71 @@
                                                                          
                                 </ul>
                             </li>
+                                <li class="nav-item {% if active_link == 'staff' %} open {% endif %}">
+                                    <a href="#" class="nav-link nav-toggle">
+                                        <i class="fa fa-medkit"></i>
+                                        <span class="title">Staff</span>
+                                        <span class="arrow"></span>
+                                    </a>
+                                    <ul class="sub-menu" {% if active_link == 'lab' %} style="display: block;" {% endif %}>
+                                        <li class="nav-item">
+                                            <a href="{% url "staff:add_department" %}" class="nav-link ">
+                                                <span class="title">Add Department</span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+                                            <a href="{% url 'staff:list_department' %}" class="nav-link ">
+                                                <span class="title">View Departments</span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item  ">
+                                            <a href="{% url 'staff:add_designation' %}" class="nav-link ">
+                                                <span class="title">Add Designation</span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item  ">
+                                            <a href="{% url 'staff:list_designation' %}" class="nav-link ">
+                                                <span class="title">Designation List</span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item  ">
+                                            <a href="{% url 'staff:add_employee' %}" class="nav-link ">
+                                                <span class="title">Add Employee</span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item  ">
+                                            <a href="{% url 'staff:list_employee' %}" class="nav-link ">
+                                                <span class="title">List Employee</span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item  ">
+                                            <a href="{% url 'staff:leave_request_list' %}" class="nav-link ">
+                                                <span class="title">Leave Request list</span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item  ">
+                                            <a href="{% url 'staff:add_workshift' %}" class="nav-link ">
+                                                <span class="title">Create Work shift</span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item  ">
+                                            <a href="{% url 'staff:list_workshift' %}" class="nav-link ">
+                                                <span class="title">List Work shift</span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item  ">
+                                            <a href="{% url 'staff:daily_attendance' %}" class="nav-link ">
+                                                <span class="title">Todays Attendace</span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item  ">
+                                            <a href="{% url 'staff:schedule' %}" class="nav-link ">
+                                                <span class="title">Schedule table</span>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+
                             {% else %}
 
                             {% endif %}
@@ -1185,16 +1359,16 @@
             <!-- end chat sidebar -->
         </div>
         <!-- end page container -->
-        <!-- start footer 
+      <!--
         <div class="page-footer">
-            <div class="page-footer-inner"> 2018 &copy; Sunray Template By
-            <a href="https://radixtouch.com/cdn-cgi/l/email-protection#780a1d1c0b0c190a0c101d151d381f15191114561b1715" target="_top" class="makerCss">Redstar Theme</a>
+            <div class="page-footer-inner"> 2022 &copy; Template By Anku
+
             </div>
             <div class="scroll-to-top">
                 <i class="material-icons">eject</i>
             </div>
         </div>-->
-        <!-- end footer -->
+        <!-- end footer--> 
     </div>
     <!-- start js include path -->
     <!-- <script data-cfasync="false" src="../../../../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js' %}"></script> -->
@@ -1234,6 +1408,7 @@
 			$('#'+messageBoxId).hide();
 		}
 	</script>
+      <script src="https://unpkg.com/htmx.org@1.8.0"></script>
     {% block scripts %}
 
     {% endblock %}

@@ -1,11 +1,14 @@
 from django.shortcuts import render
 from .models import *
+from .utils import return_triaged_patient, return_room_queue
+
 from core.models import *
-from staff_mgmt.models import StaffTeam
+from staff_mgmt.models import StaffTeam,Department,Designation
 
 from pharmacy_app.models import *
 from inpatient_app.models import *
 from billing_app.models import *
+from lis.models import LaboratorySection
 from django.contrib import messages
 from core.forms import PatientPaymentStatusForm, InsuranceDetailForm
 from .forms import *
@@ -16,26 +19,61 @@ from django.shortcuts import redirect
 from django.contrib import messages
 from datetime import datetime
 import itertools
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework.renderers import TemplateHTMLRenderer
+from collections import OrderedDict
+from .fusioncharts import FusionCharts
+
+
 # Create your views here.
+def myFirstChart(request):
+# Chart data is passed to the `dataSource` parameter, like a dictionary in the form of key-value pairs.
+	dataSource = OrderedDict()
+
+# The `chartConfig` dict contains key-value pairs of data for chart attribute
+	chartConfig = OrderedDict()
+	chartConfig["caption"] = "Countries With Most Oil Reserves [2017-18]"
+	chartConfig["subCaption"] = "In MMbbl = One Million barrels"
+	chartConfig["xAxisName"] = "Country"
+	chartConfig["yAxisName"] = "Reserves (MMbbl)"
+	chartConfig["numberSuffix"] = "K"
+	chartConfig["theme"] = "fusion"
+
+	dataSource["chart"] = chartConfig
+	dataSource["data"] = []
+# The data for the chart should be in an array wherein each element of the array  is a JSON object having the `label` and `value` as keys.
+# Insert the data into the `dataSource['data']` list.
+	for drug in Dosage.objects.all():
+		dispensed_drugs = DrugDispensed.objects.filter(bill_no__drug=drug)
+		drug_sum = 0
+		if dispensed_drugs:
+			for sd in dispensed_drugs:
+				price = DrugPrice.objects.get(drug=sd.bill_no.drug,active='active')
+				drug_sum = drug_sum + price.selling_price
+			print('Drug: ',str(drug), ' Sum: ', drug_sum)
+			dataSource["data"].append({"label": str(drug), "value": drug_sum})
+
+# Create an object for the column 2D chart using the FusionCharts class constructor
+# The chart data is passed to the `dataSource` parameter.
+	column2D = FusionCharts("column2d", "myFirstChart", "600", "400", "myFirstchart-container", "json", dataSource)
+	#return render(request, 'index.html', {'output': column2D.render()})
+	context = {'output': column2D.render()}
+	return render(request,'outpatient_app/index33.html',context)
 
 def PatientRegistration(request):
-	"""
-	count = 0
-	visits = VisitQueue.objects.all()
-	for visit in visits:
-		if count == 0:
-			visit.delete()
-			count = count + 1
-	"""
-
+	#age = datetime.strptime(request.GET.get('birth_date') or '1998-09-02', '%Y-%m-%d')
+	age = datetime.now()
 	patient_form = PatientRegistrationForm()
 	payment_status_form = PatientPaymentStatusForm()
 	if request.method == 'POST':
 		patient_form = PatientRegistrationForm(request.POST)
 		payment_status_form = PatientPaymentStatusForm(request.POST)
 		if patient_form.is_valid():
-			patient_model = patient_form.save()
+			patient_model = patient_form.save(commit=False)
 			status_model = payment_status_form.save(commit=False)
+			#patient_model.age = age
+			patient_model.save()
 			status_model.patient = patient_model
 			status_model.active = True
 			status_model.registered_on = datetime.now()
@@ -44,7 +82,8 @@ def PatientRegistration(request):
 				return redirect('enter_insurance_detail', patient_model.id)
 			messages.success(request, patient_model.first_name + " " + patient_model.last_name + " has been successfully registered!")
 
-
+		else:
+			messages.error(request, str(patient_form.errors))
 	context = {'patient_form':patient_form,
 				'payment_status_form':payment_status_form
 				}
@@ -104,15 +143,16 @@ def OutpatientTriageForm(request):
 	vital_sign_form = VitalSignForm()
 	service_team_form = ServiceTeamForm()
 	patient_list = Patient.objects.exclude(inpatient='yes')
-
+	"""
 	allocated_patient_array = []
 	patient_compliant = OutpatientChiefComplaint.objects.filter(active=True)
 	for patient in patient_compliant:
 		allocated_patient_array.append(patient.patient.id)
 		print('\n', patient.patient,'\n')
+	"""
 
 	not_inpatient = Patient.objects.exclude(inpatient='yes')
-	not_outpatient = not_inpatient.exclude(id__in=allocated_patient_array)
+	not_outpatient = not_inpatient.exclude(id__in=return_triaged_patient())
 	complaint_form.fields['patient'].queryset = not_outpatient
 #	service_team_form.fields['service_team'].queryset = ServiceTeam.objects.filter( id__in=service_teams)
 	room_array = []
@@ -125,7 +165,9 @@ def OutpatientTriageForm(request):
 		room_array.append(room)
 #		print('yeaaaaaaa',queue_amount,'\n')
 	room_zip = zip(room_array, queue_amount_array )
-
+	rq = return_room_queue()
+	for a,b in rq:
+		print(a,b,'\n')
 	if request.method == 'POST':
 		arrival_form = PatientArrivalForm(request.POST)
 		complaint_form = ChiefComplaintForm(request.POST)
@@ -171,9 +213,12 @@ def OutpatientTriageForm(request):
 			#visiting_card = VisitingCardPrice.objects.filter(service__service_team=service_team_model.service_team).last()
 			bill_detail_model.visiting_card = visiting_card
 			bill_detail_model.patient = patient
+			#bill_detail_model.selling_price = visiting_card.visiting_price
+
 			payment_status = PatientPaymentStatus.objects.get(patient=patient,active=True)
 			if payment_status.payment_status == 'Free':
-				bill_detail_model.selling_price = 0
+				bill_detail_model.free = True
+				#bill_detail_model.selling_price = 0
 				service_team = ServiceTeam.objects.filter(service__id=service_recieved)
 				for team in service_team:
 					service_room_provider = ServiceRoomProvider.objects.filter(service_team=team.team)
@@ -185,7 +230,7 @@ def OutpatientTriageForm(request):
 						#patient_visit.visit_status = 'Pending'
 						patient_visit.payment_status = 'paid'
 
-						patient_visit.service_room = room1
+						patient_visit.service_room = ServiceRoom.objects.get(id=1)
 						patient_visit.visit_status = 'Active'
 				#patient_visit.save()
 				#patient_visit_model.save()
@@ -215,21 +260,22 @@ def OutpatientTriageForm(request):
 					#messages.success(request, 'Successfully Assigned!')
 
 			elif payment_status.payment_status == 'Discount':
-				bill_detail_model.discount = 'Yes'
+				bill_detail_model.discount = True
 				#bill_detail_model.selling_price = visiting_card.discounted_price
 				patient_visit = PatientVisit()
 				patient_visit.patient = bill_detail_model.patient
 				patient_visit.payment_status = 'not_paid'
 
-				patient_visit.service_room = room
+				patient_visit.service_room = ServiceRoom.objects.get(id=1)
 				patient_visit.visit_status = 'Pending'
 
 			elif payment_status.payment_status == 'Insurance':
-				bill_detail_model.insurance = 'Yes'
+				bill_detail_model.insurance = True
 				#bill_detail_model.selling_price = visiting_card.visiting_card.visiting_price				
 				patient_visit = PatientVisit()
 				patient_visit.patient = bill_detail_model.patient
 				patient_visit.payment_status = 'not_paid'
+				patient_visit.service_room = ServiceRoom.objects.get(id=1)
 
 				patient_visit.service_room = room
 				patient_visit.visit_status = 'Pending'
@@ -239,6 +285,7 @@ def OutpatientTriageForm(request):
 				patient_visit = PatientVisit()
 				patient_visit.patient = bill_detail_model.patient
 				patient_visit.payment_status = 'not_paid'
+				patient_visit.service_room = ServiceRoom.objects.get(id=1)
 
 				patient_visit.service_room = room
 				patient_visit.visit_status = 'Pending'
@@ -269,18 +316,267 @@ def OutpatientTriageForm(request):
 	return render(request,'outpatient_app/outpatient_triage_form.html',context)
 
 def AdminDashboard(request):
+	for room in ServiceRoom.objects.all():
+		print(room,'and ',room.id,'\n')
+	lab_test_chart = OrderedDict()
+
+
+# The data for the chart should be in an array wherein each element of the array  is a JSON object having the `label` and `value` as keys.
+# Insert the data into the `dataSource['data']` list.
+	#thirty_days_ago = today - datetime.timedelta(days=30)
+	
+
+# Chart data is passed to the `dataSource` parameter, like a dictionary in the form of key-value pairs.
+	dataSource = OrderedDict()
+
+# The `chartConfig` dict contains key-value pairs of data for chart attribute
+	chartConfig = OrderedDict()
+	chartConfig["caption"] = "Drugs Sold Today"
+	chartConfig["subCaption"] = "In Birr"
+	chartConfig["xAxisName"] = "Country"
+	chartConfig["yAxisName"] = "Reserves (MMbbl)"
+	chartConfig["numberSuffix"] = " Birr"
+	chartConfig["theme"] = "fusion"
+	chartConfig["numVisiblePlot"] = "8",
+	chartConfig["flatScrollBars"] = "1",
+	chartConfig["scrollheight"] = "1",
+
+	dataSource["chart"] = chartConfig
+	dataSource["data"] = []
+
+	lab_test_chart["chart"] = chartConfig
+	lab_test_chart["data"] = []
+
+	lab_test_chart["chart"] = {
+		"caption":'Lab Tests Taken Today',
+		"subCaption":' In Birr',
+		"numberSuffix":' Birr',
+		'theme':'fusion',
+		'yAxisName':' Lab Tests',
+	}
+
+# The data for the chart should be in an array wherein each element of the array  is a JSON object having the `label` and `value` as keys.
+# Insert the data into the `dataSource['data']` list.
+	#thirty_days_ago = today - datetime.timedelta(days=30)
+	
+	for drug in Dosage.objects.all():
+		dispensed_drugs = DrugDispensed.objects.filter(bill_no__drug=drug)
+		drug_sum = 0
+		if dispensed_drugs:
+			for sd in dispensed_drugs:
+				price = DrugPrice.objects.get(drug=sd.bill_no.drug,active='active')
+				drug_sum = drug_sum + price.selling_price
+			print('Drug: ',str(drug), ' Sum: ', drug_sum)
+			dataSource["data"].append({"label": str(drug), "value": drug_sum})
+	today = datetime2.now()
+	rt = Patient.objects.filter(registered_at__day=today.day)
+	if rt:
+		new_patients_today = rt.count()
+	else:
+		new_patients_today = 0
+
+	test_list = []
+	test_revenue = []
+	for t in LaboratoryTestType.objects.all():
+		performed_tests = OutpatientLabResult.objects.filter(lab_result__result_type__test_type=t)
+		test_sum = 0
+		if performed_tests:
+			for d in performed_tests:
+				price = LaboratoryTestPrice.objects.get(test_type=d.lab_result.result_type.test_type,active=True)
+				test_sum = test_sum + price.price
+		test_list.append(t)
+		test_revenue.append(test_sum)
+		lab_test_chart["data"].append({"label": str(t), "value": test_sum})
+
+
 	team_setting_form = TeamSettingForm()
-	context = {'team_setting_form':team_setting_form}
+	column2D = FusionCharts("column2d", "myFirstChart", "550", "550", "myFirstchart-container", "json", dataSource)
+	lab_test_chart = FusionCharts("pie2d", "lab_test_chart", "600", "600", "lab_test_container", "json", lab_test_chart)
+	#return render(request, 'index.html', {'output': column2D.render()})
+
+	context = {'team_setting_form':team_setting_form,
+				'new_patients_today':new_patients_today,
+				'output': column2D.render(),
+				'lab_test_chart': lab_test_chart.render()	
+	}
 
 	return render(request,'outpatient_app/admin_dashboard.html', context)
 
+def GeneralReport(request):
+
+	today = datetime2.now()
+
+	patient_list = Patient.objects.all()
+	patient_amount = patient_list.count()
+	today_patient_list = patient_list.filter(registered_at__day=today.day)
+	today_patient_amount = today_patient_list.count()
+
+	employee_list = Employee.objects.all()
+	employee_amount = employee_list.count()
+	today_employee_list = employee_list.filter(employed_date__day=today.day)
+	today_employee_amount = today_employee_list.count()
+
+	department_list = Department.objects.all()
+
+	if request.htmx:
+		request_name = request.GET.get('id')
+		print('HOHOHOHOHOOHOHOHO','\n','jsksksks',request_name)
+		#dispensed_drugs2 = DrugDispensed.objects.filter(dispensary_id=dispensary_id)
+		if request_name == '45':
+			print('sfaaffafafaffaf')
+			context2 = {'today_patient_list':today_patient_list}
+		elif request_name == '46':
+			print('dadadfjfafjkf')
+			context2 = {'patient_list':patient_list}
+
+		return render(request,'outpatient_app/partials/patient_table_partial.html', context2)
+
+	context = {#'patient_list':patient_list,
+				'patient_amount':patient_amount,
+				'today_patient_amount':today_patient_amount,
+
+				#'employee_list':employee_list,
+				'employee_amount':employee_amount,
+				#'today_employee_list':today_employee_list,
+				'today_employee_amount':today_employee_amount,
+				'department_list':department_list,
+
+	}
+
+	return render(request,'outpatient_app/general_report.html', context)
+
+def EmployeeListReport(request):
+	today = datetime2.now()
+
+	patient_list = Patient.objects.all()
+	patient_amount = patient_list.count()
+	today_patient_list = patient_list.filter(registered_at__day=today.day)
+	today_patient_amount = today_patient_list.count()
+
+	employee_list = Employee.objects.all()
+	employee_amount = employee_list.count()
+	today_employee_list = employee_list.filter(employed_date__day=today.day)
+	today_employee_amount = today_employee_list.count()
+
+	department_list = Department.objects.all()
+	designation_list = Designation.objects.all()
+	if request.htmx:
+		request_name = request.GET.get('id')
+		print('HOHOHOHOHOOHOHOHO','\n','jsksksks',request_name)
+		#dispensed_drugs2 = DrugDispensed.objects.filter(dispensary_id=dispensary_id)
+		if request_name == '45':
+			print('sfaaffafafaffaf')
+			context2 = {'today_patient_list':today_patient_list}
+		elif request_name == '46':
+			print('dadadfjfafjkf')
+			context2 = {'patient_list':patient_list}
+
+		return render(request,'outpatient_app/partials/patient_table_partial.html', context2)
+
+	context = {#'patient_list':patient_list,
+				'employee_list':employee_list,
+				'department_list':department_list,
+				'designation_list':designation_list	
+	}
+
+	return render(request,'pharmacy_app/employee_list_report.html', context)
+
 def PharmacyDashboard(request):
+# Chart data is passed to the `dataSource` parameter, like a dictionary in the form of key-value pairs.
+	dataSource = OrderedDict()
 
-	return render(request,'outpatient_app/pharmacy_dashboard.html')
+# The `chartConfig` dict contains key-value pairs of data for chart attribute
+	chartConfig = OrderedDict()
+	chartConfig["caption"] = "Drugs Sold Today"
+	chartConfig["subCaption"] = "In Birr"
+	chartConfig["xAxisName"] = "Country"
+	chartConfig["yAxisName"] = "Reserves (MMbbl)"
+	chartConfig["numberSuffix"] = " Birr"
+	chartConfig["theme"] = "fusion"
+	chartConfig["numVisiblePlot"] = "8",
+	chartConfig["flatScrollBars"] = "1",
+	chartConfig["scrollheight"] = "1",
 
-def LabratoryDashboard(request):
+	dataSource["chart"] = chartConfig
+	dataSource["data"] = []
+# The data for the chart should be in an array wherein each element of the array  is a JSON object having the `label` and `value` as keys.
+# Insert the data into the `dataSource['data']` list.
+	#thirty_days_ago = today - datetime.timedelta(days=30)
+	
+	for drug in Dosage.objects.all():
+		dispensed_drugs = DrugDispensed.objects.filter(bill_no__drug=drug)
+		drug_sum = 0
+		if dispensed_drugs:
+			for sd in dispensed_drugs:
+				price = DrugPrice.objects.get(drug=sd.bill_no.drug,active='active')
+				drug_sum = drug_sum + price.selling_price
+			print('Drug: ',str(drug), ' Sum: ', drug_sum)
+			dataSource["data"].append({"label": str(drug), "value": drug_sum})
+	today = datetime2.now()
+	rt = Patient.objects.filter(registered_at__day=today.day)
+	if rt:
+		new_patients_today = rt.count()
+	else:
+		new_patients_today = 0
 
-	return render(request,'outpatient_app/labratory_dashboard.html')
+	team_setting_form = TeamSettingForm()
+	column2D = FusionCharts("column2d", "myFirstChart", "1000", "600", "myFirstchart-container", "json", dataSource)
+	#return render(request, 'index.html', {'output': column2D.render()})
+	context = {'team_setting_form':team_setting_form,
+				'new_patients_today':new_patients_today,
+				'output': column2D.render()
+	}
+
+
+	return render(request,'outpatient_app/pharmacy_dashboard.html', context)
+
+def LaboratoryDashboard(request):
+# Chart data is passed to the `dataSource` parameter, like a dictionary in the form of key-value pairs.
+	dataSource = OrderedDict()
+
+# The `chartConfig` dict contains key-value pairs of data for chart attribute
+	chartConfig = OrderedDict()
+	chartConfig["caption"] = "Lab Tests Today"
+	chartConfig["subCaption"] = "In Birr"
+	chartConfig["xAxisName"] = "Country"
+	chartConfig["yAxisName"] = "Reserves (MMbbl)"
+	chartConfig["numberSuffix"] = " Birr"
+	chartConfig["theme"] = "fusion"
+	chartConfig["numVisiblePlot"] = "8",
+	chartConfig["flatScrollBars"] = "1",
+	chartConfig["scrollheight"] = "1",
+
+	dataSource["chart"] = chartConfig
+	dataSource["data"] = []
+# The data for the chart should be in an array wherein each element of the array  is a JSON object having the `label` and `value` as keys.
+# Insert the data into the `dataSource['data']` list.
+	#thirty_days_ago = today - datetime.timedelta(days=30)
+	
+	test_list = []
+	test_revenue = []
+	for t in LaboratoryTestType.objects.all():
+		performed_tests = OutpatientLabResult.objects.filter(lab_result__result_type__test_type=t)
+		test_sum = 0
+		if performed_tests:
+			for d in performed_tests:
+				price = LaboratoryTestPrice.objects.get(test_type=d.lab_result.result_type.test_type,active=True)
+				test_sum = test_sum + price.price
+		test_list.append(t)
+		test_revenue.append(test_sum)
+		dataSource["data"].append({"label": str(t), "value": test_sum})
+
+	test_revenue_zip = zip(test_list,test_revenue)
+	today = datetime2.now()
+	rt = Patient.objects.filter(registered_at__day=today.day)
+	if rt:
+		new_patients_today = rt.count()
+	else:
+		new_patients_today = 0
+
+	team_setting_form = TeamSettingForm()
+	column2D = FusionCharts("column2d", "myFirstChart", "1000", "400", "myFirstchart-container", "json", dataSource)
+	context = {'output':column2D.render()}
+	return render(request,'outpatient_app/labratory_dashboard.html',context)
 
 def AdminSetting(request):
 	"""	
@@ -300,6 +596,10 @@ def AdminSetting(request):
 def PharmacySettings(request):
 
 	return render(request,'outpatient_app/pharmacy_settings.html')
+
+def LabSettings(request):
+
+	return render(request,'outpatient_app/lab_settings.html')
 
 def AdminSetting2(request):
 	try:
@@ -650,13 +950,38 @@ def ReassignRoom(request, pk, room_pk):
 			return redirect('room_queue', room.service_room.id)
 	context = {'reassign_form':reassign_form}
 	return render(request,'outpatient_app/reassign_room.html',context)
-
+"""
 def DoctorQueue(request):
 	acs = OutpatientChiefComplaint.objects.all()
 	for a in acs:
 		a.active=False
 		a.save()	
 	print(request.user)
+	service_team = ServiceTeam.objects.filter(service_provider__user_profile=request.user)
+	#service_provider = ServiceProvider.objects.get(service_provider__user_profile=request.user)
+	room_array = []
+	for team in service_team:
+		room = ServiceRoomProvider.objects.filter(service_team=team.team)
+		for room in room:
+			room_array.append(room.room)
+
+	for room in room_array:
+		visit_queue = VisitQueue.objects.filter(visit__service_room=room.room).exclude(visit__visit_status='Ended').order_by('queue_number')
+	arrival_detail_array = []
+	for visit in visit_queue:
+		arrival_detail = PatientArrivalDetail.objects.filter(patient=visit.visit.patient, active=True).last()		
+		print(visit.queue_number,'s')
+		visit_array.append(visit)
+		arrival_detail_array.append(arrival_detail)
+	visit_zip = zip(visit_array,arrival_detail_array)
+#	for v,s in visit_zip:
+#		print(v,s,'\n')
+	context = {'visit_zip':visit_zip, 'room':room}
+	return render(request,'outpatient_app/doctor_queue.html',context)
+"""
+
+#Original Queue
+def DoctorQueue(request):
 	service_team = ServiceTeam.objects.get(service_provider__user_profile=request.user)
 	#service_provider = ServiceProvider.objects.get(service_provider__user_profile=request.user)
 	room = ServiceRoomProvider.objects.get(service_team=service_team.team)
@@ -682,7 +1007,13 @@ def OutpatientMedicalNotePage(request,patient_id):
 	visit = PatientVisit.objects.filter(patient = patient).exclude(visit_status='Ended').last()
 	medication_list = OutpatientMedication.objects.filter(visit=visit, patient=patient)
 	lab_result_list = OutpatientLabResult.objects.filter(visit=visit, patient=patient)
+	rad_result_list = OutpatientRadiologyResult.objects.filter(visit=visit,patient=patient)
 	service_list = ServiceBillDetail.objects.filter(visit=visit)
+	complaint = OutpatientChiefComplaint.objects.filter(active=True, patient=patient).last()
+	#print('\n',complaint.complaint,'\n')
+	vital_sign = PatientVitalSign.objects.filter(active='active',patient=patient).last()
+	print('\n',vital_sign,'\n')
+
 	service_form = ServiceForm()
 	medical_note_form = OutpatientMedicalNote()
 	intervention_form = OutpatientInterventionForm()
@@ -710,8 +1041,70 @@ def OutpatientMedicalNotePage(request,patient_id):
 				'medication_list':medication_list,
 				'lab_result_list':lab_result_list,
 				'service_list':service_list,
+				'rad_result_list':rad_result_list,
+				'complaint':complaint,
+				'vital_sign':vital_sign,
+
 	}
 	return render(request,'outpatient_app/opd_doctor_note.html',context)
+
+
+def OpdInvestigation(request, patient_id):
+	patient = Patient.objects.get(id=patient_id)
+	question_form = QuestionForPatientForm()
+	response_form = OpdPatientResponseForm()
+	response_form2 = OpdPatientResponseForm2()
+
+	if request.method == 'POST':
+		question_form = QuestionForPatientForm(request.POST)
+		response_form2 = OpdPatientResponseForm2(request.POST)
+		if question_form.is_valid():
+			if response_form2.is_valid():
+
+				question_model = question_form.save(commit=False)
+				response_model = response_form2.save(commit=False)
+
+				question_model.registered_by = Employee.objects.get(user_profile=request.user, designation__name='Doctor')
+				question_model.registered_on = datetime.now()
+				response_model.question = question_model
+				response_model.visit = PatientVisit.objects.filter(patient=patient, visit_status='Active').last()
+				response_model.registered_by = Employee.objects.get(user_profile=request.user, designation__name='Doctor')
+				response_model.registered_on = datetime.now()
+
+				question_model.save()
+				response_model.save()
+				return redirect('outpatient_medical_note',patient.id)
+				messages.success(request,'successful!')
+			else:
+				messages.error(request,str(response_form2.errors))
+
+		else:
+			messages.error(request,str(question_form.errors))
+	context = {'question_form':question_form,
+				'response_form':response_form,
+				'response_form2':response_form2,
+				'patient':patient,
+	}
+	return render(request, 'outpatient_app/opd_investigation.html',context)
+
+#This function saves responses made by patient 
+def SavePatientResponseForm(request,patient_id):
+	patient = Patient.objects.get(id=patient_id)
+	if request.method == 'POST':
+		response_form = OpdPatientResponseForm(request.POST)
+		if response_form.is_valid():
+
+			response_model = response_form.save(commit=False)
+
+			response_model.visit = PatientVisit.objects.filter(patient=patient, visit_status='Active').last()
+			response_model.registered_by = Employee.objects.get(user_profile=request.user, designation__name='Doctor')
+			response_model.registered_on = datetime.now()
+			response_model.save()
+			messages.success(request,'Successfully Registered!')
+			return redirect('outpatient_medical_note', patient.id)
+		else:
+			messages.error(request,str(note_form.errors))
+			return redirect('outpatient_medical_note', patient.id)
 
 #This function saves notes made by doctor 
 def SaveOutpatientNote(request,patient_id):
@@ -736,13 +1129,57 @@ def SaveServiceBill(request,patient_id):
 		service_form = ServiceForm(request.POST)
 
 		if service_form.is_valid():
-			service_model = service_form.save(commit=False)
-			service_model.patient = patient
-			bill = ServiceBill()
-			service_model.bill = bill
-			service_model.visit = PatientVisit.objects.get(visit_status='Active',patient=patient)
-			bill.save()
-			service_model.save()
+			service_bill_detail = service_form.save(commit=False)
+			service_bill_detail.patient = patient
+			#bill = ServiceBill()
+			#service_bill_detail.bill = bill
+			service_bill_detail.visit = PatientVisit.objects.get(visit_status='Active',patient=patient)
+			#bill.save()
+			payment_status = PatientPaymentStatus.objects.get(patient=patient,active=True)
+			price = ServicePrice.objects.get(service=service_bill_detail.service,active=True)
+			service_bill_detail.service_price = price.price
+
+			service_bill.registered_by = Employee.objects.get(user_profile=request.user, designation__name='Cashier')
+			today = datetime.today()
+			#today = now.day
+			if CashierDebt.objects.filter(cashier__user_profile=request.user, reconciled=False, date=today).last():
+				cashier_debt = CashierDebt.objects.get(cashier__user_profile=request.user, reconciled=False) 
+				cashier_debt.cash_debt = cashier_debt.cash_debt + price.price 
+			else:
+				cashier_debt = CashierDebt()
+				cashier_debt.cashier = 	Employee.objects.get(user_profile=request.user, designation__name='Cashier')
+				cashier_debt.cash_debt = price.price
+				cashier_debt.date = today
+
+			if payment_status.payment_status=='Free':
+				service_bill_detail.free = True
+				service_bill_detail.discount = False
+				service_bill_detail.insurance = False
+				service_bill_detail.credit = False
+				service_bill_detail.service_price = 0
+
+			elif payment_status.payment_status == 'Insurance':
+				service_bill_detail.free = False
+				service_bill_detail.discount = False
+				service_bill_detail.insurance = True
+				service_bill_detail.credit = False
+
+			elif payment_status.payment_status == 'discount':
+				service_bill_detail.free = False
+				service_bill_detail.discount = True
+				service_bill_detail.insurance = False
+				service_bill_detail.credit = False
+
+			else:
+				service_bill_detail.free = False
+				service_bill_detail.discount = False
+				service_bill_detail.insurance = False
+				service_bill_detail.credit = False
+
+			service_bill_detail.registered_on = datetime.now()
+			cashier_debt.save()
+			service_bill_detail.save()
+	
 			messages.success(request,'Successfully Registered!')
 			return redirect('outpatient_medical_note', patient.id)
 		else:
@@ -823,17 +1260,6 @@ def PatientPrescription(request, patient_id, patient_visit_id, room_id, visit_qu
 				print('no patient symptom')	
 				messages.success(request,'Successfully Prescribed!')
 
-			patient_queue = VisitQueue.objects.get(id=visit_queue_id)
-			queue = VisitQueue.objects.filter(visit__service_room_id=room_id, visit__visit_status='Pending')
-			queue_range_array = []
-			for  queue in range(patient_queue.queue_number + 1, queue.last().queue_number + 1 ):
-				print('\n',queue)
-				queue_range_array.append(queue)
-			queue_patients = VisitQueue.objects.filter(queue_number__in=queue_range_array, visit__service_room=room)
-			for queue in queue_patients:
-				queue.queue_number = queue.queue_number - 1
-				queue.save()
-				print('success 3 ','\n')	
 			patient_medication = InpatientMedication()
 			patient_medication.patient = patient
 			patient_medication.stay_duration = stay_duration
@@ -849,7 +1275,7 @@ def PatientPrescription(request, patient_id, patient_visit_id, room_id, visit_qu
 	else:
 		print('Not POST')
 	context = {'prescription_form':prescription_form}
-	return render(request, 'outpatient_app/patient_prescription.html', context)
+	return render(request, 'outpatient_app/patient_prescription2.html', context)
 
 def PatientSurgeryHistoryFormPage(request, patient_id):
 	patient = Patient.objects.get(id=patient_id)
@@ -964,6 +1390,26 @@ def AssignServiceTeam(request):
 	context = {'assign_form':assign_form}
 	return render(request, 'outpatient_app/assign_service_team.html', context)
 
+def AddFollowUp(request, patient_id):
+	patient = Patient.objects.get(id=patient_id)
+	visit = PatientVisit.objects.filter(patient = patient).exclude(visit_status='Ended').last()
+
+	follow_up_form = PatientFollowUpForm()
+	if request.method == 'POST':
+		follow_up_form = PatientFollowUpForm(request.POST)
+		if follow_up_form.is_valid():
+			follow_up_model = follow_up_form.save(commit=False)
+			follow_up_model.patient = patient
+			follow_up_model.ordered_by = Employee.objects.get(user_profile=request.user, designation__name='Doctor')
+			follow_up_model.visit = visit
+			follow_up_model.registered_on = datetime.now()
+			follow_up_model.save()
+			messages.success(request, 'Successful!')
+			return redirect('doctor_queue')
+	context = {'follow_up_form':follow_up_form}
+	return render(request, 'outpatient_app/add_follow_up.html', context)
+
+
 def DischargeOutpatientFormPage(request, patient_id):
 	patient = Patient.objects.get(id=patient_id)
 	visit = PatientVisit.objects.filter(patient = patient).exclude(visit_status='Ended').last()
@@ -992,14 +1438,648 @@ def DischargeOutpatient(request, patient_id):
 		visit.save()
 	#stay_duration.leave_date = datetime.now()
 
-	arrival_detail = PatientArrivalDetail.objects.filter(active=False)
+	arrival_detail = PatientArrivalDetail.objects.filter(patient = patient, active=True)
 	for detail in arrival_detail:
-		detail.active=True
+		detail.active=False
 		detail.save()
 
-	all_complaint = OutpatientChiefComplaint.objects.filter(active=False)
+	all_complaint = OutpatientChiefComplaint.objects.filter(patient=patient,active=True)
 	for complaint in all_complaint:
-		complaint.active=True
+		complaint.active=False
 		complaint.save()
 	messages.success(request, 'Successful!')
-	return redirect('doctor_queue')
+	return redirect('add_follow_up',patient_id)
+
+def OPDReport(request):
+	dataSource = OrderedDict()
+	used_service_chart = OrderedDict()
+	dispensary_supply_chart = OrderedDict()
+	discharge_chart = OrderedDict()
+	payment_status_chart = OrderedDict()
+	occupancy_chart = OrderedDict()
+
+	building_revenue_chart = OrderedDict()
+
+# The `chartConfig` dict contains key-value pairs of data for chart attribute
+	chartConfig = OrderedDict()
+	chartConfig["caption"] = "Drugs Sold Today"
+	chartConfig["subCaption"] = "In Birr"
+	chartConfig["xAxisName"] = "Country"
+	chartConfig["yAxisName"] = "Reserves (MMbbl)"
+	chartConfig["numberSuffix"] = " Birr"
+	chartConfig["theme"] = "fusion"
+	chartConfig["numVisiblePlot"] = "8",
+	chartConfig["flatScrollBars"] = "1",
+	chartConfig["scrollheight"] = "1",
+	chartConfig["type"] = "pie2d",
+
+	dataSource["chart"] = chartConfig
+	dataSource["data"] = []
+
+	used_service_chart["chart"] = chartConfig
+	used_service_chart["chart"] = {
+		"caption":'Total Used Resource By Patient',
+		"subCaption":'In Unit',
+		"numberSuffix":'Units',
+		'theme':'fusion',
+		'yAxisName':'Number Of Patients',
+	}
+	used_service_chart["data"] = []
+
+	dispensary_supply_chart["chart"] = {
+		"caption":'Total Drugs Supplied',
+		"subCaption":'In Unit',
+		"numberSuffix":'Units',
+		'theme':'fusion',
+	}
+
+	dispensary_supply_chart["data"] = []
+
+	payment_status_chart["chart"] = {
+		"caption":'Admission By Payment status',
+		"subCaption":'In Unit',
+		"numberSuffix":'Patients',
+		'theme':'fusion',
+		'yAxisName':'Number Of Patients',
+	}
+	payment_status_chart["data"] = []
+
+	discharge_chart["chart"] = chartConfig
+	discharge_chart["chart"] = {
+		"caption":'Patients By Discharge Condition',
+		"subCaption":' In Unit',
+		"numberSuffix":' Patients',
+		'theme':'fusion',
+		'yAxisName':'Patients',
+	}
+	discharge_chart["data"] = []
+
+	occupancy_chart["chart"] = chartConfig
+	occupancy_chart["chart"] = {
+		"caption":'Room Occupancy',
+		"subCaption":' In Unit',
+		"numberSuffix":' Rooms',
+		'theme':'fusion',
+		'yAxisName':' Rooms',
+	}
+	occupancy_chart["data"] = []
+
+	building_revenue_chart["chart"] = chartConfig
+	building_revenue_chart["chart"] = {
+		"caption":'Revenue By Building Unit',
+		"subCaption":' In Birr',
+		"numberSuffix":' Birr',
+		'theme':'fusion',
+		'yAxisName':' Buildings',
+	}
+	building_revenue_chart["data"] = []
+
+	start_date = datetime.strptime(request.GET.get('start_date') or '1970-01-01', '%Y-%m-%d')
+	end_date = datetime.strptime(request.GET.get('end_date') or str(datetime.now().date()),  '%Y-%m-%d')
+	today =  str(datetime.now().date()),  '%Y-%m-%d'
+
+#	lab_section = int(self.request.GET.get('lab_section', '0'))
+	filtered_room_id = int(request.GET.get('room','0')) or 'None'
+	filtered_sex = int(request.GET.get('sex','0')) or 'None'
+
+	print('here is: ',filtered_room_id)
+
+	visit = PatientVisit.objects.filter(patient__isnull=False,registered_on__range=[start_date,end_date])
+
+	medication = OutpatientMedication.objects.filter(visit__isnull=False, registered_on__range=[start_date,end_date]).values('visit__id').distinct()
+	lab_test = OutpatientLabResult.objects.filter(visit__isnull=False, registered_on__range=[start_date,end_date]).values('visit__id').distinct()
+	rad_test = OutpatientRadiologyResult.objects.filter(visit__isnull=False, registered_on__range=[start_date,end_date]).values('visit__id').distinct()
+
+	if filtered_room_id == 'None' or filtered_room_id == '0':
+		print('do nothing')
+	else:
+		medication = medication.filter( visit__service_room=ServiceRoom.objects.get(id=filtered_room_id))
+		lab_test = lab_test.filter(visit__service_room=ServiceRoom.objects.get(id=filtered_room_id))
+		rad_test = rad_test.filter(visit__service_room=ServiceRoom.objects.get(id=filtered_room_id))
+
+	if filtered_sex == 'MALE' or filtered_sex =='FEMALE':
+		if filtered_sex == 'MALE':
+			medication = medication.filter(patient__sex='MALE',visit__isnull=False, visit__service_room=ServiceRoom.objects.get(id=filtered_room_id)).values('visit__id').distinct()
+			lab_test = lab_test.filter(patient__sex='MALE',visit__isnull=False, registered_on__range=[start_date,end_date]).values('visit__id').distinct()
+			rad_test = rad_test.filter(patient__sex='MALE',visit__isnull=False, registered_on__range=[start_date,end_date]).values('visit__id').distinct()
+
+		if filtered_sex == 'FEMALE':
+			medication = medication.filter(patient__sex='FEMALE',visit__isnull=False, visit__service_room=ServiceRoom.objects.get(id=filtered_room_id)).values('visit__id').distinct()
+			lab_test = lab_test.filter(patient__sex='FEMALE',visit__isnull=False, registered_on__range=[start_date,end_date]).values('visit__id').distinct()
+			rad_test = rad_test.filter(patient__sex='FEMALE',visit__isnull=False, registered_on__range=[start_date,end_date]).values('visit__id').distinct()
+
+	used_service_chart["data"].append({"label": "Taken Medication", "value": medication.count()})
+	used_service_chart["data"].append({"label": "Taken Lab Test", "value": lab_test.count()})
+	used_service_chart["data"].append({"label": "Taken Rad Test", "value": rad_test.count()})
+	used_service_chart["data"].append({"label": "Admitted To Ward", "value": 7})
+
+
+
+	room = ServiceRoom.objects.all()
+	sex = ['MALE','FEMALE']
+	payment_status = ['Insurance','Free','Credit','Default']
+
+	ps = PatientPaymentStatus.objects.first()
+
+	payment_status_chart["data"].append({"label": 'Insurance', "value": ps.insurancePatientAmount})
+	payment_status_chart["data"].append({"label": 'Free', "value": ps.freePatientAmount})
+	payment_status_chart["data"].append({"label": 'Discount', "value": ps.discountPatientAmount})
+	payment_status_chart["data"].append({"label": 'Default', "value": ps.defaultPatientAmount})
+
+	#assign_to_ward
+	#
+	#print('firssss:',count,'\n','seccc',medication.count())
+
+	#Average Usage
+	#visit = PatientVisit.objects.filter(patient__isnull=False).distinct('patient__id')
+	#visit = OutpatientMedication.objects.filter(patient__isnull=False).values('visit').distinct()
+	#medication = OutpatientMedication.objects.filter(visit__isnull=False).values('visit__id').distinct()
+	#for m in visit:
+	#	print(m,'\n')	
+	if visit.count()==0:	
+		average_medication = 0
+		average_lab_test = 0	
+		average_xray_test = 0
+	else:
+		average_medication = medication.count()/visit.count()
+		average_lab_test = lab_test.count() / visit.count()	
+		average_xray_test = rad_test.count()/visit.count()
+
+	total_discharge = OutpatientDischargeSummary.objects.filter(patient__isnull=False).count() 
+	follow_up_discharge = FollowUp.objects.all().count()
+	completed_discharge = total_discharge - follow_up_discharge
+	incomplete_discharge = 5
+	discharge_chart["data"].append({"label": "Completed Treatment", "value": completed_discharge})
+	discharge_chart["data"].append({"label": "Discharge With Follow up", "value": follow_up_discharge})
+
+	allocated_rooms = PatientVisit.objects.filter(visit_status='Active').count()
+	total_rooms = ServiceRoom.objects.all().count()
+	free_rooms = total_rooms - allocated_rooms
+	occupancy_chart["data"].append({"label": "Free Rooms", "value": free_rooms})
+	occupancy_chart["data"].append({"label": "Allocated Rooms", "value": allocated_rooms})
+
+	drug_name = []
+	drug_usage= []
+	for drug in Dosage.objects.all():		
+		all_medication = OutpatientMedication.objects.filter(drug_prescription__drug=drug).count()
+		drug_name.append(str(drug))
+		if all_medication:
+			drug_usage.append(all_medication)
+		else:
+			drug_usage.append(0)
+	drug_zip =zip(drug_name,drug_usage)
+
+	test_name = []
+	test_usage = []
+	for section in LaboratorySection.objects.all():
+		all_test = OutpatientLabResult.objects.filter(lab_result__result_type__test_type__section=section).count()
+		test_name.append(section)
+		if all_test:
+			test_usage.append(all_test)
+		else:
+			test_usage.append(0)
+	xray_tests = OutpatientRadiologyResult.objects.all().count()
+	test_name.append('Xray Test')
+	test_name.append(xray_tests)
+	lab_zip = zip(test_name,test_usage)
+	#for m in all_medication:
+
+	waiting_time_label = ['Until Room Assignment', 'Until Doctor Visit']
+	waiting_time = [1.37,2.3]
+
+	payment_status_label = ['Insurance','Free','Credit','Default']
+	payment_status = ['Insurance','Free','Credit','Default']
+	print(visit.count())
+
+	#address_region = ['Insurance','Free','Credit','Default']
+	age = []
+	for i in range(1,120):
+		age.append(i)
+	#for age in age:
+	#	print(age,'\n')
+
+	age_array = age
+
+	total_service_bill = ServiceBillDetail.objects.filter(service_price__isnull=False,registered_on__range=[start_date,end_date])
+	service_list = []
+	service_revenue = []
+	for s in Service.objects.all():
+		services = total_service_bill.filter(service=s, service_price__isnull=False)
+		service_sum = 0
+		if services:
+			for d in services:
+				service_sum = service_sum + d.service_price
+		service_list.append(s)
+		service_revenue.append(service_sum)
+	service_revenue_zip = zip(service_list,service_revenue)
+
+
+	drug_list3 = []
+	drug_revenue = []
+	total_drug_bill = BillDetail.objects.filter(selling_price__isnull=False,registered_on__range=[start_date,end_date])
+	drug_sum = 0
+	for drug in Dosage.objects.all():
+		drug_bills = total_drug_bill.filter(drug=drug)
+		if drug_bills:
+			for bill in drug_bills:
+				if bill.discount ==True:
+					drug_sum = drug_sum + (bill.quantity * bill.selling_price.discounted_price)
+				else:
+					drug_sum = drug_sum + (bill.quantity * bill.selling_price.selling_price)
+
+		drug_list3.append(drug)
+		drug_revenue.append(drug_sum)
+	drug_revenue_zip = zip(drug_list3,drug_revenue)
+
+	test_list = []
+	test_revenue = []
+	total_lab_bill = LabBillDetail.objects.filter(registered_on__range=[start_date,end_date])
+	lab_sum = 0
+	for section in LaboratorySection.objects.all():
+		lab_bills = total_lab_bill.filter(test__section=section)
+		if lab_bills:
+			for bill in lab_bills:
+				if bill.discount ==True:
+					lab_sum = lab_sum + bill.test_price.discounted_price
+				else:
+					lab_sum = lab_sum + bill.test_price.price
+
+		test_list.append(section)
+		test_revenue.append(lab_sum)
+	test_revenue_zip = zip(test_list,test_revenue)
+
+	total_revenue = lab_sum + drug_sum + service_sum
+	"""
+	test_sum = 0
+	building_tests = OutpatientLabResult.objects.filter(visit__service_room__building=b)
+	if building_tests:
+		for d in building_tests:
+			price = LaboratoryTestPrice.objects.get(test_type=d.lab_result.result_type.test_type,active=True)
+			test_sum = test_sum + price.price
+
+		building_list.append(b)
+		building_revenue.append(test_sum + drug_sum)
+		building_revenue_chart["data"].append({"label": str(b), "value": test_sum + drug_sum})
+
+	building_revenue_zip = zip(building_list,building_revenue)
+
+
+	drug_list3 = []
+	drug_revenue = []
+	for d in Dosage.objects.all():
+		sold_drugs = OutpatientMedication.objects.filter(drug_prescription__drug=d)
+		drug_sum = 0
+		if sold_drugs:
+			for sd in sold_drugs:
+				price = DrugPrice.objects.get(drug=sd.drug_prescription.drug,active='active')
+				drug_sum = drug_sum + price.selling_price
+		drug_list3.append(d)
+		drug_revenue.append(drug_sum)
+	drug_revenue_zip = zip(drug_list3,drug_revenue)
+
+	test_list = []
+	test_revenue = []
+	for t in LaboratoryTestType.objects.all():
+		performed_tests = OutpatientLabResult.objects.filter(lab_result__result_type__test_type=t)
+		test_sum = 0
+		if performed_tests:
+			for d in performed_tests:
+				price = LaboratoryTestPrice.objects.get(test_type=d.lab_result.result_type.test_type,active=True)
+				test_sum = test_sum + price.price
+		test_list.append(t)
+		test_revenue.append(test_sum)
+	test_revenue_zip = zip(test_list,test_revenue)
+
+	service_list = []
+	service_revenue = []
+	for s in Service.objects.all():
+		services = ServiceBillDetail.objects.filter(service=s, service_price__isnull=False)
+		service_sum = 0
+		if services:
+			for d in services:
+				service_sum = service_sum + d.service_price
+	service_list.append(s)
+	service_revenue.append(service_sum)
+	service_revenue_zip = zip(service_list,service_revenue)
+	"""
+	used_service_chart = FusionCharts("column2d", "used_service_chart", "500", "300", "used_service_bar_chart_container", "json", used_service_chart)
+	payment_status_chart_doughnut = FusionCharts("column2d", "payment_status_chart_doughnut", "500", "300", "payment_status_doughnut_container", "json", payment_status_chart)
+	payment_status_chart_pie = FusionCharts("pie2d", "payment_status_chart_pie", "500", "300", "payment_status_pie_container", "json", payment_status_chart)
+	discharge_chart = FusionCharts("doughnut2d", "discharge_chart", "500", "300", "discharge_doughnut_container", "json", discharge_chart)
+	occupancy_chart = FusionCharts("pie2d", "occupancy_chart", "400", "300", "occupancy_pie_container", "json", occupancy_chart)
+	building_revenue_chart = FusionCharts("column2d", "building_revenue_chart", "500", "300", "building_bar_container", "json", building_revenue_chart)
+
+	context = {'total_visit':visit.count(),
+				'medicated':medication.count(),
+				'lab_tested':lab_test.count(),
+				'rad_tested':rad_test.count(),
+				'used_service_chart':used_service_chart.render(),
+
+				'room':room,
+				'sex':sex,
+				'payment_status':payment_status,
+				'average_medication':average_medication,
+				'average_xray_test':average_xray_test,
+				'average_lab_test':average_lab_test,
+
+				'total_discharge':total_discharge,
+				'completed_discharge':completed_discharge,
+				'incomplete_discharge':incomplete_discharge,
+				'follow_up_discharge':follow_up_discharge,
+				'discharge_chart':discharge_chart.render(),
+
+				'ipa':ps.insurancePatientAmount,
+				'dpa':ps.discountPatientAmount,
+				'fpa':ps.freePatientAmount,
+				'dfpa':ps.defaultPatientAmount,
+				'payment_status_chart_pie':payment_status_chart_pie.render(),
+				'payment_status_chart_doughnut':payment_status_chart_doughnut.render(),
+
+				'allocated_rooms':allocated_rooms,
+				'total_rooms':total_rooms,
+				'free_rooms':free_rooms,
+				'occupancy_chart':occupancy_chart.render(),
+
+				'drug_zip':drug_zip,
+				'lab_zip':lab_zip,
+
+				'age_array':age_array,
+
+				#'building_revenue_zip':building_revenue_zip,
+				#'building_revenue_chart':building_revenue_chart.render(),
+
+				'total_revenue':total_revenue,
+				'drug_revenue_zip':drug_revenue_zip,
+				'test_revenue_zip':test_revenue_zip,
+				'service_revenue_zip':service_revenue_zip,
+
+	}
+	return render(request, 'outpatient_app/opd_report.html', context)
+
+
+def LabBillReport(request):
+	filtered_drug = request.GET.get('drug') or 'None2'
+	filtered_dispensary = request.GET.get('dispensary') or 'None2'
+
+	bill_list = LabBillDetail.objects.all()
+	"""
+	if filtered_drug == 'None2' or filtered_drug == 0:
+		supplied_list = DrugSupplyToDispensary.objects.all()
+	else:
+		drug = Dosage.objects.get(id=filtered_drug)
+		supplied_list = supplied_list.filter(drug=drug)
+	if filtered_dispensary == 'None2' or filtered_dispensary == 0:
+		print('Do Nothing')
+	else:
+		dispensary = Dispensary.objects.get(id=filtered_dispensary)
+		supplied_list = supplied_list.filter(dispensary=dispensary)	
+	"""
+	drugs = Dosage.objects.all()
+	dispensary_list = Dispensary.objects.all()
+	age = []
+	for i in range(1,120):
+		age.append(i)
+	sex = ['MALE','FEMALE']
+	department = ['Inpatient','Outpatient']
+
+	payment_statuses = ['Insurance','Free','Credit','Default']
+	dosage_forms = ['Tablet','Capsule','Oral_solution','Injection','Injection with Dilutent']
+
+	context = {'bill_list':bill_list,
+				'drugs':drugs,
+				'dispensary_list':dispensary_list,
+				'age_array':age,
+				'payment_statuses':payment_statuses,
+				'department':department
+	}
+
+	return render(request, 'outpatient_app/lab_bill_report.html',context)
+
+def VisitingCardBillReport(request):
+	start_date = datetime.strptime(request.GET.get('start_date') or '1970-01-01', '%Y-%m-%d')
+	end_date = datetime.strptime(request.GET.get('end_date') or str(datetime.now().date()),  '%Y-%m-%d')
+
+	filtered_drug = request.GET.get('drug') or 'None2'
+	filtered_dispensary = request.GET.get('dispensary') or 'None2'
+
+	bill_list = VisitBillDetail.objects.filter(registered_on__range=[start_date,end_date])
+	"""
+	if filtered_drug == 'None2' or filtered_drug == 0:
+		supplied_list = DrugSupplyToDispensary.objects.all()
+	else:
+		drug = Dosage.objects.get(id=filtered_drug)
+		supplied_list = supplied_list.filter(drug=drug)
+	if filtered_dispensary == 'None2' or filtered_dispensary == 0:
+		print('Do Nothing')
+	else:
+		dispensary = Dispensary.objects.get(id=filtered_dispensary)
+		supplied_list = supplied_list.filter(dispensary=dispensary)	
+	"""
+	service_list = Service.objects.all()
+	dispensary_list = Dispensary.objects.all()
+	age = []
+	for i in range(1,120):
+		age.append(i)
+	sex = ['MALE','FEMALE']
+	department = ['Inpatient','Outpatient']
+
+	payment_statuses = ['Insurance','Free','Credit','Default']
+	dosage_forms = ['Tablet','Capsule','Oral_solution','Injection','Injection with Dilutent']
+
+	context = {'bill_list':bill_list,
+				'dispensary_list':dispensary_list,
+				'age_array':age,
+				'payment_statuses':payment_statuses,
+				'department':department,
+				'service_list':service_list,
+	}
+
+	return render(request, 'outpatient_app/visiting_card_bill_report.html',context)
+
+def ServiceBillReport(request):
+	start_date = datetime.strptime(request.GET.get('start_date') or '1970-01-01', '%Y-%m-%d')
+	end_date = datetime.strptime(request.GET.get('end_date') or str(datetime.now().date()),  '%Y-%m-%d')
+
+
+	
+	filtered_service = request.GET.get('service') or 'None2'
+	filtered_dispensary = request.GET.get('dispensary') or 'None2'
+
+	bill_list = ServiceBillDetail.objects.filter(registered_on__range=[start_date,end_date])
+	
+	if filtered_service == 'None2' or filtered_service == '0':
+		print('Do Nothing')
+	else:
+		service = Service.objects.get(id=filtered_service)
+		bill_list = bill_list.filter(service=service)
+	"""
+	if filtered_dispensary == 'None2' or filtered_dispensary == 0:
+		print('Do Nothing')
+	else:
+		dispensary = Dispensary.objects.get(id=filtered_dispensary)
+		supplied_list = supplied_list.filter(dispensary=dispensary)	
+	"""
+	service_list = Service.objects.all()
+	dispensary_list = Dispensary.objects.all()
+	age = []
+	for i in range(1,120):
+		age.append(i)
+	sex = ['MALE','FEMALE']
+	department = ['Inpatient','Outpatient']
+
+	payment_statuses = ['Insurance','Free','Credit','Default']
+	dosage_forms = ['Tablet','Capsule','Oral_solution','Injection','Injection with Dilutent']
+
+	context = {'bill_list':bill_list,
+				'dispensary_list':dispensary_list,
+				'age_array':age,
+				'payment_statuses':payment_statuses,
+				'department':department,
+				'service_list':service_list,
+	}
+
+	return render(request, 'outpatient_app/service_bill_report.html',context)
+
+def RadiologyBillReport(request):
+	filtered_drug = request.GET.get('drug') or 'None2'
+	filtered_dispensary = request.GET.get('dispensary') or 'None2'
+
+	bill_list = SerivceBillDetail.objects.all()
+	"""
+	if filtered_drug == 'None2' or filtered_drug == 0:
+		supplied_list = DrugSupplyToDispensary.objects.all()
+	else:
+		drug = Dosage.objects.get(id=filtered_drug)
+		supplied_list = supplied_list.filter(drug=drug)
+	if filtered_dispensary == 'None2' or filtered_dispensary == 0:
+		print('Do Nothing')
+	else:
+		dispensary = Dispensary.objects.get(id=filtered_dispensary)
+		supplied_list = supplied_list.filter(dispensary=dispensary)	
+	"""
+	service_list = Service.objects.all()
+	dispensary_list = Dispensary.objects.all()
+	age = []
+	for i in range(1,120):
+		age.append(i)
+	sex = ['MALE','FEMALE']
+	department = ['Inpatient','Outpatient']
+
+	payment_statuses = ['Insurance','Free','Credit','Default']
+	dosage_forms = ['Tablet','Capsule','Oral_solution','Injection','Injection with Dilutent']
+
+	context = {'bill_list':bill_list,
+				'dispensary_list':dispensary_list,
+				'age_array':age,
+				'payment_statuses':payment_statuses,
+				'department':department,
+				'service_list':service_list,
+	}
+
+	return render(request, 'outpatient_app/service_bill_report.html',context)
+
+def VisitReportChart(request):
+	return render(request, 'pharmacy_app/visit_report_chart.html')
+
+
+class VisitReportChartData(APIView):
+	authentication_classes = []
+	permission_classes = []
+
+	def get(self, request, format=None, *args, **kwargs):
+
+		drug_use_labels = ['Took Drug','Took No Drug']
+		drug_use_array = []
+		lab_use_array = []
+		rad_use_array = []
+		visit = PatientVisit.objects.filter(patient__isnull=False)
+		medication = OutpatientMedication.objects.filter(visit__isnull=False).values('visit__id').distinct().count()
+		lab_test = OutpatientLabResult.objects.filter(visit__isnull=False).values('visit__id').distinct().count()
+		rad_test = OutpatientRadiologyResult.objects.filter(visit__isnull=False).values('visit__id').distinct().count()
+		
+		#medicated = visit.count() - medication
+		drug_use_array.append(visit.count() - medication)
+		drug_use_array.append(medication)
+
+		lab_use_array.append(visit.count() - lab_test)
+		lab_use_array.append(lab_test)
+		
+		rad_use_array.append(visit.count() - rad_test)		
+		rad_use_array.append(rad_test)		
+
+
+		waiting_time_label = ['Until Room Assignment', 'Until Doctor Visit','Average Hospital Stay']
+		waiting_time = [1.37,4.4,25.5]
+
+		payment_status_label = ['Insurance','Free','Credit','Default']
+		payment_status = [3,2,4,8]
+
+
+		unadmitted = visit.count()-7
+		admission_label = ['Admitted To Ward', 'Discharged']
+		admission = [7,unadmitted]
+		labels = ['one','two','three']
+		number = [10]
+		
+		age = []
+
+		data = {'labels':drug_use_labels,
+				'numbers':drug_use_array,
+				'lab_numbers':lab_use_array,
+				'rad_numbers':rad_use_array,
+				'wait_labels':waiting_time_label,
+				'wait_numbers':waiting_time,
+				'payment_labels':payment_status_label,
+				'payment_numbers':payment_status,
+				'admission_label':admission_label,
+				'admission':admission,
+				'age':age,
+				}
+		return Response(data)
+
+def chart(request):
+	return render(request, 'pharmacy_app/chart.html')
+
+class ChartData(APIView):
+	authentication_classes = []
+	permission_classes = []
+
+	def get(self, request, format=None, *args, **kwargs):
+		
+		drugs = Dosage.objects.all()
+		"""
+		for drug in drugs:
+			drug_name = drugs.drug.drug.commercial_name
+		"""
+		stock_quantity_array =[]
+		shelf_quantity_array = []
+		total_quantity_array = []
+		drug_names = []
+		drug_names_array = []
+		for drug in drugs:
+			drug_names.append(drug.drug.drug.commercial_name)
+			drug_in_stock = InStockSlotDrug.objects.filter(drug=drug)
+			for drugl in drug_in_stock:
+				drug_names_array.append(str(drugl.drug))
+			try:
+				stock_quantity_dict = drug_in_stock.aggregate(Sum('quantity'))
+				stock_quantity = stock_quantity_dict['quantity__sum']
+				stock_quantity_array.append(stock_quantity)
+
+				drug_on_slot = DispensaryDrug.objects.filter(drug=drug)
+				shelf_quantity_dict = drug_on_slot.aggregate(Sum('quantity'))
+				shelf_quantity = shelf_quantity_dict['quantity__sum']
+				shelf_quantity_array.append(shelf_quantity)
+
+				total_quantity = shelf_quantity + stock_quantity
+				print(total_quantity)
+				total_quantity_array.append(total_quantity)
+			except:
+				total_quantity_array.append(0)
+				
+
+		labels = ['one','two','three']
+		number = [10]
+		data = {'labels':drug_names_array,
+				'numbers':total_quantity_array }
+		return Response(data)

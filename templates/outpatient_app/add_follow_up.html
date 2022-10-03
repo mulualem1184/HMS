@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} {% endblock %}
+{% load crispy_forms_tags %}
+{% block style %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <link href="{% static 'css/pages/formlayout.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css' %}" rel="stylesheet" type="text/css" />
+	<link href="{% static 'css/pages/formlayout.css' %}" rel="stylesheet" type="text/css" />
+
+{% endblock%}
+{% block page_content %}
+       
+        <div class="col-md-12 col-sm-12">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header> Add Follow Up </header>
+                </div>
+                <div class="card-body" id="bar-parent">
+        
+			    <form class="form-horizontal" style="padding-left: 200px;" id="form_sample_1" action="" method="POST">
+			        		{% csrf_token %}
+			                <h3> </h3>
+
+			                <div class="input-group date form_date " data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+			                    {{follow_up_form.appointment_time}}
+			                    <span class="input-group-addon"><span class="fa fa-calendar"></span></span>
+			                </div>
+			                 
+			            	<div class="form-group" style="padding-top: 15px;">
+			                <button class="form-group btn btn-primary"  type="submit" > Submit</button>
+			                <a class="form-group btn btn-warning" style="padding-left: 10px;" href="{% url 'doctor_queue' %}">Skip</a>
+			            	</div>
+			            
+			    </form>
+		      </div>
+    </div>
+  </div>
+
+    {% block scripts %}
+ <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>        
+<script >
+  $(document).ready(function() {
+    $('#service-provider-id').select2();
+    $('#room-id').select2();
+});
+  </script>
+
+    <script src="{% static 'plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js' %}"></script>
+    <script src="{% static 'plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker-init.js' %}"></script>
+
+      
+    {% endblock %}
+
+{% endblock %}
+
+ 

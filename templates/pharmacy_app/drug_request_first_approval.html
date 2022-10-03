@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+{% block style %}
+    <!-- data tables -->
+    <link href="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"/>
+
+    <link href="{% static '/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css' %}" rel="stylesheet" media="screen">
+
+{% endblock %}
+{% block title %} Prescriptions {% endblock %}
+
+{% block page_content %}
+
+                                <ul class="nav nav-tabs">
+                                    <li class="nav-item"><a class="nav-link active show"
+                                        href="#tab1" data-toggle="tab">Unapproved</a></li>
+                                    <li class="nav-item"><a class="nav-link" href="#tab2a"
+                                        data-toggle="tab">Approved</a></li>
+                                </ul>
+
+							
+    <div class="tab-content">
+        <div class="tab-pane active " id="tab1">
+            <div class="card">
+            <div class="card-head">
+                <header>Request List</header>
+            </div>
+
+                <div class="card-body">
+    
+                 <table class="mdl-data-table ml-table-bordered  " id="example4">
+                    <thead>
+                        <tr>                        	
+                            <th class="mdl-data-table__cell--non-numeric"> Dispensary </th>
+                            <th class="mdl-data-table__cell--non-numeric"> View Request </th>
+                            <th class="mdl-data-table__cell--non-numeric"> Approve </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    	{% for request in request_list %}
+						<tr >
+
+            {% include "pharmacy_app/partials/confirm_approval_modal.html" %}
+							
+							<td class="mdl-data-table__cell--non-numeric">{{request.dispensary.dispensary}}</td>
+							<td class="mdl-data-table__cell--non-numeric"><a href="{% url 'view_drug_request' request.dispensary.dispensary.id %}"> View Request </a></td>
+							
+							<td class="mdl-data-table__cell--non-numeric"><a href="" data-toggle='modal' data-target="#confirm-approval-modal{{request.id}}">Approve </a>
+                            </td>
+						</tr>
+						{% endfor %}
+
+					</tbody>
+                </table>
+             </div>
+         </div>
+     </div>
+
+
+                                    <div class="tab-pane" id="tab2a">
+                                    	            <div class="card">
+            <div class="card-head">
+                <header>Approved Request List</header>
+            </div>
+
+                <div class="card-body">
+    
+                 <table class="mdl-data-table ml-table-bordered  " id="example4">
+                    <thead>
+                        <tr>                        	
+                            <th class="mdl-data-table__cell--non-numeric"> Dispensary </th>
+                            <th class="mdl-data-table__cell--non-numeric"> View Request </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    	{% for request in request_list2 %}
+						<tr >
+							
+							<td class="mdl-data-table__cell--non-numeric">{{request.dispensary.dispensary}}</td>
+							<td class="mdl-data-table__cell--non-numeric"><a href="{% url 'view_approved_request' request.dispensary.dispensary.id 1 %}"> View Request </a></td>
+							
+						</tr>
+						{% endfor %}
+
+					</tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock %}
+
+{% block scripts %}
+    <!-- data tables -->
+
+{% endblock %}
+
+	

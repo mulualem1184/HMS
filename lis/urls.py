@@ -1,8 +1,15 @@
 from django.urls.conf import path
 
-from .views import (AddSpecimen, CancelOrder, CreateOrder, EditTestResult, EnterTestResult, MarkMultipleOrdersAsPaid, MarkOrderAsPaid, MyOrders,
-                    OrderForPatient, SetSpecimenForTest, ToggleTestPaidStatus, UpdateTestStatus, ViewOrder,
-                    ViewOrderList, ViewSpecimenImage, ViewTest, ViewTestList, ViewTestResult)
+from .views import (AddNormalRange, AddSampleType, AddSpecimen, CancelOrder,
+                    CreateLabTestType, CreateOrder, EditLabTestResultType,
+                    EditLabTestType, EditTestResult, EnterTestResult,
+                    MarkMultipleOrdersAsPaid, MarkOrderAsPaid, MyOrders,
+                    OrderForPatient, RemoveLabTestType, RemoveResultType,
+                    ReportPage, SetSpecimenForTest, ToggleTestPaidStatus,
+                    UpdateTestStatus, ViewOrder, ViewOrderList,
+                    ViewSpecimenImage, ViewTest, ViewTestList, ViewTestResult, LaboratoryList,
+                    AssignLabEmployee
+                    )
 
 urlpatterns = [
     path('order', CreateOrder.as_view(), name='create-order'),
@@ -23,4 +30,16 @@ urlpatterns = [
     path('update-test-status/<int:test_id>', UpdateTestStatus.as_view(), name='update-test-status'),
     path('tests', ViewTestList.as_view(), name='view-tests'),
     path('specimen-image/<int:specimen_id>', ViewSpecimenImage.as_view(), name='view-specimen-image'),
+    path('create-test-type', CreateLabTestType.as_view(), name='create_lab_test_type'),
+    path('edit-test-type/<int:id>', EditLabTestType.as_view(), name='edit_lab_test_type'),
+    path('remove-test-type/<int:id>', RemoveLabTestType.as_view(), name='remove_lab_test_type'),
+    path('edit-result-type/<int:id>', EditLabTestResultType.as_view(), name='edit_lab_test_result_type'),
+    path('remove-result-type/<int:id>', RemoveResultType.as_view(), name='remove_lab_test_result_type'),
+    path('add-sample-type', AddSampleType.as_view(), name='add_sample_type'),
+    path('add-normal-range/<int:id>', AddNormalRange.as_view(), name='add_normal_range'),
+    path('report', ReportPage.as_view(), name='lis_report'),
+
+    path('laboratory_list', LaboratoryList, name='laboratory_list'),
+    path('assign_lab_employee', AssignLabEmployee, name='assign_lab_employee'),
+
 ]

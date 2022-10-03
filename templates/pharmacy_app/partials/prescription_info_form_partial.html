@@ -1,0 +1,49 @@
+        
+        <form action="" id='form-id-id' method="POST" hx-post="{% url 'prescription_info_form' drug.id row|add:1 %}" hx-swap='outerHTML'>
+        
+        {% csrf_token %}
+
+        <div class="col-md-11 form-row">
+                    <div class="form-group col-md-1">
+                        {{row}}
+        </div>
+
+          <div class="form-group col-md-2">
+        {{info_form.frequency}}
+        </div>
+
+          <div class="form-group col-md-2">
+        {{info_form.frequency_unit}}
+        </div>
+
+          <div class="form-group col-md-2">
+        {{info_form.duration}}
+        </div>
+          <div class="form-group col-md-2">
+        {{info_form.duration_unit}}
+        </div>
+          <div class="form-group col-md-2">
+        {{info_form.units_per_take}}
+        </div>
+
+        <div class="form-group col-md-1">
+                <a onclick="toggleServiceForm()" id='button-{{row}}' class="btn btn-primary btn-circle pull-right" hx-post="{% url 'prescription_info_form' drug.id row|add:1 %}" hx-trigger='click' hx-target='#drug-request-create' hx-include="#form-id-id" hx-swap='beforeend'><i class="fa fa-plus"></i></a>
+
+        </div>
+        </div>
+      
+            </form>
+<script type="text/javascript">
+        function toggleServiceForm (){
+          document.getElementById('button-{{row}}').style.display = 'none';          
+        }
+</script>
+
+<!--
+<form action='.' method="POST" hx-post='{% if url %}{{ url }}{% else %}.{% endif%}' hx-swap='outerHTML'>
+    {% csrf_token %}
+   {{ form.as_p }}
+    <div class='htmx-indicator'>Loading...</div>
+    <button class='htmx-inverted-indicator' style='margin-top:10px;' type='submit' >Save</button>
+</form>
+-->

@@ -16,7 +16,7 @@
 {% csrf_token %}
   
     <div class="row">
-      <div class="col-md-6">
+      <div class="col-md-7">
         <div class="card card-box">
             <div class="card-head">
                 <header>Stock Supply Form</header>
@@ -24,48 +24,76 @@
             </div>
             <div class="card-body " id="bar-parent1">
               
-        
-    <form action="" method="POST">
+            <form action="" method="POST">
       
             {% csrf_token %}
 
             <div class="form-row">
-                <div class=" form-group col-md-6">
-                    {{batch_form.batch_no|as_crispy_field}}
+                 <div class="form-group col-md-2" style="padding-top: 35px;">
+                    <p>Batch No:</p>
+                  </div>
 
+                <div class=" form-group col-md-8">
+                    {{batch_form.batch_no|as_crispy_field}}
                 </div>
-                <div class=" form-group col-md-6">
-                    {{batch_form.drug|as_crispy_field}}
-                </div>
+
 
             </div>
-            <div class="form-row">
 
-                
-                <div class=" form-group col-md-6">
-                    {{stock_supply_form.stock_slot_no|as_crispy_field}}
+            <div class="form-row">
+                 <div class="form-group col-md-2" style="padding-top: 35px;">
+                    <p>Drug Info:</p>
+                  </div>
+
+                <div class=" form-group col-md-4">
+                    {{batch_form.drug|as_crispy_field}}
                 </div>
-                <div class=" form-group col-md-6">
+                <div class=" form-group col-md-4">
                     {{batch_form.quantity|as_crispy_field}}
                 </div>
 
-            </div> 
+
+            </div>
 
             <div class="form-row">
-                <div class=" form-group col-md-6">
+                 <div class="form-group col-md-2" style="padding-top: 35px;">
+                    <p>From - To</p>
+                  </div>
+
+             <div class=" form-group col-md-4">
+                    {{stock_supply_form.stock_slot_no|as_crispy_field}}
+                </div>
+             <div class=" form-group col-md-4">
+                    {{slot_form.stock_slot_no|as_crispy_field}}
+                </div>
+
+            </div>
+
+
+
+            <div class="form-row">
+                 <div class="form-group col-md-2" style="padding-top: 35px;">
+                    <p>Supply Info:</p>
+                  </div>
+
+                <div class=" form-group col-md-4">
                     {{stock_supply_form.purchasing_cost|as_crispy_field}}
                 </div>
-                <div class=" form-group col-md-6">
+                <div class=" form-group col-md-4">
                     {{stock_supply_form.supplier|as_crispy_field}}
                 </div>
                 
                 
             </div> 
                 <div class="form-row">
-                    <div class="form-group col-md-6">                            
+                 <div class="form-group col-md-2" style="padding-top: 35px;">
+                    <p>Expiration Info:</p>
+                  </div>
+
+                    <div class="form-group col-md-4">                            
                         {{drug_expiration_form.manufacturing_date|as_crispy_field}}                        
                     </div>
-                    <div class="form-group col-md-6">                            
+                    <div class="form-group col-md-4">                            
                         {{drug_expiration_form.expiration_date|as_crispy_field}}                        
                     </div>
                 </div>       
@@ -75,15 +103,13 @@
                 <input  type="submit" class="btn btn-info" name="Submit">
             </div>
         </div>
-                 
 
-            
-             
         </form>
+
     </div>
   </div>
   </div>
-              <div class="col-md-4">
+              <div class="" style="overflow-y:scroll;overflow-x:scroll; height: 600px;width: 515px;">
                     <table class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded" id="example4">
                         <thead>
                             <tr class="gradeX odd">
@@ -125,6 +151,10 @@ $(document).ready(function() {
 });
 </script>
 
+    <script src="../assets/plugins/material/material.min.js"></script>
+    <script src="../assets/plugins/material-datetimepicker/moment-with-locales.min.js"></script>
+    <script src="../assets/plugins/material-datetimepicker/bootstrap-material-datetimepicker.js"></script>
+    <script src="../assets/plugins/material-datetimepicker/datetimepicker.js"></script>
 
       
     {% endblock %}

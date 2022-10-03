@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+    <link href="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"/>
+{% endblock %}
+{% block title %} Prescriptions {% endblock %}
+
+{% block page_content %}
+{% include "pharmacy_app/partials/filter_daily_prescription.html" %}
+{% include "pharmacy_app/partials/filter_prescription.html" %}
+
+    <div class="row">
+        <div class="col-md-12">
+        <div class="card" style="overflow-y:scroll;overflow-x:scroll; height: 650px;width: 1150px;">
+                <div class="card-head">
+                    <header>Prescriptions</header>
+                <button class="btn btn-primary" data-toggle="modal" data-target="#filterPrescriptionModal">
+                    <i class="fa fa-filter"></i> 
+                </button>
+
+                </div>
+                
+                    <table id="example1" class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded">
+                        <thead>
+                            <tr class="gradeX odd">
+                                <th class="mdl-data-table__cell--non-numeric">Time</th>
+                                <th class="mdl-data-table__cell--non-numeric">Prescriber</th>
+                                <th class="mdl-data-table__cell--non-numeric">Patient</th>
+                                <th class="mdl-data-table__cell--non-numeric">Diagnosis</th>
+                                <th class="mdl-data-table__cell--non-numeric">Drug</th>
+                                
+                                <th class="mdl-data-table__cell--non-numeric">Frequency</th>
+                                <th class="mdl-data-table__cell--non-numeric">Duration</th>
+                                <th class="mdl-data-table__cell--non-numeric">Comments</th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for prescription in prescription_list %}
+                                <tr>
+                                    <td class="mdl-data-table__cell--non-numeric">{{prescription.registered_on.time}}</td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ prescription.prescriber.full_name }}</td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ prescription.patient }} </td>
+                                    
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ prescription.diagnosis }} </td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ prescription.drug }} </td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ prescription.frequency }} times a day </td>
+                                    <td class="mdl-data-table__cell--non-numeric"> {{ prescription.duration_amount }} {{ prescription.duration_unit }} </td>
+                                    <td class="mdl-data-table__cell--non-numeric">{{prescription.comments}}</td>
+
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <!-- data tables -->
+{% endblock %}

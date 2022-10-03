@@ -8,6 +8,7 @@
 
 {% endblock%}
 {% block page_content %}
+                {% include "outpatient_app/partials/follow_up_modal.html" %}
        
         <div class="col-md-12 col-sm-12">
             <div class="card card-box">
@@ -34,6 +35,8 @@
                 <button class="form-group btn btn-primary"  type="submit" > Submit</button>
                 <a class="form-group btn btn-warning" style="padding-left: 10px;" href="{% url 'doctor_queue' %}">Cancel</a>
             	</div>
+ <a href="" data-toggle='modal' data-target="#follow-up-modal"><i class="fa fa-eye"></i> </a>
+
             
     </form>
       </div>

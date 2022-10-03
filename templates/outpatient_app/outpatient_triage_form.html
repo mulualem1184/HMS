@@ -86,13 +86,14 @@
                                                 {{arrival_form.injury_mechanism|as_crispy_field}}
                                             </div>
                                             <div class="col">
+                                                <!--
                                             <div class="form-group col-md-9">
                                                 {{arrival_form.avpu|as_crispy_field}}
                                             </div>
 
                                             <div class=" form-group col-md-9">
                                                 {{arrival_form.mobility|as_crispy_field}}
-                                            </div>
+                                            </div>-->
                                        <!-- <div class="form-row">
                                             <div class=" form-group col-md-9" style="padding-left: 17px;">
                                                 {{service_team_form.team|as_crispy_field}}
@@ -158,6 +159,38 @@
                                            
                                           </div>
 
+                                          <div class="form-row">
+                                           <div class="form-group col-md-2 " >
+                                            <div style="padding-top: 30px;">
+                                            <p>Oxygen Saturation</p>
+                                            </div>
+                                          </div>
+
+                                              <div class="form-group col-md-4">  
+                                                {{vital_form.oxygen_saturation|as_crispy_field}}
+                                              </div>
+
+                                           
+                                          </div>
+
+
+                                          <div class="form-row">
+                                           <div class="form-group col-md-2 " >
+                                            <div style="padding-top: 30px;">
+                                            <p>Blood Glucose Level</p>
+                                            </div>
+                                          </div>
+
+                                              <div class="form-group col-md-2">  
+                                                {{vital_form.blood_glucose_level|as_crispy_field}}
+                                              </div>
+
+                                              <div class="form-group col-md-2">  
+                                                {{vital_form.glucose_level_unit|as_crispy_field}}
+                                              </div>
+                                           
+                                          </div>
+
                                           <div>
                                 </fieldset>
                             </div>
@@ -170,7 +203,7 @@
                             
                             </div>
                             
-                            <button class="btn btn-primary" type="submit">Save</button>
+                            <button class="btn btn-primary" type="submit">Proceed</button>
                         </div>
                     </form>
                 </div>

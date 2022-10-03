@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}
+    Add Lab test type
+{% endblock %}
+{% block page_content %}
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-lg-8">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>Create Lab test type</header>
+                </div>
+                <div class="card-body" id="bar-parent">
+                    <form method="POST" id="form_sample_1" class="form-horizontal" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <div class="form-body">
+                            {% for field in form %}
+                                {% if field.widget_type == 'checkbox' %}
+                                    <div class="form-group row">
+                                        <label class="control-label col-md-3" for="{{ field.id_for_label }}">
+                                            {{ field.label }}
+                                        </label>
+                                        <div class="col-md-5">
+                                            {{ field }}
+                                        </div>
+                                    </div>
+                                {% else %}
+                                    <div class="form-group row">
+                                        <label class="control-label col-md-3" for="{{ field.id_for_label }}" >
+                                            {{ field.label }}<span class="required"> * </span>
+                                        </label>
+                                        <div class="col-md-5">
+                                            {{ field }}
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="margin-left: 75px;">Create</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 col-sm-12 col-lg-4">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>Lab test types</header>
+                </div>
+                <div class="card-body" id="bar-parent">
+                    <div class="table-wrap">
+                        <div class="table-responsive">
+                            <!-- <h4>Test types</h4> -->
+                            <table class="table display product-overview mb-30" id="support_table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Available</th>
+                                        <th>Price</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for test in test_type_list %}
+                                        <tr>
+                                            <td> {{ test.name }} </td>
+                                            <td>
+                                                {% if test.is_available %}
+                                                    Yes
+                                                {% else %}
+                                                    No
+                                                {% endif %}
+                                            </td>
+                                            <td> {{ test.price }} </td>
+                                            <td> 
+                                                <a href="{% url 'edit_lab_test_type' test.id %}">
+                                                    <i class="fa fa-edit"></i> 
+                                                </a>
+                                                <a href="{% url 'edit_lab_test_result_type' test.id %}">
+                                                    <i class="fa fa-gear"></i>
+                                                </a>
+                                                <a href="{% url 'remove_lab_test_type' test.id %}">
+                                                    <i class="fa fa-remove red"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

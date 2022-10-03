@@ -58,6 +58,35 @@ class DrugProfileForm(forms.ModelForm):
 			)
 		)	
 	"""
+class PrescriptionInfoForm(forms.ModelForm):
+
+	class Meta:
+		model = DrugPrescriptionInfo
+		fields = ['drug' ,'units_per_take', 'frequency', 'frequency_unit',
+					'duration', 'duration_unit']
+		widgets = {			
+			'units_per_take': forms.NumberInput(attrs={
+			'class' : 'form-control forms',
+				}),
+			'frequency': forms.NumberInput(attrs={
+			'class' : 'form-control forms',
+				}),
+			'frequency_unit': forms.Select(attrs={
+			'class' : 'form-control select2',
+				}),
+			'duration': forms.NumberInput(attrs={
+			'class' : 'form-control forms',
+				}),
+			'duration_unit': forms.Select(attrs={
+			'class' : 'form-control select2',
+				}),
+			'drug': forms.Select(attrs={
+			'class' : 'form-control select2',
+				}),
+		
+			}
+
+
 
 class DiseaseDrugForm(forms.ModelForm):
 	class Meta:
@@ -244,6 +273,22 @@ class StockSupplyForm(forms.ModelForm):
 
 #			"stock_slot_no":autocomplete_light.TextWidget("StockSupplyAutocomplete"),
 			}
+
+class StockSlotForm(forms.ModelForm):
+
+	class Meta:
+		model =  DrugSupply
+#		autocomplete_fields = ("stock_slot_no")
+		fields = ['stock_slot_no']
+
+		widgets = {
+			
+			'stock_slot_no': forms.Select(attrs={
+			'class' : 'form-control select2',
+				}),
+
+#			"stock_slot_no":autocomplete_light.TextWidget("StockSupplyAutocomplete"),
+			}
  
 class BatchForm(forms.ModelForm):
 	
@@ -263,8 +308,25 @@ class BatchForm(forms.ModelForm):
 			'class' : 'form-control select2',
 				}),
 			}
+
+class NoProcurementBatchForm(forms.ModelForm):
+	
+	class Meta:
+		model = Batch
+		fields = ['quantity', 'drug']
+
+		widgets = {
+			
+			'quantity': forms.NumberInput(attrs={
+			'class' : 'forms form-control',
+				}),
+			'drug': forms.Select(attrs={
+			'class' : 'form-control select2',
+				}),
+			}
+
 class ExpirationDateForm(forms.ModelForm):
-	DateTimeInput = partial(forms.DateTimeInput, {'class':'datepicker'})
+	#DateTimeInput = partial(forms.DateTimeInput, {'class':'datepicker'})
 
 	class Meta:
 		model = DrugExpiration
@@ -273,11 +335,11 @@ class ExpirationDateForm(forms.ModelForm):
 		
 		widgets = {
 			'manufacturing_date': forms.DateTimeInput(attrs={
-			'class' : 'datepicker',
+			'class' : 'forms form-control',
 				}),
 			
 			'expiration_date': forms.DateTimeInput(attrs={
-			'class' : 'datepicker',
+			'class' : 'forms form-control',
 				}),							
 			}
 
@@ -294,6 +356,20 @@ class ProcurementForm(forms.ModelForm):
 				}),
 			
 			}
+
+class ProcurementDispensaryForm(forms.ModelForm):
+	class Meta:
+		model = DispensaryShelf
+		fields = ['dispensary']
+
+		widgets = {
+			
+			'dispensary': forms.Select(attrs={
+			'class' : 'forms form-control select2 ',
+				}),
+			
+			}
+
 class ProcurementDetailForm(forms.ModelForm):
 	class Meta:
 		model = ProcurementDetail
@@ -479,7 +555,7 @@ class PrescriptionForm(forms.ModelForm):
 	"""
 	class Meta:
 		model = DrugPrescription
-		fields = ['diagnosis','drug','order_category','comments']
+		fields = ['diagnosis','drug','order_category','comments', 'info']
 		widgets = {			
 			'diagnosis': forms.TextInput(attrs={
 			'class' : 'form-control forms',
@@ -488,9 +564,8 @@ class PrescriptionForm(forms.ModelForm):
 			'drug': forms.Select(attrs={
 			'class' : 'form-control select2',
 			'id' : 'drug',
-
 				}),
-			'order_category': forms.Select(attrs={
+			'info': forms.Select(attrs={
 			'class' : 'form-control select2',
 				}),
 			'comments': forms.TextInput(attrs={
@@ -533,6 +608,18 @@ class DispensaryStructureForm(forms.Form):
 			'class': 'form-control',
 		}
 	))
+
+class DispensaryStockForm(forms.ModelForm):
+	class Meta:
+		model = Dispensary
+		fields = ['stock']
+		widgets = {									
+			'stock': forms.Select(attrs={
+			'class' : 'forms form-control select2',
+				}),
+			
+
+			}
 
 
 class EditDispensaryShelfForm(forms.ModelForm):
@@ -727,4 +814,28 @@ class DispensaryDrugForm(forms.ModelForm):
 			'slot_no': forms.Select(attrs={
 			'class' : 'select2 form-control',
 				}),
+			}
+
+class AssignPharmacistForm(forms.ModelForm):
+	class Meta:
+		model = DispensaryPharmacist
+		fields = ['pharmacist']
+		widgets = {			
+			'pharmacist': forms.Select(attrs={
+			'class' : 'select2 form-control',
+				}),
+			}
+
+class DrugRequestForm(forms.ModelForm):
+	class Meta:
+		model = DispensaryProcurementRequest
+		fields = ['drug', 'quantity']
+		widgets = {			
+			'drug': forms.Select(attrs={
+			'class' : 'select2 form-control',
+				}),
+			'quantity': forms.NumberInput(attrs={
+			'class' : 'forms form-control',
+				}),
+
 			}

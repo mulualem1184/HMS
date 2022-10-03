@@ -29,20 +29,21 @@
     </div>
     <div class="state-overview">
         <div class="row">
-            {% for x in '45678'%}
+            {% for duration, summary in stay_duration_zip %}
                 {% include "core/phistory_modal.html" %}
                 <div class="col-lg-3 col-sm-6">
                     <div class="overview-panel blue">
                         <div class="symbol">
-                            <img src="{% static 'img/patient.png' %}" alt="" style="width: 35px; height: 35px;" onmouseover="showHistoryModal({{x}})" onmouseout="hideHistoryModal({{x}})">
+                            <img src="{% static 'img/patient.png' %}" alt="" style="width: 35px; height: 35px;" onmouseover="showHistoryModal({{duration.id}})" onmouseout="hideHistoryModal({{duration.id}})">
                             <!-- <i class="fa fa-info-circle usr-clr" onmouseover="showHistoryModal({{x}})" onmouseout="hideHistoryModal({{x}})"></i> -->
                         </div>
                         <div class="value white">
-                            <p class="sbold addr-font-h1" data-counter="counterup" dafta-value="53">May {{ x }}</p>
-                            <p>
-                                - May 13
+                            <!--<p class="sbold addr-font-h1" data-counter="counterup" dafta-value="53">May {{x}}</p>
+                            <p>-->
+                                {{duration.admission_date.date}}-
+                                <br> {{duration.leave_date.date}}
                                 <br>
-                                <a href="{% url 'core:visit_detail' 1 %}" style="color: rgba(1, 7, 2, 0.959);">View</a>
+                                <a href="{% url 'core:patient_visit_detail' 1 %}" style="color: rgba(1, 7, 2, 0.959);">View</a>
                             </p>
                         </div>
                     </div>

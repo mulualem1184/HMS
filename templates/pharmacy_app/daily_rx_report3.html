@@ -1,0 +1,44 @@
+                            
+{% extends "base.html" %}
+{% load static %}
+{% block title %} {% endblock %}
+
+{% block page_content %}
+        
+    <div class="" style="width: 100%;">
+        <div class="card card-box">
+            <div class="card-head">
+                <header></button>
+<a class="btn btn-info"  href="{% url 'pdf_download' %}">Generate PDF</a>
+                </header>
+            </div>
+            <div class="card-body " id="bar-parent1">
+              
+        
+                    {%block content1%}
+                    <table id="example1" class="mdl-data-table ml-table-bordered  " style="width:100%;">
+                        <thead>
+                            <tr >
+                                <th class="mdl-data-table__cell--non-numeric">Stock</th>
+                                <th class="mdl-data-table__cell--non-numeric">Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for drug,quantity in inventory_zip %}
+                            <tr>
+                                <td class="mdl-data-table__cell--non-numeric">{{drug}}</td>
+                                <td class="mdl-data-table__cell--non-numeric">{{quantity}}</td>
+                            </tr>
+                                           
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% endblock %}
+                     
+    {% block scripts %}
+               
+            {% endblock %}
+
+{% endblock %}
+
+ 

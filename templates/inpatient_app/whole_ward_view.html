@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+{% endblock %}
+{% block title %} Ward View {% endblock %}
+
+{% block page_content %}
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-box">
+                <div class="card-head">
+                    <header>Room List</header>
+                </div>
+                                        {% for bed in bed_list %}
+                                            <div class="col-md-4">
+                                                <div class="card card-box">
+                                                    <div class="card-body no-padding ">
+                                                        <div class="doctor-profile">
+                                                                 
+                                                            <div class="profile-usertitle">
+                                                                <div class="doctor-name">{{ bed }} </div>
+                                                            </div>
+                                                                <p><i class="fa fa-bed"></i></p> 
+                                                                <div><p><a href="tel:(123)456-7890">00005455</a></p> </div>
+                                                            <div class="profile-userbuttons">
+                                                            <a href="">
+                                                                <span class="">Patient Chart</span> 
+                                                            </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <!-- data tables -->
+{% endblock %}

@@ -4,6 +4,8 @@ from .models import *
 # Register your models here.
 
 admin.site.register(DrugProfile)
+admin.site.register(DrugPrescriptionInfo)
+
 admin.site.register(DiseaseDrugModel)
 
 #admin.site.register(AllergyList)
@@ -62,6 +64,9 @@ admin.site.register(DrugAvailabilityStatus)
 
 admin.site.register(DrugRelocationTemp)
 admin.site.register(PatientCredit)
+admin.site.register(DispensaryPharmacist)
+admin.site.register(DispensaryProcurementRequest)
+admin.site.register(DrugSupplyToDispensary)
 
 
 """

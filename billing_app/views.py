@@ -79,6 +79,7 @@ def GenerateVisitBill(request, bill_id):
 	#discount_form = VisitBillDiscountForm(initial={'discount':'No'})
 	#insurance_form = VisitBillInsuranceForm(initial={'insurance':'No'})
 	visit_bill_detail = VisitBillDetail.objects.get(id=bill_id)
+	visit_bill_detail.selling_price = visit_bill_detail.visiting_card.visiting_price
 	#service_team = ServiceTeam.objects.filter(service__id=service_recieved).first()
 	#service_room_provider = ServiceRoomProvider.objects.filter(service_team=service_team.team).last()
 
@@ -114,16 +115,27 @@ def GenerateVisitBill(request, bill_id):
 			else:
 				visit_bill.insurance = 'No'
 	"""
-	if visit_bill.discount== 'Yes':
-		visit_bill.selling_price = visit_bill.visiting_card.discounted_price	
-	else:
-		visit_bill.selling_price = visit_bill.visiting_card.visiting_price	
+	if visit_bill_detail.free== True:
+		visit_bill_detail.selling_price = 0	
 
 	#bill.save()
 	patient_visit = PatientVisit.objects.get(visit_status = 'Pending', payment_status='not_paid', patient=patient)
 	patient_visit.payment_status = 'paid'
 
-	visit_bill.save()
+	visit_bill_detail.registered_by = Employee.objects.get(user_profile=request.user, designation__name='Cashier')
+	today = datetime.today()
+	#today = now.day
+	if CashierDebt.objects.filter(cashier__user_profile=request.user, reconciled=False, debt_date=today).last():
+		cashier_debt = CashierDebt.objects.get(cashier__user_profile=request.user, reconciled=False, debt_date=today)
+		cashier_debt.cash_debt = cashier_debt.cash_debt + visit_bill_detail.selling_price 
+	else:
+		cashier_debt = CashierDebt()
+		cashier_debt.cashier = 	Employee.objects.get(user_profile=request.user, designation__name='Cashier')
+		cashier_debt.cash_debt = visit_bill_detail.selling_price 
+		cashier_debt.date = today
+
+	cashier_debt.save()
+	visit_bill_detail.save()
 	patient_visit.save()
 #	patient_visit_model.save()
 	try:
@@ -158,6 +170,86 @@ def GenerateVisitBill(request, bill_id):
 #	context = {'discount_form': discount_form, 'insurance_form':insurance_form}
 #	return render(request,'billing_app/generate_visit_bill.html',context)
 
+def LabOrderList(request):
+	order_list = Order.objects.all()
+	unpaid_orders_array = []
+	for order in order_list:
+		unpaid_orders = order.test_set.filter(paid=False)
+		if unpaid_orders:
+			for u in unpaid_orders:
+				#print(u,'\n')
+				if u.order not in unpaid_orders_array:
+					unpaid_orders_array.append(u.order)
+	for u in unpaid_orders_array:
+
+		print(u.priority,'\n')
+	context = {'unpaid_orders_array':unpaid_orders_array}
+	return render(request,'billing_app/lab_order_list.html',context)
+
+def ViewLabOrderDetail(request, order_id):
+	order = Order.objects.get(id=order_id)
+	test_types = order.test_set.all()
+	context = {'test_types':test_types}
+	return render(request,'billing_app/view_lab_order_detail.html',context)
+
+def MarkLabTestAsPaid(request, test_id):
+	test = LaboratoryTest.objects.get(id=test_id)
+	lab_bill = LabBillDetail()
+	lab_bill.test = test.test_type
+	lab_bill.test_price=LaboratoryTestPrice.objects.get(test_type=test.test_type,active=True)
+	lab_bill.patient = test.order.patient
+	lab_bill.registered_on = datetime.now()
+	lab_bill.registered_by = Employee.objects.get(user_profile=request.user, designation__name='Cashier')
+	today = datetime.today()
+	#today = now.day
+	if CashierDebt.objects.filter(cashier__user_profile=request.user, reconciled=False, debt_date=today).last():
+		cashier_debt = CashierDebt.objects.get(cashier__user_profile=request.user, reconciled=False,debt_date=today) 
+		cashier_debt.cash_debt = cashier_debt.cash_debt + lab_bill.test_price.price 
+	else:
+		cashier_debt = CashierDebt()
+		cashier_debt.cashier = 	Employee.objects.get(user_profile=request.user, designation__name='Cashier')
+		cashier_debt.cash_debt = lab_bill.test_price.price 
+		cashier_debt.date = today
+	payment_status = PatientPaymentStatus.objects.get(patient=test.order.patient, active=True)
+	if payment_status.payment_status == 'Free':
+		lab_bill.discount = False
+		lab_bill.insurance = False
+		lab_bill.credit = False
+		lab_bill.free = True
+	elif payment_status.payment_status == 'Insurance':
+		lab_bill.discount = False
+		lab_bill.free = False
+		lab_bill.credit = False
+		lab_bill.insurance = True		
+	elif payment_status.payment_status == 'Credit':
+		lab_bill.discount = False
+		lab_bill.free = False
+		lab_bill.credit = False
+		lab_bill.insurance = True		
+	elif payment_status.payment_status == 'Discount':
+		lab_bill.discount = True
+		lab_bill.free = False
+		lab_bill.credit = False
+		lab_bill.insurance = False
+	else:
+		lab_bill.discount = False
+		lab_bill.free = False
+		lab_bill.credit = False
+		lab_bill.insurance = False
+	bed = Bed.objects.first()
+	allocated_patients = bed.return_ward_patients	
+	for p in allocated_patients:
+		print('\n',p)
+	if lab_bill.patient in allocated_patients:
+		lab_bill.department = 'Inpatient'
+	else:
+		lab_bill.department = 'Outpatient'
+	test.paid = True
+	cashier_debt.save()
+	test.save()
+	lab_bill.save()
+	messages.success(request,'Bill Generated Successfully!')
+	return redirect('view_lab_order_detail', test.order.id)
 def VisitBillDetailPage(request, bill_id):
 	visit_bill = VisitBillDetail.objects.get(id=bill_id)
 	try:
@@ -284,3 +376,99 @@ def LabTestBill(request):
 
 	context = {'test_bills':test_bills}
 	return render(request,'billing_app/lab_test_bill.html',context)
+
+def CashierList(request):
+	cashier_list = []
+
+	#cashier_list = LabBillDetail.objects.filter(test__paid=False)
+	for debt in CashierDebt.objects.filter(reconciled=False):
+		if debt.cashier not in cashier_list:
+			cashier_list.append(debt.cashier)
+
+	#Employee.objects.get(user_profile=request.user, designation__name='Cashier')
+
+	context = {'cashier_list':cashier_list}
+	return render(request,'billing_app/cashier_list.html',context)
+
+def CashierDebtList(request, cashier_id):
+
+	debt_list = CashierDebt.objects.filter(cashier__id=cashier_id, reconciled=False)	
+	#cashier_list = LabBillDetail.objects.filter(test__paid=False)
+
+	#Employee.objects.get(user_profile=request.user, designation__name='Cashier')
+
+	context = {'debt_list':debt_list}
+	return render(request,'billing_app/cashier_debt_list.html',context)
+
+def ReconcileFullDebt(request, debt_id):
+
+	debt = CashierDebt.objects.get(id=debt_id)	
+	#cashier_list = LabBillDetail.objects.filter(test__paid=False)
+	debt.reconciled =True
+	reconcilation = CashierReconcilation()
+	reconcilation.finance_employee = Employee.objects.get(user_profile=request.user, designation__name='Finance Personnel')
+	reconcilation.debt = debt
+	reconcilation.remaining_amount = 0
+	reconcilation.registered_on = datetime.now()
+
+	debt.save()
+	reconcilation.save()
+	#Employee.objects.get(user_profile=request.user, designation__name='Cashier')
+	messages.success(request,'Successful!')
+	return redirect('cashier_debt_list', debt.cashier.id)
+
+def PartialReconcilation(request, debt_id):
+
+	debt = CashierDebt.objects.get(id=debt_id, reconciled=False)	
+	#cashier_list = LabBillDetail.objects.filter(test__paid=False)
+	try:
+		reconcilation2 = CashierReconcilation.objects.get(debt=debt)
+	except:
+		reconcilation2 = None
+
+	rec_form = PartialReconcilationForm()
+	#Employee.objects.get(user_profile=request.user, designation__name='Cashier')
+
+	if request.method == 'POST':
+		rec_form = PartialReconcilationForm(request.POST)
+		if rec_form.is_valid():
+			#print(inventory_structure_form.data['stock'])
+			amount = int(rec_form.data['amount_paid'])
+			#shelf_amount =int( rec_form.data['shelf_amount'])
+			try:
+				reconcilation = CashierReconcilation.objects.get(debt=debt)
+			except:
+				reconcilation = CashierReconcilation()
+				reconcilation.finance_employee = Employee.objects.get(user_profile=request.user, designation__name='Finance Personnel')
+				reconcilation.debt = debt
+
+			if debt.cash_debt - amount > -1:
+				if reconcilation.remaining_amount:
+					if reconcilation.remaining_amount - amount <0:
+						messages.error(request,"Paid Amount Cannot Exceed Debt!")
+						return redirect('partial_reconcilation', debt.id)
+					else:
+						reconcilation.remaining_amount = reconcilation.remaining_amount - amount
+						reconcilation.registered_on = datetime.now()
+						reconcilation.save()
+					
+				else:
+					reconcilation.remaining_amount = debt.cash_debt - amount
+					reconcilation.registered_on = datetime.now()
+					reconcilation.save()
+			elif debt.cash_debt - amount<0:
+				messages.error(request,"Paid Amount Cannot Exceed Debt!")
+				return redirect('partial_reconcilation', debt.id)
+
+			if reconcilation.remaining_amount  == 0:
+				debt.reconciled = True
+				debt.save()
+				messages.success(request,"Successfully Reconciled!")
+				return redirect('cashier_debt_list', debt.cashier.id)
+			return redirect('partial_reconcilation',debt.id)
+	context = {'debt':debt,
+				'rec_form':rec_form,
+				'reconcilation2':reconcilation2
+
+	}
+	return render(request,'billing_app/partial_reconcilation_form.html',context)

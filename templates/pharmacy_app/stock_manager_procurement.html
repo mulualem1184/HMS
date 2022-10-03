@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %} {% endblock %}
+
+{% block page_content %}
+
+
+    <div class="" style="width: 100%;">
+        <div class="card card-box">
+            <div class="card-head">
+                <header>Procurement</header>
+            </div>
+            <div class="card-body " id="bar-parent1">
+              
+        
+                    {%block content1%}
+
+                    <table class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded" id="example4">
+                        <thead>
+                            <tr>
+                                <th class="mdl-data-table__cell--non-numeric">Procurement</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for procurement, status in procurement_zip %}
+                            {% include "pharmacy_app/procurement_detail_form.html" %}
+
+                           <tr> 
+
+                              <td class="mdl-data-table__cell--non-numeric">
+                                    <a href="{% url 'procurement_detail' procurement.procurement_no 1 %}">{{procurement}} </a>
+                              </td>
+
+                        </tr>
+                                           
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% endblock %}
+
+            
+ 
+                     
+    {% block scripts %}
+               
+    {% endblock %}
+
+{% endblock %}
+
+ 

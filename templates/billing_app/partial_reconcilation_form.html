@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+{% block style %}
+    <!-- data tables -->
+
+    <link href="{% static '/plugins/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css' %}" rel="stylesheet" media="screen">
+
+{% endblock %}
+{% block title %} Nurse Team List {% endblock %}
+
+{% block page_content %}
+                                         
+    
+        
+
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="card  card-box">
+                                                    <div class="tab-pane" id="tab1">
+
+                                                    <div class="card-body ">
+                                                        
+                    Cashier <b>{{ debt.cashier.user_profile.full_name }} <br></b>
+                    Date <b>{{ debt.debt_date }} <br></b>
+                    Total Amount: <b>{{ debt.cash_debt }} <br></b>
+                    Remaining Amount: <b>
+                        {% if reconcilation2 == None %} 
+                        {{ debt.cash_debt }}
+                        {% else %}
+                        {{reconcilation2.remaining_amount}}
+                        {% endif %}
+                        <br></b>
+
+        
+    <form action="" method="POST">
+        		{% csrf_token %}
+            
+                <div class="form-group col-md-4">  
+                    {{rec_form.amount_paid|as_crispy_field}}
+                </div>
+                <div class="form-group">
+            		<button class="form-group btn btn-info" type="submit" name="Submit">
+                    Reconcile
+                    </button>
+                    </div>
+          
+             
+    </form>
+
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    
+{% endblock %}
+
+{% block scripts %}
+    <!-- data tables -->
+
+    <script src="{% static '/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js' %}"></script>
+    <script src="{% static '/plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker-init.js' %}"></script>
+
+{% endblock %}
+
