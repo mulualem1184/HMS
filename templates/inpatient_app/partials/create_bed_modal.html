@@ -1,0 +1,78 @@
+<div class="modal fade" id="createBedModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog " role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <form method="POST" action="{% url 'create_ipd_bed' %}">
+                        {% csrf_token %}
+
+                <h4 class="modal-title center">
+                        <button class="btn " type="submit" hx-get="{% url 'create_ipd_bed' %}" hx-trigger='click' hx-include="[name='bed_id'">Save And Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </h4>
+            </div>
+            <div class="modal-body">
+
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-2 control-label">Name</label>
+                        <div class="col-md-8">
+                            {{bed_form.name}}
+                        </div>
+
+                    </div>
+
+                    <!--
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-2 control-label">Ward</label>
+                        <div class="col-md-8">
+                            {{create_ward_form.category}}
+                        </div>
+                        
+                    </div>-->
+                                                    <input type="checkbox" id="MixedId" name="gender" value="MIXED" hx-get="{% url 'ipd_structure' %}?id=MIXED" hx-trigger='click'  hx-include="[id='gender_form']"  hx-swap='beforeend'>
+
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-2 control-label">Ward</label>
+                        <div class="col-md-8">    
+                            <select name="dispensary_id" id="labsection" class="form-control"  >
+                                <option value="0">All</option>
+                                {% for ward in ward_value_list %}
+                                    <option value="{{ward.id}}" hx-get="{% url 'ipd_structure' %}?id={{ward.id}}" hx-trigger='click' hx-target='#ward_field_div_id' hx-swap='outerHTML' hx-include="[name='ward_id']">{{ward}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                    </div>
+
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-2 control-label">Room</label>
+                        <div class="col-md-8">    
+                                {% include "inpatient_app/partials/ward_field_div_partial.html" %}
+
+                        </div>                        
+                    </div>
+
+                    <!--
+                                <input type="checkbox" id="MixedId" name="gender" value="MIXED" hx-post="{% url 'whole_ward_view' %}?id=MIXED" hx-trigger='click' hx-target='#ward_view_partial' hx-include="[id='gender_form']"  hx-swap='beforeend'>
+                    -->
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-2 control-label">Price</label>
+                        <div class="col-md-8">
+                            {{price_form.room_price}}
+                        </div>
+                        
+                    </div>
+
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-2 control-label">Discounted Price</label>
+                        <div class="col-md-8">
+                            {{price_form.discounted_price}}
+                        </div>
+                        
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>

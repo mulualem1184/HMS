@@ -1,0 +1,49 @@
+{% load crispy_forms_tags %}
+{% load static %}
+{% block style %}
+
+{% endblock %}
+<div class="modal fade" id="createOccupationFormModal" tabindex="0" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog " role="document">
+        <div class="modal-content" >
+            <div class="modal-header" >
+                <form method="POST" action="{% url 'core:create_occupation' patient.id %}" id="search-occupation-form-id">
+                                    {% csrf_token %}
+
+                <h4 class="modal-title center">
+
+                        <button class="btn " type="submit"><i class="fa fa-save"></i>Save And Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                </h4>
+            </div>
+            <div class="modal-body" >
+
+                        <div class="row">
+                                <div class="row" style="padding-left: 50px;">
+                                    <label for="labsection" class="col-md-5 control-label"><small>Occupation Name</small></label>
+                                    <div class="col-md-7">
+                                        {{create_occupation_form.name}}
+                                    </div>
+                                </div>
+
+                        </div>
+
+
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+        function submitOccupationSearchForm() {
+                alert('jj');
+               document.getElementById('search-occupation-form-id').submit();
+            }
+
+</script>
+
+    <script src="{% static 'plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js' %}"></script>
+    <script src="{% static 'plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker-init.js' %}"></script>

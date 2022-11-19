@@ -71,7 +71,7 @@ class LaboratoryTestType(models.Model):
         (False, 'No'),
     ]
 
-    section = models.ForeignKey(to=LaboratorySection, null=True, on_delete=models.SET_NULL)
+    section = models.ForeignKey(to=LaboratorySection, null=True, on_delete=models.SET_NULL,related_name='test_section')
     name = models.CharField(max_length=1000, unique=True, blank=False, null=False)
     price = models.FloatField(null=False)
     tat = models.FloatField(verbose_name='TAT', help_text="amount of time it takes to complete this test in hours")

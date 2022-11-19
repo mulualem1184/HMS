@@ -1,0 +1,76 @@
+<div class="modal fade" id="editWardModal{{ward.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <form method="POST" action="{% url 'edit_ipd_ward' ward.id %}" >
+                        {% csrf_token %}
+
+                <h4 class="modal-title center">
+                        <button class="btn " type="submit">Save And Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                </h4>
+            </div>
+            <div class="modal-body">
+
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-2 control-label">Name</label>
+                        <div class="col-md-3">
+                            <input type="text" name="ward_name" value="{{ward.name}}" id="start_date" class="form-control">
+                        </div>                        
+                        <div class="col-md-1">
+                            
+                        </div>
+                        <label for="labsection" class="col-md-2 control-label">Gender</label>
+                        <div class="col-md-3">
+                                    <select name="gender_select" id="gender-select"  class="form-control">
+                                        <option value="{{ward.by_gender}}">{{ward.by_gender}}</option>
+                                        {% if ward.by_gender == 'MALE' %}
+                                        <option value="FEMALE">FEMALE</option>
+                                        <option value="MIXED">MIXED</option>
+                                        {% elif ward.by_gender == 'FEMALE' %}
+                                        <option value="MALE">MALE</option>
+                                        <option value="MIXED">MIXED</option>
+                                        {% elif ward.by_gender == 'MIXEd' %}
+                                        <option value="MALE">MALE</option>
+                                        <option value="FEMALE">FEMALE</option>
+                                        {% endif %}
+                                    </select>
+                        </div>                        
+      
+                    </div>
+
+
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-2 control-label">Type</label>
+                        <div class="col-md-3">
+                                    <select name="building"   class="form-control">
+                                        <option value="{{ward.category}}">{{ward.category}}</option>
+
+                                        {% for category in ward_list2 %}
+                                        {% if ward.category == category %}
+                                        {% else %}
+                                        <option value="{{category.id}}">{{category}}</option>
+                                        {%endif%}
+                                        {% endfor %}
+                                    </select>
+                        </div>                        
+                        <div class="col-md-1"></div>
+                        <label for="labsection" class="col-md-2 control-label">Building</label>
+                        <div class="col-md-3">
+                                    <select name="building"   class="form-control">
+                                        <option value="{{ward.hospital_unit.id}}">{{ward.hospital_unit}}</option>
+                                        {% for building in building_list %}
+                                        <option value="{{building.id}}">{{building}}</option>
+                                        {% endfor %}
+                                    </select>
+                        </div>                        
+      
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,39 @@
+-
+<div id="ward_field_div_id">
+                                <select name="ward_id" id="labsection" class="form-control"  >
+
+                                {% for ward in ward_list %}
+                                    <option value="{{ward.id}}" >{{ward}}</option>
+                                {% endfor %}
+                            </select>
+                        
+</div>
+<!--
+<div id="ward_field_div_id">
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-2 control-label">Room</label>
+                        <div class="col-md-8">
+                            {{bed_form2.ward}}
+                        </div>
+                        {{yeah}}
+                    </div>
+
+</div>
+
+
+<div id="ward_field_div_id">
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-2 control-label">Ward</label>
+                        <div class="col-md-8">    
+                            <select name="ward_id" id="labsection" class="form-control"  >
+                                {% for ward in ward_list %}
+                                    <option value="{{ward.id}}" >{{ward}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button class="btn btn" type="submit">Save And Close</button>
+                        
+                    </div>
+</div>
+
+-->

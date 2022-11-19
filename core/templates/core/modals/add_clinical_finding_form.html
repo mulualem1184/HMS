@@ -1,0 +1,42 @@
+<div class="modal fade" id="addClinicalFindingModal{{patient.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog " role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <form method="POST" action="{% url 'core:add_clinical_finding' patient.id %}" >
+                        {% csrf_token %}
+
+                <h4 class="modal-title center">
+                        <button class="btn " type="submit">Save And Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                </h4>
+            </div>
+            <div class="modal-body">
+
+                    <div class="form-group col-md-12">
+                        <div class="col">
+                            <!--
+                            <div>
+                                <label for="labsection" class="col-md-3 control-label">Allergy</label>
+                                <div class="col-md-9">
+
+                                    {{finding_form.tags}}
+                                </div>
+                            </div>-->
+                            <div >
+                                <label for="labsection" class="col-md-5 control-label"><small>Clinical Finding</small></label>
+                                <div class="col-md-7">
+                                    {{finding_form.clinical_finding}}
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,45 +1,345 @@
 {% extends "base.html" %}
 {% load static %}
 {% block style %}
-    <!-- data tables -->
+l    <!-- data tables -->
+    <style>
+        .quick-launch-container {
+            display: inline-block;
+            margin-left: 5px;
+            padding-left: 5px;
+            margin-right: 7px;
+            border: black;
+            border-width: 10px;
+        }
+        .quick-launch-label {
+            display: block;
+            color: black;
+            font-weight: bold;
+        }
+        fieldset {
+            padding-bottom: 10px;
+            width: 150px; 
+            border: 2px solid; 
+            border-radius: 5px; 
+            border-color: #0a7e37;
+        }
+        legend {
+            color: black;
+            width: max-content;
+            font-size: 14px;
+        }
+        input[id='dismissed_cb'] + label{
+            font-style: normal;
+
+        }
+        input[id='dismissed_cb']:checked + label{
+            font-style: normal;
+            border: 1px solid;
+            line-height: 12px;
+
+        }
+
+        input[id='completed_cb'] + label{
+            font-style: normal;
+
+        }
+        input[id='completed_cb']:checked + label{
+            font-style: normal;
+            border: 1px solid;
+            line-height: 12px;
+        }
+        input[id='no_status_cb']:checked + label{
+            font-style: normal;
+            border: 1px solid;
+            line-height: 12px;
+        }
+
+    </style>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+
+  <link rel="stylesheet" href="//tenor.com/view/loading-slow-net-turtle-net-gif-17258660">
+
 {% endblock %}
 {% block title %} Ward View {% endblock %}
 
 {% block page_content %}
+{% include "inpatient_app/partials/filter_bed_list.html" %}
+{% include "inpatient_app/partials/treatment_plan_modal.html" %}
+{% include "inpatient_app/partials/treatment_plan_form.html" %}
+{% include "inpatient_app/partials/modals/filter_treatment_plan.html" %}
 
-    <div class="row">
+<!--
+<input type="checkbox" id="MixedId" name="gender" value="MIXED" hx-get="{% url 'ipd_structure' %}?id=MIXED" hx-trigger='click'  hx-include="[id='gender_form']"  hx-swap='beforeend'>-->
+<datalist id="patient_data_list" hx-get="{% url 'ipd_structure' %}?id=MIXED" hx-trigger='click'    hx-swap='beforeend'>
+    {% for patient in patient_list %}
+        <option value="{{patient}}" hx-get="{% url 'ipd_structure' %}?id=MIXED" hx-trigger='click'  hx-swap='beforeend'>
+            ID = {{patient.id}}
+        </option>
+    {% endfor %}    
+</datalist>
+    <div class="row" id="ward_view_wrapper">    
+     <div class="col col-md-2 card card-box">
+                                               
+        <div class="">
+            <fieldset>
+              <!--  <input type="text" name="" name='tagss' id='tagss'>-->
+                <legend>Views</legend>
+                                            <ul class="nav nav-tabs tabs-left">
+                                                <li class="nav-item" style="height:33px;">
+                                                    <a href="#drug_price_tab" data-toggle="tab" class="{% if active_tab == 'plan_tab' %} {% else %} active {% endif %}"><small>Bed List </small></a>
+                                                </li>
+                                                <li class="nav-item" style="height:33px;">
+                                                    <a href="#treatment-plan-tab" data-toggle="tab" class="{% if active_tab == 'plan_tab' %} active {% else %}  {% endif %}" > <small>Treatment Plan</small> </a>
+                                                </li>
+
+                                            </ul>
+                
+            </fieldset>
+        </div>
+
+
+        <div class="">
+            <fieldset>
+                <legend>Ward </legend>
+
+                <form method="GET">
+                    <div class="" >
+                        <div style="padding-left:15px;">
+                                {% for ward in category_list %}
+                                <input type="checkbox" id="input_id" hx-get="{% url 'whole_ward_view' %}?id=Ward" hx-trigger='click'  hx-swap='outerHTML' hx-target='#drug_price_tab'  hx-include="[name='ward_category']" name="ward_category" value="{{ward.id}}" checked>
+                                  <label for="building.id"><small>{{ward}}</small></label>
+                                    <br>
+                                {% endfor %}
+                        </div>
+                    </div>
+                </form>
+            </fieldset>
+
+        </div>
+
+        <div class="" >
+            <fieldset>
+                <legend>By Gender </legend>
+
+
+                <form  name="gender_form" id="gender_form">
+                    {% csrf_token %}
+                    <div class="" >
+                        <div style="padding-left:15px;">
+                                <input type="checkbox" id="MaleId"  hx-get="{% url 'whole_ward_view' %}?id=GENDER" hx-trigger='click'  hx-swap='outerHTML' hx-target='#drug_price_tab' hx-include="[name='gender']" name="gender" value="MALE" checked>
+                                  <label for="gender"><small>MALE</small></label>
+                                    <br>
+                                <input type="checkbox" id="FemaleId" hx-get="{% url 'whole_ward_view' %}?id=GENDER" hx-trigger='click'  hx-swap='outerHTML' hx-target='#drug_price_tab' hx-include="[name='gender']" name="gender" value="FEMALE" checked>
+                                  <label for="gender"><small>FEMALE</small></label>
+                                    <br>
+                                <input type="checkbox" id="MixedId" hx-get="{% url 'whole_ward_view' %}?id=GENDER" hx-trigger='click'  hx-swap='outerHTML' hx-target='#drug_price_tab' hx-include="[name='gender']" name="gender" value="MIXED"  checked>
+                                  <label for="gender"><small>MIXED</small></label>
+                                    <br>
+
+                                    <!--
+                                <button  id='button-{{row}}' class="btn btn-primary btn-circle pull-right" hx-get="{% url 'pharmacy_report1' %}?id={{ dispensary.id }}" hx-trigger='click' hx-target='#drug-request-create'  hx-swap='beforeend'>-->
+                        </div>
+                    </div>
+                </form>
+            </fieldset>
+
+        </div>
+        <div>
+            <fieldset>
+                <legend>Beds </legend>
+
+                <form method="GET" id="gender-form">
+                    <div class="" >
+                        <div style="padding-left:15px;">
+                                <input type="checkbox" id="FreeId" hx-get="{% url 'whole_ward_view' %}?id=BedStatus" hx-trigger='click'  hx-swap='outerHTML' hx-target='#drug_price_tab' hx-include="[name='bed_status']" name="bed_status" value="FREE" checked="">
+                                  <label for="gender"><small>Free</small></label>
+                                    <br>
+                                <input type="checkbox" id="OccupiedId" hx-get="{% url 'whole_ward_view' %}?id=BedStatus" hx-trigger='click'  hx-swap='outerHTML' hx-target='#drug_price_tab' hx-include="[name='bed_status']" name="bed_status" value="OCCUPIED" checked>
+                                  <label for="gender"><small>Occupied</small></label>
+                                    <br>
+                        </div>
+                    </div>
+                </form>
+            </fieldset>
+            
+        </div>
+        <!--
+        <div class="" style="padding-top:15px'">
+            <fieldset>
+                <legend>Beds </legend>
+
+                <form method="GET" id="gender-form">
+                    <div class="" >
+                        <div style="padding-left:15px;">
+                                <input type="checkbox" id="AlId" name="building" value="0">
+                                  <label for="0"> <small>All</small></label>
+                                  <br>
+                        </div>
+                        <div style="padding-left:15px;">
+                                <input type="checkbox" id="FreeId" hx-get="{% url 'whole_ward_view' %}?id=BedStatus" hx-trigger='click'  hx-swap='outerHTML' hx-target='#drug_price_tab' hx-include="[name='bed_status']" name="bed_status" value="FREE" che>
+                                  <label for="gender"><small>Free</small></label>
+                                    <br>
+                                <input type="checkbox" id="OccupiedId" hx-get="{% url 'whole_ward_view' %}?id=BedStatus" hx-trigger='click'  hx-swap='outerHTML' hx-target='#drug_price_tab' hx-include="[name='bed_status']" name="bed_status" value="OCCUPIED">
+                                  <label for="gender"><small>Occupied</small></label>
+                                    <br>
+                                <input type="checkbox" id="UncheckedMedicsId" hx-get="{% url 'whole_ward_view' %}?id=BedStatus" hx-trigger='click'  hx-swap='outerHTML' hx-target='#drug_price_tab' hx-include="[name='bed_status']" name="bed_status" value="UNCHECKEDMEdICS">
+                                  <label for="gender"><small>Unchecked Medics</small></label>
+                                    <br>
+                        <button class="btn-circle" type="submit"><i class="fa fa-filter"></i></button> 
+                        </div>
+                    </div>
+                </form>
+            </fieldset>
+
+        </div>
+        -->
+    </div>
+    <div data-url='{% url "whole_ward_view" %}' class="content-data">
+        
+    </div>
+        <div style="padding-left:18px;"></div>
+
+        <div class="card card-box border border-left col-md-9" style="background-color: white;" >
+
         <div class="col-md-12">
-            <div class="card card-box">
-                <div class="card-head">
-                    <header>Room List</header>
-                </div>
-                                        {% for bed in bed_list %}
-                                            <div class="col-md-4">
-                                                <div class="card card-box">
-                                                    <div class="card-body no-padding ">
-                                                        <div class="doctor-profile">
-                                                                 
-                                                            <div class="profile-usertitle">
-                                                                <div class="doctor-name">{{ bed }} </div>
-                                                            </div>
-                                                                <p><i class="fa fa-bed"></i></p> 
-                                                                <div><p><a href="tel:(123)456-7890">00005455</a></p> </div>
-                                                            <div class="profile-userbuttons">
-                                                            <a href="">
-                                                                <span class="">Patient Chart</span> 
-                                                            </a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            
 
-            </div>
+            <div class="tab-content">
+            {% include "inpatient_app/partials/ward_view_partial.html" %}
+
+<!--tab div yetachu-->
+            {% include "inpatient_app/partials/treatment_plan_list_partial.html" %}
+
         </div>
     </div>
+
+<!--tabs-->
+</div>
+</div>
+        <div >
+                                                    
+        </div>
 {% endblock %}
 
 {% block scripts %}
-    <!-- data tables -->
+<script type="">
+    const dataa = '{{bed_list}}'
+    console.log("kssssssssssssssssssssssssssssssssssssssssssssssssdk")
+    console.log(dataa)
+
+    var rdata = dataa.replace(/&/g,'')
+    rdata = rdata.replace(/lt/g,'')
+    rdata = rdata.replace(/gt/g,'')
+    rdata = rdata.replace(/;/g,'')
+
+    console.log('ksksk')
+    console.log(rdata)
+
+    var male_input = document.getElementById('MaleId')
+    console.log(male_input)
+    let filteredArr = []
+
+    var ward_view_div = document.getElementById('drug_price_tab')
+
+    male_input.addEventListener('click',(e)=>{
+
+        ward_view_div.innerHTML = ""
+        console.log(e.target.value)
+        filteredArr = rdata.filter(bed=>bed['name__by_gender'].includes(e.target.value))
+
+    })
+
+</script>
+
+  <script>
+  $( function() {
+    $( "#AllId" ).autocomplete({
+      source: "{% url 'whole_ward_view' %}"
+    });
+  } );
+  </script>
+    <script>
+
+        function searchPlan() {
+               document.getElementById('search-plan-id').style.display = 'block';          
+                showingModal = true;
+            }
+
+        function submitPlanSearchForm() {
+               document.getElementById('search-plan-form-id').submit();
+               showLoader();
+                showingModal = true;
+            }
+
+            function showLoader(){
+                    var str = '<div style="" id="loadingDiv"><div class="loader">Loading...</div></div>'; //it can be anything
+                    var str2 = '<div style="" id="loadingDiv"><div class="loader">  Loading  </div></div>'; //it can be anything
+                    var gif = document.getElementById('gif-id');
+                    var Obj = document.getElementById('treatment-plan-table-id'); //any element to be fully replaced
+                    if(Obj.outerHTML) { //if outerHTML is supported
+                        Obj.outerHTML= str2; ///it's simple replacement of whole element with contents of str var
+                    }
+              }
+
+        function closeSearchDiv() {
+               document.getElementById('search-plan-id').style.display = 'none';          
+               
+                showingModal = true;
+            }
+
+
+        function Selected() {
+                console.log('mouse ouggted')
+                    if (document.getElementById('FemaleId').checked){
+                     d = document.getElementById('FemaleId').value;
+                    
+                    var c = d
+                    var action = 'Selected'
+                    var male = false
+                    var female = false
+                    var mixed = false
+                    if (document.getElementById('MaleId').checked){
+                            male = true
+                    }
+                    if (document.getElementById('MixedId').checked){
+                            mixed = true
+                    }
+                    if (document.getElementById('FemaleId').checked){
+                            female = true
+                    }
+
+
+                $.ajax({
+                    url:$('.content-data').data('url'),
+                    type: 'GET',
+                    data:{
+                        'd':c,
+                        'e':action,
+                        'male':male,
+                        'female':female,
+                        'mixed':mixed,
+                    },
+                    dataType:'json',
+                    success: function(data){
+                        if (data.is_checked){
+                            alert("is_checked");
+                        }
+                    }
+                });
+                    }
+        }
+
+        function showHistoryModal(id) {
+                console.log('mouse hovered')
+               document.getElementById('admit-patient-id'+id).style.display = 'block';          
+
+                showingModal = true;
+            }
+
+        function hideHistoryModal(id) {
+                console.log('mouse outed')
+               document.getElementById('admit-patient-id'+id).style.display = 'none';          
+        }
+
+    </script>
+
 {% endblock %}

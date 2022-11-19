@@ -1,0 +1,101 @@
+{% load crispy_forms_tags %}
+{% load static %}
+{% block style %}
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <link href="{% static 'css/pages/formlayout.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'css/pages/formlayout.css' %}" rel="stylesheet" type="text/css" />
+
+    <link href="{% static 'plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css' %}" rel="stylesheet" type="text/css" />
+{% endblock %}
+{% load custom_dict %}
+
+
+<div class="modal fade" id="manualPrescriptionFormModal10{{plan.id}}" tabindex="0" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    {% if plan.prescription.info %}
+                                            {% return_info_form plan.id %}
+                    {% endif %}
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" >
+            <div class="modal-header" >
+                <form method="POST" action="">
+                                    {% csrf_token %}
+
+                <h4 class="modal-title center">
+
+                        <button class="btn " type="submit"><i class="fa fa-save"></i><a href="{% url 'treatment_plan_prescription' plan.id %}"> Save And Close</a></button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                </h4>
+            </div>
+            <div class="modal-body" >
+                {% if info_form5 %}
+                        <div class="form-row" > 
+
+                              <div class="form-group col-md-6 ">
+                                <small>
+                                    {{ info_form5.drug|as_crispy_field }}
+                                </small>
+                              </div>
+                              <div class="form-group col-md-6 mb-0">
+                                <small>
+                                    {{ info_form5.units_per_take|as_crispy_field }}
+                                </small>
+                              </div>
+                              
+                        </div>
+                                                    
+                                                    <div class="form-row" > 
+                                                      <div class="form-group col-md-6 mb-0">
+                                                        <small>
+                                                          {{ info_form5.frequency|as_crispy_field }}
+                                                        </small>
+                                                      </div>
+                                                      <div class="form-group col-md-6 mb-0">
+                                                        <small>
+                                                            {{ info_form5.frequency_unit|as_crispy_field }}
+                                                        </small>      
+                                                      </div>
+                                                      
+                                                    </div>
+
+                                                    <div class="form-row" > 
+                                                      <div class="form-group col-md-6 mb-0">
+                                                        <small>
+                                                        {{ info_form5.duration|as_crispy_field }}
+                                                        </small>  
+                                                    </div>
+                                                      <div class="form-group col-md-6 mb-0">
+                                                        <small>
+                                                        {{ info_form5.duration_unit|as_crispy_field }}
+                                                        </small>
+                                                      </div>
+                                                      
+                                                    </div>
+
+                                                    <div class="form-row">   
+                                                     <div class= " form-group col-md-6 mb-0">
+                                                        <small>
+                                                            {{prescription_form.diagnosis|as_crispy_field}}
+                                                        </small>
+                                                      </div>
+                                                     <div class= " form-group col-md-6 mb-0">
+                                                        <small>
+                                                            {{prescription_form.comments|as_crispy_field}}
+                                                        </small>
+                                                      </div>
+                                                    </div>
+
+                </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+</script>
+
+    <script src="{% static 'plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js' %}"></script>
+    <script src="{% static 'plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker-init.js' %}"></script>

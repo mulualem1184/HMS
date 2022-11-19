@@ -309,6 +309,89 @@
 	                                </div>
 	                            </div>
 	                        </li>
+                            {% if user.employee.designation.staff_code == '88888' %}
+                                <li class="nav-item ">
+                                    <a href="#" class="nav-link nav-toggle">
+                                        <i class="fa fa-medkit"></i>
+                                        <span class="title">Records</span>
+                                        <span class="arrow"></span>
+                                    </a>
+                                    <ul class="sub-menu"  >
+                                        <li class="nav-item">
+                                                <div class="col-md-1">
+                                                </div>
+                                            <a href="" class="nav-link ">
+                                                <span class="title"><small> Home</small></span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item">
+
+                                            <a href="{% url 'core:patient_dashboard' 22 %}" class="nav-link ">
+                                                <i class="fa fa-user"></i>                                                
+                                                <span class="title"><small>Patient Chart</small></span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item  ">
+
+                                            <a href="{% url 'core:activities' 22 %}" class="nav-link ">
+                                                <span class="title"><small>Activities</small></span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item  ">
+                                                <div class="col-md-1">
+                                                </div>
+
+                                            <a href="{% url 'core:consultations' 22 %}" class="nav-link ">
+                                                <span class="title"><small>Consultation</small></span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item  ">
+                                                <div class="col-md-1">
+                                                </div>
+
+                                            <a href="{% url 'core:patient_list' %}" class="nav-link ">
+                                                <span class="title"><small> Patients</small></span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item  ">
+
+                                            <a href="{% url 'whole_ward_view' %}" class="nav-link">
+                                                <i class="fa fa-bed"></i>
+                                                <span class="title"><small> Inpatients</small></span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item  ">
+
+                                            <a href="{% url 'core:bed_calendar' %}" class="nav-link ">
+                                                <span class="title"><small> Beds Calendar</small></span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item  ">
+
+                                            <a href="" class="nav-link ">
+                                                <i class="fa fa-calendar"></i>
+                                                <span class="title"><small>Calendars</small></span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item  ">
+
+                                            <a href="{% url 'core:checkins' 22 %}" class="nav-link ">
+                                                <span class="title"><small> Checkins</small></span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item  ">
+                                            <a href="{% url 'core:resources' 22 %}" class="nav-link ">
+                                                <span class="title"><small> Resources </small></span>
+                                            </a>
+                                        </li>
+
+                                    </ul>
+                                </li>
+                            {% else %}
+                            {% endif %}
+
+
+
 							{% if user.employee.designation.staff_code == '17' %}
 								<li class="nav-item {% if active_link == 'staff' %} open {% endif %}">
 									<a href="#" class="nav-link nav-toggle">

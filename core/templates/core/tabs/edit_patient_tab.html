@@ -1,0 +1,160 @@
+{% load crispy_forms_tags %}
+
+        <div class="tab-pane active" id="patient-tab">
+
+            <div class="row" >
+                <div class="col-md-6">    
+                    <div class="panel-group accordion" id="accordion3">
+                          <div class="panel panel-default">
+                              <div class="panel-heading panel-heading-gray">
+                                  <h4 class="panel-title" style="height: 10px;">
+                                      <a class="accordion-toggle accordion-toggle-styled" data-toggle="collapse" data-parent="#accordion3" href="#collapse_3_1"><b><h6 style="color:black;"> Demographics </h6></b></a>
+                                  </h4>
+                              </div>
+                              <div id="collapse_3_1" class="panel-collapse in">
+                                  <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <small>{{registration_form.first_name|as_crispy_field}}</small>
+                                                
+                                            </div>
+                                            <div class="col-md-3">
+                                                <small>{{registration_form.last_name|as_crispy_field}}</small>                                           
+                                            </div>
+                                            <div class="col-md-3">
+                                                <small>{{registration_form.grandfather_name|as_crispy_field}}</small>                                           
+                                            </div>
+                                            <div class="col-md-2">
+                                                <small>{{registration_form.title|as_crispy_field}}</small>                                           
+                                            </div>
+
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <small>{{registration_form.dob|as_crispy_field}}</small>
+                                                
+                                            </div>
+                                            <div class="col-md-3">
+                                                <small>{{registration_form.sex|as_crispy_field}}</small>                                           
+                                            </div>
+
+                                        </div>
+                                            
+
+                                  </div>
+                              </div>
+                          </div>
+                    </div>
+                    <div class="panel-group accordion" id="accordion4">
+                          <div class="panel panel-default">
+                              <div class="panel-heading panel-heading-gray" style="height: 40px;">
+                                  <h4 class="panel-title" >
+                                      <a class="accordion-toggle accordion-toggle-styled" data-toggle="collapse" data-parent="#accordion4" href="#collapse_3_2" ><b><h6 style="color:black;"> Address </h6></b></a>
+                                  </h4>
+                              </div>
+                              <div id="collapse_3_2" class="panel-collapse in">
+                                  <div class="panel-body">
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <small>{{registration_form.sub_city|as_crispy_field}}</small>                                            
+                                            </div>
+                                            <div class="col-md-6">
+                                                <small>{{registration_form.wereda|as_crispy_field}}</small>                                           
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <small>{{registration_form.kebele|as_crispy_field}}</small>                                           
+                                            </div>
+                                            <div class="col-md-6">
+                                                <small>{{registration_form.region|as_crispy_field}}</small>                                           
+                                            </div>
+
+                                        </div>
+                                  </div>
+                              </div>
+                          </div>
+                    </div>
+
+                    <div class="panel-group accordion" id="accordion4">
+                          <div class="panel panel-default">
+                              <div class="panel-heading panel-heading-gray" style="height: 40px;">
+                                  <h4 class="panel-title" >
+                                      <a class="accordion-toggle accordion-toggle-styled" data-toggle="collapse" data-parent="#accordion4" href="#collapse_3_3" ><b><h6 style="color:black;">Contact </h6></b></a>
+                                  </h4>
+                              </div>
+                              <div id="collapse_3_3" class="panel-collapse in">
+                                  <div class="panel-body">
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <small>{{registration_form.phone_number|as_crispy_field}}</small>                                            
+                                            </div>
+                                            <div class="col-md-6">
+                                                <small>{{email_form.email|as_crispy_field}}</small>                                           
+                                            </div>
+                                        </div>
+                                  </div>
+                              </div>
+                          </div>
+                    </div>
+
+
+                </div> 
+                <div class="col-md-6">
+                    <div class="panel-group accordion" id="accordion4">
+                          <div class="panel panel-default">
+                              <div class="panel-heading panel-heading-gray" style="height: 40px;">
+                                  <h4 class="panel-title" >
+                                      <a class="accordion-toggle accordion-toggle-styled" data-toggle="collapse" data-parent="#accordion4" href="#collapse_3_5" ><b><h6 style="color:black;">Medical </h6></b></a>
+                                  </h4>
+                              </div>
+                              <div id="collapse_3_5" class="panel-collapse in">
+                                  <div class="panel-body">
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <small>{{family_medic_form.medic|as_crispy_field}}</small>                                            
+                                            </div>
+                                            <div class="col-md-6">
+                                                <small>{{referrer_form.referrer|as_crispy_field}}</small>                                           
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <small>{{blood_group_form.blood_type|as_crispy_field}}</small>                                            
+                                            </div>
+                                            <div class="col-md-6">
+                                                <small>{{blood_group_form.rh_factor|as_crispy_field}}</small>                                           
+                                            </div>
+                                        </div>
+                                  </div>
+                              </div>
+                          </div>
+                    </div>                
+
+                    <div class="panel-group accordion" id="accordion4">
+                          <div class="panel panel-default">
+                              <div class="panel-heading panel-heading-gray" style="height: 40px;">
+                                  <h4 class="panel-title" >
+                                      <a class="accordion-toggle accordion-toggle-styled" data-toggle="collapse" data-parent="#accordion4" href="#collapse_3_6" ><b><h6 style="color:black;"> Note </h6></b></a>
+                                  </h4>
+                              </div>
+                              <div id="collapse_3_6" class="panel-collapse in">
+                                  <div class="panel-body">
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <small>{{note_form.note|as_crispy_field}}</small>                                            
+                                            </div>
+                                        </div>
+                                  </div>
+                              </div>
+                          </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>

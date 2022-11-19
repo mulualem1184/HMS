@@ -8,7 +8,7 @@ from django.contrib.admin import site as admin_site
 from django.contrib.admin.widgets import RelatedFieldWidgetWrapper
 from django.contrib.admin.widgets import AdminDateWidget
 from functools import partial
-
+from inpatient_app.models import IPDTreatmentPlan
 #import autocomplete_light
 
 from django.forms.models import(
@@ -59,7 +59,6 @@ class DrugProfileForm(forms.ModelForm):
 		)	
 	"""
 class PrescriptionInfoForm(forms.ModelForm):
-
 	class Meta:
 		model = DrugPrescriptionInfo
 		fields = ['drug' ,'units_per_take', 'frequency', 'frequency_unit',
@@ -86,6 +85,44 @@ class PrescriptionInfoForm(forms.ModelForm):
 		
 			}
 
+class EditPrescriptionInfoForm(forms.ModelForm):
+	def __init__(self, *args, **kwargs):
+		planid = kwargs.pop('planid')
+		plan = IPDTreatmentPlan.objects.get(id=planid)
+		print('plannnn ',plan.id)
+		print('pspspspsjnjjjjjj',plan.prescription.info)
+		info = plan.prescription.info
+		super(EditPrescriptionInfoForm, self).__init__(*args, **kwargs)
+		for f in self.fields:
+			if hasattr(info,f):
+				value = getattr(info,f)
+				self.fields[f].initial = value
+
+	class Meta:
+		model = DrugPrescriptionInfo
+		fields = ['drug' ,'units_per_take', 'frequency', 'frequency_unit',
+					'duration', 'duration_unit']
+		widgets = {			
+			'units_per_take': forms.NumberInput(attrs={
+			'class' : 'form-control forms',
+				}),
+			'frequency': forms.NumberInput(attrs={
+			'class' : 'form-control forms',
+				}),
+			'frequency_unit': forms.Select(attrs={
+			'class' : 'form-control select2',
+				}),
+			'duration': forms.NumberInput(attrs={
+			'class' : 'form-control forms',
+				}),
+			'duration_unit': forms.Select(attrs={
+			'class' : 'form-control select2',
+				}),
+			'drug': forms.Select(attrs={
+			'class' : 'form-control select2',
+				}),
+		
+			}
 
 
 class DiseaseDrugForm(forms.ModelForm):

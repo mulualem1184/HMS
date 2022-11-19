@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+    <style>
+        .quick-launch-container {
+            display: inline-block;
+            margin-left: 5px;
+            padding-left: 5px;
+            margin-right: 7px;
+            border: black;
+            border-width: 10px;
+        }
+        .quick-launch-label {
+            display: block;
+            color: black;
+            font-weight: bold;
+        }
+        fieldset {
+            padding-bottom: 10px;
+            width: 150px; 
+            border: 2px solid; 
+            border-radius: 5px; 
+            border-color: #0a7e37;
+        }
+        legend {
+            color: black;
+            width: max-content;
+            font-size: 14px;
+        }
+        .add-allergy {
+            position: absolute;
+            bottom: 0;
+            right: 3px;
+        }
+    </style>
+
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet" type="text/css" />
+    <!-- icons -->
+    <link href="fonts/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+     <!-- Material Design Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <!--bootstrap -->
+    <link href="../assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <!-- Material Design Lite CSS -->
+    <link href="../assets/plugins/material/material.min.css" rel="stylesheet" >
+    <link href="../assets/css/material_style.css" rel="stylesheet">
+    <!-- Theme Styles -->
+    <link href="../assets/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="../assets/css/plugins.min.css" rel="stylesheet" type="text/css" />
+    <link href="../assets/css/responsive.css" rel="stylesheet" type="text/css" />
+    <link href="../assets/css/theme-color.css" rel="stylesheet" type="text/css" />
+    <!-- Date Time item CSS -->
+    <link rel="stylesheet" href="../assets/plugins/material-datetimepicker/bootstrap-material-datetimepicker.css" />
+    <!-- favicon -->
+    <link rel="shortcut icon" href="https://radixtouch.com/templates/admin/sunray/source/assets/img/favicon.ico" /> 
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+
+{% endblock %}
+{% block title %} Patient Dashboard {% endblock %}
+{% block page_content %}
+
+<form method="POST" action="{% url 'core:save_consultation' patient.id %}">
+
+{% csrf_token %}
+
+                        <header class="panel-heading panel-heading-gray custom-tab ">
+                                <small><button class="btn " type="submit"><i class="fa fa-save"></i>Save </button></small> 
+                                <small><button type="button" class="btn " data-dismiss="modal"><i class="fa fa-person"></i><a style="color: black;" href="{% url 'core:patient_dashboard' patient.id %}"> Patient Chart</a></button></small>
+                        </header>
+
+<div class="card card-box  " style="background-color: white;" >
+    
+    <div class="row">    
+
+        <div class="col-md-2" style="height:600px;">
+                 <ul class="nav nav-tabs tabs-left">
+                      <li class="nav-item"><a class="nav-link active" href="#content-tab2"
+                        data-toggle="tab"><small>Content</small></a></li>
+
+                      <li class="nav-item"><a class="nav-link "
+                        href="#systems-tab" data-toggle="tab"><small> Review Of Systems</small></a></li>
+                      <li class="nav-item"><a class="nav-link" href="#vitals-tab"
+                        data-toggle="tab"><small>Vitals</small></a></li>
+                      <li class="nav-item"><a class="nav-link" href="#physical-exam-tab"
+                        data-toggle="tab"><small>Physical Exam</small></a></li>
+                      <li class="nav-item"><a class="nav-link" href="#lab-request-tab"
+                        data-toggle="tab"><small>Lab Requests</small></a></li>
+                      <li class="nav-item"><a class="nav-link" href="#document-tab"
+                        data-toggle="tab"><small>Documents</small></a></li>
+
+               </ul>
+        </div>
+
+        <div class="tab-content col-md-9" >
+           <div class="tab-pane active" id="content-tab2">
+
+                <div class="col-md-12">
+                    <div class="row" style="padding-bottom: 15px; padding-top: 30px;" >
+                        <label for="labsection" class="col-md-2 control-label"><small>Title</small></label>
+                        <div class="col-md-7">
+                            {{partial_consultation_form.title}}
+                        </div>
+                    </div>
+                    <div class="row" style="padding-bottom: 15px;">
+                        <label for="labsection" class="col-md-2 control-label"><small>Tags</small></label>
+                        <div class="col-md-7">
+                            {{consultation_form.tags}}
+                        </div>
+                    </div>
+                    <div class="row" style="padding-bottom: 15px;">
+                        <label for="labsection" class="col-md-2 control-label"><small>Condition</small></label>
+                        <div class="col-md-7">
+                            {{partial_consultation_form.condition}}
+                        </div>
+                    </div>
+                    <div class="row" style="padding-bottom: 15px;">
+                        <label for="labsection" class="col-md-2 control-label"><small>Compliant</small></label>
+                        <div class="col-md-7">
+                            {{consultation_form.compliant}}
+                        </div>
+                    </div>
+
+                    <div class="row" style="padding-bottom: 15px;">
+                        <label for="labsection" class="col-md-2 control-label"><small>Clinical Findings</small></label>
+                        <div class="col-md-7">
+                            {{consultation_form.clinical_finding}}
+                        </div>
+                    </div>
+                    <div class="row" style="padding-bottom: 15px;">
+                        <label for="labsection" class="col-md-2 control-label"><small>Paraclinical Findings</small></label>
+                        <div class="col-md-7">
+                            {{consultation_form.paraclinical_finding}}
+                        </div>
+                    </div>
+                    <div class="row" style="padding-bottom: 15px;">
+                        <label for="labsection" class="col-md-2 control-label"><small>Diagnoses</small></label>
+                        <div class="col-md-7">
+                            {{consultation_form.diagnoses}}
+                        </div>
+                    </div>
+                    <div class="row" style="padding-bottom: 15px;">
+                        <label for="labsection" class="col-md-2 control-label"><small>Materials</small></label>
+                        <div class="col-md-7">
+                            {{consultation_form.material}}
+                        </div>
+                    </div>
+                    <div class="row" style="padding-bottom: 15px;">
+                        <label for="labsection" class="col-md-2 control-label"><small>Surgery</small></label>
+                        <div class="col-md-7">
+                            {{consultation_form.surgery}}
+                        </div>
+                    </div>
+                    <div class="row" style="padding-bottom: 15px;">
+                        <label for="labsection" class="col-md-2 control-label"><small>Recommendation</small></label>
+                        <div class="col-md-7">
+                            {{consultation_form.recommendation}}
+                        </div>
+                    </div>
+                </div>            
+            </div>
+            </form>
+                    {% include "core/tabs/consultation_systems_review_tab.html" %}
+                    {% include "core/tabs/consultation_vital_sign_tab.html" %}
+                    {% include "core/tabs/consultation_physical_exam_tab.html" %}
+                    {% include "core/tabs/consultation_lab_request_tab.html" %}
+                    {% include "core/tabs/consultation_document_tab.html" %}
+
+
+
+
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+    {% block scripts %}
+
+    <script type="text/javascript">
+  $(document).ready(function() {
+
+    $('#tags_id').select2({
+      tags: true,
+      tokenSeparators: [',', ' ']      
+      
+    });
+    $('#material_id').select2({
+      tags: true,
+      tokenSeparators: [',', ' ']      
+    });
+    $('#para_finding_id').select2({
+      tags: true,
+      tokenSeparators: [',', ' ']      
+    });
+    $('#clinical_finding_id').select2({
+      tags: true,
+      tokenSeparators: [',', ' ']      
+    });
+    $('#compliant_id').select2({
+      tags: true,
+      tokenSeparators: [',', ' ']      
+    });
+    $('#diagnoses_id').select2({
+      tags: true,
+      tokenSeparators: [',', ' ']      
+    });
+    $('#surgery_id').select2({
+      tags: true,
+      tokenSeparators: [',', ' ']      
+    });
+    $('#recommendation_id').select2({
+      tags: true,
+      tokenSeparators: [',', ' ']      
+    });
+
+});
+        
+    </script>
+    <script data-cfasync="false" src="../../../../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="../assets/plugins/jquery/jquery.min.js" ></script>
+    <script src="../assets/plugins/popper/popper.min.js" ></script>
+    <script src="../assets/plugins/jquery-blockui/jquery.blockui.min.js" ></script>
+    <script src="../assets/plugins/jquery-slimscroll/jquery.slimscroll.js"></script>
+    <!-- bootstrap -->
+    <script src="../assets/plugins/bootstrap/js/bootstrap.min.js" ></script>
+    <!-- Common js-->
+    <script src="../assets/js/app.js" ></script>
+    <script src="../assets/js/layout.js" ></script>
+    <script src="../assets/js/theme-color.js" ></script>
+    <!-- Material -->
+    <script src="../assets/plugins/material/material.min.js"></script>
+    <script src="../assets/plugins/material-datetimepicker/moment-with-locales.min.js"></script>
+    <script src="../assets/plugins/material-datetimepicker/bootstrap-material-datetimepicker.js"></script>
+    <script src="../assets/plugins/material-datetimepicker/datetimepicker.js"></script>
+    <!-- end js include path -->
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>        
+{% endblock %}

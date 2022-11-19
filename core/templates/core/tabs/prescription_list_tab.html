@@ -1,0 +1,56 @@
+            <div class="tab-pane" id="prescription-list-tab">
+                    <div class="row">
+
+                        <div class="col-md-6" id="dispensary-supplied-drug-table-id" >
+                            <div class="card" style="height: 270px;width: 500px;">
+                                    <div class="card-head">
+                                        <header>
+                                            <small>
+                                                <small><i onclick="addImageForm2({{treatment.id}})" class="fa fa-plus"></i>Add Prescription</small>
+                                            </small>
+                                            <small>
+                                                <small><i onclick="addImageForm2({{treatment.id}})" class="fa fa-plus"></i>Repeat Prescription</small>
+                                            </small>
+
+                                        </header>
+                                    </div>
+                                    <div class="card-body">
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;">
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="">
+                                                    <th class="text-center"><small> Drug</small></th>
+                                                    <th class="text-center"><small> Duration</small></th>
+                                                    <th class="text-center"><small> Registered on</small></th>
+                     
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for prescription in prescription_list %}
+                                                    <tr class="" style="height:40px;">
+                                                        <td style="width:300px" class="text-center">
+                                                            <small>
+                                                                {{prescription.drug}}
+                                                            </small>
+                                                        </td>
+                                                        <td style="width:300px" class="text-center">
+                                                            <small>
+                                                                {{prescription.info.duration}} {{prescription.info.duration_unit}}
+                                                            </small>
+                                                        </td>
+                                                        <td style="width:300px" class="text-center">
+                                                            <small>
+                                                                {{prescription.registered_on}} 
+                                                            </small>
+                                                        </td>
+
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+            
+        </div>

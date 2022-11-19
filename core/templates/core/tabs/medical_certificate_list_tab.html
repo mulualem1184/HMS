@@ -1,0 +1,52 @@
+                                                {% include "core/modals/add_medical_certificate_form.html" %}
+
+            <div class="tab-pane" id="medical-certificate-list-tab">
+                    <div class="row">
+
+                        <div class="col-md-6" id="" >
+                            <div class="card" style="height: 270px;width: 500px;">
+                                    <div class="card-head">
+                                           <small> <span><a href="" data-toggle="modal" data-target="#addMedicalCertificateModal{{patient.id}}">Add Certificate</a></span> </small>
+
+                                    </div>
+                                    <div class="card-body">
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;">
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="">
+                                                    <th class="text-center"><small> Reason</small></th>
+                                                    <th class="text-center"><small> Certificate Type</small></th>
+                                                    <th class="text-center"><small> Registered on</small></th>
+                     
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for certificate in certificate_list %}
+                                                    <tr class="" style="height:40px;">
+                                                        <td style="width:300px" class="text-center">
+                                                            <small>
+                                                                {{certificate.reason}}
+                                                            </small>
+                                                        </td>
+                                                        <td style="width:300px" class="text-center">
+                                                            <small>
+                                                                {{certificate.certificate_type}}
+                                                            </small>
+                                                        </td>
+
+                                                        <td style="width:300px" class="text-center">
+                                                            <small>
+                                                                {{certificate.registered_on}} 
+                                                            </small>
+                                                        </td>
+
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+            
+        </div>

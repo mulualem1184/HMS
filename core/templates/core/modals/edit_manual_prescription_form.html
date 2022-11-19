@@ -1,0 +1,87 @@
+{% load crispy_forms_tags %}
+{% load custom_dict %}
+
+<div class="modal fade" id="manualPrescriptionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <form method="POST" action="">
+                                    {% csrf_token %}
+
+                <h4 class="modal-title center">
+
+                        <button class="btn " type="submit"><i class="fa fa-save"></i>Save And Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                </h4>
+
+            </div>
+
+            <div class="modal-body" style="background-color:#E5E4E2;">
+              jdkaljfskjdf
+
+                        <div class="row">
+
+                        </div>
+                        <div class="form-row" > 
+
+                              <div class="form-group col-md-6 ">
+                                <small>
+                                    {{ info_form5.drug|as_crispy_field }}
+                                </small>
+                              </div>
+                              <div class="form-group col-md-6 mb-0">
+                                <small>
+                                    {{ info_form5.units_per_take|as_crispy_field }}
+                                </small>
+                              </div>
+                              
+                        </div>
+                                                    
+                                                    <div class="form-row" > 
+                                                      <div class="form-group col-md-6 mb-0">
+                                                        <small>
+                                                          {{ info_form5.frequency|as_crispy_field }}
+                                                        </small>
+                                                      </div>
+                                                      <div class="form-group col-md-6 mb-0">
+                                                        <small>
+                                                            {{ info_form5.frequency_unit|as_crispy_field }}
+                                                        </small>      
+                                                      </div>
+                                                      
+                                                    </div>
+
+                                                    <div class="form-row" > 
+                                                      <div class="form-group col-md-6 mb-0">
+                                                        <small>
+                                                        {{ info_form5.duration|as_crispy_field }}
+                                                        </small>  
+                                                    </div>
+                                                      <div class="form-group col-md-6 mb-0">
+                                                        <small>
+                                                        {{ info_form5.duration_unit|as_crispy_field }}
+                                                        </small>
+                                                      </div>
+                                                      
+                                                    </div>
+
+                                                    <div class="form-row">   
+                                                     <div class= " form-group col-md-6 mb-0">
+                                                        <small>
+                                                            {{prescription_form.diagnosis|as_crispy_field}}
+                                                        </small>
+                                                      </div>
+                                                     <div class= " form-group col-md-6 mb-0">
+                                                        <small>
+                                                            {{prescription_form.comments|as_crispy_field}}
+                                                        </small>
+                                                      </div>
+                                                    </div>
+
+                </form>
+            jsjsj
+            </div>
+        </div>
+    </div>
+</div>

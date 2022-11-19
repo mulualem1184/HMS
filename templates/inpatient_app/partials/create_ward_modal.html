@@ -1,0 +1,53 @@
+<div class="modal fade" id="createWardModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog " role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <form method="POST" action="{% url 'create_ipd_ward' %}" >
+                        {% csrf_token %}
+
+                <h4 class="modal-title center">
+                        <button class="btn btn" type="submit">Save And Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                </h4>
+            </div>
+            <div class="modal-body">
+
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-2 control-label">Name</label>
+                        <div class="col-md-8">
+                            {{ward_form.name}}
+                        </div>
+
+                    </div>
+
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-2 control-label">Type</label>
+                        <div class="col-md-8">
+                            {{ward_form.by_gender}}
+                        </div>
+                        
+                    </div>
+
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-2 control-label">Ward</label>
+                        <div class="col-md-8">
+                            {{ward_form.category}}
+                        </div>
+                        
+                    </div>
+
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-2 control-label">Building</label>
+                        <div class="col-md-8">
+                            {{ward_form.hospital_unit}}
+                        </div>
+                        
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>

@@ -63,7 +63,9 @@ INSTALLED_APPS = [
     'crispy_forms',
 
     'mathfilters',
-
+    'dal',
+    'dal_select2',
+    'django_flatpickr',
 ]
 
 MIDDLEWARE = [

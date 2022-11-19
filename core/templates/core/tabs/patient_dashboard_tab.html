@@ -1,0 +1,75 @@
+
+            <div class="tab-pane active" id="patient-dashboard-tab">
+
+                    <div class="row">
+
+                        <div class="col-md-6" id="dispensary-supplied-drug-table-id" >
+                            <div class="card"  style="height: 270px;">
+                                    <div class="card-head">
+                                        <header><small>Demographics</small></header>
+                                    </div>
+                                    <div class="card-body">
+                                             <small><b>Full Name:</b> {{patient.full_name}}</small></br>
+                                             <small><b>Gender</b> {{patient.sex}}</small></br>
+                                             <!--<small><b>Date Of Birth</b> {{patient.dob}}</small></br>-->
+                                             <small><b>Address:</b> {{patient.adress}}</small></br>
+                                             <small><b>Phone Number:</b> {{patient.phone_number}}</small></br>
+
+                                             <small><b>Blood Group:</b> </small></br>
+                                             <small><b>Last Visit:</b> {% if last_visit %} {{last_visit.registered_on}} {% else %} {{last_ward_visit.admission_date}} {% endif %}</small></br>
+                                    </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6" id="dispensary-supplied-drug-table-id" >
+                            <div class="card" style="height: 270px;">
+                                    <div class="card-head">
+                                        <header><small>Notes</small></header>
+                                    </div>
+                                    <div class="card-body">
+                                             <p><small></small></p>
+                                             <p><small></small></p>
+                                             <p><small></small></p>
+                                             <p><small></small></p>
+                                             <p><small></small></p>
+
+                                    </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6" id="dispensary-supplied-drug-table-id">
+                            <div class="card" style="height: 270px;">
+                                    <div class="card-head">
+                                        <header><small>Appointment and Treatment</small></header>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="add-allergy">
+                                            {% include "core/modals/schedule_stuff_form.html" %}
+                                           <small> <span><a href="" data-toggle="modal" data-target="#scheduleStuffModal{{patient.id}}">Schedule Appointment</a></span> </small>
+                                        </div>
+
+                                    </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6" id="dispensary-supplied-drug-table-id">
+                            <div class="card" style="height: 270px;">
+                                    <div class="card-head">
+                                        <header><small>Allergies</small></header>
+                                    </div>
+                                    <div class="card-body">
+                                        {% for allergy in allergy_list %}
+                                            {% if allergy.active == True %}
+                                                {% include "core/modals/edit_allergy_form.html" %}
+                                                 <small><b><a href="" data-toggle="modal" data-target="#editAllergyModal{{allergy.id}}">{{allergy.allergy}}</a></b> </small></br>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <div class="add-allergy">
+                                            {% include "core/modals/add_allergy_form.html" %}
+                                           <small> <span><a href="" data-toggle="modal" data-target="#addAllergyModal{{patient.id}}">Add Allergy</a></span> </small>
+                                        </div>
+                                    </div>
+                            </div>
+                        </div>
+
+                    </div>
+            
+          </div>

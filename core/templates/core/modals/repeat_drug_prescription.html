@@ -1,0 +1,85 @@
+{% load crispy_forms_tags %}
+
+<div class="modal fade" id="addDrugPrescriptionModal2{{patient.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog " role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <form method="POST" action="{% url 'core:add_prescription' patient.id %}" >
+                        {% csrf_token %}
+
+                <h4 class="modal-title center">
+                        <button class="btn " type="submit">Save And Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                </h4>
+            </div>
+            <div class="modal-body">
+
+                    <div class="form-group col-md-12">
+                        <div class="col">
+                              <div class="form-row" >                           
+                                      <div class="form-row" > 
+                                        <div class="form-group col-md-6 ">
+                                          <small>
+                                              {{ info_form.drug|as_crispy_field }}
+                                          </small>
+                                        </div>
+                                        <div class="form-group col-md-6 mb-0">
+                                          <small>
+                                              {{ info_form.units_per_take|as_crispy_field }}
+                                          </small>
+                                        </div>
+                                        
+                                      </div>
+                                      
+                                      <div class="form-row" > 
+                                        <div class="form-group col-md-6 mb-0">
+                                          <small>
+                                            {{ info_form.frequency|as_crispy_field }}
+                                          </small>
+                                        </div>
+                                        <div class="form-group col-md-6 mb-0">
+                                          <small>
+                                              {{ info_form.frequency_unit|as_crispy_field }}
+                                          </small>      
+                                        </div>
+                                        
+                                      </div>
+
+                                      <div class="form-row" > 
+                                        <div class="form-group col-md-6 mb-0">
+                                          <small>
+                                          {{ info_form.duration|as_crispy_field }}
+                                          </small>  
+                                      </div>
+                                        <div class="form-group col-md-6 mb-0">
+                                          <small>
+                                          {{ info_form.duration_unit|as_crispy_field }}
+                                          </small>
+                                        </div>
+                                        
+                                      </div>
+
+                                      <div class="form-row">   
+                                       <div class= " form-group col-md-6 mb-0">
+                                          <small>
+                                              {{prescription_form.diagnosis|as_crispy_field}}
+                                          </small>
+                                        </div>
+                                       <div class= " form-group col-md-6 mb-0">
+                                          <small>
+                                              {{prescription_form.comments|as_crispy_field}}
+                                          </small>
+                                        </div>
+                                      </div>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>

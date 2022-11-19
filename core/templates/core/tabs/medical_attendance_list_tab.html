@@ -1,0 +1,57 @@
+                                                {% include "core/modals/add_medical_attendance_form.html" %}
+
+            <div class="tab-pane" id="medical-attendance-list-tab">
+                    <div class="row">
+
+                        <div class="col-md-6" id="" >
+                            <div class="card" style="height: 270px;width: 500px;">
+                                    <div class="card-head">
+                                           <small> <span><a href="" data-toggle="modal" data-target="#addMedicalAttendanceModal{{patient.id}}">Add Attendance</a></span> </small>
+                                    </div>
+                                    <div class="card-body">
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;">
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="">
+                                                    <th class="text-center"><small> Date</small></th>
+                                                    <th class="text-center"><small> Start Time</small></th>
+                                                    <th class="text-center"><small> End Time</small></th>
+                                                    <th class="text-center"><small> Registered on</small></th>
+                     
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for attendace in attendance_list %}
+                                                    <tr class="" style="height:40px;">
+                                                        <td style="width:300px" class="text-center">
+                                                            <small>
+                                                                {{attendance.date}}
+                                                            </small>
+                                                        </td>
+                                                        <td style="width:300px" class="text-center">
+                                                            <small>
+                                                                {{attendance.start_time}}
+                                                            </small>
+                                                        </td>
+
+                                                        <td style="width:300px" class="text-center">
+                                                            <small>
+                                                                {{attendance.end_time}} 
+                                                            </small>
+                                                        </td>
+                                                        <td style="width:300px" class="text-center">
+                                                            <small>
+                                                                {{attendance.registered_on}} 
+                                                            </small>
+                                                        </td>
+
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+            
+        </div>

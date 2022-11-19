@@ -24,4 +24,7 @@ admin.site.register(WardNurseTeam)
 admin.site.register(BedReleaseDate)
 admin.site.register(AdmissionPriorityLevel)
 admin.site.register(PatientStayDurationPrediction)
+admin.site.register(WardStayDuration)
+admin.site.register(WardDischargeSummary)
+admin.site.register(IPDTreatmentPlan)
 

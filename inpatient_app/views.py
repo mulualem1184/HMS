@@ -1,7 +1,11 @@
 from django.shortcuts import render
+from django.http import JsonResponse
+
 from .models import *
 from billing_app.models import * 
 from pharmacy_app.models import *
+from pharmacy_app.forms import PrescriptionForm,PrescriptionInfoForm
+
 from staff_mgmt.models import (Attendance, AttendanceReport, Department, Designation,
 					 Employee, EmployeeDocument, ShiftType, StaffLeave, WorkShift)
 from staff_mgmt.forms import (ChangePasswordForm, DepartmentForm,
@@ -17,7 +21,7 @@ from django.views import View
 
 from django.contrib import messages
 from .forms import *
-from outpatient_app.forms import VitalSignForm
+from outpatient_app.forms import VitalSignForm,AppointmentForm
 from django.shortcuts import redirect
 
 from django.db.models import Sum
@@ -31,7 +35,7 @@ from rest_framework.response import Response
 from rest_framework.renderers import TemplateHTMLRenderer
 from collections import OrderedDict
 from .fusioncharts import FusionCharts
-
+from core.forms import PatientTreatmentForm,RecurrenceForm
 
 # Create your views here.
 def HospitalStructure(request):
@@ -84,6 +88,330 @@ def HospitalStructure(request):
 				}
 	return render(request,'inpatient_app/hospital_structure.html',context)
 
+def WholeWardView(request):
+	start_date = datetime.strptime(request.GET.get('start_date') or '1970-10-01', '%Y-%m-%d')
+	end_date = datetime.strptime(request.GET.get('end_date') or str(datetime.now().date()),  '%Y-%m-%d')
+	end_date = end_date + timedelta(days=1)
+	patient_list = Patient.objects.all()
+	check_input = request.GET.get('check_input',None)
+	print('Check',check_input)	
+	plan_list = IPDTreatmentPlan.objects.filter(active=True,registered_on__range=[start_date,end_date])
+	bed_list = Bed.objects.all()
+	building_list = HospitalUnit.objects.filter(active=True)
+	ward_list = Ward.objects.filter(active=True)
+	category_list = BedCategory.objects.all()
+
+
+	plan_text = request.GET.get('search-plan',None)
+	filtered_status = request.GET.get('treatment_plan_status',None)
+	filtered_patient_id = request.GET.get('patient',None)
+
+	active_tab = None
+	print(plan_text)
+	if plan_text == None:
+		print('')
+	else:
+		plan_list = plan_list.filter(patient__last_name__icontains=plan_text)
+		active_tab = 'plan_tab'
+
+	if filtered_status == None:
+		print('none 1')
+	elif filtered_status == '2':
+		plan_list = plan_list.filter(status__isnull=True)
+		active_tab = 'plan_tab'
+	elif filtered_status == '3':
+		plan_list = plan_list.filter(status='Completed')
+		active_tab = 'plan_tab'
+	elif filtered_status == '4':
+		plan_list = plan_list.filter(status='Dismissed')
+		active_tab = 'plan_tab'
+
+	if filtered_patient_id == None:
+		print('none 2')
+	elif filtered_patient_id == '0':
+		print('0000')
+	else:
+		print('patient is    : ',filtered_patient_id)
+		plan_list = plan_list.filter(patient=Patient.objects.get(id=filtered_patient_id))
+		active_tab = 'plan_tab'
+	plan_list = plan_list[::-1]
+	d = request.GET.get('d',None)
+	c = request.GET.get('tagss',None)
+	sb = request.GET.get('search-building',None)
+
+	bed_list = Bed.objects.all()
+	building_list = HospitalUnit.objects.filter(active=True)
+	ward_list = Ward.objects.filter(active=True)
+
+	category_list = BedCategory.objects.all()
+
+	patient_array = []
+	patient_form = PatientForm()
+	patient_form2 = PatientForm()
+
+	bed_list2= Bed.objects.filter(patient__isnull=False)
+	for bed in bed_list2:
+		patient_array.append(bed.patient.id)
+
+	patient_form.fields['patient'].queryset = Patient.objects.exclude(id__in=patient_array)
+	patient_form2.fields['patient'].queryset = Patient.objects.filter(id__in=patient_array)
+	#prediction_form = StayDurationPredictionForm()
+	care_plan_list = InpatientCarePlan.objects.filter(status='active')
+	treatment_plan_form = IPDTreatmentPlanForm()
+	treatment_plan_form.fields['patient'].queryset = Patient.objects.exclude(id__in=patient_array)
+	treatment_actions = ['None','Add Prescription','Add Lab Test']
+
+	by_gender = ['MALE','FEMALE','MIXED']
+	gender_value = ['MALE','FEMALE','MIXED']
+
+	prescription_form = PrescriptionForm()
+	patient_list = Patient.objects.all()
+	dynamic_treatment_form = DynamicTreatmentForm()
+	manual_treatment_form = ManualTreatmentForm()
+	info_form2 = PrescriptionInfoForm()
+	appointment_form = AppointmentForm()
+	patient_treatment_form = PatientTreatmentForm()
+	recurrence_form = RecurrenceForm()
+
+
+	if request.htmx:
+		print('HTMX')
+		filter_request = request.GET.get('id')
+		print("request id:",filter_request )
+		ward_value = request.GET.getlist('ward_category')
+		bed_status_value = request.GET.getlist('bed_status')
+		bed_list = list(bed_list)
+		print("request id:",ward_value )
+
+		plan_list = list(plan_list)
+		is_dismissed = False
+		is_complete = False
+
+		if filter_request == "PlanStatus":
+			plan_status_value = request.GET.getlist('plan_status')
+			print("request id:",plan_status_value )
+
+			for status in plan_status_value:
+				if status == 'Completed':
+					is_complete = True
+				else:
+					print()
+				if status =='Dismissed':
+					is_dismissed = True
+
+			if is_complete == True:
+				plans = IPDTreatmentPlan.objects.filter(status='Completed')
+				for plan in plans:
+					if plan in plan_list:
+						print('plan already is')
+					else:				
+						plan_list.append(plan)
+			else:
+				for plan in plan_list:
+					if plan.status == 'Completed':
+						plan_list.remove(plan)
+
+			if is_dismissed == True:
+				plans = IPDTreatmentPlan.objects.filter(status='Dismissed')
+				for plan in plans:
+					if plan in plan_list:
+						print('dplan already is')
+					else:				
+						plan_list.append(plan)
+			else:
+				for plan in plan_list:
+					if plan.status == 'Dismissed':
+						plan_list.remove(plan)
+			if is_complete == False:
+				for plan in plan_list:
+					if plan.status == 'Completed':
+						plan_list.remove(plan)
+					print(plan.status)
+			context2 = {'plan_list':plan_list}
+			return render(request,'inpatient_app/partials/treatment_plan_list_partial.html', context2)
+
+		if filter_request == "GENDER":
+			gender_value = request.GET.getlist('gender')
+
+			print('valud: ',gender_value)
+			is_male = False
+			is_female = False
+			is_mixed = False
+
+
+			for value in gender_value:
+				if value == 'MALE':
+					is_male = True
+				else:
+					print('')
+				if value == 'FEMALE':
+					is_female = True
+				else:
+					print('')
+				if value == 'MIXED':
+					is_mixed = True
+				else:
+					print('')
+			if is_male == True:
+				print('1')
+				beds = Bed.objects.filter(ward__by_gender='MALE')
+				for bed in beds:
+					if bed in bed_list:
+						print('male already is')
+					else:
+				
+						bed_list.append(bed)
+			else:
+				for bed in bed_list:
+					if bed.ward.by_gender == 'MALE':
+						bed_list.remove(bed)
+				#bed_list = bed_list.exclude(ward__by_gender='MALE')
+			if is_female == True:
+				print('2')
+				beds = Bed.objects.filter(ward__by_gender='FEMALE')
+				for bed in beds:
+					if bed in bed_list:
+						print('female already is')
+					else:
+						bed_list.append(bed)
+			else:			
+				for bed in bed_list:
+					if bed.ward.by_gender == 'FEMALE':
+						bed_list.remove(bed)
+				#bed_list = bed_list.exclude(ward__by_gender='FEMALE')
+			if is_mixed == True:
+				print('3')
+				beds = Bed.objects.filter(ward__by_gender='MIXED')
+				for bed in beds:
+					if bed in bed_list:
+						print('mixed already is')
+					else:
+						bed_list.append(bed)
+
+			else:
+				for bed in bed_list:
+					if bed.ward.by_gender == 'MIXED':
+						bed_list.remove(bed)
+				
+				#bed_list = bed_list.exclude(ward__by_gender='MIXED')
+
+		is_occupied = False
+		is_free = False
+
+		if filter_request == "BedStatus":
+			bed_status_value = request.GET.getlist('bed_status')
+			for value in bed_status_value:
+				if value == 'FREE':
+					is_free = True
+				else:
+					print('')
+				if value == 'FEMALE':
+					is_occupied = True
+				else:
+					print('')
+			if is_free == True:
+				print('1')
+				beds = Bed.objects.filter(patient__isnull=True)
+				for bed in beds:
+					if bed in bed_list:
+						print('free already is')
+					else:				
+						bed_list.append(bed)
+			else:
+				for bed in bed_list:
+					if bed.patient ==None:
+						bed_list.remove(bed)
+
+			if is_occupied == True:
+				print('1')
+				beds = Bed.objects.filter(patient__isnull=False)
+				for bed in beds:
+					if bed in bed_list:
+						print('occupied already is')
+					else:				
+						bed_list.append(bed)
+			else:
+				for bed in bed_list:
+					if bed.patient:
+						print('removivivi')
+						bed_list.remove(bed)
+
+		category_array = []
+		for bed in bed_list:
+			if bed.ward.category in category_array:
+				print('')
+			else:
+				category_array.append(bed.ward.category)
+
+		if filter_request == "Ward":
+			print('it is ward')
+			ward_value = request.GET.getlist('ward_category')
+
+			category_list = category_array			
+			for category in BedCategory.objects.all():
+				if category.id in ward_value:
+					print()
+					pritn('WArd already there')
+				else:
+					if category in category_list:
+						print('category remmoved:', category)
+						category_list.remove(category)
+			for value in ward_value:
+				category = BedCategory.objects.get(id=value)
+				if category in category_list:
+					print('al')
+				else:
+					print('category added:', category)
+					category_list.append(category)
+
+
+		#bed_list2 = bed_list.filter(ward__by_gender='MIXED')
+		ward_list2 = Ward.objects.filter(active=True,by_gender='MIXED')
+		
+		#for c in category_list2:
+		#	print(c,'\n')		
+		#dispensed_drugs2 = DrugDispensed.objects.filter(dispensary_id=dispensary_id)
+
+		context2 = {'bed_list':bed_list,
+					'ward_list2':ward_list2,
+					'ward_list':ward_list,
+					'category_list':category_list,
+					'gender_value':gender_value
+		}
+		return render(request,'inpatient_app/partials/ward_view_partial.html', context2)
+	context = {'patient_list':patient_list,
+				'bed_list':bed_list,
+				'ward_list':ward_list,
+
+				'building_list':building_list,
+				'category_list':category_list,
+				'gender_value':gender_value,
+
+				'patient_form':patient_form,
+				'patient_form2':patient_form2,
+
+				#'prediction_form':prediction_form,
+				'appointment_form':appointment_form,
+				'recurrence_form':recurrence_form,
+
+				'care_plan_list':care_plan_list,
+				'by_gender':by_gender,
+
+				'treatment_plan_form':treatment_plan_form,
+				'prescription_form':prescription_form,
+				'info_form2':info_form2,
+
+				'plan_list':plan_list,
+				'active_tab':active_tab,
+
+				'dynamic_treatment_form':dynamic_treatment_form,
+				'manual_treatment_form':manual_treatment_form,
+				'patient_treatment_form':patient_treatment_form,
+
+
+	}
+	return render(request,'inpatient_app/whole_ward_view.html', context)
+
 
 def PatientList(request):
 	beds = Bed.objects.filter(patient__isnull=False)
@@ -114,6 +442,753 @@ def PatientList(request):
 				}
 	return render(request,'inpatient_app/patient_list.html',context)
 
+
+# Create your views here.
+def AdmitPatientToWard(request,bed_id,value):
+	print('dxn value:',value,'\n')
+	bed = Bed.objects.get(id=bed_id)	
+	if request.method == 'POST':
+		patient_name = request.POST.get('patient_input',None)
+		patient = None
+		found = False
+		for patient1 in Patient.objects.all():
+			if found == False:
+				if patient1.full_name == patient_name:
+					print(patient1.full_name," : ",patient_name,'\n')
+					print('found it')
+					found = True
+					patient = patient1
+		print(patient)	
+		if patient==None:
+			messages.error(request,'Invalid Patient Input!')
+			return redirect('whole_ward_view')
+
+		#prediction_form = StayDurationPredictionForm(request.POST)
+		#patient_form = PatientForm(request.POST)
+		#if patient_form.is_valid():
+		start_date = datetime.strptime(request.POST.get('start_date') or '2022-11-04', '%Y-%m-%d')
+		end_date = datetime.strptime(request.POST.get('end_date') or '2022-11-08',  '%Y-%m-%d')
+
+		#patient_model = patient_form.save(commit=False)
+		#patient = patient_model.patient
+		#prediction_model = prediction_form.save(commit=False)
+		patient_arary = []
+		for bed in Bed.objects.all():
+			if bed.patient:
+				patient_arary.append(bed.patient)
+		if patient in patient_arary:
+			messages.error(request,'Already Assigned!')
+			return redirect('core:bed_calendar')
+
+		if bed.ward.by_gender == 'MIXED':
+			bed.patient = patient
+
+		elif patient.sex == bed.ward.by_gender:
+			bed.patient = patient
+		else:
+			messages.error(request,'Cannot Assign To Wrong Gender!')
+			if value == 'calendar':
+				return redirect('core:bed_calendar')
+			else:
+				return redirect('whole_ward_view')
+			
+
+		prediction_model = PatientStayDurationPrediction()
+		prediction_model.patient = patient
+		prediction_model.start_date = start_date
+		prediction_model.end_date = end_date
+		prediction_model.bed = bed
+		prediction_model.active =True
+		stay_duration = WardStayDuration()
+		stay_duration.patient = patient
+		stay_duration.admission_date = datetime.now()
+		stay_duration.room = bed
+		admission_model = InpatientAdmissionAssessment()
+		admission_model.patient = patient
+		admission_model.admitted_from = 'Direct'
+		admission_model.status = True
+		admission_model.save()
+		prediction_model.save()
+		bed.save()
+		stay_duration.save()				
+		if value == 'calendar':
+			messages.success(request,"Successful!")
+			return redirect('core:bed_calendar')
+		else:
+			messages.success(request,"Successful!")
+			return redirect('whole_ward_view')
+		#else:
+		#	messages.error(request,str(patient_form.errors))
+		#	return redirect('whole_ward_view')
+
+
+def EditWardAdmission(request, bed_id):
+	bed = Bed.objects.get(id=bed_id)
+	if request.method == 'POST':
+		patient_name = request.POST.get('patient_input',None)
+		patient = None
+		found = False
+		for patient1 in Patient.objects.all():
+			if found == False:
+				if patient1.full_name == patient_name:
+					print(patient1.full_name," : ",patient_name,'\n')
+					print('found it')
+					found = True
+					patient = patient1
+		print(patient)	
+		if patient==None:
+			messages.error(request,'Invalid Patient Input!')
+			return redirect('whole_ward_view')
+
+		#prediction_form = StayDurationPredictionForm(request.POST)
+		#patient_form = PatientForm(request.POST)
+		#if patient_form.is_valid():
+		start_date = datetime.strptime(request.GET.get('start_date') or '2022-10-18', '%Y-%m-%d')
+		end_date = datetime.strptime(request.GET.get('end_date') or '2022-10-29',  '%Y-%m-%d')
+		print('patient:',bed.patient)
+		prediction_model = PatientStayDurationPrediction.objects.get(patient=bed.patient, active=True)
+		prediction_model.patient = patient
+		prediction_model.start_date = start_date
+		prediction_model.end_date = end_date
+		prediction_model.active =True
+		stay_duration = PatientStayDuration.objects.get(patient=bed.patient, leave_date__isnull=True)
+		stay_duration.patient = patient
+		stay_duration.admission_date = start_date
+		stay_duration.room = bed
+		admission_model = InpatientAdmissionAssessment.objects.get(patient=bed.patient, status=True)
+		"""
+		count = 0
+		for m in admission_model:
+			if count == 0:
+				m.delete()
+				count=1
+				return redirect('whole_ward_view')
+		"""
+		admission_model.patient = patient
+		admission_model.admitted_from = 'Direct'
+		admission_model.status = True
+		bed.patient = patient
+		admission_model.save()
+		prediction_model.save()
+		
+		bed.save()
+		stay_duration.save()				
+		messages.success(request, 'Successful!')
+		return redirect('whole_ward_view')
+
+def DeleteWardAdmission(request, bed_id):
+	bed = Bed.objects.get(id=bed_id)
+	patient = bed.patient
+	prediction_model = PatientStayDurationPrediction.objects.get(patient=bed.patient, active=True)
+	prediction_model.active =False
+	#stay_duration = PatientStayDuration.objects.get(patient=bed.patient, leave_date__isnull=True)
+	admission_model = InpatientAdmissionAssessment.objects.get(patient=bed.patient, status=True)
+
+	admission_model.status = False
+	summary = WardDischargeSummary.objects.get(patient=bed.patient, active=True)
+	summary.active=False
+
+	bed.patient = None
+	summary.save()
+	admission_model.save()
+	prediction_model.save()
+	
+	bed.save()
+	#stay_duration.delete()				
+	messages.success(request, 'Successful!')
+	return redirect('inpatient_bill_detail',patient.id)
+
+def SaveTreatmentPlan2(request):
+	if request.method == 'POST':
+		patient_name = request.POST.get('patient_input',None)
+		patient = None
+		found = False
+		for patient in Patient.objects.all():
+			if found == False:
+				#print(patient.full_name," : ",patient_name,'\n')
+				if patient.full_name == patient_name:
+					#print('found it')
+					found = True
+					patient = patient
+		#print(patient)	
+		if patient==None:
+			messages.error(request,'Invalid Patient Input!')
+			return redirect('whole_ward_view')
+		plan_form = IPDTreatmentPlanForm(request.POST)
+		chosen_action = int(request.POST.get('action_select')) or 'None'
+		chosen_recurrence = int(request.POST.get('recurrence')) or 'None'
+		print('chosen: ',chosen_recurrence)
+		if plan_form.is_valid():
+			plan_model = plan_form.save(commit=False)
+			plan_model.registered_on = datetime.now()
+			plan_model.start_time = datetime.now()
+			plan_model.active=True
+			plan_model.patient=patient
+
+			plan_model.name = 'nameesf'
+			plan_model.description = 'descdksks'
+
+			if chosen_recurrence == 1:
+				print('chosen_recurrence1')
+				recurrence_form = RecurrenceForm(request.POST)
+				if recurrence_form.is_valid():
+					recurrence_model = recurrence_form.save(commit=False)
+					recurrence_model.daily = True
+					recurrence_model.active=True
+					plan_model.recurrence = recurrence_model
+					recurrence_model.save()
+					#plan_model.save()
+					#messages.success(request,'Successful')
+					#return redirect('whole_ward_view')
+
+			elif chosen_recurrence == 2:
+				print('chosen_recurrence2')
+				recurrence_form = RecurrenceForm(request.POST)
+				if recurrence_form.is_valid():
+					recurrence_model = recurrence_form.save(commit=False)
+					recurrence_model.weekly = True
+					recurrence_model.active=True
+					plan_model.recurrence = recurrence_model
+					recurrence_model.save()
+
+			elif chosen_recurrence == 3:
+				print('chosen_recurrence3')
+				recurrence_form = RecurrenceForm(request.POST)
+				if recurrence_form.is_valid():
+					recurrence_model = recurrence_form.save(commit=False)
+					recurrence_model.monthly = True
+					recurrence_model.active=True
+					plan_model.recurrence = recurrence_model
+					recurrence_model.save()
+
+			elif chosen_recurrence == 4:
+				print('chosen_recurrence4')
+				recurrence_form = RecurrenceForm(request.POST)
+				if recurrence_form.is_valid():
+					recurrence_model = recurrence_form.save(commit=False)
+					recurrence_model.yearly = True
+					recurrence_model.active=True
+					plan_model.recurrence = recurrence_model
+					recurrence_model.save()
+
+			if chosen_action == 'None':
+				print('yes it',)
+			else:
+				print('jjjjjjkkkk',plan_model.name)
+				print(chosen_action)
+				if chosen_action == 0:
+					plan_model.save()
+				elif chosen_action == 1:
+					prescription_form = PrescriptionForm(request.POST)
+					if prescription_form.is_valid():
+						prescription_model = prescription_form.save(commit=False)
+						if prescription_model.info:
+							prescription_model.department = 'Ward'
+							prescription_model.registered_on = datetime.now()
+							plan_model.prescription = prescription_model
+							prescription_model.save()
+							plan_model.save()
+							messages.success(request,'Successful')
+							return redirect('whole_ward_view')
+					else:
+						messages.error(request,str(prescription_form.errors))
+						return redirect('whole_ward_view')
+
+					prescription_form = PrescriptionForm(request.POST)
+					info_form2 = PrescriptionInfoForm(request.POST)
+
+					if prescription_form.is_valid():
+						info_model = info_form2.save(commit=False)
+						prescription_model = prescription_form.save(commit=False)
+
+						prescription_model.department = 'Ward'
+						prescription_model.registered_on = datetime.now()
+						plan_model.prescription = prescription_model
+						prescription_model.info = info_model
+						info_model.save()
+						prescription_model.save()
+						plan_model.save()
+						messages.success(request,'Successful')
+						return redirect('whole_ward_view')
+					else:
+						messages.error(request,str(prescription_form.errors))
+						return redirect('whole_ward_view')
+
+				elif chosen_action==2:
+					patient_treatment_form = PatientTreatmentForm(request.POST)
+					print(patient_treatment_form)
+					if patient_treatment_form:
+						if patient_treatment_form.is_valid():
+							
+							treatment_model = patient_treatment_form.save(commit=False)
+							treatment_model.patient=patient
+							if treatment_model.treatment:
+								print('do nothing')
+							else:
+								treatment_model.treatment = 'tresjdfk'
+							treatment_model.active=True
+							treatment_model.registered_on = datetime.now()
+							plan_model.treatment = treatment_model	
+							treatment_model.save()
+							plan_model.save()
+							messages.success(request,'Successful')
+							return redirect('whole_ward_view')
+							"""
+							else:
+								messages.error(request,'No t')
+								return redirect('whole_ward_view')
+							"""
+						else:
+							messages.error(request,str(treatment_plan_form.errors))
+							return redirect('whole_ward_view')
+
+					"""
+					manual_treatment_form = ManualTreatmentForm(request.POST)
+					if manual_treatment_form:
+						if manual_treatment_form.is_valid():
+							
+							treatment_model = manual_treatment_form.save(commit=False)
+							if treatment_model.name:
+								treatment_model.active=True
+								treatment_model.registered_on = datetime.now()
+								plan_model.treatment = treatment_model	
+								treatment_model.save()
+								plan_model.save()
+								messages.success(request,'Successful')
+								return redirect('whole_ward_view')
+
+						else:
+							messages.error(request,str(manual_treatment_form.errors))
+							return redirect('whole_ward_view')
+				
+					dynamic_treatment_form = DynamicTreatmentForm(request.POST)
+					if dynamic_treatment_form.is_valid():
+						treatment_model = dynamic_treatment_form.save(commit=False)
+						treatment_model = treatment_model.treatment
+						plan_model.treatment = treatment_model
+						treatment_model.save()
+						plan_model.save()
+						messages.success(request,'Successfuld')
+						return redirect('whole_ward_view')
+					else:
+						messages.error(request,str(dynamic_treatment_form.errors))
+						return redirect('whole_ward_view')
+					"""
+				elif chosen_action == 3:
+					appointment_date = datetime.strptime(request.POST.get('appointment_date') or str(datetime.now().date()),  '%Y-%m-%d')
+
+					#if appointment_form.is_valid():
+					#appointment_model = appointment_form.save(commit=False)
+					appointment_model = PatientAppointment()
+					appointment_model.patient = patient
+					appointment_model.registered_on = datetime.now()
+					appointment_model.appointment_time = appointment_date
+					plan_model.appointment = appointment_model	
+					appointment_model.save()
+					plan_model.save()
+					messages.success(request,'Successfuld')
+					return redirect('whole_ward_view')
+					#else:
+					#messages.error(request,str(dynamic_treatment_form.errors))
+					#return redirect('whole_ward_view')
+
+
+		else:
+			messages.error(request,str(plan_form.errors))
+			return redirect('whole_ward_view')
+
+
+def SaveTreatmentPlan(request):
+	if request.method == 'POST':
+		inpatient_reason_form = InpatientReasonForm(request.POST)
+		inpatient_care_plan_form = InpatientCarePlanForm(request.POST)
+		patient_form = PatientForm(request.POST)
+		assessment_form = InpatientAssessmentForm(request.POST)
+		if inpatient_reason_form.is_valid():
+			if assessment_form.is_valid():
+				inpatient_reason_model = inpatient_reason_form.save(commit=False)
+				inpatient_care_plan_model = inpatient_care_plan_form.save(commit=False)
+				patient_model = patient_form.save(commit=False)
+				assessment_model = assessment_form.save(commit=False)
+				patient = patient_model.patient
+				employee = Employee.objects.get(user_profile=request.user, designation__name='Doctor')
+				inpatient_reason_model.service_provider = employee
+				inpatient_reason_model.status = 'active'
+				inpatient_reason_model.patient = patient
+
+				inpatient_care_plan_model.service_provider = employee
+				inpatient_care_plan_model.status = 'active'
+				inpatient_care_plan_model.patient = patient
+				
+				try:
+					emergency_assessment_model = InpatientAdmissionAssessment.objects.get(patient=patient,status=True, general_appearance__isnull=True)
+				except:
+					messages.error(request,"Patient Must Be Admitted Before Treatment Plan Is Set")
+					return redirect('whole_ward_view')
+				employee = Employee.objects.get(user_profile=request.user, designation__name='Doctor')
+				emergency_assessment_model.service_provider = employee
+				emergency_assessment_model.patient = patient
+				emergency_assessment_model.general_appearance = assessment_model.general_appearance
+				emergency_assessment_model.other_assessment = assessment_model.other_assessment
+
+				emergency_assessment_model.save()
+				inpatient_care_plan_model.save()
+				inpatient_reason_model.save()
+				messages.success(request, 'Successful!')
+				return redirect('whole_ward_view')
+			else:
+				messages.error(request,str(assessment_form.errors))
+				return redirect('whole_ward_view')
+
+		else:
+			messages.error(request,str(inpatient_reason_form.errors))
+			return redirect('whole_ward_view')
+
+def EditTreatmentPlan(request, plan_id):
+	if request.method == 'POST':
+		patient_id = int(request.POST.get('patient_select')) or 'None'
+		name = str(request.POST.get('plan_name')) or 'None'
+		#start_date = #datetime.strptime(request.GET.get('start_date') or datetime.now())
+		description = str(request.POST.get('description')) or 'None'
+		action_value = int(request.POST.get('action_select')) or 'None'
+		plan_model = IPDTreatmentPlan()
+		plan = IPDTreatmentPlan.objects.get(id=plan_id)
+		plan.active = False
+		plan_model.patient =Patient.objects.get(id=patient_id) 
+		plan_model.name = name
+		plan_model.start_time = datetime.now()
+		plan_model.status = plan.status
+		plan_model.description = description
+		plan_model.active = True
+		plan_model.registered_on = datetime.now()
+		plan_model.prescription = plan.prescription
+		plan_model.save()
+		plan.save()
+		messages.success(request, 'Successful!')
+		return redirect('whole_ward_view')
+
+def DeleteTreatmentPlan(request, plan_id):
+	plan = IPDTreatmentPlan.objects.get(id=plan_id)
+	plan.active = False
+	plan.save()
+	messages.success(request, 'Successfuly Deleted!')
+	return redirect('whole_ward_view')
+
+def ChangePlanStatus(request, plan_id):
+	
+	plan = IPDTreatmentPlan.objects.get(id=plan_id)
+
+	"""
+	action_value = int(request.POST.get('status_select')) or 'None'
+	print(action_value)
+	
+	if action_value == 0:
+		plan.status = 'Completed'
+	elif action_value == 1:
+		plan.status = 'Dismissed'
+	"""
+	"""
+	if plan.status == 'Dismissed':
+		plan.status='Completed'
+	elif plan.status =='Completed':
+		plan.status='Dismissed'
+	"""
+	#plan.status='Completed'
+	
+	#plan.end_time = datetime.now()
+	perform = PerformPlan()
+	perform.plan = plan
+	perform.registered_on = datetime.now()
+	perform.registered_by = Employee.objects.get(user_profile=request.user)
+	print('change it','\n','\n')
+	plan.recurrence.recurrence_threshold = plan.recurrence.recurrence_threshold + 1
+	perform.save()
+	plan.recurrence.save()
+	messages.success(request, 'Plan Applied Successfuly!')
+	return redirect('whole_ward_view')
+
+
+def TreatmentPlanPrescription(request, plan_id):
+	
+	plan = IPDTreatmentPlan.objects.get(id=plan_id)
+	plan.prescription.prescribed = True
+	plan.status='Completed'
+	plan.end_time = datetime.now()
+	plan.save()
+	messages.success(request, 'Drug Prescribed Successfuly!')
+	return redirect('whole_ward_view')
+
+def IPDStructure(request):
+	building_list = HospitalUnit.objects.all()
+	bed_list = Bed.objects.all()
+	ward_list = Ward.objects.all()
+	ward_list2 = BedCategory.objects.all()
+
+	building_text = request.GET.get('search-building',None)
+	room_text = request.GET.get('search-room',None)
+	bed_text = request.GET.get('search-bed',None)
+	category_text = request.GET.get('search-ward-category',None)
+
+	active_tab = 'building_tab'
+
+	print(building_text)
+	if building_text == None:
+		print('')
+	else:
+		building_list = building_list.filter(unit_name__icontains=building_text)
+		active_tab = 'building_tab'
+
+	if room_text == None:
+		print('')
+	else:
+		ward_list = ward_list.filter(name__icontains=room_text)
+		active_tab = 'room_tab'
+
+	if bed_text == None:
+		print('')
+	else:
+		bed_list = bed_list.filter(name__icontains=bed_text)
+		active_tab = 'bed_tab'
+
+	if category_text == None:
+		print('isisisis')
+	else:
+		ward_list2 = ward_list2.filter(category__icontains=category_text)
+		active_tab = 'ward_tab'
+
+	building_form = CreateBuildingForm()
+	ward_form = CreateRoomForm()
+	create_ward_form = CreateWardForm()
+
+	bed_form = CreateBedForm()
+	price_form = RoomPriceForm()	
+	bed_form2 = RoomFieldForm()
+
+	ward_value_list = BedCategory.objects.all()
+	if request.htmx:
+		ward_id = request.GET.get('id')
+		room_id = request.GET.get('ward_id')
+
+		print('categoryID:S:S: ',ward_id, 'roomIOD:',room_id,'\n')
+		if ward_id == None:
+			print('None')
+		else:			
+			ward5 = BedCategory.objects.get(id=ward_id)
+			ward_list = Ward.objects.filter(category=ward5)
+		yeah = 'yeah'
+		context2 = {'bed_form2':bed_form2,
+					'yeah':yeah,
+					'ward_list':ward_list,
+		
+		}
+		return render(request, 'inpatient_app/partials/ward_field_div_partial.html',context2)
+	print('tab:',active_tab)
+	context = { 'bed_list':bed_list,
+				'ward_list':ward_list,
+				'ward_list2':ward_list2,
+				'building_list':building_list,
+
+				'active_tab':active_tab,
+
+				'building_form':building_form,
+				'ward_form':ward_form,
+				'bed_form':bed_form,
+				'bed_form2':bed_form2,
+
+				'create_ward_form':create_ward_form,
+
+				'price_form':price_form,
+				'ward_value_list':ward_value_list,
+
+	}
+	return render(request, 'inpatient_app/ipd_structure.html', context)
+
+def CreateWard(request):
+	if request.method == 'POST':
+		ward_form = CreateWardForm(request.POST)
+		if ward_form.is_valid():
+			ward_model = ward_form.save(commit=False)
+			ward_model.registered_on = datetime.now()
+			ward_model.registered_by = Employee.objects.get(user_profile=request.user)
+			ward_model.active=True
+			ward_model.save()
+			messages.success(request, 'Successful!')
+			return redirect('ipd_structure')
+		else:
+			messages.error(request,str(ward_form.errors))
+			return redirect('ipd_structure')
+
+
+def EditWard(request, ward_id):
+	if request.method == 'POST':
+		name = str(request.POST.get('ward_category_name')) or 'None'
+		print('name: ',name)
+		ward = BedCategory.objects.get(id=ward_id)
+		ward.category = name
+		print(ward.category)
+		ward.save()
+		messages.success(request, 'Successful!')
+		return redirect('ipd_structure')
+
+def DeleteWard(request, ward_id):
+	ward = BedCategory.objects.get(id=building_id)
+	ward.active = False
+	ward.save()
+	messages.success(request, 'Successfuly Deleted!')
+	return redirect('ipd_structure')
+
+def CreateIPDBuilding(request):
+	if request.method == 'POST':
+		building_form = CreateBuildingForm(request.POST)
+		if building_form.is_valid():
+			building_model = building_form.save(commit=False)
+			building_model.registered_on = datetime.now()
+			building_model.registered_by = Employee.objects.get(user_profile=request.user)
+			building_model.active=True
+			building_model.save()
+			messages.success(request, 'Successful!')
+			return redirect('ipd_structure')
+		else:
+			messages.error(request,str(building_form.errors))
+			return redirect('ipd_structure')
+
+
+def EditIPDBuilding(request, building_id):
+	if request.method == 'POST':
+		name = str(request.POST.get('unit_name')) or 'None'
+		building = HospitalUnit.objects.get(id=building_id)
+		building.unit_name = name
+		building.save()
+		messages.success(request, 'Successful!')
+		return redirect('ipd_structure')
+
+def DeleteIPDBuilding(request, building_id):
+	building = HospitalUnit.objects.get(id=building_id)
+	building.active = False
+	building.save()
+	messages.success(request, 'Successfuly Deleted!')
+	return redirect('ipd_structure')
+
+def CreateIPDWard(request):
+	if request.method == 'POST':
+		ward_form = CreateRoomForm(request.POST)
+		if ward_form.is_valid():
+			ward_model = ward_form.save(commit=False)
+			ward_model.registered_on = datetime.now()
+			ward_model.registered_by = Employee.objects.get(user_profile=request.user)
+			ward_model.save()
+			messages.success(request, 'Successful!')
+			return redirect('ipd_structure')
+		else:
+			messages.error(request,str(ward_form.errors))
+			return redirect('ipd_structure')
+
+def EditIPDWard(request, ward_id):
+	if request.method == 'POST':
+		name = str(request.POST.get('ward_name')) or 'None'
+		ward = Ward.objects.get(id=ward_id)
+		building_id = int(request.POST.get('building')) or 'None'
+		gender = str(request.POST.get('gender_select')) or 'None'
+		ward.name = name
+		ward.hospital_unit = HospitalUnit.objects.get(id=building_id)
+		ward.by_gender = gender
+		ward.save()
+		messages.success(request, 'Successful!')
+		return redirect('ipd_structure')
+
+
+def DeleteIPDRoom(request, ward_id):
+	ward = Ward.objects.get(id=ward_id)
+	ward.active = False
+	ward.save()
+	messages.success(request, 'Successfuly Deleted!')
+	return redirect('ipd_structure')
+
+def CreateIPDBed(request):
+	if request.htmx:
+		ward_id = request.GET.get('ward_id')
+		print('ward id',ward_id)
+		room = Ward.objects.get(id=ward_id)
+		bed_form = CreateBedForm(request.POST)
+		price_form = RoomPriceForm(request.POST)
+
+		if bed_form.is_valid():
+			if price_form.is_valid():
+				bed_model = bed_form.save(commit=False)
+				price_model = price_form.save(commit=False)
+				bed_model.ward = room
+				bed_model.registered_on = datetime.now()
+				bed_model.registered_by = Employee.objects.get(user_profile=request.user)
+				price_model.room = bed_model
+				price_model.active = True
+				print('sss')
+				#bed_model.save()
+				#price_model.save()
+
+				messages.success(request, 'Successful!')
+				return redirect('ipd_structure')
+
+			else:
+				messages.error(request,str(price_form.errors))
+				return redirect('ipd_structure')
+
+		else:
+			messages.error(request,str(bed_form.errors) + "d")
+			return redirect('ipd_structure')
+
+	if request.method == 'POST':
+		ward_id = request.POST.get('ward_id')
+		print('ward id',ward_id)
+
+		room = Ward.objects.get(id=ward_id)
+		bed_form = CreateBedForm(request.POST)
+		price_form = RoomPriceForm(request.POST)
+
+		if bed_form.is_valid():
+			if price_form.is_valid():
+				bed_model = bed_form.save(commit=False)
+				price_model = price_form.save(commit=False)
+				bed_model.ward = room
+				bed_model.registered_on = datetime.now()
+				bed_model.registered_by = Employee.objects.get(user_profile=request.user)
+				price_model.room = bed_model
+				price_model.active = True
+
+				#bed_model.save()
+				#price_model.save()
+
+				messages.success(request, 'Successful!')
+				return redirect('ipd_structure')
+
+			else:
+				messages.error(request,str(price_form.errors))
+				return redirect('ipd_structure')
+
+		else:
+			messages.error(request,str(bed_form.errors) + "d")
+			return redirect('ipd_structure')
+
+
+def EditIPDBed(request, bed_id):
+	if request.method == 'POST':
+		name = str(request.POST.get('name')) or 'None'
+		bed = Bed.objects.get(id=bed_id)
+		ward_id = int(request.POST.get('ward')) or 'None'
+		bed.name = name
+		bed.ward = Ward.objects.get(id=ward_id)
+		bed.save()
+		messages.success(request, 'Successful!')
+		return redirect('ipd_structure')
+
+def DeleteIPDBed(request, bed_id):
+	bed = Bed.objects.get(id=bed_id)
+	bed.active = False
+	bed_price = RoomPrice.objects.get(room=bed,active=True)
+	bed_price.active = False
+	bed_price.save()
+	bed.save()
+	messages.success(request, 'Successfuly Deleted!')
+	return redirect('ipd_structure')
 
 def AllocatedPatientList(request):
 	beds = Bed.objects.filter(patient__isnull=False)
@@ -1491,7 +2566,7 @@ def NurseChartView(request, patient_id):
 	intervention_zip = zip(independent_intervention_list, evaluation_count_array)
 
 	nurse_team = WardNurseTeam.objects.get(nurse__user_profile=request.user)
-	instruction_list = InpatientDoctorInstruction.objects.filter(ward_team_bed__nurse_team=nurse_team, instruction_status = 'not_done', patient=patient)
+	instruction_list = InpatientDoctorInstruction.objects.all()
 	intervention_count_array = []
 	for instruction in instruction_list:
 		intervention_list_array = []
@@ -1838,7 +2913,7 @@ def DoctorInstructionFormPage(request, patient_id):
 			instruction_model = instruction_form.save(commit=False)
 			instruction_model.patient = patient
 			instruction_model.doctor = Employee.objects.get(user_profile=request.user, designation__name='Doctor')
-			instruction_model.ward_team_bed = WardTeamBed.objects.get(team__ward_service_provider=instruction_model.doctor, bed__patient=patient)#bed=
+			#instruction_model.ward_team_bed = WardTeamBed.objects.get(team__ward_service_provider=instruction_model.doctor, bed__patient=patient)#bed=
 			instruction_model.stay_duration = stay_duration
 			instruction_model.view_status = 'not_seen'
 			instruction_model.instruction_status = 'not_done'
@@ -1851,22 +2926,20 @@ def DoctorInstructionFormPage(request, patient_id):
 	return render(request, 'inpatient_app/doctor_instruction_form.html', context)
 
 def DischargeSummaryFormPage(request, patient_id):
-	for price in RoomPrice.objects.all():
-		price.active=True
-		price.save()
-		print('11 ')
 	patient = Patient.objects.get(id=patient_id)
-	stay_duration = PatientStayDuration.objects.get(patient=patient, leave_date__isnull=True)
-
+	#stay_duration = WardStayDuration.objects.get(patient=patient, leave_date__isnull=True)
+	print(patient)
 	discharge_form = DischargeSummaryForm()
 	if request.method == 'POST':
 		discharge_form = DischargeSummaryForm(request.POST)
 		if discharge_form.is_valid():
 			discharge_model = discharge_form.save(commit=False)
 			discharge_model.patient = patient
-			discharge_model.discharged_by = Employee.objects.get(user_profile=request.user, designation__name='Doctor')
-			discharge_model.stay_duration = stay_duration
+			#discharge_model.discharged_by = Employee.objects.get(user_profile=request.user, designation__name='Doctor')
+			#discharge_model.stay_duration = stay_duration
 			discharge_model.registered_on = datetime.now()
+			discharge_model.active = True
+
 			discharge_model.save()
 			messages.success(request, 'Successful!')
 			return redirect('discharge_inpatient', patient.id)
@@ -1876,10 +2949,8 @@ def DischargeSummaryFormPage(request, patient_id):
 
 def DischargeInpatient(request, patient_id):
 	patient = Patient.objects.get(id=patient_id)
-	patient_bill = InpatientBillRelation.objects.get(patient=patient, is_active='active')	
-#	patient_bill.is_active = 'not_active'
 
-	stay_duration = PatientStayDuration.objects.get(patient=patient, leave_date__isnull=True)
+	stay_duration = WardStayDuration.objects.get(patient=patient, leave_date__isnull=True)
 	stay_duration.leave_date = datetime.now()
 
 	duration_amount = int(stay_duration.leave_date.day) - int( stay_duration.admission_date.day)
@@ -1891,15 +2962,21 @@ def DischargeInpatient(request, patient_id):
 	room_bill.room_price = room_price.room_price * duration_amount
 	"""
 	room_bill = RoomBillDetail()
-	room_bill.room = stay_duration.room
+	room_bill.room = stay_duration.bed
 	room_bill.patient = stay_duration.patient
 	room_bill.registered_on = datetime.now()
 	payment_status = PatientPaymentStatus.objects.get(patient=patient,active=True)
 	try:
 		price = RoomPrice.objects.get(room=stay_duration.room,active=True)
 	except:
-		messages.error(request,'Room Price Has Not Been Assigned')
-		return redirect('doctor_chart_view', patient.id)
+		price = RoomPrice.objects.filter().last()
+		#room_price.room = stay_duration.bed
+		#room_price.room_price = 100
+		#room_price.discounted_price = 50
+		#room_price.active=True
+		#room_price.save()
+		#messages.error(request,'Room Price Has Not Been Assigned')
+		#return redirect('core:patient_dashboard', patient.id)
 	room_bill.room_price = price
 	if payment_status.payment_status=='Free':
 		room_bill.free = True
@@ -1926,45 +3003,46 @@ def DischargeInpatient(request, patient_id):
 		room_bill.insurance = False
 		room_bill.credit = False
 
-	inpatient_reason = InpatientReason.objects.get(patient=patient, status='active')
-	inpatient_reason.status ='not_active'	
+	#inpatient_reason = InpatientReason.objects.get(patient=patient, status='active')
+	#inpatient_reason.status ='not_active'	
 
 	bed = Bed.objects.get(patient=patient)
-	bed_release_date = BedReleaseDate.objects.get(bed=bed, status = 'active')
-	bed_release_date.status = 'not_active'
+	#bed_release_date = BedReleaseDate.objects.get(bed=bed, status = 'active')
+	#bed_release_date.status = 'not_active'
 
-	priority_level = AdmissionPriorityLevel.objects.get(patient=patient, status='active')	
-	priority_level.status = 'not_active'
+	#priority_level = AdmissionPriorityLevel.objects.get(patient=patient, status='active')	
+	#priority_level.status = 'not_active'
 
-	room_bill.save()
-	priority_level.save()
-	bed_release_date.save()
+	#priority_level.save()
+	#bed_release_date.save()
 	print('\n', 'Successful 111','\n')
-	stay_duration_prediction = PatientStayDurationPrediction.objects.get(patient=patient,status='active')
-	stay_duration_prediction.status = 'not_active'
-	stay_duration_prediction.save()
+	#stay_duration_prediction = PatientStayDurationPrediction.objects.get(patient=patient,active=True)
+	#stay_duration_prediction.active = False
+	#stay_duration_prediction.save()
 	print('\n', 'Successful 222','\n')
 #	notify(request.user,'info', ' Trial notification ', trial_string,link='/patient_list_for_doctor')
 
-	inpatient_care_plan = InpatientCarePlan.objects.filter(patient=patient, status='active')
-	for care_plan in inpatient_care_plan:
-		care_plan.status = 'not_active'
-		care_plan.save()
+	#inpatient_care_plan = InpatientCarePlan.objects.filter(patient=patient, status='active')
+	#for care_plan in inpatient_care_plan:
+	#	care_plan.status = 'not_active'
+	#	care_plan.save()
 
 	#print('one done','\n')
 		
 #	inpatient_care_plan.save()	
 	
-	inpatient_reason.save()	
+	#inpatient_reason.save()	
 
-	patient_bill.save()
+	#patient_bill.save()
+
 	stay_duration.save()
 	room_bill.save()
+
+
 	string = str(bed) + " Released!"
 	notify(request.user,'info', ' Trial notification ', string,link='/patient_list')
-
 	messages.success(request, 'Successful!')
-	return redirect('inpatient_bill_detail', patient.id)
+	return redirect('core:patient_dashboard', patient.id)
 
 def InstructionListForNurse(request):
 	instruction_list = InpatientDoctorInstruction.objects.filter(ward_team_bed__nurse_team__nurse__user_profile=request.user)
@@ -1973,25 +3051,30 @@ def InstructionListForNurse(request):
 
 
 def InpatientBillDetailPage(request, patient_id):
+	"""
+	for price in RoomPrice.objects.all():
+		price.delete()
+	for bed in Bed.objects.all()
+	"""
 	patient = Patient.objects.get(id=patient_id)	
-	patient_bill = InpatientBillRelation.objects.get(patient=patient, is_active='active')	
-	stay_duration = PatientStayDuration.objects.filter(patient=patient)
-	stay_duration = stay_duration.last()
-	room_price = RoomPrice.objects.get(room = stay_duration.room)
-
+	#patient_bill = InpatientBillRelation.objects.get(patient=patient, is_active='active')	
+	stay_duration = WardStayDuration.objects.filter(patient=patient).last()
+	room_price = RoomPrice.objects.filter().last()
 	duration_amount = int(stay_duration.leave_date.day) - int( stay_duration.admission_date.day)
 
-	room_bill = InpatientRoomBillDetail.objects.get(patient=patient, bill=patient_bill.bill, active='active')
-	drug_bill = InpatientDrugBillDetail.objects.filter(patient=patient, bill=patient_bill.bill)
-	service_bill = InpatientServiceBillDetail.objects.filter(patient=patient, bill=patient_bill.bill)
+	room_bill = RoomBillDetail.objects.filter(patient=patient, stay_duration=stay_duration).last()
+
+	drug_bill = DrugBill.objects.filter(patient=patient, stay_duration=stay_duration)
+	lab_bill = LabBillDetail.objects.filter(patient=patient, stay_duration=stay_duration)
 
 #	single_drug_price = drug_price / 
-	drug_price_dict = drug_bill.aggregate(Sum('drug_price'))
-	drug_price = drug_price_dict['drug_price__sum']
+	drug_price_dict = drug_bill.aggregate(Sum('selling_price__selling_price'))
+	print(drug_price_dict)
+	drug_price = drug_price_dict['selling_price__selling_price__sum']
 
-	service_price_dict = service_bill.aggregate(Sum('service_price'))
-	service_price = service_price_dict['service_price__sum']
-
+	#lab_price_dict = lab_bill.aggregate(Sum('service_price'))
+	#service_price = service_price_dict['service_price__sum']
+	"""
 	if drug_price  is not None:
 		if service_price is not None:
 			total_price = room_bill.room_price + drug_price + service_price
@@ -2002,8 +3085,19 @@ def InpatientBillDetailPage(request, patient_id):
 			total_price = room_bill.room_price + service_price
 		else:
 			total_price = room_bill.room_price
-	context = {'room_bill':room_bill, 'stay_duration':duration_amount, 'room_price':room_price,
-				'drug_bill':drug_bill, 'service_bill':service_bill, 'total_price':total_price,
+	"""
+
+	if drug_price:
+		total_price = room_price.room_price + int(drug_price)
+	else:
+		total_price = room_price.room_price
+	context = {'room_bill':room_bill, 
+				'stay_duration':duration_amount,
+				'room_price':room_price,
+				'drug_bill':drug_bill, 
+				'total_price':total_price,
+				'patient':patient,
+
 #				'single_drug_price':single_drug_price
 	}
 	return render(request,'inpatient_app/inpatient_bill_detail.html',context)

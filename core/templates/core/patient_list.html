@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+    <style>
+        .quick-launch-container {
+            display: inline-block;
+            margin-left: 5px;
+            padding-left: 5px;
+            margin-right: 7px;
+            border: black;
+            border-width: 10px;
+        }
+        .quick-launch-label {
+            display: block;
+            color: black;
+            font-weight: bold;
+        }
+        fieldset {
+            padding-bottom: 10px;
+            width: 150px; 
+            border: 2px solid; 
+            border-radius: 5px; 
+            border-color: #0a7e37;
+        }
+        legend {
+            color: black;
+            width: max-content;
+            font-size: 14px;
+        }
+        .add-allergy {
+            position: absolute;
+            bottom: 0;
+            right: 3px;
+        }
+    </style>
+
+
+{% endblock %}
+{% block title %} Patient Dashboard {% endblock %}
+
+{% block page_content %}
+
+
+                    <div class="" style="padding-bottom:30px;">
+                        <div class=" card col-md-12 " >
+
+                        <div class="card-head " >
+                                   <!-- <button  class="btn btn-circle" data-toggle="modal" data-target="#createBuildingModal">
+                                    </button> -->
+                                <div class="row">
+                                    <a data-toggle="modal" data-target="#treatmentPlanForm">
+                                    <div class="row" style="padding-left:30px;">
+                                        <div>
+                                        <i class="fa fa-plus fa-1x"></i> 
+                                         </div>
+                                        <div style="padding-left:7px;padding-right: 8px;">
+                                            <label><small> Add Entry </small></label>
+                                        </div>
+                                    </div>
+                                    </a>
+
+                                </div>
+                               <div style="padding-left:50px;" onclick="searchPlan()">
+                                    
+                                        <i class="fa fa-search"></i>
+                                        <label><small>Search</small></label>
+                                     
+                                </div>
+
+                                   <div class="pull-right" style="padding-left:10px;">
+                                        <a>
+                                            <i class="fa fa-print"></i>
+                                            <label><small>Print/Export</small></label>
+                                        </a> 
+                                    </div>
+
+                                <div class="pull-right" style="padding-left:10px;" >
+                                        <input type="checkbox" class="hidden" hx-get="{% url 'whole_ward_view' %}?id=PlanStatus" hx-trigger='click'  hx-swap='innerHTML' hx-target='#treatment-plan-tab' hx-include="[name='plan_status']"  value="Dismissed" name="plan_status" id="dismissed_cb">
+                                        <label for="dismissed_cb"><small>Active</small></label>                                    
+                                </div>
+
+                                <div class="pull-right" style="padding-left:10px;" >
+                                        <input type="checkbox" class="hidden" hx-get="{% url 'whole_ward_view' %}?id=PlanStatus" hx-trigger='click'  hx-swap='innerHTML' hx-target='#treatment-plan-tab' hx-include="[name='plan_status']"  value="Completed" name="plan_status" id="completed_cb">
+                                        <label for="completed_cb"><small>Inactive</small></label>                                    
+                                </div>
+                                <div class="pull-right" style="padding-left:10px;" >
+                                        <input type="checkbox" class="hidden" hx-get="{% url 'whole_ward_view' %}?id=PlanStatus" hx-trigger='click'  hx-swap='innerHTML' hx-target='#treatment-plan-tab' hx-include="[name='plan_status']"  value="Completed" name="plan_status" id="completed_cb">
+                                        <label for="completed_cb"><small>All</small></label>                                    
+                                </div>
+
+                                <div class="pull-right" style="padding-left:10px;" >
+                                        <input type="checkbox" class="hidden" hx-get="{% url 'whole_ward_view' %}?id=PlanStatus" hx-trigger='click'  hx-swap='innerHTML' hx-target='#treatment-plan-tab' hx-include="[name='plan_status']"  value="Dismissed" name="plan_status" id="dismissed_cb">
+                                        <label for="dismissed_cb"><small>Outpatient</small></label>                                    
+                                </div>
+
+                                <div class="pull-right" style="padding-left:10px;" >
+                                        <input type="checkbox" class="hidden" hx-get="{% url 'whole_ward_view' %}?id=PlanStatus" hx-trigger='click'  hx-swap='innerHTML' hx-target='#treatment-plan-tab' hx-include="[name='plan_status']"  value="Completed" name="plan_status" id="completed_cb">
+                                        <label for="completed_cb"><small>Inpatient</small></label>                                    
+                                </div>
+
+
+                        </div>
+                        </div>
+                        <div class="card card-box col-md-8" id="search-plan-id" style="display:none;">
+                           <div class="row" style="padding-bottom: 10px;">
+                               <div style="padding-right:10px;">
+                                    <label><small>Look For</small></label>
+                               </div>
+                               <form method="GET" id="search-plan-form-id">
+                                   <div>
+                                        <input type="text" list="patient_data_list" name="search-plan" id="search-plan" class="col-md-6"> 
+                                        <small><button type="button" onclick="submitPlanSearchForm()">Find Now</button></small> 
+
+                                   </div>
+                               </form>
+                               <div class="pull-right">
+                                    <a onclick="closeSearchDiv()"> <i class="fa fa-times"></i></a> 
+                               </div>
+
+                            </div>
+                        </div>
+                            <div class="row">    
+                                <div class="" id="treatment-plan-table-id" style="overflow-y:scroll;overflow-x:scroll; height: 600px;width: 1100px;">
+                                    <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;">
+                                        <thead style="background-color: lightgrey;">
+                                            <tr class="">
+                                                <th class="text-center"><small> Patient </small></th>
+                                                <th class="text-center"><small> Age </small></th>
+                                                <th class="text-center"><small> Address </small></th>
+                                                <th class="text-center"><small> Entry Date </small></th>
+                                                <th class="text-center"><small> Edit </small></th>
+                                                <th class="text-center"><small> Delete </small></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for patient in patient_list %}
+                                                <tr class="" style="height:40px;">
+                                                    <td style="width:300px;" class="text-center" > <a href="{% url 'core:patient_dashboard' patient.id %}"> <small>{{ patient.full_name}} </small></a></td>
+                                                    <td style="width:300px;" class="text-center"><small> {% if patient.age %} {{patient.age}} {% else %} 23 {% endif %}</small> </td>
+                                                    <td style="width:300px;" class="text-center"><small> {{patient.region}}</small> </td>
+                                                    <td style="width:300px;" class="text-center"><small> {{patient.registered_at}}</small> </td>
+                                                    <td style="width:300px;" class="text-center"><small><a href="{% url 'core:edit_patient' patient.id %}"> <i class="fa fa-edit"></i></a></small> </td>
+                                                    <td style="width:300px;" class="text-center"><small><i class="fa fa-delete"></i></small> </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="col-md-1">
+                                    {% for letter in small_letters %}
+                                    <div>
+                                            <input type="checkbox" class="hidden" hx-get="{% url 'core:patient_list' %}?id=PatientAlphabet" hx-trigger='click'  hx-swap='innerHTML' hx-target='#treatment-plan-tab' hx-include="[name='alphabet']"  value="{{letter}}" name="alphabet" id="letter{{letter}}">
+                                            <div style="background-color: #eef1f5;width: 20px;padding-left: 5px;margin: 0px;" >
+                                                <label class="text-center" for="letter{{letter}}"><small>{{letter}}</small></label>                                    
+                                            </div>
+                                    </div>
+                                    {% endfor %}                                    
+                                </div>
+                            </div>
+                    </div>
+
+
+{% endblock %}
+
+{% block scripts %}
+    <script>
+
+
+    </script>
+{% endblock %}

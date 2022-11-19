@@ -1,0 +1,483 @@
+{% load crispy_forms_tags %}
+{% load static %}
+{% block style %}
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <link href="{% static 'css/pages/formlayout.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'css/pages/formlayout.css' %}" rel="stylesheet" type="text/css" />
+
+    <link href="{% static 'plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css' %}" rel="stylesheet" type="text/css" />
+{% endblock %}
+<div class="modal fade" id="treatmentPlanForm"  role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" >
+            <div class="modal-header" >
+                <form method="POST" action="{% url 'save_treatment_plan2' %}">
+                                    {% csrf_token %}
+
+                <h4 class="modal-title center">
+
+                        <button class="btn " type="submit"><i class="fa fa-save"></i>Save And Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <!--
+                <button type="button" onclick="OpenModal9()">dsss</button>
+                -->
+                </h4>
+            </div>
+            <div class="modal-body" style="background-color:#E5E4E2;">
+
+                        <div class="row">
+                            <div class="col col-md-5 card card-box"  >
+                                <div class="row" style="padding-bottom: 15px;">
+                                    <label for="labsection" class="col-md-4 control-label"><small>Patient</small></label>
+                                    <div class="col-md-8">
+                                        <input type="" hx-get="{% url 'whole_ward_view' %}?id=MIXED" hx-trigger='click'  hx-swap='beforeend' list="patient_data_list" class="form-control" name="patient_input" id="patient_input">
+                                    </div>
+                                <!--   
+                                    <div class="col-md-8">
+                                        {{treatment_plan_form.patient}}
+                                    </div>
+                                -->
+                                </div>
+                                <div class="row" style="padding-bottom: 15px;">
+                                    <label for="labsection" class="col-md-4 control-label"><small>Start Time</small></label>
+
+                                    <div class="col-md-4">
+                                        <input type="date" name="start_date" placeholder="{{plan.start_time}}" id="start_date" class="form-control">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <small>
+                                            <input type="Time" name="start_ime"  id="" >  
+                                        </small>                          
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <label for="labsection" class="col-md-4 control-label"><small>Status</small></label>
+                                    <div class="col-md-8">
+                                        {{treatment_plan_form.status}}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col col-md-7" style="background-color:#E5E4E2;">
+                                <div class="row" style="padding-bottom: 15px;">
+                                    <label for="labsection" class="col-md-3 control-label"><small>Treatment Name</small></label>
+                                    <div class="col-md-8">
+                                        {{treatment_plan_form.name}}
+                                    </div>
+                                </div>
+                                <div class="row" style="padding-bottom: 15px;">
+                                    <label for="labsection" class="col-md-3 control-label"><small>Description</small></label>
+                                    <div class="col-md-8" >
+                                        {{treatment_plan_form.description}}
+                                    </div>
+                                </div>
+                                <div style="padding-bottom: 15px;">
+                                <div class="col" >    
+                                    <div class="row">
+                                        <div style="padding-left:0px;">
+                                        <label for="labsection" class="col-md-2 control-label"><small> Action</small></label>
+                                        </div>
+                                        <div class="col-md-1"></div>
+                                        <div class="col-md-8" style="padding-left:20px;">
+                                            <select name="action_select" id="action-select" onchange="actionFn()" class="form-control">
+                                                <option value="0">None</option>
+                                                <option value="1">Add Prescription</option>
+                                                <option value="2">Add Treatment</option>
+                                                <option value="3">Schedule Appointment</option>
+
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div style="padding-top:50px;">
+                                        
+                                    </div>
+                                    <div class="card card-box" style="padding-top:20px;padding-bottom: 20px;display: none;" id="action-card-id">
+                                        <div class="col-md-12" style="display:none;" id="prescription-form-id">
+                                                   <a onclick="DynamicPrescriptionForm()"><i class="fa fa-arrow-right" ></i></a> 
+                                                    
+                                                            <div class="form-row" >
+
+                                                         
+                                                              <div class="form-group col-md-6 mb-0">
+                                                                <small>
+                                                                {{ prescription_form.info|as_crispy_field }}
+                                                                </small>
+                                                              </div>
+                                                              <div class="form-group col-md-6 mb-0">
+                                                                <small>
+                                                                {{ prescription_form.diagnosis|as_crispy_field }}
+                                                                </small>
+                                                              </div>
+                                                              
+                                                            </div>
+                                                            
+                                                            <div class="form-row">   
+                                                             <div class= " form-group col-md-12 mb-0">
+                                                                <small>
+                                                                    {{prescription_form.comments|as_crispy_field}}
+                                                                </small>
+                                                              </div>
+                                                            </div>
+                                            
+                                        </div>
+                                        <div class="col-md-12" style="display:none;" id="dynamic-prescription-form-id">
+                                                   <a ><i class="fa fa-arrow-left" ></i></a> 
+                                                    <div class="form-row" > 
+                                                      <div class="form-group col-md-6 ">
+                                                        <small>
+                                                            {{ info_form2.drug|as_crispy_field }}
+                                                        </small>
+                                                      </div>
+                                                      <div class="form-group col-md-6 mb-0">
+                                                        <small>
+                                                            {{ info_form2.units_per_take|as_crispy_field }}
+                                                        </small>
+                                                      </div>
+                                                      
+                                                    </div>
+                                                    
+                                                    <div class="form-row" > 
+                                                      <div class="form-group col-md-6 mb-0">
+                                                        <small>
+                                                          {{ info_form2.frequency|as_crispy_field }}
+                                                        </small>
+                                                      </div>
+                                                      <div class="form-group col-md-6 mb-0">
+                                                        <small>
+                                                            {{ info_form2.frequency_unit|as_crispy_field }}
+                                                        </small>      
+                                                      </div>
+                                                      
+                                                    </div>
+
+                                                    <div class="form-row" > 
+                                                      <div class="form-group col-md-6 mb-0">
+                                                        <small>
+                                                        {{ info_form2.duration|as_crispy_field }}
+                                                        </small>  
+                                                    </div>
+                                                      <div class="form-group col-md-6 mb-0">
+                                                        <small>
+                                                        {{ info_form2.duration_unit|as_crispy_field }}
+                                                        </small>
+                                                      </div>
+                                                      
+                                                    </div>
+
+                                                    <div class="form-row">   
+                                                     <div class= " form-group col-md-6 mb-0">
+                                                        <small>
+                                                            {{prescription_form.diagnosis|as_crispy_field}}
+                                                        </small>
+                                                      </div>
+                                                     <div class= " form-group col-md-6 mb-0">
+                                                        <small>
+                                                            {{prescription_form.comments|as_crispy_field}}
+                                                        </small>
+                                                      </div>
+                                                    </div>
+                                            
+                                        </div>
+
+                                        <div class="col-md-12" style="display:none;" id="manual-treatment-form-id">
+                                                   <!--<a onclick="DynamicTreatmentForm()"><i class="fa fa-arrow-right" ></i></a>
+                                                            
+                                                            <div class="form-row" >
+                                                         
+                                                              <div class="form-group col-md-12 mb-0">
+                                                                <small>
+                                                                    {{ manual_treatment_form.name|as_crispy_field }}
+                                                                </small>
+                                                              </div>
+                                                              
+                                                            </div>
+                                                            
+                                                            <div class="form-row">   
+                                                             <div class= " form-group col-md-12 mb-0">
+                                                                <small>
+                                                                    {{manual_treatment_form.description|as_crispy_field}}
+                                                                </small>
+                                                              </div>
+                                                            </div>
+                                                        --> 
+                                                            <div class="form-row" >
+                                                         
+                                                              <div class="form-group col-md-12 mb-0">
+                                                                <small>
+                                                                    {{patient_treatment_form.treatment|as_crispy_field }}
+                                                                </small>
+                                                              </div>
+                                                              
+                                                            </div>
+                                                            
+                                                            <div class="form-row">   
+                                                             <div class= " form-group col-md-12 mb-0">
+                                                                <small>
+                                                                    {{patient_treatment_form.detail|as_crispy_field}}
+                                                                </small>
+                                                              </div>
+                                                            </div>
+
+                                        </div>
+                                        <div class="col-md-12" style="display:none;" id="dynamic-treatment-form-id">
+                                                    
+                                                   <a onclick="DynamicTreatmentForm()"><i class="fa fa-arrow-right" ></i></a> 
+
+                                                            <div class="form-row" >
+
+                                                         
+                                                              <div class="form-group col-md-12 mb-0">
+                                                                <small>
+                                                                    {{ dynamic_treatment_form.treatment|as_crispy_field }}
+                                                                </small>
+                                                              </div>
+                                                              
+                                                            </div>
+                                                            
+                                            
+                                        </div>
+
+                                        <div  class="col-md-12" style="display:none;padding-top: 30px;" id="appointment-form-id">                                       
+                                                   
+                                                            <div class="form-row" >
+
+                                                         
+                                                              <div class="form-group col-md-12 mb-0">
+                                                                <small>
+                                                                    <label for="labsection" class="col-md-6 control-label">Appointment Time</label>
+                                                                </small>
+                                                                <input type="date" name="appointment_date" placeholder="" id="start_date" class="form-control"> 
+
+                                                              </div>
+                                                              
+                                                            </div>
+                                                            
+                                            
+                                        </div>
+                                    </div>
+                                </div>    
+                                </div>
+
+                            </div>
+                            
+                            <div style="padding-left: 5px;" class="col-md-9 card card-box">
+                                <div class="row">                                
+                                    <div style="padding-left:15px;" class="col-md-3">
+                                            <input type="radio" name="recurrence" id="daily-id" onclick="recurrenceFn()" value="1" checked>
+                                              <label for="gender"><small>Daily</small></label>
+                                                <br>
+                                            <input type="radio" id="weekly-id" onclick="recurrenceFn()"  name="recurrence" value="2" >
+                                              <label for="gender"><small>Weekly</small></label>
+                                                <br>
+                                            <input type="radio"  id="monthly-id" onclick="recurrenceFn()" name="recurrence" value="3" >
+                                              <label for="gender"><small>Monthly</small></label>
+                                                <br>
+                                            <input type="radio"   id="yearly-id" onclick="recurrenceFn()" name="recurrence" value="4" >
+                                              <label for="gender"><small>Yearly</small></label>
+                                                <br>
+
+                                    </div>
+                                    <div  class="col-md-9" id="daily-choices">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                {{recurrence_form.daily_choices}}
+                                            </div>
+                                            <label for="labsection" class="col-md-2 control-label"><small>Day</small></label>
+                                        </div>
+                                    </div>
+                                    <div style="display: none;" class="col-md-9" id="weekly-choices">
+                                        <div class="row">
+                                            <label for="labsection" class="col-md-4 control-label"><small>Days</small></label>
+                                            <div class="col-md-8">
+                                                {{recurrence_form.days}}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style="display: none;"class="col-md-9" id="monthly-choices">
+                                       <div class="row">
+                                            <label for="labsection" class="col-md-2 control-label"><small>Day</small></label>
+                                            <div class="col-md-2">
+                                                {{recurrence_form.monthly_day}}
+                                            </div>
+                                            <label for="labsection" class="col-md-3 control-label"><small>Of Every</small></label>
+                                            <div class="col-md-2">
+                                                {{recurrence_form.every_int}}
+                                            </div>
+                                            <label for="labsection" class="col-md-2 control-label"><small>months</small></label>
+
+                                        </div>
+  
+                                    </div>
+                                    <div style="display: none;" class="col-md-9" id="yearly-choices">
+                                       <div class="row">
+                                            <label for="labsection" class="col-md-2 control-label"><small>Every</small></label>
+                                            <div class="col-md-3">
+                                                {{recurrence_form.yearly_choices}}
+                                            </div>
+                                            <div class="col-md-3">
+                                                {{recurrence_form.monthly_day}}
+                                            </div>
+                                        </div>
+ 
+                                    </div>
+
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div  class="col-md-9" id="">
+                                       <div class="row">
+                                            <label for="labsection" class="col-md-4 control-label" ><small>End After</small></label>
+                                            <div class="col-md-3">
+                                                {{recurrence_form.recurrence_threshold}}
+                                            </div>
+                                            <label for="labsection" class="col-md-3 control-label" ><small>Occurrences</small></label>
+                                        </div>
+ 
+                                    </div>
+                                    
+                                </div>
+                                <div style="padding-bottom: 50px;">
+                                    
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+        function OpenModal9() {
+                $("#treatmentPlanForm").modal('hide');
+
+            }
+
+
+    function recurrenceFn() {
+            if(document.getElementById('daily-id').checked) {
+                document.getElementById('daily-choices').style.display = 'block';          
+                document.getElementById('weekly-choices').style.display = 'none';          
+                document.getElementById('monthly-choices').style.display = 'none';          
+                document.getElementById('yearly-choices').style.display = 'none';          
+
+              } 
+            if(document.getElementById('weekly-id').checked) {
+                document.getElementById('weekly-choices').style.display = 'block';          
+                document.getElementById('daily-choices').style.display = 'none';          
+                document.getElementById('monthly-choices').style.display = 'none';          
+                document.getElementById('yearly-choices').style.display = 'none';          
+              } 
+            if(document.getElementById('monthly-id').checked) {
+                document.getElementById('weekly-choices').style.display = 'none';          
+                document.getElementById('monthly-choices').style.display = 'block';          
+                document.getElementById('daily-choices').style.display = 'none';          
+                document.getElementById('yearly-choices').style.display = 'none';          
+              } 
+            if(document.getElementById('yearly-id').checked) {
+                document.getElementById('weekly-choices').style.display = 'none';          
+                document.getElementById('daily-choices').style.display = 'none';          
+                document.getElementById('monthly-choices').style.display = 'none';          
+                document.getElementById('yearly-choices').style.display = 'block';          
+              } 
+
+    }
+
+    function actionFn() {
+        d = document.getElementById('action-select').value;
+        
+        if (d==1){
+            
+            document.getElementById('prescription-form-id').style.display = 'block';          
+              document.getElementById('manual-treatment-form-id').style.display = 'none';          
+
+                document.getElementById('dynamic-treatment-form-id').style.display = 'none';          
+                document.getElementById('dynamic-prescription-form-id').style.display = 'none';          
+                        document.getElementById('appointment-form-id').style.display = 'none';          
+            document.getElementById('action-card-id').style.display = 'block';          
+
+        }
+        else if (d==2){
+                        document.getElementById('appointment-form-id').style.display = 'none';          
+                        document.getElementById('manual-treatment-form-id').style.display = 'block';          
+                            document.getElementById('prescription-form-id').style.display = 'none';          
+                        document.getElementById('dynamic-treatment-form-id').style.display = 'none';          
+                        document.getElementById('dynamic-prescription-form-id').style.display = 'none';          
+            document.getElementById('action-card-id').style.display = 'block';          
+
+        }
+        else if (d==3){
+                        document.getElementById('appointment-form-id').style.display = 'block';          
+                        document.getElementById('manual-treatment-form-id').style.display = 'none';          
+                        document.getElementById('prescription-form-id').style.display = 'none';          
+                        document.getElementById('dynamic-treatment-form-id').style.display = 'none';          
+                        document.getElementById('dynamic-prescription-form-id').style.display = 'none';          
+            document.getElementById('action-card-id').style.display = 'block';          
+
+
+        }
+
+    }
+
+    function DynamicTreatmentForm() {
+        
+            document.getElementById('manual-treatment-form-id').style.display = 'none';          
+            document.getElementById('dynamic-treatment-form-id').style.display = 'block';          
+            document.getElementById('prescription-form-id').style.display = 'none';          
+            document.getElementById('dynamic-prescription-form-id').style.display = 'none';          
+            document.getElementById('action-card-id').style.display = 'block';          
+
+        }
+
+    function ManualTreatmentForm() {
+        
+            document.getElementById('manual-treatment-form-id').style.display = 'block';          
+            document.getElementById('dynamic-treatment-form-id').style.display = 'none';          
+            document.getElementById('action-card-id').style.display = 'block';          
+
+        }
+    function DynamicPrescriptionForm() {
+        
+            document.getElementById('prescription-form-id').style.display = 'none';          
+            document.getElementById('dynamic-prescription-form-id').style.display = 'block';          
+            document.getElementById('manual-treatment-form-id').style.display = 'none';          
+            document.getElementById('dynamic-treatment-form-id').style.display = 'none';          
+            document.getElementById('action-card-id').style.display = 'block';          
+
+        }
+    function PrescriptionForm() {
+        
+            document.getElementById('prescription-form-id').style.display = 'block';          
+            document.getElementById('dynamic-prescription-form-id').style.display = 'none';          
+            document.getElementById('manual-treatment-form-id').style.display = 'none';          
+            document.getElementById('dynamic-treatment-form-id').style.display = 'none';          
+            document.getElementById('action-card-id').style.display = 'block';          
+
+        }
+
+</script>
+
+    {% block scripts %}
+
+    <script type="text/javascript">
+  $(document).ready(function() {
+
+    $('#days_id').select2({
+      tags: true,
+      tokenSeparators: [',', ' ']            
+    });
+    $('#id_status').select2({
+      tags: true,
+      tokenSeparators: [',', ' ']            
+    });
+
+});
+        
+    </script>
+{% endblock %}
+    <script src="{% static 'plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js' %}"></script>
+    <script src="{% static 'plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker-init.js' %}"></script>

@@ -1,0 +1,140 @@
+{% load crispy_forms_tags %}
+{% load custom_dict %}
+
+
+<div class="modal fade" id="treatmentPlanActionModal{{plan.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+
+
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <form method="POST" action="{% url 'edit_treatment_plan' plan.id %}">
+                                    {% csrf_token %}
+
+                <h4 class="modal-title center">
+
+                        <button class="btn " type="submit"><i class="fa fa-save"></i>Save And Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                </h4>
+
+            </div>
+            <div class="modal-body" style="background-color:#E5E4E2;">
+                        <div class="row">
+                            <div class="col col-md-4 card card-box"  >
+                                <div class="row" style="padding-bottom: 15px;">
+                                    <label for="labsection" class="col-md-4 control-label"><small>Patient</small></label>
+                                    <div class="col-md-8">
+                                        <small>{{plan.patient}}</small>
+                                    </div>
+                                </div>
+                                <div class="row" style="padding-bottom: 15px;">
+                                    <label for="labsection" class="col-md-4 control-label"><small>Start Time</small></label>
+
+                                    <div class="col-md-8">
+                                        <small>{{plan.start_time}}</small>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <label for="labsection" class="col-md-4 control-label"><small>Status</small></label>
+                                    <div class="col-md-8">
+                                      <small>  {{plan.status}}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col col-md-8" style="background-color:#E5E4E2;">
+                                <div class="row" style="padding-bottom: 15px;">
+                                    <label for="labsection" class="col-md-3 control-label"><small>Name</small></label>
+                                    <div class="col-md-8">
+                                        <small>{{plan.name}}</small>
+                                    </div>
+                                </div>
+                                <div class="row" style="padding-bottom: 15px;">
+                                    <label for="labsection" class="col-md-3 control-label"><small> Description</small></label>
+                                    <div class="col-md-8">
+                                           <small> {{plan.description}}</small>
+                                    </div>
+                                </div>
+
+                                <div class="row" style="padding-bottom: 15px;">
+                                    <label for="labsection" class="col-md-3 control-label"><small> Action</small></label>
+                                    <div class="col-md-8">
+                                        {% if plan.prescription %}
+                                        <small>Prescription</small>
+                                        {% elif plan.treatment %}
+                                        <small>Treatment</small>
+                                        {% elif plan.appointment %}
+                                        {{plan.appointment.appointment_time}}
+                                        {% endif %}                                        
+                                    </div>
+                                </div>
+                                    {% if plan.status == 'Completed'  %}
+                                    {% else %}
+                                        {% if plan.prescription %}
+                                    
+                                    <div class="row" style="padding-bottom: 15px;">
+
+                                        <label for="labsection" class="col-md-3 control-label"><small>{{plan.prescription.info.drug}} </small></label>
+                                        <div class="col-md-8">
+                                        <a> 
+                                            <small onclick="OpenModal2({{plan.id}})" style="color: #0645ad;">Prescribe</small>
+                                            </a>
+                                        </div>
+                                    </div>
+                                        {% endif %}
+
+                                        {% if plan.treatment %}
+                                    <div class="row" style="padding-bottom: 15px;">
+                                        <label for="labsection" class="col-md-3 control-label"><small> Apply Treatment</small></label>
+                                        <div class="col-md-8">
+                                        <a > 
+                                            <small onclick="OpenTreatmentModal({{plan.id}})" style="color: #0645ad;">{{plan.treatment}}</small>
+                                            </a>
+                                        </div>
+                                    </div>
+                                        {% endif %}
+                                    {% endif %}
+                                    <div>
+
+                                    </div>
+
+                            </div>
+
+
+                        </div>
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+                {% include "inpatient_app/partials/edit_treatment_plan_modal.html" %}
+                {% include "core/modals/edit_manual_prescription_form10.html" %}
+                {% include "core/modals/edit_treatment_form2.html" %}
+
+    <script type="text/javascript">
+        function OpenModal2(id) {
+                $("#treatmentPlanActionModal"+id).modal('hide');
+                $("#manualPrescriptionFormModal10"+id).modal('show');
+
+            }
+
+        function OpenTreatmentModal(id) {
+                $("#treatmentPlanActionModal"+id).modal('hide');
+                $("#editTreatmentFormModal10"+id).modal('show');
+
+            }
+
+        showingModal = false;
+        function showHistoryModal(id) {
+            if (showingModal == false) {
+                console.log('mouse hovered')
+                $("#patientHistoryModal"+id).modal('show');
+                showingModal = true;
+            }
+        }
+
+</script>

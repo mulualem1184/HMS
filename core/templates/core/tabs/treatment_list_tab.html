@@ -1,0 +1,53 @@
+                                                {% include "core/modals/add_treatment_form.html" %}
+
+            <div class="tab-pane" id="treatment-list-tab">
+                    <div class="row">
+
+                        <div class="col-md-6" id="dispensary-supplied-drug-table-id" >
+                            <div class="card" style="height: 270px;width: 500px;">
+                                    <div class="card-head">
+                                           <small> <span><a href="" data-toggle="modal" data-target="#addTreatmentModal{{patient.id}}">Add Treatment</a></span> </small>
+
+                                    </div>
+                                    <div class="card-body">
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;">
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="">
+                                                    <th class="text-center"><small> Treatment</small></th>
+                                                    <th class="text-center"><small> Detail</small></th>
+                                                    <th class="text-center"><small> Registered on</small></th>
+                     
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for treatment in treatment_list %}
+                                                {% include "core/modals/edit_treatment_form.html" %}
+
+                                                    <tr class="" style="height:40px;">
+                                                        <td style="width:300px" class="text-center">
+                                                            <small>
+                                                               <a href="" data-toggle="modal" data-target="#editTreatmentModal{{treatment.id}}"> {{treatment.treatment}}</a>
+                                                            </small>
+                                                        </td>
+                                                        <td style="width:300px" class="text-center">
+                                                            <small>
+                                                                {{treatment.detail}} 
+                                                            </small>
+                                                        </td>
+                                                        <td style="width:300px" class="text-center">
+                                                            <small>
+                                                                {{treatment.registered_on}} 
+                                                            </small>
+                                                        </td>
+
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+            
+        </div>

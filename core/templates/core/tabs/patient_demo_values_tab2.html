@@ -1,0 +1,97 @@
+                                            {% include "core/modals/demo_values_form.html" %}
+                                                    {% include "core/modals/edit_demo_values_form.html" %}
+
+{% load static %}
+
+<head>
+    <script type="text/javascript" src="{% static "fusioncharts/fusioncharts.js" %}"></script>
+    <script type="text/javascript" src="{% static "fusioncharts/fusioncharts.charts.js" %}"></script>
+    <script type="text/javascript" src="{% static "fusioncharts/themes/fusioncharts.theme.fusion.js" %}"></script>
+
+</head>
+
+            <div class="tab-pane " id="patient-demo-values-tab8">
+                    <div class="row">
+
+                        <div class="col-md-6" >
+                            <div class="card"  style="height: 690px;">
+                                    <div class="card-head">
+                                        <header><small>Latest Values</small></header>
+                                           <small> <span><a href="" data-toggle="modal" data-target="#addDemoValuesModal">Add</a></span> </small> 
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div>
+                                                 <small><b>Cholestrol</b> </small></br>
+                                                 <small><b>HDL</b>  </small></br>
+                                                 <small><b>Cholestrol</b> </small></br>
+                                                 <small><b>Cholestrol</b> </small></br>
+                                                 <small><b>Cholestrol</b> </small></br>
+                                                    
+                                            </div>
+                                            <div class="col-md-1">
+                                                
+                                            </div>
+                                            <div>
+                                                 <small><a href="" data-toggle="modal" data-target="#editDemoValuesModal">{{latest_value.cholestrol}}</a> </small></br>
+                                                 <small> <a href="" data-toggle="modal" data-target="#editDemoValuesModal">{{latest_value.HDL}}</a> </small></br>
+                                                 <small> <a href="" data-toggle="modal" data-target="#editDemoValuesModal">{{latest_value.LDL}}</a></small></br>
+                                                 <small> <a href="" data-toggle="modal" data-target="#editDemoValuesModal">{{latest_value.TGO}}</a></small></br>
+                                                 <small><a href="" data-toggle="modal" data-target="#editDemoValuesModal">{{latest_value.TGP}}</a></small></br>
+                                                
+                                            </div>
+                                        </div>
+
+                                    </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6"  >
+                            <div class="card" style="height: 270px;width: 500px;">
+                                    <div class="card-head">
+                                        <header><small>Field Values</small></header>
+                                    </div>
+                                    <div class="card-body">
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;">
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="">
+                                                    <th class="text-center"><small> Cholestrol</small></th>
+                                                    <th class="text-center"><small> HDL </small></th>
+                                                    <th class="text-center"><small> LDL </small></th>
+                                                    <th class="text-center"><small> TGO </small></th>
+                                                    <th class="text-center"><small> TGP </small></th>
+                     
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for value in demo_value_list %}
+                                                    <tr class="" style="height:40px;">
+                                                        <td style="width:300px" class="text-center">
+                                                            <small>
+                                                                <a href="" data-toggle="modal" data-target="#editDemoValuesModal">{{ value.cholestrol}}</a> 
+                                                            </small>
+                                                        </td>
+                                                        <td style="width:300px;" class="text-center"><small> {{value.HDL}}</small> </td>
+                                                        <td style="width:300px;" class="text-center"><small> {{value.LDL}}</small> </td>
+                                                        <td style="width:300px;" class="text-center"><small> {{value.TGO}}</small> </td>
+                                                        <td style="width:300px;" class="text-center"><small> {{value.TGP}}</small> </td>                                                     
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                            </div>
+                            <div class="card" style="height: 420px;width: 500px;">
+                                    <div class="card-head">
+                                        <header><small>Chart</small></header>
+                                    </div>
+                                    <div class="card-body">
+                                            <div id="demo_line_container">{{ demo_chart|safe }}</div>
+
+                                    </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+            </div>

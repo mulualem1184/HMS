@@ -1,0 +1,29 @@
+{% load crispy_forms_tags %}
+
+           <div class="tab-pane" id="lab-request-tab">
+
+                <div class="col-md-12">
+                    {% for section in section_list %}
+                             <div><small><b>{{section}}</b></small></div>
+                             {% for test_type in section.test_section.all %}                                 
+                             <div class="row">
+                                <div>
+                                    <small>
+                                        <label class="rt-chkbox rt-chkbox-single rt-chkbox-outline">
+                                            <input type="checkbox" name='tests' value="{{ test_type.id }}" class="checkboxes" />
+                                            <span></span>
+                                        </label>
+                                    </small>
+                                </div>
+                                <div>
+
+                                   <small> {{test_type}}</small>
+                                </div>
+                             </div>
+                             {% endfor %}
+
+                    {% endfor %}
+
+                </div>            
+            </div>
+

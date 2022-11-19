@@ -1,0 +1,522 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+    <link href="../assets/plugins/morris/morris.css" rel="stylesheet" type="text/css" />
+    <link href="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"/>
+
+    <style>
+        .quick-launch-container {
+            display: inline-block;
+            margin-left: 5px;
+            padding-left: 5px;
+            margin-right: 7px;
+            border: black;
+            border-width: 10px;
+        }
+        .quick-launch-label {
+            display: block;
+            color: black;
+            font-weight: bold;
+        }
+        fieldset {
+            padding-bottom: 10px;
+            width: 150px; 
+            border: 2px solid; 
+            border-radius: 5px; 
+            border-color: #0a7e37;
+        }
+        legend {
+            color: black;
+            width: max-content;
+        }
+    </style>
+
+{% endblock %}
+{% block title %} IPD Structure {% endblock %}
+
+{% block page_content %}
+
+{% include "inpatient_app/partials/create_building_form_modal.html" %}
+{% include "inpatient_app/partials/create_ward_modal.html" %}
+{% include "inpatient_app/partials/create_bed_modal.html" %}
+    <div class="row">
+        <div class=" card card-box col-sm-2" style="background-color:#E5E4E2;overflow-y:scroll;overflow-x:scroll; height: 600px;width: 200px;">    
+            <div class="col">
+                <div>
+                    <label><small>Settings</small></label>
+                </div>
+                <div>
+                        <ul class="">
+   <!--                             <input type="checkbox" id="MixedId" name="gender" value="MIXED" hx-get="{% url 'ipd_structure' %}?id=MIXED" hx-trigger='click'  hx-include="[id='gender_form']"  hx-swap='beforeend'>
+
+<button  id='button-{{row}}' class="btn btn-primary btn-circle pull-right" hx-get="{% url 'ipd_structure' %}?id=ll" hx-trigger='click' hx-target='#drug-request-create'  hx-swap='beforeend'> Clic </button>
+-->
+                          <li class=""><a class="nav-link" href="#category-tab"
+                            data-toggle="tab"><small>Bed Setup</a></small></li>
+
+                          <li class=""><a class="nav-link active show"
+                            href="#drug-price-tab" data-toggle="tab"><small> Test Setup</small></a></li>
+
+                            </ul>
+                </div>
+            </div>
+        </div>
+        <div style="padding-left:18px;"></div>
+        <div class="card card-box border border-left-0 col-md-9" >
+
+    <div class="row">    
+
+        <div class="col-md-2" style="height:600px;">
+                                            <ul class="nav nav-tabs tabs-left">
+                  <li class="nav-item"><a class="nav-link {% if active_tab == 'ward_tab' %} active {% else %}  {% endif %}" href="#ward-category-tab"
+                    data-toggle="tab"><small>Ward</a></small></li>
+
+                  <li class="nav-item"><a class="nav-link {% if active_tab == 'building_tab' %} active {% else %}  {% endif %}"
+                    href="#drug-price-tab" data-toggle="tab"><small> Building</small></a></li>
+                  <li class="nav-item"><a class="nav-link {% if active_tab == 'room_tab' %} active {% else %}  {% endif %}" href="#ward-tab"
+                    data-toggle="tab"><small>Room</a></small></li>
+                  <li class="nav-item"><a class="nav-link {% if active_tab == 'bed_tab' %} active {% else %}  {% endif %}" href="#bed-tab"
+                    data-toggle="tab"><small>Bed</a></small></li>
+
+                                            </ul>
+        </div>
+
+
+        <div class="col-md-10 border" style="background-color:white;height:590px;" >
+
+            <div class="tab-content">
+
+                <div class="tab-pane {% if active_tab == 'building_tab' %} active {% else %}  {% endif %}" id="drug-price-tab">
+
+
+                        <div class=" card col-md-12 " >
+
+                        <div class="card-head " >
+                                   <!-- <button  class="btn btn-circle" data-toggle="modal" data-target="#createBuildingModal">
+                                    </button> -->
+                                <div class="row">
+                                    <a data-toggle="modal" data-target="#createBuildingModal">
+                                    <div class="row" style="padding-left:30px;">
+                                        <div>
+                                        <i class="fa fa-plus fa-1x"></i> 
+                                         </div>
+                                        <div style="padding-left:7px;padding-right: 8px;">
+                                            <label> New </label>
+                                        </div>
+                                    </div>
+                                    </a>
+
+                                </div>
+                                           <div style="padding-left:50px;" onclick="searchBuilding()">
+                                                
+                                                    <i class="fa fa-search"></i>
+                                                    <label><small>Search</small></label>
+                                                 
+                                            </div>
+
+                                   <div class="pull-right">
+                                        <a>
+                                            <i class="fa fa-print"></i>
+                                            <label><small>Print/Export</small></label>
+                                        </a> 
+                                    </div>
+
+                        </div>
+                        </div>
+                        <div class="card card-box col-md-8" id="search-building-id" style="display:none;">
+                           <div class="row" style="padding-bottom: 10px; padding-left: 25px;">
+                                <div class="row" style="padding-top:20px;">
+
+                                   <div style="padding-right:10px;">
+                                        <label><small>Look For</small></label>
+                                   </div>
+                                   <form method="GET">
+                                       <div>
+                                            <input type="text" name="search-building" id="search-building" class="col-md-5"> 
+                                            <small><button type="submit">Find Now</button></small> 
+                                            <small><button>Clear</button></small>
+                                       </div>
+                                   </form>
+                               </div>
+                               <div class="pull-right" style="padding-left:0px;">
+                                    <a onclick="closeSearchDiv()"> <i class="fa fa-times"></i></a> 
+                               </div>
+
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;">
+                                <thead style="background-color: lightgrey;">
+                                    <tr class="">
+                                        <th class="text-center"><small> Building</small></th>
+                                        <th class="text-center"><small> Registered on </small></th>
+                                        <th class="text-center"><small> Edit </small></th>
+                                        <th class="text-center"><small> Delete </small></th>
+         
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for building in building_list %}
+                                    {% if building.active == True %}
+                                {% include "inpatient_app/partials/edit_building_modal.html" %}
+                                {% include "inpatient_app/partials/delete_building_dialog_box.html" %}
+
+                                        <tr class="" style="height:40px;">
+                                            <td style="width:300px" class="text-center"> <small>{{ building.unit_name}} </small></td>
+                                            <td style="width:300px;" class="text-center"><small> {{building.registered_on}}</small> </td>
+                                            <td style="width:300px;" class="text-center"><small> <a href="" data-toggle="modal" data-target="#editBuildingModal{{building.id}}"  ><i class="fa fa-edit"></i></a></small></td>
+                                            <td style="width:300px;" class="text-center"><small>  <a href="" data-target="#deleteBuildingModal{{building.id}}" data-toggle='modal'  ><i class="fa fa-trash"></i></a></small></td>
+                                           
+                                        </tr>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>                            
+                </div>
+
+                <div class="tab-pane {% if active_tab == 'ward_tab' %} active {% else %}  {% endif %}" id="ward-category-tab">
+
+
+                        <div class=" card col-md-12 " >
+
+                        <div class="card-head " >
+                                   <!-- <button  class="btn btn-circle" data-toggle="modal" data-target="#createBuildingModal">
+                                    </button> -->
+                                <div class="row">
+                                    <a data-toggle="modal" data-target="#createWardModal2">
+                                    <div class="row" style="padding-left:30px;">
+                                        <div>
+                                        <i class="fa fa-plus fa-1x"></i> 
+                                         </div>
+                                        <div style="padding-left:7px;padding-right: 8px;">
+                                            <label> New </label>
+                                        </div>
+                                    </div>
+                                    </a>
+
+                                </div>
+                                           <div style="padding-left:50px;" onclick="searchWardCategory()">
+                                                    <i class="fa fa-search"></i>
+                                                    <label><small>Search</small></label>
+                                                 
+                                            </div>
+
+                                   <div class="pull-right">
+                                        <a>
+                                            <i class="fa fa-print"></i>
+                                            <label><small>Print/Export</small></label>
+                                        </a> 
+                                    </div>
+
+                        </div>
+                        </div>
+                        <div class="card card-box col-md-8" id="search-ward-category-id" style="display:none;">
+                           <div class="row" style="padding-bottom: 10px;">
+                               <div style="padding-right:10px;">
+                                    <label><small>Look For</small></label>
+                               </div>
+                               <form method="GET">
+                                   <div>
+                                        <input type="text" name="search-ward-category" id="search-ward-category" class="col-md-6"> 
+                                        <small><button type="submit">Find Now</button></small> 
+
+                                   </div>
+                               </form>
+                               <div class="pull-right">
+                                    <a onclick="closeSearchDiv()"> <i class="fa fa-times"></i></a> 
+                               </div>
+
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;">
+                                <thead style="background-color: lightgrey;">
+                                    <tr class="">
+                                        <th class="text-center"><small> Building</small></th>
+                                        <th class="text-center"><small> Registered on </small></th>
+                                        <th class="text-center"><small> Edit </small></th>
+                                        <th class="text-center"><small> Delete </small></th>
+         
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ward in ward_list2 %}
+                                    {% include "inpatient_app/partials/create_ward_modal2.html" %}
+                                    {% include "inpatient_app/partials/edit_ward_category_modal.html" %}
+
+                                        <tr class="" style="height:40px;">
+                                            <td style="width:250px" class="text-center"> <small>{{ ward.category}} </small></td>
+                                            <td style="width:250px;" class="text-center"><small> {{ward.registered_on}}</small> </td>
+                                            <td style="width:250px;" class="text-center"><small> <a href="" data-toggle="modal" data-target="#editWardCategoryModal{{ward.id}}" ><i class="fa fa-edit"></i></a></small></td>
+                                            <td style="width:250px;" class="text-center"><small>  <a href="" data-target="#createWardModal" data-toggle='modal'  ><i class="fa fa-trash"></i></a></small></td>                                         
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>                            
+                </div>
+
+<!--tab div yetachu-->
+                <div class="tab-pane {% if active_tab == 'room_tab' %} active {% else %}  {% endif %}" id="ward-tab">
+
+                        <div class=" card col-md-12 " >
+                        <div class="card-head " >
+                                   <!-- <button  class="btn btn-circle" data-toggle="modal" data-target="#createBuildingModal">
+                                    </button> -->
+                                <div class="row">
+                                    <a data-toggle="modal" data-target="#createWardModal">
+                                    <div class="row" style="padding-left:30px;">
+                                        <div>
+                                        <i class="fa fa-plus fa-1x"></i> 
+                                         </div>
+                                        <div style="padding-left:7px;padding-right: 8px;">
+                                            <label> New </label>
+                                        </div>
+                                    </div>
+                                    </a>
+
+                                </div>
+                                           <div style="padding-left:50px;"  onclick="searchRoom()">
+                                                
+                                                    <i class="fa fa-search" ></i>
+                                                    <label><small>Search</small></label>
+                                                 
+                                            </div>
+
+                                   <div class="pull-right">
+                                        <a>
+                                            <i class="fa fa-print"></i>
+                                            <label><small>Print/Export</small></label>
+                                        </a> 
+                                    </div>
+
+                        </div>
+                        </div>
+
+                <!--<div class=" card card-body col-md-8 ">
+                
+                <div class="card-head" >
+                    <header ><small>Room</small></header>
+                            <button  class="btn btn-circle" data-toggle="modal" data-target="#createWardModal">
+
+                            <i class="fa fa-plus"></i>
+                            </button>
+
+                </div>-->
+
+                        <div class="card card-box col-md-8" id="search-room-id" style="display:none;">
+                           <div class="row" style="padding-bottom: 10px;">
+                               <div style="padding-right:10px;">
+                                    <label><small>Look For</small></label>
+                               </div>
+                               <form method="GET">
+                                   <div>
+                                        <input type="text" name="search-room" id="search-room" class="col-md-6"> 
+                                        <small><button type="submit">Find Now</button></small> 
+
+                                   </div>
+                               </form>
+                               <div class="pull-right">
+                                    <a onclick="closeSearchDiv()"> <i class="fa fa-times"></i></a> 
+                               </div>
+
+                            </div>
+                        </div>
+
+                        <div class="col-md-10">
+                            <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;">
+                                <thead>
+                                    <tr class="" style="background-color: lightgrey;">
+                                        <th><small> Building</small></th>
+                                        <th><small> Room </small></th>
+                                        <th><small> Edit </small></th>
+                                        <th><small> Delete </small></th>
+         
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for ward in ward_list %}
+                                    {% if ward.active == True %}
+                                {% include "inpatient_app/partials/edit.html" %}
+                                {% include "inpatient_app/partials/delete_room_dialog_box.html" %}
+
+                                        <tr class="" style="height:40px;">
+                                            <td style="width:300px;"> <small>{{ ward.hospital_unit}} </small></td>
+                                            <td style="width:300px;"><small> {{ward}}</small> </td>
+                                            <td style="width:300px;"><small> <a href="" data-toggle="modal" data-target="#editWardModal{{ward.id}}"  ><i class="fa fa-edit"></i></a></small></td>
+                                            <td style="width:300px;"><small>  <a href="" data-target="#deleteRoomModal{{ward.id}}" data-toggle='modal'  ><i class="fa fa-trash"></i></a></small></td>
+                                           
+                                        </tr>
+                                    {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                </div>
+
+                 <div class="tab-pane {% if active_tab == 'bed_tab' %} active {% else %}  {% endif %}" id="bed-tab">
+                            <!--
+                            <div class="card-head" style=" height: 5px;">
+                                Bed
+                                <a style="size: 20px;"  class="btn btn-circle" data-toggle="modal" data-target="#createBedModal" >
+
+                                <i class="fa fa-plus"></i>
+                            </a>
+                            </div>-->
+                        <div class=" card col-md-12 " >
+                        <div class="card-head " >
+                                   <!-- <button  class="btn btn-circle" data-toggle="modal" data-target="#createBuildingModal">
+                                    </button> -->
+                                <div class="row">
+                                    <a data-toggle="modal" data-target="#createBedModal">
+                                    <div class="row" style="padding-left:30px;">
+                                        <div>
+                                        <i class="fa fa-plus fa-1x"></i> 
+                                         </div>
+                                        <div style="padding-left:7px;padding-right: 8px;">
+                                            <label> New </label>
+                                        </div>
+                                    </div>
+                                    </a>
+
+                                </div>
+                                           <div style="padding-left:50px;" onclick="searchBed()">
+                                                
+                                                    <i class="fa fa-search"></i>
+                                                    <label><small>Search</small></label>
+                                                 
+                                            </div>
+
+                                   <div class="pull-right">
+                                        <a>
+                                            <i class="fa fa-print"></i>
+                                            <label><small>Print/Export</small></label>
+                                        </a> 
+                                    </div>
+
+                        </div>
+                        </div>
+
+                        <div class="card card-box col-md-8" id="search-bed-id" style="display:none;">
+                           <div class="row" style="padding-bottom: 10px;">
+                               <div style="padding-right:10px;">
+                                    <label><small>Look For</small></label>
+                               </div>
+                               <form method="GET">
+                                   <div>
+                                        <input type="text" name="search-bed" id="search-bed" class="col-md-6"> 
+                                        <small><button type="submit">Find Now</button></small> 
+
+                                   </div>
+                               </form>
+                               <div class="pull-right">
+                                    <a onclick="closeSearchDiv()"> <i class="fa fa-times"></i></a> 
+                               </div>
+
+                            </div>
+                        </div>
+
+                            <div class="" style="padding-top: 10px;">
+                                <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;">
+                                    <thead style="background-color: lightgrey;">
+                                        <tr class="">
+                                            <th><small> Building</small></th>
+                                            <th><small> Room </small></th>
+                                            <th><small> Bed </small></th>
+                                            <th><small> Price </small></th>
+                                            <th><small> Edit </small></th>
+                                            <th><small> Delete </small></th> 
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for bed in bed_list %}
+                                    {% include "inpatient_app/partials/edit_bed.html" %}
+
+                                            <tr class="" style="height:40px;">
+                                                <td style="width:250px;"> <small>{{ bed.ward.hospital_unit}} </small></td>
+                                                <td style="width:250px;"><small> {{bed.ward}}</small> </td>
+                                                <td style="width:250px;"><small> {{bed}}</small> </td>
+                                                <td style="width:250px;"><small> price</small> </td>
+
+                                                <td style="width:250px;"><small> <a href="" data-toggle="modal" data-target="#editBedModal{{bed.id}}"  ><i class="fa fa-edit"></i></a></small></td>
+                                                <td style="width:250px;"><small>  <a href="" data-target="#deleteBedModal{{bed.id}}" data-toggle='modal'  ><i class="fa fa-trash"></i></a></small></td>                                   
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+
+                            </div>
+                                    
+                </div>
+
+                
+            
+        </div>
+
+
+
+
+</div>
+
+
+<!--tabs-->
+</div>
+</div>
+</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        function searchBuilding() {
+               document.getElementById('search-building-id').style.display = 'block';          
+
+                showingModal = true;
+            }
+
+        function searchRoom() {
+               document.getElementById('search-room-id').style.display = 'block';          
+
+                showingModal = true;
+            }
+
+        function searchBed() {
+               document.getElementById('search-bed-id').style.display = 'block';          
+
+                showingModal = true;
+            }
+
+        function searchWardCategory() {
+               document.getElementById('search-ward-category-id').style.display = 'block';          
+
+                showingModal = true;
+            }
+
+        function closeSearchDiv() {
+               document.getElementById('search-building-id').style.display = 'none';          
+               document.getElementById('search-room-id').style.display = 'none';          
+               document.getElementById('search-bed-id').style.display = 'none';          
+
+                showingModal = true;
+            }
+
+        function showHistoryModal(id) {
+                console.log('mouse hovered')
+               document.getElementById('admit-patient-id'+id).style.display = 'block';          
+
+                showingModal = true;
+            }
+
+
+        function hideHistoryModal(id) {
+                console.log('mouse outed')
+               document.getElementById('admit-patient-id'+id).style.display = 'none';          
+        }
+    </script>
+    <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}" ></script>
+    <script src="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.js' %}" ></script>
+    <script src="{% static 'js/pages/table/table_data.js' %}"></script>
+
+{% endblock %}

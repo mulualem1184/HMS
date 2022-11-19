@@ -1,0 +1,60 @@
+            <div class="tab-pane " id="patient-demo-values-">
+                    <div class="row">
+
+                        <div class="col-md-6" >
+                            <div class="card"  style="height: 540px;">
+                                    <div class="card-head">
+                                        <header><small>Latest Values</small></header>
+                                           {% include "core/modals/demo_values_form.html" %}
+                                           <small> <span><a href="" data-toggle="modal" data-target="#addDemoValuesModal">Add Clinical Findings</a></span> </small> 
+                                    </div>
+                                    <div class="card-body">
+                                             <small><b>Full Name:</b> {{patient.full_name}}</small></br>
+                                             <small><b>Gender</b> {{patient.sex}}</small></br>
+                                             <!--<small><b>Date Of Birth</b> {{patient.dob}}</small></br>-->
+                                             <small><b>Address:</b> {{patient.adress}}</small></br>
+                                             <small><b>Phone Number:</b> {{patient.phone_number}}</small></br>
+
+                                             <small><b>Blood Group:</b> </small></br>
+                                             <small><b>Last Visit:</b> {% if last_visit %} {{last_visit.registered_on}} {% else %} {{last_ward_visit.admission_date}} {% endif %}</small></br>
+                                    </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6"  >
+                            <div class="card" style="height: 270px;">
+                                    <div class="card-head">
+                                        <header><small>Notes</small></header>
+                                    </div>
+                                    <div class="card-body">
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;">
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="">
+                                                    <th class="text-center"><small> Cholestrol</small></th>
+                                                    <th class="text-center"><small> HDL </small></th>
+                                                    <th class="text-center"><small> LDL </small></th>
+                                                    <th class="text-center"><small> TGO </small></th>
+                                                    <th class="text-center"><small> TGP </small></th>
+                     
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for value in demo_values %}
+                                                    <tr class="" style="height:40px;">
+                                                        <td style="width:300px" class="text-center"> <small>{{ value.cholestrol}} </small></td>
+                                                        <td style="width:300px;" class="text-center"><small> {{value.hdl}}</small> </td>
+                                                        <td style="width:300px;" class="text-center"><small> {{value.ldl}}</small> </td>
+                                                        <td style="width:300px;" class="text-center"><small> {{value.tgo}}</small> </td>
+                                                        <td style="width:300px;" class="text-center"><small> {{value.tgp}}</small> </td>
+                                                       
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+            </div>

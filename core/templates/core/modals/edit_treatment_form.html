@@ -1,0 +1,125 @@
+<div class="modal fade" id="editTreatmentModal{{treatment.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <form method="POST" action="{% url 'core:edit_treatment' treatment.id %}" >
+                        {% csrf_token %}
+
+                <h4 class="modal-title center">
+                        <button class="btn " type="submit">Save And Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <a href="{% url 'core:delete_treatment' treatment.id %}" class="btn btn-danger" >Delete</a>
+
+                </h4>
+            </div>
+            <div class="modal-body">
+
+                    <div class="form-group col-md-12">
+                        <div class="col">
+                            <div>
+                                <label for="labsection" class="col-md-3 control-label">Treatment</label>
+                                <div class="col-md-9">
+                                    <input type="text" name="treatment" value="{{treatment.treatment}}" id="start_date" class="form-control">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="labsection" class="col-md-3 control-label">Detail</label>
+                                <div class="col-md-9">
+                                   <!-- <input type="text" name="allergy" value="{{allergy.allergy}}" id="allergy" class="form-control">-->
+                                                <textarea name="treatment" value="{{treatment.treatment}}" id="treatment" class="form-control" style="width:200px; height: 150px;">{{treatment.detail}}</textarea>
+                               
+                                </div>                        
+                            </div>
+                        <div style="padding-top: 15px;padding-right: 10px;">
+                            <div class="col-md-9" >
+                                <div class="col">
+                                    <div class="">
+                                        <small><b>Documents</b></small>
+                                    </div>
+                                    <div class="card" >
+                                            <div class="card-head">
+                                                <small><i onclick="addImageForm2({{treatment.id}})" class="fa fa-plus"></i>Add Image</small>
+                                            </div>
+                                            <div class="card-body"  style="background-color: white;height: 300px;"
+                                            >   <div class="col">
+                                                    <div class="row" id="image-div-id" >
+                                                        <div>
+                                                            {% for image in treatment.image.all %}
+                                                                <div style="padding-left: 30px;" class="row">
+                                                                    <div>
+                                                                        <a href="{{ image.image.url }}" target="_blank">
+                                                                            {{image.image}}
+                                                                        </a>
+                                                                    </div>
+                                                                    <div style="padding-left: 10px;">
+                                                                        <a href="{% url 'core:remove_treatment_image' image.id patient.id %}"><i class="fa fa-times"></i></a>
+                                                                    </div>
+                                                                </div>
+
+                                                            {% endfor %}
+                                                           <label for="labsection" class="col-md-3 control-label"><small></small></label>
+                                                            
+                                                        </div>
+                                                    </div>
+                                                    <div class="row" id="image-div-id3{{treatment.id}}" style="display: none;" >
+                                                        <div>
+                                                           <label for="labsection" class="col-md-3 control-label"><small></small></label>
+                                                        </div>
+                                                        <div>
+                                                            <div class="col-md-9">
+                                                                <small><input  name="images" type="file" multiple class="form-control-file"></small>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                    <!--
+                                                           {% if image_formset %}
+                                                          
+
+                                                          {{image_formset.management_form}}
+                                                          <h4>Additional Drugs</h4>
+                                                          <div id='additional-form-list'>
+                                                            {% for form in image_formset %}
+                                                              <div class="additional-form">
+                                                                {{form.as_p}}
+                                                              </div>
+                                                            {% endfor %}                                                            
+
+                                                          </div>
+                                                      
+                                                          {% endif %}
+                                                      -->
+
+
+
+                                            </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+        function addImageForm2(id) {
+                alert(id);
+               document.getElementById('image-div-id3'+id).style.display = 'block';          
+            }
+
+        function closeSearchDiv() {
+               document.getElementById('search-building-id').style.display = 'none';          
+               document.getElementById('search-room-id').style.display = 'none';          
+               document.getElementById('search-bed-id').style.display = 'none';          
+
+                showingModal = true;
+            }
+
+</script>

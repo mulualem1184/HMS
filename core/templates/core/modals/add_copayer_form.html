@@ -1,0 +1,82 @@
+{% load crispy_forms_tags %}
+{% load static %}
+{% block style %}
+
+{% endblock %}
+{% include "core/modals/add_person_info_form2.html" %}
+<div class="modal fade" id="createCopayerFormModal" tabindex="0" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog " role="document">
+        <div class="modal-content" >
+            <div class="modal-header" >
+                <form method="POST" action="{% url 'core:create_copayer' patient.id %}" id="search-occupation-form-id">
+                                    {% csrf_token %}
+
+                <h4 class="modal-title center">
+
+                        <button class="btn " type="submit"><i class="fa fa-save"></i>Save And Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                </h4>
+            </div>
+            <div class="modal-body" >
+
+                                <div class="form-row" style="padding-bottom: 50px;">
+                                    <label for="labsection" class="col-md-3 control-label"><small>Person Info</small></label>
+                                    <div class="col-md-5">
+                                        {{copayer_form.person_info}}
+                                    </div>
+                                    <div>
+                                        <i style="padding-bottom: 40px;" class="fa fa-plus" onclick="OpenModal()"></i>
+                                    </div>
+                                </div>
+                                <div class="form-row" style="padding-bottom: 50px;">
+                                    <label for="labsection" class="col-md-3 control-label"><small>Copayer Type</small></label>
+                                    <div class="col-md-5">
+                                        {{copayer_form.copayer_type}}
+                                    </div>
+                                </div>
+                                <div class="form-row" style="padding-bottom: 50px;">
+                                    <label for="labsection" class="col-md-3 control-label"><small>Tax Handling</small></label>
+                                    <div class="col-md-5">
+                                        {{copayer_form.tax_handling}}
+                                    </div>
+                                </div>
+
+
+
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+        function OpenModal() {
+                alert('jj');
+                $("#createCopayerFormModal").modal('hide');
+                $("#addPersonInfoFormModal2").modal('show');
+
+            }
+
+        showingModal = false;
+        function showHistoryModal(id) {
+            if (showingModal == false) {
+                console.log('mouse hovered')
+                $("#patientHistoryModal"+id).modal('show');
+                showingModal = true;
+            }
+        }
+
+        function hideHistoryModal(id) {
+            if (showingModal == true) {
+                console.log('mouse outed')
+                $("#patientHistoryModal"+id).modal('hide');
+                showingModal = false;
+            }
+        }
+
+</script>
+
+    <script src="{% static 'plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js' %}"></script>
+    <script src="{% static 'plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker-init.js' %}"></script>

@@ -1,0 +1,44 @@
+{% load crispy_forms_tags %}
+{% include "core/modals/add_person_info_form.html" %}
+
+    <div class="tab-pane" id="contact-tab">
+            <div class="card">
+                <div class="card-head" >
+                    <div class="row" style="padding-left: 50px;">
+                            <a href="" data-toggle="modal" data-target="#addPersonInfoFormModal"  >
+                                <i class="fa fa-plus"></i>
+                            </a>
+                            <small>Add Emergency Contact</small>
+
+                    </div>
+                </div>
+                <div class="card-body">
+                            <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;">
+                                <thead style="background-color: lightgrey;">
+                                    <tr class="">
+                                        <th class="text-center"><small> Full Name </small></th>
+                                        <th class="text-center"><small> Phone Number </small></th>
+                                        <th class="text-center"><small> Edit </small></th>
+                                        <th class="text-center"><small> Deleted </small></th>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for contact in contact_list %}
+                                        {% include "core/modals/edit_person_info_form.html" %}
+
+                                        <tr class="" style="height:40px;">
+                                            <td style="width:200px;" class="text-center" > <small>{{ contact.first_name}} {{ contact.last_name}} </small></td>
+                                            <td style="width:200px;" class="text-center"><small> {{contact.phone_number}}</small> </td>
+                                            <td style="width:100px;" class="text-center"><small> <a href="" data-toggle="modal" data-target="#editPersonInfoFormModal{{contact.id}}"  ><i class="fa fa-edit"></i></a></small></td>
+                                            <td style="width:100px;" class="text-center"><small>  <a href="" data-target="#deleteTreatmentPlanModal{{plan.id}}" data-toggle='modal'  ><i class="fa fa-trash"></i></a></small></td>
+
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                </div>
+
+                
+            </div>
+    </div>

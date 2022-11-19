@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+    <style>
+        .quick-launch-container {
+            display: inline-block;
+            margin-left: 5px;
+            padding-left: 5px;
+            margin-right: 7px;
+            border: black;
+            border-width: 10px;
+        }
+        .quick-launch-label {
+            display: block;
+            color: black;
+            font-weight: bold;
+        }
+        fieldset {
+            padding-bottom: 10px;
+            width: 150px; 
+            border: 2px solid; 
+            border-radius: 5px; 
+            border-color: #0a7e37;
+        }
+        legend {
+            color: black;
+            width: max-content;
+            font-size: 14px;
+        }
+        .add-allergy {
+            position: absolute;
+            bottom: 0;
+            right: 3px;
+        }
+    </style>
+
+
+{% endblock %}
+{% block title %} Patient Dashboard {% endblock %}
+
+{% block page_content %}
+{% load custom_dict %}
+
+
+<div class="card card-box  " style="background-color: white;" >
+    
+    <div class="col-md-12" >
+        <div class="" style="padding-right: 40px;">
+            <div class="card-head col-md-12 border-bottom-0" style="background-color: #eef1f5; padding-bottom: 10px;padding-left: 20px;">
+                <div class="row">
+                        <div>
+                                {{patient.full_name}}                             
+
+                            <a href="{% url 'core:edit_patient' patient.id %}"> <i class="fa fa-edit"></i> </a>
+                            {%is_admitted patient.id %}
+                            {% if result %}
+                                <a style="padding-left: 20px;" href="{% url 'discharge_summary_form' patient.id %}"> Discharge </a>
+                            {% endif %}
+                        </div>
+                        <div>
+                        </div>                    
+                </div>
+            </div>
+        </div>
+        <div class="row" style="padding-left: 13px;">    
+            <div class="col col-md-2 card card-box" >
+            <div class="">
+                <fieldset>
+                    <legend> </legend>
+                        <ul class="nav nav-tabs tabs-left">
+                            <li class="nav-item" style="height:33px;">
+                                <a href="#drug-price-tab" data-toggle="tab" class="active"><small>Dashboard</small></a>
+                            </li>
+                            <li class="nav-item" style="height:33px;">
+                                <a href="{% url 'core:patient_chart_history' patient.id %}" > <small>History</small> </a>
+                            </li>
+                            <li class="nav-item" style="height:33px;">
+                                <a href="{% url 'core:patient_activites' patient.id %}" > <small>Timeline</small> </a>
+                            </li>
+                            <li class="nav-item" style="height:33px;">
+                                <a href="{% url 'core:patient_activites' patient.id %}" > <small>Activities</small> </a>
+                            </li>
+                            <li class="nav-item" style="height:33px;">
+                                <a href="#consultation-list-tab" data-toggle="tab"> <small>Consultation</small> </a>
+                            </li>
+
+                        </ul>
+                    
+                </fieldset>
+            </div>
+            <div class="">
+                <fieldset>
+                    <legend></legend>
+                        <ul class="nav nav-tabs tabs-left">
+                            <li class="nav-item" style="height:33px;">
+                                <a href="#document-list-tab" data-toggle='tab'> <small>Documents</small> </a>
+                            </li>
+                            <li class="nav-item" style="height:33px;">
+                                <a href="#prescription-list-tab" data-toggle='tab'> <small>Medication</small> </a>
+                            </li>
+                            <li class="nav-item" style="height:33px;">
+                                <a href="#treatment-plan-list-tab" data-toggle='tab'> <small>Treatment Plan</small> </a>
+                            </li>
+
+                        </ul>
+                    
+                </fieldset>
+            </div>
+
+            </div>
+             
+             <div class="" style="padding-top: 15px;">
+            <div class="col">
+                <div class="col-md-12">
+                            <div class="row col-md-12" >
+                                   <ul class="nav nav-tabs">
+                                      <li class="nav-item"><a class="nav-link active show"
+                                        href="#patient-dashboard-tab" data-toggle="tab"><small>Summary</small></a></li>
+                                      <li class="nav-item"><a class="nav-link" href="#patient-lists-tab"
+                                        data-toggle="tab"><small>Lists</small></a></li>
+                                      <li class="nav-item"><a class="nav-link" href="#patient-demo-values-tab8"
+                                        data-toggle="tab"><small>Demo Values</small></a></li>
+
+                                    </ul>
+
+                           </div>
+              </div>
+             <!-- <div class="col-md-2"></div>-->
+            <div class="tab-content col-md-12" >
+
+                {% include "core/tabs/patient_dashboard_tab.html" %}
+
+        
+                {% include "core/tabs/patient_lists_tab.html" %}
+
+                {% include "core/tabs/patient_demo_values_tab2.html" %}
+
+                {% include "core/tabs/consultation_list_tab.html" %}
+
+                {% include "core/tabs/document_list_tab.html" %}
+                
+                {% include "core/tabs/prescription_list_tab.html" %}
+
+                {% include "core/tabs/treatment_plan_list_tab.html" %}
+
+            </div>
+            </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+    <script>
+
+
+    </script>
+{% endblock %}

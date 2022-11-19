@@ -1,0 +1,245 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+    <style>
+        .quick-launch-container {
+            display: inline-block;
+            margin-left: 5px;
+            padding-left: 5px;
+            margin-right: 7px;
+            border: black;
+            border-width: 10px;
+        }
+        .quick-launch-label {
+            display: block;
+            color: black;
+            font-weight: bold;
+        }
+        fieldset {
+            padding-bottom: 10px;
+            width: 150px; 
+            border: 2px solid; 
+            border-radius: 5px; 
+            border-color: #0a7e37;
+        }
+        legend {
+            color: black;
+            width: max-content;
+            font-size: 14px;
+        }
+        .add-allergy {
+            position: absolute;
+            bottom: 0;
+            right: 3px;
+        }
+        .right-bottom {
+            position: absolute;
+            right: 3px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+    </style>
+
+
+{% endblock %}
+{% block title %} Patient History {% endblock %}
+
+{% block page_content %}
+
+
+<div class="card card-box  " style="background-color: white;" >
+    
+    <div class="col-md-12" >
+        <div class="" style="padding-right: 40px;">
+            <div class="card-head col-md-12 border-bottom-0" style="background-color: #eef1f5; padding-bottom: 10px;padding-left: 20px;">
+                <div class="row">
+                        <div>
+                                {{patient.full_name}}                             
+
+                            <a href="{% url 'core:edit_patient' patient.id %}"> <i class="fa fa-edit"></i> </a>
+
+                        </div>
+                        <div>
+                        </div>                    
+                </div>
+            </div>
+        </div>
+        <div class="row" style="padding-left: 13px;">    
+            <div class="col col-md-2 card card-box" >
+            <div class="">
+                        <ul class="nav nav-tabs tabs-left">
+                            <li class="nav-item" style="height:33px;">
+                                <a href="#drug-price-tab" data-toggle="tab" ><small>Dashboard</small></a>
+                            </li>
+                            <li class="nav-item" style="height:33px;">
+                                <a href="{% url 'core:patient_chart_history' patient.id %}" > <small>History</small> </a>
+                            </li>
+                            <li class="nav-item" style="height:33px;">
+                                <a href="{% url 'core:patient_chart_history' patient.id %}" > <small>Timeline</small> </a>
+                            </li>
+                            <li class="nav-item" style="height:33px;">
+                                <a href="" data-toggle="tab" class="active"> <small>Activities</small> </a>
+                            </li>
+                            <hr style="background-color: black;">
+                            <li class="nav-item" style="height:33px;">
+                                <a href="#{% url 'core:patient_dashboard' patient.id %}" data-toggle="tab"> <small>Consultation</small> </a>
+                            </li>
+                            <li class="nav-item" style="height:33px;">
+                                <a href="{% url 'core:patient_dashboard' patient.id %}"> <small>Documents</small> </a>
+                            </li>
+                            <li class="nav-item" style="height:33px;">
+                                <a href="{% url 'core:patient_dashboard' patient.id %}" > <small>Medication</small> </a>
+                            </li>
+                            <li class="nav-item" style="height:33px;">
+                                <a href="{% url 'core:patient_dashboard' patient.id %}" > <small>Treatment Plan</small> </a>
+                            </li>
+
+                        </ul>
+                    
+            </div>
+
+            </div>
+             
+            <div class="col">
+                <div class="col-md-12">
+              </div>
+             <!-- <div class="col-md-2"></div>-->
+                <div class="card card-box">
+                        <div class="card-head " >
+                                   <!-- <button  class="btn btn-circle" data-toggle="modal" data-target="#createBuildingModal">
+                                    </button> -->
+                                <div class="row">
+                                    <a href="{% url 'core:add_patient_consultation' patient.id %}">
+                                    <div class="row" style="padding-left:30px;">
+                                        <div>
+                                        <i class="fa fa-plus fa-1x"></i> 
+                                         </div>
+                                        <div style="padding-left:7px;padding-right: 8px;">
+                                            <label><small> Add Consultation </small></label>
+                                        </div>
+                                    </div>
+                                    </a>
+
+                                </div>
+
+                        </div>
+
+                    <div class="card-body">
+                     {% for object in objects %}
+                            <div class="col-md-12">
+                                {{date}}
+                            </div>
+                        {% if object.registered_on.date == date %}                            
+                        {% if object.title %}
+                            <div onload="dateArray({{object.registered_on.date}})"></div>
+                            <div class="row">
+                                <div style="padding-left: 0px;" class="col-md-2">
+                                    <small><b>Consultation:</b></small></br>                                
+                                </div>
+                                <div style="" class="col-md-2">
+                                    <small> {{object.title}}</small></br>                                
+                                </div>
+                                <div style="" class="col-md-3">
+                                    <small> {{object.registered_on}}</small></br>                                
+                                </div>
+
+                            </div>
+                            {% for ob in object.clinical_finding.all %}
+                                <div class="row">
+                                    <div style="padding-left: 0px;" class="col-md-2">
+                                        <small><b>Clinical Finding:</b></small></br>                                
+                                    </div>
+                                    <div class="col-md-2">
+                                        <small> {{ob}}</small></br>                                
+                                    </div>
+                                    <div  class="col-md-3">
+                                        <small> {{object.registered_on}}</small></br>                                
+                                    </div>
+
+                                </div>
+                            {% endfor %}
+                            {% for ob in object.diagnoses.all %}
+                                <div class="row">
+                                    <div style="padding-left: 0px;" class="col-md-2">
+                                        <small><b>Diagnosis:</b></small></br>                                
+                                    </div>
+                                    <div style="padding-left: 0px;" class="col-md-2">
+                                        <small> {{ob}}</small></br>                                
+                                    </div>
+                                    <div style="padding-left: 0px;" class="col-md-3">
+                                        <small> {{object.registered_on}}</small></br>                                
+                                    </div>
+
+                                </div>
+                            {% endfor %}
+                            {%  endif %}
+                        {% elif object.clinical_finding %}
+                            <div class="row">
+                            <div class="col-md-2">
+                                <small><b>Clinical Finding:</b></small> 
+                            </div>
+                            <div style="padding-left: 0px;" class="col-md-2">
+                                <small>{{object.clinical_finding}}</small>
+                            </div>
+                            <div style="padding-left: 0px;" class="col-md-3">
+                                <small>{{object.registered_on}}</small>
+                            </div>
+
+                            </div>
+                                                      
+
+                        {% elif object.cholestrol %}
+                            <div class="row">
+                                <div style="padding-left: 15px;" class="col-md-2">
+                                    <small><b>Cholestrol:</b></small></br>                                
+                                </div>
+                                <div style="padding-left: 0px;" class="col-md-2">
+                                    <small> {{object.cholestrol}}</small></br>                                
+                                </div>
+                                <div style="padding-left: 0px;" class="col-md-3">
+                                    <small> {{object.registered_on}}</small>                                
+                                </div>
+
+                            </div>
+
+                        {% endif %}
+
+                     {% endfor %}
+                    </div>
+
+                </div>
+          </div>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+    <script>
+
+
+        function dateArray(date) {
+                    alert(date);
+
+                var arr = [];
+                if date in arr{
+
+                }
+                else{
+                    arr.push(date);
+                    document.getElementById('array_check').value = date;
+                  
+
+                }
+               document.getElementById('admit-patient-id'+id).style.display = 'block';          
+
+                showingModal = true;
+            }
+
+    </script>
+{% endblock %}

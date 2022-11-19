@@ -1,0 +1,63 @@
+<div class="modal fade" id="filterBedListModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title center">Apply Filter</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="GET">
+
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-2 control-label">By Ward</label>
+                        <div class="col-md-3">
+
+                            <select name="ward" id="labsection" class="form-control">
+                                <option value="0">All</option>
+                                {% for ward in ward_list %}
+                                    <option value="{{ward.id}}">{{ward}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-1"></div>
+                        <label for="labsection" class="col-md-2 control-label">By Building</label>
+                        <div class="col-md-3">
+
+                            <select name="building" id="labsection" class="form-control">
+                                <option value="0">All</option>
+                                {% for building in building_list %}
+                                    <option value="{{building.id}}">{{building}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer d-flex justify-content-center">
+                        <button class="btn btn-primary" type="submit">Filter</button>
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--
+<div class="col-md-8">
+<div class="modal fade" id="filteripdReportModal" tabindex="-1" role="dialog" aria-labelledby="setAccessionNumberLabel" aria-hidden="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+-->

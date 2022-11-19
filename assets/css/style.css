@@ -8656,7 +8656,7 @@ span.notificationtime {
     background-color: #0a7e37;
 }
 .sidemenu-container {
-    background-color: grey;
+    background-color: #eef1f5;
 }
 .card {
     background-color: #eef1f5;
@@ -8669,4 +8669,19 @@ thead {
 }
 tbody{
     background-color: white;
+}
+
+legend{
+    font-size: 100px;
+}
+.page-content-wrapper{
+    background-color: #eef1f5;
+}
+div.page-content-wrapper{
+    background-color: #eef1f5;
+}
+hr{
+    margin: 5px 0;
+    padding-bottom: 2px;
+    padding-top: 2px;
 }

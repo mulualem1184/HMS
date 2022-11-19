@@ -92,19 +92,6 @@ class PatientSymptom(models.Model):
 	symptom = models.CharField(max_length=100,null=True,blank=True)	
 	active = models.CharField(max_length=100,null=True,blank=True, choices=symptom_status)
 
-class PatientAllergy(models.Model):
-	allergy_status = (
-		('active','active'),
-		('not_active','not_active'),
-		)
-	patient = models.ForeignKey(Patient,on_delete= models.SET_NULL, null=True)
-	allergy = models.CharField(max_length=100,null=True,blank=True)	
-	reaction = models.CharField(max_length=5000,null=True,blank=True)	
-
-	active = models.CharField(max_length=100,null=True,blank=True, choices=allergy_status)
-	registered_by = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
-
-	registered_on = models.DateTimeField(null=True)
 
 
 class PatientHabit(models.Model):
@@ -321,9 +308,13 @@ class PatientAppointment(models.Model):
 	service_provider: staff member (doctor, councelor, etc..) who gives some type of clinical service
 	apointment_time: time when 
 	"""
-	patient = models.ForeignKey(Patient,  on_delete= models.SET_NULL, null=True)
+	patient = models.ForeignKey(Patient,  on_delete= models.SET_NULL, null=True, blank=True)
 	service_provider = models.ForeignKey(ServiceProvider,  on_delete= models.SET_NULL, null=True)
-	appointment_time = models.DateTimeField(null=True)
+	appointment_time = models.DateTimeField(null=True, blank=True)
+	registered_by = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
+	registered_on = models.DateTimeField(null=True)
+	def __str__(self):
+		return str(self.appointment_time)
 
 class PatientMedication(models.Model):
     Visit_status = (

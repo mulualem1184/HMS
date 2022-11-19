@@ -1,0 +1,78 @@
+{% load custom_dict %}
+                <div class="tab-pane" id="resource-month-tab">
+                    <div class="card col-md-12" style="overflow-y:scroll;overflow-x:scroll; height: 600px;width: 1100px;">
+                        <div class="card-head " >
+                                   <!-- <button  class="btn btn-circle" data-toggle="modal" data-target="#createBuildingModal">
+                                    </button> -->
+                                <div class="row">
+                                        <a href="" data-toggle="modal" data-target="#addResourceModal{{patient.id}}">
+                                        <div class="row" style="padding-left:30px;">
+                                            <div>
+                                            <i class="fa fa-plus fa-1x"></i> 
+                                             </div>
+                                            <div style="padding-left:7px;padding-right: 8px;">
+                                                <label><small> Schedule Resource </small></label>
+                                            </div>
+                                        </div>
+                                        </a>
+
+                                </div>
+
+                        </div>
+                        <div class="card-body">
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;">
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="">
+                                                    <th class="text-center"><small> Resource</small></th>
+                                                    {% for day in month_day_list %}
+                                                    <th class="text-center"><small> {{ day.date|date:'l' }}  {{day.date.day}}</small></th>
+                                                    {% endfor %}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for resource in resource_list %}
+                                                    <tr class="" style="height:40px;">
+                                                        <td style="width:300px" class="text-center">
+                                                            <small>
+                                                                <a href="" >{{ resource}}</a> 
+                                                            </small>
+                                                        </td>
+                                                                {% for day in month_day_list %}
+                                                                    {% is_scheduled day resource.id %}
+                                                                    {% if result %}
+                                                                    {% include "core/modals/edit_resource_form.html" %}
+
+                                                                    <td style="width:50px;" class="text-center">
+                                                                        <a data-toggle="modal" data-target="#editResourceModal{{resource.id}}"> 
+                                                                            <small>  <hr style="height: 5px;background-color: black; "> </small>
+                                                                        </a> 
+                                                                    </td>
+                                                                
+                                                                {% else %}
+                                                                    {% if day.date == today.date %}
+                                                                    <td style="width:50px;" class="text-center">
+                                                                        <a style="padding-top: 5px;" data-toggle="modal" data-target="#addResourceModal{{patient.id}}">
+                                                                             <label style="height: 10px;background-color: white;color: white; "> d</label>
+                                                                        </a>
+                                                                    </td>
+                                                                    {% else %}
+                                                                    <td style="width:50px;" class="text-center">
+                                                                        <a style="padding-top: 5px;" data-toggle="modal" >
+                                                                             <label style="height: 10px;background-color: white;color: white; "> d</label>
+                                                                        </a>
+                                                                    </td>
+
+                                                                    {% endif %}
+                                                                {% endif %}
+                                                                {% endfor %}
+                                                        
+
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                            
+                        </div>
+
+                    </div>
+                </div>

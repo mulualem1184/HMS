@@ -1,0 +1,51 @@
+{% load crispy_forms_tags %}
+    <div class="tab-pane" id="demographics-tab2">
+
+        <div class="col-md-6">
+                <div class="row">
+                    <div class="col-md-5">
+                        <small>{{occupation_form.occupation|as_crispy_field}}</small>                                            
+                    </div>
+                    <div class="col-md-1">
+                        <a href="" data-toggle="modal" data-target="#createOccupationFormModal"  >                    
+                            <i style="padding-top: 40px;" class="fa fa-plus"></i> 
+                        </a>
+                    </div>
+                    <div class="col-md-1"></div>
+                    <div class="col-md-5">
+                        <small>{{occupation_form.company|as_crispy_field}}</small>                                           
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-5">
+                        <small>{{personal_form.martial_status|as_crispy_field}}</small>                                            
+                    </div>
+                    <div class="col-md-2"></div>
+
+                    <div class="col-md-5">
+                        <small>{{personal_form.spouse_name|as_crispy_field}}</small>                                           
+                    </div>
+
+                </div>
+            
+                <div class="row">
+                    <div class="col-md-5">
+                        <small>{{personal_form.nationality|as_crispy_field}}</small>                                            
+                    </div>
+                    <div class="col-md-2"></div>
+                    <div class="col-md-5">
+                        <small>{{personal_form.place_of_birth|as_crispy_field}}</small>                                           
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-5">
+                        <small>{{personal_form.hobby|as_crispy_field}}</small>                                            
+                    </div>
+                </div>
+                <div style="padding-bottom: 50px;">
+                    
+                </div>
+        </div>
+    </div>

@@ -1,0 +1,32 @@
+{% load crispy_forms_tags %}
+   <div class="tab-pane" id="social-history-tab">
+	       		<div class="row">
+					<div class="col-md-6">
+                                    <div class="col-md-6">
+	                                     <small>{{social_form.alcohol_use|as_crispy_field}}</small>                                           
+                                    </div>
+                                    <div class="col-md-6">
+	                                     <small>{{social_form.tobaco_use|as_crispy_field}}</small>               
+                                    </div>
+                                    <div class="col-md-6">
+	                                     <small>{{social_form.caffeine_use|as_crispy_field}}</small>               
+                                    </div>
+                                    <div class="col-md-6">
+	                                     <small>{{social_form.drug_use|as_crispy_field}}</small>               
+                                    </div>
+                    </div>
+					<div class="col-md-6">
+                                    <div class="col-md-6">
+	                                     <small>{{social_form.exercise|as_crispy_field}}</small>                                           
+                                    </div>
+                                    <div class="col-md-6">
+	                                     <small>{{social_form.sleep|as_crispy_field}}</small>               
+                                    </div>
+                    </div>
+
+                </div>
+                <div style="padding-bottom: 50px;">
+                	
+                </div>
+
+   </div>

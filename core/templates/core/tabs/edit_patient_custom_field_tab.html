@@ -1,0 +1,30 @@
+{% load crispy_forms_tags %}
+
+       <div class="tab-pane" id="custom-tab2">
+                        <header class=" ">
+                            <ul class="nav nav-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active show" href="#patint-tab" data-toggle="tab"><small> Medical History</small></a></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#cust" data-toggle="tab"><small> Surgical History</small></a></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#social-history-tab" data-toggle="tab"><small>Social History</small></a></li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#family-history-tab" data-toggle="tab"><small>Family History</small></a></li>
+
+                            </ul>
+                        </header>
+    <div class="tab-content col-md-12" >
+        {% include "core/tabs/edit_patient_medical_history_tab.html" %}
+
+	       <div class="tab-pane" id="cust">
+	       		djjj
+	       </div>
+        {% include "core/tabs/edit_patient_social_history_tab.html" %}
+
+        {% include "core/tabs/edit_patient_family_history_tab.html" %}
+        {% include "core/tabs/edit_patient_surgery_history_tab.html" %}
+
+	</div>
+        </div>

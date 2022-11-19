@@ -28,22 +28,34 @@ from django.forms.models import(
 
 class PatientRegistrationForm(forms.ModelForm):
 	DateInput = partial(forms.DateInput, {'class':'datepicker'})
+	patient = Patient.objects.all()
 
-	
+	def __init__(self, *args, **kwargs):
+		super(PatientRegistrationForm, self).__init__(*args, **kwargs)
+		self.fields['first_name'].initial = patient
 	class Meta:
 		model = Patient
 		fields = ['first_name', 'last_name', 'sex', 'dob',
 					'occupation', 'phone_number', 'sub_city'
-					,'wereda','kebele','region'
+					,'wereda','kebele','region','grandfather_name',
+					'title'
 					]
 		
 		widgets = {
 			'first_name': forms.TextInput(attrs={
 			'class' : 'forms form-control',
-				}),
+				},
+				),
 			'last_name': forms.TextInput(attrs={
 			'class' : 'forms form-control',
 				}),
+			'grandfather_name': forms.TextInput(attrs={
+			'class' : 'forms form-control',
+				}),
+			'title': forms.Select(attrs={
+			'class' : 'select2 form-control',
+				}),
+
 			'sex': forms.Select(attrs={
 			'class' : 'select2 form-control',
 				}),
@@ -70,6 +82,100 @@ class PatientRegistrationForm(forms.ModelForm):
 			'class' : 'forms form-control select2',
 				}),
 			
+			}
+
+class PatientRegistrationForm2(forms.ModelForm):
+	DateInput = partial(forms.DateInput, {'class':'datepicker'})
+	patient = Patient.objects.all()
+
+	def __init__(self, *args, **kwargs):
+		patientid = kwargs.pop('patientid')
+		patient = Patient.objects.get(id=patientid)
+		super(PatientRegistrationForm2, self).__init__(*args, **kwargs)
+		self.fields['first_name'].initial = patient.first_name
+		self.fields['last_name'].initial = patient.last_name
+		self.fields['sex'].initial = patient.sex
+		self.fields['dob'].initial = patient.dob
+		self.fields['phone_number'].initial = patient.phone_number
+		self.fields['sub_city'].initial = patient.sub_city
+		self.fields['wereda'].initial = patient.sub_city
+		self.fields['kebele'].initial = patient.kebele
+		self.fields['region'].initial = patient.region
+		if patient.grandfather_name:
+			self.fields['grandfather_name'].initial = patient.grandfather_name
+		if patient.title:
+			self.fields['title'].initial = patient.title
+
+	class Meta:
+		model = Patient
+		fields = ['first_name', 'last_name', 'sex', 'dob',
+					 'phone_number', 'sub_city'
+					,'wereda','kebele','region','grandfather_name',
+					'title'
+					]
+		
+		widgets = {
+			'first_name': forms.TextInput(attrs={
+			'class' : 'forms form-control',
+				},
+				),
+			'last_name': forms.TextInput(attrs={
+			'class' : 'forms form-control',
+			'class' : 'forms form-control',
+
+				}),
+			'grandfather_name': forms.TextInput(attrs={
+			'class' : 'forms form-control',
+			'name' : 'grandfather_name',
+			'id' : 'grandfather_name',
+
+				}),
+			'title': forms.Select(attrs={
+			'class' : 'select2 form-control',
+				}),
+
+			'sex': forms.Select(attrs={
+			'class' : 'select2 form-control',
+				}),
+			'dob': forms.DateInput(attrs={
+			'class' : 'form-control forms',
+			'placeholder': 'Date Of Birth',
+				}),
+			'phone_number': forms.TextInput(attrs={
+			'class' : 'forms form-control',
+				}),
+			'sub_city': forms.TextInput(attrs={
+			'class' : 'forms form-control',
+				}),
+			'wereda': forms.TextInput(attrs={
+			'class' : 'forms form-control',
+				}),
+			'kebele': forms.TextInput(attrs={
+			'class' : 'forms form-control',
+				}),
+			'region': forms.Select(attrs={
+			'class' : 'forms form-control select2',
+				}),
+			
+			}
+
+class PatientEmailForm(forms.ModelForm):
+	def __init__(self, *args, **kwargs):
+		patientid = kwargs.pop('patientid')
+		patient = Patient.objects.get(id=patientid)
+		super(PatientEmailForm, self).__init__(*args, **kwargs)
+		if patient.email:
+			self.fields['email'].initial = patient.email
+	
+	
+	class Meta:
+		model = Patient
+		fields = ['email']
+		
+		widgets = {
+            'email': forms.TextInput(attrs={
+            'class': 'form-control',
+        }),
 			}
 
 class TeamSettingForm(forms.ModelForm):
@@ -406,19 +512,6 @@ class PatientPrescriptionForm(forms.ModelForm):
 
 
 
-class PatientSurgeryHistoryForm(forms.ModelForm):
-
-	class Meta:
-		model = PatientSurgeryHistory
-		fields = [ 'surgery']
-
-		widgets = {
-			'surgery': forms.TextInput(attrs={
-			'class' : 'forms form-control',
-				}),
-
-	
-			}
 
 
 class AssignServiceProviderForm(forms.ModelForm):
@@ -463,23 +556,6 @@ class AssignServiceTeamForm(forms.ModelForm):
 
 
 
-class PatientAllergyForm(forms.ModelForm):
-
-	class Meta:
-		model = PatientAllergy
-		fields = [ 'allergy', 'reaction']
-
-		widgets = {						
-			'allergy': forms.TextInput(attrs={
-			'class' : 'form-control forms',
-
-				}),
-			'reaction': forms.Textarea(attrs={
-			'class' : 'form-control forms',
-
-				})
-
-			}
 
 
 class PatientHabitForm(forms.ModelForm):

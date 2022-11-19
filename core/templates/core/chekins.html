@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+    <style>
+        .quick-launch-container {
+            display: inline-block;
+            margin-left: 5px;
+            padding-left: 5px;
+            margin-right: 7px;
+            border: black;
+            border-width: 10px;
+        }
+        .quick-launch-label {
+            display: block;
+            color: black;
+            font-weight: bold;
+        }
+        fieldset {
+            padding-bottom: 10px;
+            width: 150px; 
+            border: 2px solid; 
+            border-radius: 5px; 
+            border-color: #0a7e37;
+        }
+        legend {
+            color: black;
+            width: max-content;
+            font-size: 14px;
+        }
+        .add-allergy {
+            position: absolute;
+            bottom: 0;
+            right: 3px;
+        }
+        .fc-toolbar-title {
+        font-size: 10em;
+        margin: 0;
+    }
+    </style>
+
+
+    <link href="{% static 'fullcalendar/main.css' %}" rel="stylesheet" type="text/css" />
+
+{% endblock %}
+{% block title %} Patient Dashboard {% endblock %}
+{% block page_content %}
+
+{% load custom_dict %}
+                {% include "core/modals/add_checkin_form.html" %}
+
+        <div class="row">
+                                            
+
+                    <div class="col-md-3">
+                             <div class="card">
+                                 <div class="card-body ">
+                                    <div class="panel-body">
+                                        <small> <div id="calendar" > </div></small>
+                                    </div>
+                                 </div>
+                             </div>
+                        
+                    </div>
+                    <div class="card col-md-9" style="overflow-y:scroll;overflow-x:scroll; height: 600px;width: 1100px;">
+                        <div class="card-head " >
+                                   <!-- <button  class="btn btn-circle" data-toggle="modal" data-target="#createBuildingModal">
+                                    </button> -->
+                                <div class="row">
+                                    <a href="" data-toggle="modal" data-target="#addCheckinModal{{patient.id}}">
+                                    <div class="row" style="padding-left:30px;">
+                                        <div>
+                                        <i class="fa fa-plus fa-1x"></i> 
+                                         </div>
+                                        <div style="padding-left:7px;padding-right: 8px;">
+                                            <label><small> Add Checkin </small></label>
+                                        </div>
+                                    </div>
+                                    </a>
+
+                                </div>
+
+                        </div>
+
+                        <div class="card-body">
+
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;">
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="">
+                                                    <th class="text-center"><small> Treatment</small></th>
+                                                    <th class="text-center"><small> Status</small></th>
+
+                                                    <th class="text-center"><small> Registered On</small></th>
+                     
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for checkin in checkin_list %}
+                                                    <tr class="" style="height:40px;">
+                                                        <td style="width:300px" class="text-center">
+                                                            <small>
+                                                                <a href="" >{{ checkin.treatment}}</a> 
+                                                            </small>
+                                                        </td>
+                                                        <td style="width:300px" class="text-center">
+                                                            <small>
+                                                                {{ checkin.status}}</a> 
+                                                            </small>
+                                                        </td>
+                                                        <td style="width:300px" class="text-center">
+                                                            <small>
+                                                                {{ checkin.registered_on}}</a> 
+                                                            </small>
+                                                        </td>
+
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                                    
+                        </div>
+
+                    </div>
+
+        </div>
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'fullcalendar/main.js' %}" ></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+          initialDate: '{{ initial_date | safe }}',
+          eventOrder: 'color,start',
+          title: '',
+
+        });
+        calendar.render();
+      });
+    </script>
+{% endblock %}
+

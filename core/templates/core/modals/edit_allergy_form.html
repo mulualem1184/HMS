@@ -1,0 +1,33 @@
+<div class="modal fade" id="editAllergyModal{{allergy.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog " role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <form method="POST" action="{% url 'core:edit_allergy' allergy.id %}" >
+                        {% csrf_token %}
+
+                <h4 class="modal-title center">
+                        <button class="btn " type="submit">Save And Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <a href="{% url 'core:delete_allergy' allergy.id %}" class="btn btn-danger" >Delete</a>
+
+                </h4>
+            </div>
+            <div class="modal-body">
+
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-3 control-label"><small>Name</small></label>
+                        <div class="col-md-9">
+                           <!-- <input type="text" name="allergy" value="{{allergy.allergy}}" id="allergy" class="form-control">-->
+                                        <textarea name="allergy" value="{{allergy.allergy}}" id="allergy" class="form-control" style="width:320px; height: 150px;">{{allergy.allergy}}</textarea>
+                       
+                        </div>                        
+
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+      

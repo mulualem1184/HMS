@@ -1,0 +1,162 @@
+{% load crispy_forms_tags %}
+{% load static %}
+{% block style %}
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+  <link href="{% static 'css/pages/formlayout.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css' %}" rel="stylesheet" type="text/css" />
+    <link href="{% static 'css/pages/formlayout.css' %}" rel="stylesheet" type="text/css" />
+
+    <link href="{% static 'plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css' %}" rel="stylesheet" type="text/css" />
+{% endblock %}
+<div class="modal fade" id="editPersonInfoFormModal{{contact.id}}" tabindex="0" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" >
+            <div class="modal-header" >
+                <form method="POST" action="{% url 'core:save_emergency_contact' patient.id %}">
+                                    {% csrf_token %}
+
+                <h4 class="modal-title center">
+
+                        <button class="btn " type="submit"><i class="fa fa-save"></i>Save And Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                </h4>
+            </div>
+            <div class="modal-body" >
+
+                        <div class="row">
+                            <div class="col col-md-4 card card-body"  >
+                                <div class="row" style="padding-bottom: 15px;">
+                                    <label for="labsection" class="col-md-5 control-label"><small>First Name</small></label>
+                                    <div class="col-md-1">
+                                        <small>
+                                            <input style="width: 100px;" type="text" name="first_name" value="{{contact.first_name}}">
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="row" style="padding-bottom: 15px;">
+                                    <label for="labsection" class="col-md-5 control-label"><small>Last Name</small></label>
+                                    <div class="col-md-2">
+                                        <small>
+                                            <input style="width:100px;" type="text" name="first_name" value="{{contact.last_name}}">
+                                        </small>
+                                    </div>
+                                </div>
+
+                                <div class="row" style="padding-bottom: 15px;">
+                                    <label for="labsection" class="col-md-5 control-label"><small>Title</small></label>
+                                    <div class="col-md-7">
+                                            <input style="width:100px;" type="text" name="first_name" value="{{contact.title}}">
+                                    </div>
+                                </div>
+                                <div class="row" style="padding-bottom: 15px;">
+                                    <label for="labsection" class="col-md-5 control-label"><small>Phone Number</small></label>
+                                    <div class="col-md-7">
+                                            <input style="width:100px;" type="text" name="first_name" value="{{contact.phone_number}}">
+                                    </div>
+                                </div>
+                                <div class="row" style="padding-bottom: 15px;">
+                                    <label for="labsection" class="col-md-5 control-label"><small>Email</small></label>
+                                    <div class="col-md-7">
+                                            <input style="width:100px;" type="text" name="first_name" value="{{contact.email}}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col col-md-8" >
+                                <header class=" ">
+                                    <ul class="nav nav-tabs">
+                                            <li class="nav-item">
+                                                <a class="nav-link active show" href="#contact-address-tab5" data-toggle="tab"><small> Address</small></a></li>
+                                            <li class="nav-item">
+                                                <a class="nav-link" href="#contact-bank-account-tab5" data-toggle="tab"><small> Bank Accounts</small></a></li>
+
+                                    </ul>
+                                </header>
+                                <div class="tab-content">
+                                   <div class="tab-pane active" id="contact-address-tab5">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="col">
+                                                    <label for="labsection" class="col-md-12 control-label"><small>Sub City</small></label>
+                                                    <div class="col-md-7">
+                                                            <input style="width:150px;" type="text" name="sub_city" value="{{contact.sub_city}}">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="col">
+                                                    <label for="labsection" class="col-md-12 control-label"><small>Wereda</small></label>
+                                                    <div class="col-md-12">
+                                                        <small>
+                                                            <input style="width:150px;" type="text" name="wereda" value="{{contact.wereda}}">
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="col">
+                                                    <label for="labsection" class="col-md-12 control-label"><small>Kebele</small></label>
+                                                    <div class="col-md-12">
+                                                        <small>
+                                                            <input style="width:150px;" type="text" name="kebele" value="{{contact.kebele}}">
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="col">
+                                                    <label for="labsection" class="col-md-12 control-label"><small>Region</small></label>
+                                                    <div class="col-md-12">
+                                                        <small>
+                                                            <input style="width:150px;" type="text" name="region" value="{{contact.region}}">
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <!--
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <small>{{edit_contact_form.date_of_birth|as_crispy_field}}</small>                                           
+                                            </div>
+
+                                        </div>
+                                    -->
+                                    </div>
+                                   <div class="tab-pane " id="contact-bank-account-tab5">
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <div class="col">
+                                                    <label for="labsection" class="col-md-12 control-label"><small>Bank Account Number</small></label>
+                                                    <div class="col-md-12">
+                                                        <small>
+                                                            <input style="width:150px;" type="Number" name="region" value="{{contact.account_number}}">
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+</script>
+
+    <script src="{% static 'plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js' %}"></script>
+    <script src="{% static 'plugins/bootstrap-datetimepicker/js/bootstrap-datetimepicker-init.js' %}"></script>

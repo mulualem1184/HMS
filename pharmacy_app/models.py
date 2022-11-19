@@ -10,13 +10,10 @@ User = get_user_model()
 #from .tasks import *
 # Create your models here.
 
-class Tag(models.Model):
-	name = models.CharField(max_length=200, null=True)
 
 class OtherProducts(models.Model):
 	product_name = models.CharField(max_length=200, null=True)
 	date_registered = models.DateTimeField(auto_now_add=True, null=True)
-	tags = models.ManyToManyField(Tag)
 	
 #this class holds information related to drug sales to a single patient
 
@@ -195,10 +192,10 @@ class DrugPrescriptionInfo(models.Model):
 
 	drug = models.ForeignKey(Dosage,  on_delete= models.SET_NULL, null=True,blank=True)
 	units_per_take = models.IntegerField(max_length=200, null=True,blank=True)
-	frequency = models.IntegerField(max_length=200, null=True)
-	frequency_unit =models.CharField( max_length=200, choices=frequency_units, null=True) 
-	duration = models.IntegerField(null=True)
-	duration_unit = models.CharField( max_length=200, choices=time_units)
+	frequency = models.IntegerField(max_length=200, null=True,blank=True)
+	frequency_unit =models.CharField( max_length=200, choices=frequency_units, null=True, blank=True) 
+	duration = models.IntegerField(null=True,blank=True)
+	duration_unit = models.CharField( max_length=200, choices=time_units,blank=True)
 	def __str__(self):
 		return str(self.drug) + " - " + str(self.units_per_take) + " Units Per Take - " + str(self.frequency) + " Times " + str(self.frequency_unit) + " For " + str(self.duration) + " " + str(self.duration_unit)
 
@@ -473,6 +470,7 @@ class DrugPrescription(models.Model):
 	dispensed = models.CharField(max_length=5000, blank=True , choices=dispensed, default='false')
 	inpatient = models.CharField(max_length=5000, blank=True , choices=inpatient, default='false')
 	department = models.CharField(max_length=5000, blank=True , choices=department_choices, default='false')
+	prescribed = models.BooleanField(default=False)
 	
 	"""
 	@property

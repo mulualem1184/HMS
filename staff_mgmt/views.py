@@ -402,17 +402,20 @@ class LeaveRequestList(View):
         emp = None
         department = None
         request_list = []
+        #    request_list = StaffLeave.objects.filter(employee__designation__department=department)
+        """
         try:
             emp = user.employee
             department = DepartmentHead.is_employee_department_head(emp)
-            if department:
-                request_list = StaffLeave.objects.filter(employee__designation__department=department)
-            else: 
-                messages.error(self.request, 'Permission Denied; Could not show you leave request list')
+            #if department:
+            request_list = StaffLeave.objects.filter(employee__designation__department=department)
+            #else: 
+            #    messages.error(self.request, 'Permission Denied; Could not show you leave request list')
             return render(self.request, 'leave_request_list.html', {
                 'request_list': request_list
             })
         except: pass
+        """
         request_list = StaffLeave.objects.all()
         return render(self.request, 'leave_request_list.html', {
             'request_list': request_list

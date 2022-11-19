@@ -1,0 +1,70 @@
+<div class="modal fade" id="scheduleStuffModal{{patient.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <form method="POST" action="" >
+                        {% csrf_token %}
+
+                <h4 class="modal-title center">
+                        <button class="btn " type="submit">Save And Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                </h4>
+            </div>
+            <div class="modal-body">
+
+                    <div class="form-group col-md-12">
+                        <div class="col">
+                            <div>
+                                <label for="labsection" class="col-md-3 control-label"><small>Reason</small></label>
+                                <div class="col-md-9">
+                                    {{schedule_stuff_form.reason}}
+                                </div>
+                            </div>
+                            <div>
+                                <label for="labsection" class="col-md-3 control-label"><small>Category</small></label>
+                                <div class="col-md-9">
+                                    {{schedule_stuff_form.category}}
+                                </div>
+                            </div>
+                    <div >
+                        <label for="start_date" class="col-md-3 control-label"><small> From </small></label>
+                        <div class="col-md-3">
+                            <input type="date" name="start_date" id="start_date" class="form-control">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="end_date" class="col-md-3 control-label"><small> To</small></label>
+                        <div class="col-md-3">
+                            <input type="date" name="end_date" id="end_date" class="form-control">
+                        </div>
+
+                        
+                    </div>
+                        </div>
+                        <div style="padding-top: 15px;padding-left: 0px;">
+                        </div>
+
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+        function addImageForm() {
+               document.getElementById('image-div-idd').style.display = 'block';          
+            }
+
+        function closeSearchDiv() {
+               document.getElementById('search-building-id').style.display = 'none';          
+               document.getElementById('search-room-id').style.display = 'none';          
+               document.getElementById('search-bed-id').style.display = 'none';          
+
+                showingModal = true;
+            }
+
+</script>

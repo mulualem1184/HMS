@@ -1,0 +1,57 @@
+<div class="modal fade" id="editDemoValuesModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog " role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <form method="POST" action="{% url 'core:add_demo_value' patient.id %}" >
+                        {% csrf_token %}
+
+                <h4 class="modal-title center">
+                        <button class="btn " type="submit">Save And Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                </h4>
+            </div>
+            <div class="modal-body">
+
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-3 control-label"><small>Name</small></label>
+                        <div class="col-md-9">
+                            {{edit_demo_form.name}}
+                        </div>
+                    </div>
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-3 control-label"><small>Cholestrol</small></label>
+                        <div class="col-md-9">
+                            {{edit_demo_form.cholestrol}}
+                        </div>
+                    </div>
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-3 control-label"><small>HDL</small></label>
+                        <div class="col-md-9">
+                            {{edit_demo_form.HDL}}
+                        </div>
+                    </div>
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-3 control-label"><small>LDL</small></label>
+                        <div class="col-md-9">
+                            {{edit_demo_form.LDL}}
+                        </div>
+                    </div>
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-3 control-label"><small>TGO</small></label>
+                        <div class="col-md-9">
+                            {{edit_demo_form.TGO}}
+                        </div>
+                    </div>
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-3 control-label"><small>TGP</small></label>
+                        <div class="col-md-9">
+                            {{edit_demo_form.TGP}}
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>

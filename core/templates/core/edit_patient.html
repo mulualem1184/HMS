@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+    <style>
+        .quick-launch-container {
+            display: inline-block;
+            margin-left: 5px;
+            padding-left: 5px;
+            margin-right: 7px;
+            border: black;
+            border-width: 10px;
+        }
+        .quick-launch-label {
+            display: block;
+            color: black;
+            font-weight: bold;
+        }
+        fieldset {
+            padding-bottom: 10px;
+            width: 150px; 
+            border: 2px solid; 
+            border-radius: 5px; 
+            border-color: #0a7e37;
+        }
+        legend {
+            color: black;
+            width: max-content;
+            font-size: 14px;
+        }
+        .add-allergy {
+            position: absolute;
+            bottom: 0;
+            right: 3px;
+        }
+    </style>
+
+    <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" rel="stylesheet" type="text/css" />
+    <!-- icons -->
+    <link href="fonts/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+     <!-- Material Design Icons -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <!--bootstrap -->
+    <link href="../assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <!-- Material Design Lite CSS -->
+    <link href="../assets/plugins/material/material.min.css" rel="stylesheet" >
+    <link href="../assets/css/material_style.css" rel="stylesheet">
+    <!-- Theme Styles -->
+    <link href="../assets/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="../assets/css/plugins.min.css" rel="stylesheet" type="text/css" />
+    <link href="../assets/css/responsive.css" rel="stylesheet" type="text/css" />
+    <link href="../assets/css/theme-color.css" rel="stylesheet" type="text/css" />
+    <!-- Date Time item CSS -->
+    <link rel="stylesheet" href="../assets/plugins/material-datetimepicker/bootstrap-material-datetimepicker.css" />
+    <!-- favicon -->
+    <link rel="shortcut icon" href="https://radixtouch.com/templates/admin/sunray/source/assets/img/favicon.ico" /> 
+
+{% endblock %}
+{% block title %} Patient Dashboard {% endblock %}
+{% block page_content %}
+
+<div class="card card-box  " style="background-color: white;" >
+    
+        <div class="" ><!--
+            <div class="card-head col-md-12 border-bottom-0" style="background-color: #eef1f5; padding-bottom: 10px;padding-left: 20px;">
+
+            </div>-->
+
+                         {% include "core/modals/create_occupation_form.html" %}
+
+<form method="POST" action="{% url 'core:edit_patient_process' patient.id %}">
+
+{% csrf_token %}
+
+                        <header class="panel-heading panel-heading-gray custom-tab ">
+                                <small><button class="btn " type="submit"><i class="fa fa-save"></i>Save </button></small> 
+                                <small><button type="button" class="btn " data-dismiss="modal"><i class="fa fa-person"></i><a style="color: black;" href="{% url 'core:patient_dashboard' patient.id %}"> Patient Chart</a></button></small>
+                        </header>
+
+                        <header class="panel-heading panel-heading-gray custom-tab ">
+                            <ul class="nav nav-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active show" href="#patient-tab" data-toggle="tab"><small> Patient</small></a></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#custom-tab2" data-toggle="tab"><small> Custom</small></a></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#demographics-tab2" data-toggle="tab"><small>Demographics</small></a></li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#frequent-tab" data-toggle="tab"><small>BarCode</small></a></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#contact-tab" data-toggle="tab"><small>Emergency Contact</small></a></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#copayer-tab" data-toggle="tab"><small>Copayers</small></a></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#frequent-tab" data-toggle="tab"><small>Biometrics</small></a></li>
+
+                            </ul>
+                        </header>
+
+        </div>
+    <div class="tab-content col-md-12" >
+        
+        {% include "core/tabs/edit_patient_tab.html" %}
+
+        {% include "core/tabs/edit_patient_custom_field_tab.html" %}
+
+
+        {% include "core/tabs/edit_patient_demographics_tab.html" %}
+</form>
+ 
+        {% include "core/tabs/edit_emergency_contact_tab.html" %}
+        {% include "core/tabs/edit_copayer_tab.html" %}
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+    <script data-cfasync="false" src="../../../../../cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="../assets/plugins/jquery/jquery.min.js" ></script>
+    <script src="../assets/plugins/popper/popper.min.js" ></script>
+    <script src="../assets/plugins/jquery-blockui/jquery.blockui.min.js" ></script>
+    <script src="../assets/plugins/jquery-slimscroll/jquery.slimscroll.js"></script>
+    <!-- bootstrap -->
+    <script src="../assets/plugins/bootstrap/js/bootstrap.min.js" ></script>
+    <!-- Common js-->
+    <script src="../assets/js/app.js" ></script>
+    <script src="../assets/js/layout.js" ></script>
+    <script src="../assets/js/theme-color.js" ></script>
+    <!-- Material -->
+    <script src="../assets/plugins/material/material.min.js"></script>
+    <script src="../assets/plugins/material-datetimepicker/moment-with-locales.min.js"></script>
+    <script src="../assets/plugins/material-datetimepicker/bootstrap-material-datetimepicker.js"></script>
+    <script src="../assets/plugins/material-datetimepicker/datetimepicker.js"></script>
+    <!-- end js include path -->
+

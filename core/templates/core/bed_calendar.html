@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+    <style>
+        .quick-launch-container {
+            display: inline-block;
+            margin-left: 5px;
+            padding-left: 5px;
+            margin-right: 7px;
+            border: black;
+            border-width: 10px;
+        }
+        .quick-launch-label {
+            display: block;
+            color: black;
+            font-weight: bold;
+        }
+        fieldset {
+            padding-bottom: 10px;
+            width: 150px; 
+            border: 2px solid; 
+            border-radius: 5px; 
+            border-color: #0a7e37;
+        }
+        legend {
+            color: black;
+            width: max-content;
+            font-size: 14px;
+        }
+        .add-allergy {
+            position: absolute;
+            bottom: 0;
+            right: 3px;
+        }
+        .fc-toolbar-title {
+        font-size: 10em;
+        margin: 0;
+    }
+    </style>
+
+
+    <link href="{% static 'fullcalendar/main.css' %}" rel="stylesheet" type="text/css" />
+
+{% endblock %}
+{% block title %} Patient Dashboard {% endblock %}
+{% block page_content %}
+
+{% load custom_dict %}
+<datalist id="patient_data_list2" >
+    {% for patient in patient_list %}
+        <option value="{{patient}}" >
+            ID = {{patient.id}}
+        </option>
+    {% endfor %}    
+</datalist>
+        <div class="row">
+                                            
+
+                    <div class="col-md-3">
+                             <div class="card">
+                                 <div class="card-body ">
+                                    <div class="panel-body">
+                                        <small> <div id="calendar" > </div></small>
+                                    </div>
+                                 </div>
+                             </div>
+                        
+                    </div>
+                    <div class="card col-md-9" style="overflow-y:scroll;overflow-x:scroll; height: 600px;width: 1100px;">
+                            <div class="card-head">
+                                <header><small>Admit Patient</small></header>
+
+                            </div>
+
+                            <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;">
+                                <thead style="background-color: lightgrey;">
+                                    <tr class="">
+                                        <th style="background-color: #eef1f5;width: 70px;"><small><b>Ward</b></small></th>
+                                        <th style="background-color: #eef1f5;width: 250px;"><small><b>Room</b></small></th>
+                                        <th class="text-center" style="background-color: #eef1f5;width: 50px;"><small><b> Bed </b></small></th>
+                                    {% for day in day_list %}                                        
+                                        <th style="width: 50px; " style="background-color: #eef1f5;" class="text-center">
+                                                <div class="col">
+                                                    <div>
+                                                        <small>{% if day.date|date:'l' == 'Sunday'%}   {{day.date}} {% endif %} </small>
+                                                    </div>
+                                                
+                                                    <div>
+                                                        <small> {{ day.date|date:'l' }}  {{day.date.day}} </small>
+                                                    </div>
+                                                </div>
+
+                                        </th>
+                                    {% endfor %}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                        {% for category in category_list %}
+
+                                    <tr>
+
+                                        <td style="background-color: #eef1f5;width: 70px;">
+                                      <a class="accordion-toggle accordion-toggle-styled" data-toggle="collapse" data-parent="#accordion3" href="#room{{category.id}}"><b> <small>{{category}}</small> </b></a>
+                                        </td>
+                                    </tr>
+                                        {% for ward in category.sp_category.all %}
+                                    <tr id="room{{ward.category.id}}">
+                                        <td style="background-color: #eef1f5;width: 70px;"></td>
+                                        <td  style="background-color: #eef1f5;width: 250px;" >
+                                      <a class="accordion-toggle accordion-toggle-styled" data-toggle="collapse" data-parent="#accordion4" href="#bedd{{ward.id}}"><b>    <small>{{ward}}</small>{% if ward.by_gender == 'MALE' %}<small> M </small>{% elif ward.by_gender == 'FEMALE' %}<small> F </small>{% else %}<small> MF </small>{% endif %}</b></a>
+                                        </td>
+                                    </tr>
+                                    <div >
+                                            {% for bed in ward.sp_ward.all %}
+                                        <tr class="" style="height:40px;" id="bedd{{ward.id}}">
+                                            <td style="background-color: #eef1f5;width: 70px;"></td>
+                                            <td style="background-color: #eef1f5;width: 250px;" ></td>
+                                            <td style="background-color: #eef1f5;" style="width:50px;" class="text-center" > <small>{{ bed}} </small></td>
+                                            {% for day in day_list %}
+                                            {%get_something day bed.id %}
+                                            {% if result %}
+                                                    {% include "inpatient_app/partials/edit_ward_admission_modal.html" %}
+                                            
+                                            <td style="width:50px;" class="text-center"><a href="" data-toggle="modal" data-target="#editWardAdmissionModal{{bed.id}}"> <small>  <hr style="height: 5px;background-color: black; "> </small></a> </td>
+                                            
+                                            {% else %}
+                                            {% include "inpatient_app/partials/admit_patient_modal.html" %}
+                                            <td style="width:50px;" class="text-center">
+                                                <a style="padding-top: 5px;" data-toggle="modal" data-target="#admitPatientModal{{bed.id}}">
+                                                     <label style="height: 10px;background-color: white;color: white; "> d</label>
+                                                </a>
+                                                </td>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </tr>
+                                    </div>
+                                    {% endfor %}
+                                {% endfor %}
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+        </div>
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'fullcalendar/main.js' %}" ></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+          initialDate: '{{ initial_date | safe }}',
+          eventOrder: 'color,start',
+          title: '',
+
+        });
+        calendar.render();
+      });
+    </script>
+{% endblock %}
+

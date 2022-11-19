@@ -7,6 +7,36 @@ from .views import *
 urlpatterns = [
 
  	path('hospital_structure/', views.HospitalStructure, name="hospital_structure"),
+ 	path('whole_ward_view/', views.WholeWardView, name="whole_ward_view"),
+ 	path('admit_patient_to_ward/<int:bed_id>/<str:value>/', views.AdmitPatientToWard, name="admit_patient_to_ward"),
+ 	path('edit_ward_admission/<int:bed_id>', views.EditWardAdmission, name="edit_ward_admission"),
+ 	path('delete_ward_admission/<int:bed_id>', views.DeleteWardAdmission, name="delete_ward_admission"),
+
+ 	path('save_treatment_plan/', views.SaveTreatmentPlan, name="save_treatment_plan"),
+ 	path('save_treatment_plan2/', views.SaveTreatmentPlan2, name="save_treatment_plan2"),
+ 	path('delete_treatment_plan/<int:plan_id>/', views.DeleteTreatmentPlan, name="delete_treatment_plan"),
+
+ 	path('edit_treatment_plan/<int:plan_id>', views.EditTreatmentPlan, name="edit_treatment_plan"),
+ 	path('change_plan_status/<int:plan_id>', views.ChangePlanStatus, name="change_plan_status"),
+ 	path('treatment_plan_prescription/<int:plan_id>', views.TreatmentPlanPrescription, name="treatment_plan_prescription"),
+
+ 	path('ipd_structure/', views.IPDStructure, name="ipd_structure"),
+ 	path('create_ward/', views.CreateWard, name="create_ward"),
+ 	path('edit_ward/<int:ward_id>', views.EditWard, name="edit_ward"),
+ 	path('delelte_ward/<int:ward_id>', views.DeleteWard, name="delete_ward"),
+
+ 	path('create_ipd_building/', views.CreateIPDBuilding, name="create_ipd_building"),
+ 	path('create_ipd_ward/', views.CreateIPDWard, name="create_ipd_ward"),
+ 	path('create_ipd_bed/', views.CreateIPDBed, name="create_ipd_bed"),
+ 	path('edit_ipd_building/<int:building_id>', views.EditIPDBuilding, name="edit_ipd_building"),
+ 	path('delete_ipd_building/<int:building_id>', views.DeleteIPDBuilding, name="delete_ipd_building"),
+
+ 	path('edit_ipd_ward/<int:ward_id>', views.EditIPDWard, name="edit_ipd_ward"),
+ 	path('delete_ipd_ward/<int:ward_id>', views.DeleteIPDRoom, name="delete_ipd_ward"),
+
+ 	path('edit_ipd_bed/<int:bed_id>', views.EditIPDBed, name="edit_ipd_bed"),
+ 	#path('delete_ipd_bed/<int:bed_id>', views.DeleteIPDBed, name="delete_ipd_ward"),
+
  	path('patient_list/', views.PatientList, name="patient_list"),
  	path('allocate_patient/<int:pk>/', views.AllocatePatient, name="allocate_patient"),
  	path('bed_release_date_form/<int:patient_id>/', views.BedReleaseDateFormPage, name="bed_release_date_form"),

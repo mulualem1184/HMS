@@ -1,0 +1,43 @@
+            <div class="tab-pane active" id="consultation-list-tab">
+                    <div class="row">
+
+                        <div class="col-md-6" id="dispensary-supplied-drug-table-id" >
+                            <div class="card" style="height: 270px;width: 500px;">
+                                    <div class="card-head">
+                                        <header><small>Field Values</small></header>
+                                    </div>
+                                    <div class="card-body">
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;">
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="">
+                                                    <th class="text-center"><small> Cholestrol</small></th>
+                                                    <th class="text-center"><small> HDL </small></th>
+                                                    <th class="text-center"><small> LDL </small></th>
+                                                    <th class="text-center"><small> TGO </small></th>
+                                                    <th class="text-center"><small> TGP </small></th>
+                     
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for value in demo_value_list %}
+                                                    <tr class="" style="height:40px;">
+                                                        <td style="width:300px" class="text-center">
+                                                            <small>
+                                                                <a href="" data-toggle="modal" data-target="#editDemoValuesModal">{{ value.cholestrol}}</a> 
+                                                            </small>
+                                                        </td>
+                                                        <td style="width:300px;" class="text-center"><small> {{value.HDL}}</small> </td>
+                                                        <td style="width:300px;" class="text-center"><small> {{value.LDL}}</small> </td>
+                                                        <td style="width:300px;" class="text-center"><small> {{value.TGO}}</small> </td>
+                                                        <td style="width:300px;" class="text-center"><small> {{value.TGP}}</small> </td>                                                     
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+            
+        </div>

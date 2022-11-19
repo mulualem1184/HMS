@@ -1,0 +1,81 @@
+                {% include "core/modals/create_resource.html" %}
+<div class="modal fade" id="addResourceModal{{patient.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog " role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <form method="POST" action="{% url 'core:schedule_resource' patient.id %}" >
+                        {% csrf_token %}
+
+                <h4 class="modal-title center">
+                        <button class="btn " type="submit">Save And Close</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </h4>
+            </div>
+            <div class="modal-body">
+
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-3 control-label"><small>Patient</small></label>
+                        <div class="col-md-9">
+                            <small> {{patient}}</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-3 control-label"><small>Resource</small></label>
+                        <div class="col-md-8">
+                            {{resource_form.resource}}
+                        </div>
+                                    <div class="col-md-1">
+                                        <i style="padding-bottom: 40px;" class="fa fa-plus" onclick="OpenCreateResourceModal({{patient.id}})"></i>
+                                    </div>
+
+                    </div>
+
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-3 control-label"><small>Reason</small></label>
+                        <div class="col-md-8">
+                            {{resource_form.reason}}
+                        </div>
+                    </div>
+
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-3 control-label"><small>Category</small></label>
+                        <div class="col-md-8">
+                            {{resource_form.category}}
+                        </div>
+                    </div>
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-3 control-label"><small>Start Time</small></label>
+                        <div class="col-md-4">
+                            <input type="date" name="start_date" placeholder="" id="start_date" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <input type="time" name="start_time" placeholder="" id="start_time" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-3 control-label"><small>End Time</small></label>
+                        <div class="col-md-4">
+                            <input type="date" name="end_date" placeholder="" id="start_date" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <input type="time" name="end_time" placeholder="" id="end_time" class="form-control">
+                        </div>
+                    </div>
+
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+            function OpenCreateResourceModal(id) {
+                $("#addResourceModal"+id).modal('hide');
+                $("#createResourceModal").modal('show');
+
+            }
+
+</script>
