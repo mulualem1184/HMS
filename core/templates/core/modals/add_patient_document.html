@@ -1,0 +1,28 @@
+<div class="modal fade" id="addDocumentModal{{patient.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog " role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <form method="POST" action="{% url 'core:add_patient_document' patient.id 'File' 'patient_dashboard' %}" >
+                        {% csrf_token %}
+                <h4 class="modal-title center">
+                        <button class="btn " type="submit">Save And Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+                </h4>
+            </div>
+            <div class="modal-body">
+
+                    <div class="form-group row col-md-12">
+                        <div class="col-md-6">
+                            <small><input  name="files" type="file" multiple class="form-control-file"></small>
+                        </div>
+
+                    </div>
+
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>

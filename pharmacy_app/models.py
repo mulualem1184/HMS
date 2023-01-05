@@ -450,7 +450,6 @@ class DrugPrescription(models.Model):
 	duration_amount and duration_unit: info for how long the drug is to be taken
 	order_category: info regarding whether it is Emergency or Non_Emergency prescription
 	registered_on: the time when it was prescribed
-
 	""" 
 
 	units_per_take = models.IntegerField(max_length=200, null=True,blank=True)
@@ -471,6 +470,7 @@ class DrugPrescription(models.Model):
 	inpatient = models.CharField(max_length=5000, blank=True , choices=inpatient, default='false')
 	department = models.CharField(max_length=5000, blank=True , choices=department_choices, default='false')
 	prescribed = models.BooleanField(default=False)
+	active = models.BooleanField(default=False)
 	
 	"""
 	@property

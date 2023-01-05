@@ -10,7 +10,7 @@
     <link href="{% static 'plugins/bootstrap-datepicker/css/bootstrap-datepicker3.min.css' %}" rel="stylesheet" type="text/css" />
 {% endblock %}
 <div class="modal fade" id="treatmentPlanForm"  role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-fluid col-md-6" role="document">
         <div class="modal-content" >
             <div class="modal-header" >
                 <form method="POST" action="{% url 'save_treatment_plan2' %}">
@@ -28,6 +28,7 @@
             <div class="modal-body" style="background-color:#E5E4E2;">
 
                         <div class="row">
+                            <div style="width: 80px;" ></div>
                             <div class="col col-md-5 card card-box"  >
                                 <div class="row" style="padding-bottom: 15px;">
                                     <label for="labsection" class="col-md-4 control-label"><small>Patient</small></label>
@@ -59,7 +60,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col col-md-7" style="background-color:#E5E4E2;">
+                            <div style="width: 30px;"></div>
+                            <div class="col col-md-5 card card-box" style="">
                                 <div class="row" style="padding-bottom: 15px;">
                                     <label for="labsection" class="col-md-3 control-label"><small>Treatment Name</small></label>
                                     <div class="col-md-8">
@@ -76,7 +78,7 @@
                                 <div class="col" >    
                                     <div class="row">
                                         <div style="padding-left:0px;">
-                                        <label for="labsection" class="col-md-2 control-label"><small> Action</small></label>
+                                        <label for="labsection" class="col-md-2 control-label"><small> A</small></label>
                                         </div>
                                         <div class="col-md-1"></div>
                                         <div class="col-md-8" style="padding-left:20px;">
@@ -85,6 +87,7 @@
                                                 <option value="1">Add Prescription</option>
                                                 <option value="2">Add Treatment</option>
                                                 <option value="3">Schedule Appointment</option>
+                                                <option value="4">Vital Signs</option>
 
                                             </select>
                                         </div>
@@ -255,15 +258,33 @@
                                                             
                                             
                                         </div>
+                                        <div  class="col-md-12" style="display:none;padding-top: 30px;" id="vital_sign_options_div">                                                                                          
+                                                    <div class="form-row" >
+                                                      <div class="form-group col-md-12 mb-0">
+                                                        <select name="vital_sign_options" id="vital_sign_options"  class="form-control">
+                                                            <option value="0">None</option>
+                                                            <option value="1">All Vital Signs</option>
+                                                            <option value="2">Temperature</option>
+                                                            <option value="3">Blood Pressure</option>
+                                                            <option value="4">Oxygen Saturation</option>
+                                                            <option value="5">Glucose Level</option>
+                                                        </select>
+
+                                                      </div>
+                                                      
+                                                    </div>                                            
+                                        </div>
                                     </div>
                                 </div>    
                                 </div>
 
                             </div>
-                            
-                            <div style="padding-left: 5px;" class="col-md-9 card card-box">
-                                <div class="row">                                
-                                    <div style="padding-left:15px;" class="col-md-3">
+                            <div class="row col-md-12">
+                            <div class="" style="padding-left: 80px;"></div>
+                            <div  class=" card card-box" style="width: 1220px;">
+                                <div class="row">
+                                    
+                                    <div style="padding-left:15px;" class="col-md-2">
                                             <input type="radio" name="recurrence" id="daily-id" onclick="recurrenceFn()" value="1" checked>
                                               <label for="gender"><small>Daily</small></label>
                                                 <br>
@@ -276,8 +297,23 @@
                                             <input type="radio"   id="yearly-id" onclick="recurrenceFn()" name="recurrence" value="4" >
                                               <label for="gender"><small>Yearly</small></label>
                                                 <br>
+                                            <input type="radio"   id="hourly-id" onclick="recurrenceFn()" name="recurrence" value="5" >
+                                              <label for="gender"><small>Hourly</small></label>
+                                                <br>
 
                                     </div>
+                                    <div  class="col-md-9" id="hourly-choices" style="display: none">
+                                        <div class="row">
+                                            <label for="labsection" class="col-md-2 control-label"><small>Every</small></label>
+                                            <div class="col-md-5">
+                                                {{recurrence_form.hourly_range}}                                            
+                                            </div>
+                                            <label for="labsection" class="col-md-1 control-label"><small>Hours</small></label>
+
+
+                                        </div>
+                                    </div>
+
                                     <div  class="col-md-9" id="daily-choices">
                                         <div class="row">
                                             <div class="col-md-6">
@@ -286,6 +322,7 @@
                                             <label for="labsection" class="col-md-2 control-label"><small>Day</small></label>
                                         </div>
                                     </div>
+
                                     <div style="display: none;" class="col-md-9" id="weekly-choices">
                                         <div class="row">
                                             <label for="labsection" class="col-md-4 control-label"><small>Days</small></label>
@@ -325,6 +362,7 @@
                                 </div>
                                 <hr>
                                 <div class="row">
+                                    <div class="col-md-1"></div>
                                     <div  class="col-md-9" id="">
                                        <div class="row">
                                             <label for="labsection" class="col-md-4 control-label" ><small>End After</small></label>
@@ -333,6 +371,24 @@
                                             </div>
                                             <label for="labsection" class="col-md-3 control-label" ><small>Occurrences</small></label>
                                         </div>
+                                       <div class="row">
+                                            <label for="labsection" class="col-md-3 control-label" ><small>Can be executed before</small></label>
+                                            <div class="col-md-1">
+                                                {{tolerable_form.tolerable_earliness}}
+                                            </div>
+                                            <div class="col-md-1">
+                                                {{tolerable_form.tolerable_earliness_unit}}
+                                            </div>
+                                        </div>
+                                       <div class="row">
+                                            <label for="labsection" class="col-md-3 control-label" ><small>Can be executed after</small></label>
+                                            <div class="col-md-1">
+                                                {{tolerable_form.tolerable_lateness}}
+                                            </div>
+                                            <div class="col-md-3">
+                                                {{tolerable_form.tolerable_lateness_unit}}
+                                            </div>
+                                        </div>
  
                                     </div>
                                     
@@ -340,6 +396,7 @@
                                 <div style="padding-bottom: 50px;">
                                     
                                 </div>
+                            </div>
                             </div>
                         </div>
 
@@ -364,6 +421,7 @@
                 document.getElementById('weekly-choices').style.display = 'none';          
                 document.getElementById('monthly-choices').style.display = 'none';          
                 document.getElementById('yearly-choices').style.display = 'none';          
+                document.getElementById('hourly-choices').style.display = 'none';          
 
               } 
             if(document.getElementById('weekly-id').checked) {
@@ -371,18 +429,29 @@
                 document.getElementById('daily-choices').style.display = 'none';          
                 document.getElementById('monthly-choices').style.display = 'none';          
                 document.getElementById('yearly-choices').style.display = 'none';          
+                document.getElementById('hourly-choices').style.display = 'none';          
+
               } 
             if(document.getElementById('monthly-id').checked) {
                 document.getElementById('weekly-choices').style.display = 'none';          
                 document.getElementById('monthly-choices').style.display = 'block';          
                 document.getElementById('daily-choices').style.display = 'none';          
                 document.getElementById('yearly-choices').style.display = 'none';          
+                document.getElementById('hourly-choices').style.display = 'none';          
               } 
             if(document.getElementById('yearly-id').checked) {
                 document.getElementById('weekly-choices').style.display = 'none';          
                 document.getElementById('daily-choices').style.display = 'none';          
                 document.getElementById('monthly-choices').style.display = 'none';          
                 document.getElementById('yearly-choices').style.display = 'block';          
+                document.getElementById('hourly-choices').style.display = 'none';          
+              } 
+            if(document.getElementById('hourly-id').checked) {
+                document.getElementById('weekly-choices').style.display = 'none';          
+                document.getElementById('daily-choices').style.display = 'none';          
+                document.getElementById('monthly-choices').style.display = 'none';          
+                document.getElementById('yearly-choices').style.display = 'none';          
+                document.getElementById('hourly-choices').style.display = 'block';          
               } 
 
     }
@@ -399,6 +468,7 @@
                 document.getElementById('dynamic-prescription-form-id').style.display = 'none';          
                         document.getElementById('appointment-form-id').style.display = 'none';          
             document.getElementById('action-card-id').style.display = 'block';          
+                        document.getElementById('vital_sign_options_div').style.display = 'none';          
 
         }
         else if (d==2){
@@ -408,6 +478,7 @@
                         document.getElementById('dynamic-treatment-form-id').style.display = 'none';          
                         document.getElementById('dynamic-prescription-form-id').style.display = 'none';          
             document.getElementById('action-card-id').style.display = 'block';          
+                        document.getElementById('vital_sign_options_div').style.display = 'none';          
 
         }
         else if (d==3){
@@ -416,7 +487,20 @@
                         document.getElementById('prescription-form-id').style.display = 'none';          
                         document.getElementById('dynamic-treatment-form-id').style.display = 'none';          
                         document.getElementById('dynamic-prescription-form-id').style.display = 'none';          
-            document.getElementById('action-card-id').style.display = 'block';          
+                        document.getElementById('action-card-id').style.display = 'block';          
+                        document.getElementById('vital_sign_options_div').style.display = 'none';          
+
+
+        }
+
+        else if (d==4){
+                        document.getElementById('appointment-form-id').style.display = 'none';          
+                        document.getElementById('manual-treatment-form-id').style.display = 'none';          
+                        document.getElementById('prescription-form-id').style.display = 'none';          
+                        document.getElementById('dynamic-treatment-form-id').style.display = 'none';          
+                        document.getElementById('dynamic-prescription-form-id').style.display = 'none';          
+                        document.getElementById('action-card-id').style.display = 'block';          
+                        document.getElementById('vital_sign_options_div').style.display = 'block';          
 
 
         }

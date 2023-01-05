@@ -21,7 +21,8 @@
             </div>
             <div class="modal-body" style="background-color:#E5E4E2;">
                         <div class="row">
-                            <div class="col col-md-4 card card-box"  >
+                            <div class="" style="padding-left: 30px;"></div>
+                            <div class="col col-md-5 card card-body"  >
                                 <div class="row" style="padding-bottom: 15px;">
                                     <label for="labsection" class="col-md-4 control-label"><small>Patient</small></label>
                                     <div class="col-md-8">
@@ -42,21 +43,23 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col col-md-8" style="background-color:#E5E4E2;">
+                            <div class="col-md-1">
+                            </div>
+                            <div class="col col-md-5 card card-body" >
                                 <div class="row" style="padding-bottom: 15px;">
-                                    <label for="labsection" class="col-md-3 control-label"><small>Name</small></label>
+                                    <label for="labsection" class="col-md-4 control-label"><small>Plan Name</small></label>
                                     <div class="col-md-8">
                                         <small>{{plan.name}}</small>
                                     </div>
                                 </div>
                                 <div class="row" style="padding-bottom: 15px;">
-                                    <label for="labsection" class="col-md-3 control-label"><small> Description</small></label>
+                                    <label for="labsection" class="col-md-4 control-label"><small> Description</small></label>
                                     <div class="col-md-8">
                                            <small> {{plan.description}}</small>
                                     </div>
                                 </div>
 
-                                <div class="row" style="padding-bottom: 15px;">
+                               <!-- <div class="row" style="padding-bottom: 15px;">
                                     <label for="labsection" class="col-md-3 control-label"><small> Action</small></label>
                                     <div class="col-md-8">
                                         {% if plan.prescription %}
@@ -68,16 +71,16 @@
                                         {% endif %}                                        
                                     </div>
                                 </div>
+                                    -->
                                     {% if plan.status == 'Completed'  %}
                                     {% else %}
                                         {% if plan.prescription %}
                                     
                                     <div class="row" style="padding-bottom: 15px;">
-
                                         <label for="labsection" class="col-md-3 control-label"><small>{{plan.prescription.info.drug}} </small></label>
                                         <div class="col-md-8">
                                         <a> 
-                                            <small onclick="OpenModal2({{plan.id}})" style="color: #0645ad;">Prescribe</small>
+                                            <small onclick="OpenModal2({{plan.id}})" style="color: #0645ad;">Administer</small>
                                             </a>
                                         </div>
                                     </div>
@@ -85,7 +88,7 @@
 
                                         {% if plan.treatment %}
                                     <div class="row" style="padding-bottom: 15px;">
-                                        <label for="labsection" class="col-md-3 control-label"><small> Apply Treatment</small></label>
+                                        <label for="labsection" class="col-md-3 control-label"><small> Action</small></label>
                                         <div class="col-md-8">
                                         <a > 
                                             <small onclick="OpenTreatmentModal({{plan.id}})" style="color: #0645ad;">{{plan.treatment}}</small>
@@ -93,12 +96,61 @@
                                         </div>
                                     </div>
                                         {% endif %}
+                                        {% if plan.vital_sign_options.temperature %}
+                                            <div class="row" style="padding-bottom: 15px;">
+                                                <label for="labsection" class="col-md-3 control-label"><small> Action</small></label>
+                                                <div class="col-md-8">
+                                                <a > 
+                                                    <small onclick="OpenTemperatureFormModal({{plan.id}})" style="color: #0645ad;">Take Temperature</small>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        {% elif plan.vital_sign_options.blood_pressure %}
+                                                <div class="row" style="padding-bottom: 15px;">
+                                                    <label for="labsection" class="col-md-3 control-label"><small> Action </small></label>
+                                                    <div class="col-md-8">
+                                                    <a > 
+                                                        <small onclick="OpenBloodPressureFormModal({{plan.id}})" style="color: #0645ad;">Take Blood Pressure</small>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                        {% elif plan.vital_sign_options.glucose %}
+                                                <div class="row" style="padding-bottom: 15px;">
+                                                    <label for="labsection" class="col-md-3 control-label"><small> Action </small></label>
+                                                    <div class="col-md-8">
+                                                    <a > 
+                                                        <small onclick="OpenGlucoseLevelFormModal({{plan.id}})" style="color: #0645ad;">Record Glucose Level</small>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                        {% elif plan.vital_sign_options.oxygen_saturation %}
+                                                <div class="row" style="padding-bottom: 15px;">
+                                                    <label for="labsection" class="col-md-3 control-label"><small> Action </small></label>
+                                                    <div class="col-md-8">
+                                                    <a > 
+                                                        <small onclick="OpenOxygenSaturationFormModal({{plan.id}})" style="color: #0645ad;">Record Oxygen Saturation</small>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                        {% elif plan.vital_sign_options.active %}
+                                                <div class="row" style="padding-bottom: 15px;">
+                                                    <label for="labsection" class="col-md-3 control-label"><small> Action </small></label>
+                                                    <div class="col-md-8">
+                                                    <a > 
+                                                        <small onclick="OpenVitalSignFormModal({{plan.id}})" style="color: #0645ad;">Record Vital Sign</small>
+                                                        </a>
+                                                    </div>
+                                                </div>
+
+                                        {% endif %}
+
                                     {% endif %}
                                     <div>
 
                                     </div>
 
                             </div>
+                            <div style="padding-right: 30px;"></div>
 
 
                         </div>
@@ -114,6 +166,10 @@
                 {% include "inpatient_app/partials/edit_treatment_plan_modal.html" %}
                 {% include "core/modals/edit_manual_prescription_form10.html" %}
                 {% include "core/modals/edit_treatment_form2.html" %}
+                {% include "inpatient_app/partials/modals/add_patient_temperature.html" %}
+                {% include "inpatient_app/partials/modals/add_blood_pressure.html" %}
+                {% include "inpatient_app/partials/modals/add_glucose_level_form.html" %}
+                {% include "inpatient_app/partials/modals/add_patient_oxygen_saturation.html" %}
 
     <script type="text/javascript">
         function OpenModal2(id) {
@@ -126,6 +182,26 @@
                 $("#treatmentPlanActionModal"+id).modal('hide');
                 $("#editTreatmentFormModal10"+id).modal('show');
 
+            }
+
+        function OpenTemperatureFormModal(id) {
+                $("#treatmentPlanActionModal"+id).modal('hide');
+                $("#addPatientTemperature"+id).modal('show');
+
+            }
+
+        function OpenBloodPressureFormModal(id) {
+                $("#treatmentPlanActionModal"+id).modal('hide');
+                $("#addPatientBloodPressure"+id).modal('show');
+            }
+
+        function OpenGlucoseLevelFormModal(id) {
+                $("#treatmentPlanActionModal"+id).modal('hide');
+                $("#addPatientGlucoseLevel"+id).modal('show');
+            }
+        function OpenOxygenSaturationFormModal(id) {
+                $("#treatmentPlanActionModal"+id).modal('hide');
+                $("#addPatientOxygenSaturation"+id).modal('show');
             }
 
         showingModal = false;

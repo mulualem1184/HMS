@@ -1,9 +1,11 @@
 {% extends "base.html" %}
+{% load custom_dict %}
 {% block title %}
     Add Lab test type
 {% endblock %}
 {% block page_content %}
     <div class="row">
+        <!--
         <div class="col-md-12 col-sm-12 col-lg-8">
             <div class="card card-box">
                 <div class="card-head">
@@ -40,37 +42,91 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-12 col-sm-12 col-lg-4">
-            <div class="card card-box">
-                <div class="card-head">
-                    <header>Lab test types</header>
-                </div>
-                <div class="card-body" id="bar-parent">
-                    <div class="table-wrap">
-                        <div class="table-responsive">
+    -->
+{% include 'lis\partials\modals\create_lab_test_type.html' %}
+{% include 'lis\partials\modals\create_lab_section.html' %}
+<datalist id="test_type_data_list" >
+    {% for test in test_type_list %}
+        <option value="{{test.name}}" >
+        </option>
+    {% endfor %}    
+</datalist>
+
+        <div class="col-md-12">
+                            <div class="card card-head" style="width: 1200px;">
+                                               <!-- <button  class="btn btn-circle" data-toggle="modal" data-target="#createBuildingModal">
+                                                </button> -->
+                                            <div class="row">
+                                                        <small style="padding-left: 50px;"><span><a href="" data-toggle="modal" data-target="#createTestType">Add Test Type</a></span></small>| 
+                                                        <small style="padding-left: 10px;"><span><a href="" data-toggle="modal" data-target="#createSection">Add Section</a></span></small>
+
+                                                       <small style="padding-left: 20px;" onclick="searchTest()"> <i class="fa fa-search"></i><label style="padding-left: 10px;">Search</label></small>
+                                                        <small style="padding-left: 550px;">                           
+                                                            <i class="fa fa-print"></i>
+                                                            <label>Print/Export</label>
+                                                        </small>
+                                            </div>
+                            </div>
+                        <div class="card card-box col-md-8" id="search-test-id" style="display:none;">
+                           <div class="row" style="padding-bottom: 10px;">
+                               <div style="padding-right:10px;">
+                                    <label><small>Look For</small></label>
+                               </div>
+                               <form method="GET" id="search-document-form-id">
+                                   <div>
+                                        <input type="text" list="test_type_data_list" name="search-test" id="search-test" class="col-md-6"> 
+                                        <small><button type="submit" >Find Now</button></small> 
+
+                                   </div>
+                               </form>
+                               <div class="pull-right">
+                                    <a onclick="closeSearchTestDiv()"> <i class="fa fa-times"></i></a> 
+                               </div>
+
+                            </div>
+                        </div>
+                <div class="" style="overflow-y:scroll;overflow-x:scroll;height: 600px;" id="">
                             <!-- <h4>Test types</h4> -->
-                            <table class="table display product-overview mb-30" id="support_table">
-                                <thead>
+                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 1200px;">
+                                <thead style="background-color: lightgrey;">
                                     <tr>
-                                        <th>Name</th>
-                                        <th>Available</th>
-                                        <th>Price</th>
-                                        <th></th>
+                                        <th class="text-center"><small>Section</small></th>
+                                        <th class="text-center"><small>Test Type</small></th>
+                                        <th class="text-center"><small>Price</small></th>
+                                        <th class="text-center"><small> Edit</small></th>
+
+                                        <th class="text-center"><small>Delete</small></th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for test in test_type_list %}
+                                       {% return_edit_test_type_form test.id %}
+
                                         <tr>
-                                            <td> {{ test.name }} </td>
-                                            <td>
+                                            <td class="text-center" style="width: 300px;"> <small>{{ test.section }}</small> </td>
+                                            <td class="text-center" style="width: 300px;">
+                                                <a href="{% url 'edit_lab_test_result_type' test.id %}">
+                                                <small>{{ test.name }}</small> 
+                                                </a>
+                                            </td>
+                                           <!--
+                                            <td class="text-center" style="width: 300px;">
                                                 {% if test.is_available %}
-                                                    Yes
+                                                    <small>Yes</small>
                                                 {% else %}
-                                                    No
+                                                    <small>No</small>
                                                 {% endif %}
                                             </td>
-                                            <td> {{ test.price }} </td>
-                                            <td> 
+                                        -->
+                                            <td class="text-center" style="width: 300px;"> <small>{{ test.price }}</small> </td>
+
+                                            {% if edit_test_type_form %}
+                                            {% include "lis/partials/modals/edit_lab_test_type.html" %}
+
+                                            <td class="text-center" style="width:100px;"><small>  <a href="" data-toggle="modal" data-target="#editTestType{{test.id}}">  <i class="fa fa-edit"></i> </a> </small></td>
+                                            {% endif %}
+                                            <!--
+                                            <td class="text-center" style="width: 300px;"> 
                                                 <a href="{% url 'edit_lab_test_type' test.id %}">
                                                     <i class="fa fa-edit"></i> 
                                                 </a>
@@ -78,17 +134,41 @@
                                                     <i class="fa fa-gear"></i>
                                                 </a>
                                                 <a href="{% url 'remove_lab_test_type' test.id %}">
-                                                    <i class="fa fa-remove red"></i>
+                                                    <i class="fa fa-trash red"></i>
+                                                </a>
+                                            </td>-->
+
+                                            <td class="text-center" style="width: 300px;"> 
+                                                <!--<a href="{% url 'edit_lab_test_type' test.id %}">
+                                                    <i class="fa fa-edit"></i> 
+                                                </a>
+                                                <a href="{% url 'edit_lab_test_result_type' test.id %}">
+                                                    <i class="fa fa-gear"></i>
+                                                </a>-->
+                                                <a href="{% url 'remove_lab_test_type' test.id %}">
+                                                    <i class="fa fa-trash"></i>
                                                 </a>
                                             </td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
-                        </div>
-                    </div>
                 </div>
-            </div>
+
         </div>
     </div>
+<script type="text/javascript">
+         function searchTest() {
+               document.getElementById('search-test-id').style.display = 'block';          
+                showingModal = true;
+            }
+
+        function closeSearchTestDiv() {
+               document.getElementById('search-test-id').style.display = 'none';          
+               
+                showingModal = true;
+            }
+   
+</script>
+
 {% endblock %}

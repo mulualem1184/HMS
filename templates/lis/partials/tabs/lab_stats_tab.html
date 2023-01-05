@@ -1,0 +1,65 @@
+            <div class="tab-pane" id="lab-stats-tab">
+
+                    <div class="row" style="padding-left: 15px;">
+
+                        <div class="" id="dispensary-supplied-drug-table-id" >
+                            <div class="card"  >
+                                    <div class="card-head">
+                                        <header><small>Overview</small></header>
+                                    </div>
+                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 600px;width: 580px;">
+                                             <div class="row">
+                                                 <div class="col">
+                                                     <div class="text-center"><h5><b>{{pending_test_count}}</b></h5></div>
+                                                     <div ><h5><b style="padding-left: 28px;">Pending</b></h5></div>
+                                                 </div>
+                                                 <div class="col">
+                                                     <div><h5><b class="text-center">{{completed_test_count}}</b></h5></div>
+                                                     <div><h5><b style="">Completed</b></h5></div>
+                                                 </div>
+
+                                             </div><hr>
+                                            <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 580px;">
+                                                
+                                                <thead style="background-color: lightgrey;">
+                                                    <tr class="gradeX odd">
+                                                        <th class= "text-center"><small>Month</small></th>
+                                                        <th class= "text-center"><small>Requests</small></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for month,count in stats_overview_zip %}
+                                                        <tr style="height: 40px;">
+                                                            <td class= "text-center" style="width:300px"><small> {{ month }} </small></td>
+                                                            <td class= "text-center" style="width:300px"><small> {{ count }} </small></td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                            
+                                            </table>
+
+                                            <div id="stats_chart_container">{{ stats_chart|safe }}</div>
+
+                                    </div>
+                            </div>
+                        </div>
+                        <div style="margin: 10px;"></div>
+                        <div class="col" id="dispensary-supplied-drug-table-id" >
+                            <div class="card"  >
+                                    <div class="card-head">
+                                        <header><small>Recent Cases</small></header>
+                                    </div>
+                                    {% include 'lis\partials\htmx\recent_cases_htmx.html'%}
+
+                            </div>
+                            <div class="card"  >
+                                    <div class="card-head">
+                                        <header><small>Recent Group Counts</small></header>
+                                    </div>
+                                    {% include 'lis\partials\htmx\group_count_htmx.html'%}
+
+                            </div>
+
+                        </div>
+                    </div>
+                </div>

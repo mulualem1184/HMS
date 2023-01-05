@@ -19,7 +19,7 @@
         </div>
 
         <div class="form-group col-md-1">
-          <a onclick="toggleServiceForm()" id='button-{{row}}' class="btn btn-primary btn-circle pull-right" hx-post="{% url 'pharmacist_drug_request' row|add:1 %}" hx-trigger='click' hx-target='#drug-request-create' hx-include="#form-id-id" hx-swap='beforeend'><i class="fa fa-plus"></i></a>
+          <a onclick="toggleServiceForm()" id='button-{{row}}' class="btn btn-primary btn-circle pull-right" hx-post="{% url 'pharmacist_drug_request' row|add:1 %}" hx-trigger='click' hx-target='#form-id-id' hx-include="#form-id-id" hx-swap='beforeend'><i class="fa fa-plus"></i></a>
       </div>
 
         </div>

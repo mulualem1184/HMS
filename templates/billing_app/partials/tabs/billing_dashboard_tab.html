@@ -1,0 +1,120 @@
+            <div class="tab-pane active" id="billing-dashboard-tab">
+
+                    <div class="row" style="padding-left: 15px;">
+
+                        <div class="" id="dispensary-supplied-drug-table-id" >
+                            <div class="card"  >
+                                    <div class="card-head">
+                                        <header><small>Billable Patients</small></header>
+                                    </div>
+                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 600px;width: 580px;">
+                                             <div class="row">
+
+                                             </div><hr>
+                                            <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 580px;">
+                                                
+                                                <thead style="background-color: lightgrey;">
+                                                    <tr class="gradeX odd">
+                                                        <th class= "text-center"><small>Name</small></th>
+                                                        <th class= "text-center"><small>View Billable Items</small></th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for billable in billable_patients1 %}
+                                                        <tr style="height: 40px;">
+                                                            <td class= "text-center" style="width:300px"><small> {{ billable }} </small></td>
+                                                            <td class= "text-center" style="width:300px"><small> <a href="{% url 'patient_billing' billable.id %}"> View </a></small></td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                            
+                                            </table>
+
+                                            <div id="stats_chart_container">{{ stats_chart|safe }}</div>
+
+                                    </div>
+                            </div>
+                        </div>
+                        <div style="margin: 10px;"></div>
+                        <div class="col" id="dispensary-supplied-drug-table-id" >
+                            <div class="card"  >
+                                    <div class="card-head">
+                                        <header><small>Sales Invoices</small></header>
+                                    </div>
+                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 300px;width: 580px;">
+                                             <div class="row">
+                                                 <div class="col">
+                                                     <div class="text-center"><h5><b>{{paid_invoice}}</b></h5></div>
+                                                     <div ><h5><b style="padding-left: 28px;">Paid</b></h5></div>
+                                                 </div>
+                                                 <div class="col">
+                                                     <div><h5><b class="text-center">{{not_paid_invoice}}</b></h5></div>
+                                                     <div><h5><b style="">Not Paid</b></h5></div>
+                                                 </div>
+
+                                             </div><hr>
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 580px;">
+                                            
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="gradeX odd">
+                                                    <th class= "text-center"><small>Date</small></th>
+                                                    <th class= "text-center"><small>Total Amount</small></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for invoice in invoices %}
+                                                    <tr style="height: 40px;">
+                                                        <td class= "text-center" style="width:300px"><small> {{ invoice.registered_on }}</small></td>
+                                                        <td class= "text-center" style="width:300px"><small> {{ invoice.total_amount }} </small></td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                            
+                                        </table>
+
+                                    </div>
+                            </div>
+                            <div class="card"  >
+                                    <div class="card-head">
+                                        <header><small>Payments And Receipts</small></header>
+                                    </div>
+                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 300px;width: 580px;">
+                                             <div class="row">
+                                                 <div class="col">
+                                                     <div class="" style="padding-left: 35px;"><h5><b>{{payment_count}}</b></h5></div>
+                                                     <div ><h5><b style="padding-left: 28px;">Count</b></h5></div>
+                                                 </div>
+
+                                             </div><hr>
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 580px;">
+                                            
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="gradeX odd">
+                                                    <th class= "text-center"><small>Date</small></th>
+                                                    <th class= "text-center"><small>Total Amount</small></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for receipt in receipts %}
+                                                    <tr style="height: 40px;">
+                                                        <td class= "text-center" style="width:300px"><small> {{ receipt.registered_on }}</small></td>
+                                                        <td class= "text-center" style="width:300px"><small> {{ count }} </small></td>
+                                                    </tr>
+                                                {% endfor %}
+                                                {% for payment in payments %}
+                                                    <tr style="height: 40px;">
+                                                        <td class= "text-center" style="width:300px"><small> {{ receipt.registered_on }}</small></td>
+                                                        <td class= "text-center" style="width:300px"><small> {{ count }} </small></td>
+                                                    </tr>
+                                                {% endfor %}
+
+                                            </tbody>
+                                            
+                                        </table>
+
+                                    </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>

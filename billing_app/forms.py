@@ -248,3 +248,217 @@ class PartialReconcilationForm(forms.Form):
 		}
 	))
 			
+
+
+class InvoiceForm(forms.ModelForm):
+
+	class Meta:
+		model = Invoice
+		fields = [ 'patient']
+		widgets = {
+			'patient': forms.Select(attrs={
+			'class' : 'select2 form-control',
+				}),
+			'due_date': forms.DateInput(attrs={
+			'class' : 'form-control forms',
+				}),
+
+			}
+
+
+class ItemSaleInfoForm(forms.ModelForm):
+
+	class Meta:
+		model = ItemSaleInfo
+		fields = [ 'item', 'quantity','discount']
+
+		widgets = {
+			'item': forms.Select(attrs={
+			'class' : 'select2 form-control',
+				}),
+			'quantity': forms.NumberInput(attrs={
+			'class' : 'forms form-control',
+				}),
+			'discount': forms.CheckboxInput(attrs={
+				'class': '',
+			})
+			}
+
+class PaymentForm(forms.ModelForm):
+
+	class Meta:
+		model = Payment
+		fields = [ 'amount_paid']
+		
+		widgets = {
+			'amount_paid': forms.NumberInput(attrs={
+			'class' : 'forms form-control',
+				}),
+			}
+
+
+class PrePaymentForm(forms.ModelForm):
+
+	class Meta:
+		model = Payment
+		fields = ['patient' ,'amount_paid']
+		
+		widgets = {
+			'patient': forms.Select(attrs={
+			'class' : 'select2 form-control',
+				}),
+			'amount_paid': forms.NumberInput(attrs={
+			'class' : 'forms form-control',
+				}),
+			}
+
+
+class CreateItemForm(forms.ModelForm):
+
+	class Meta:
+		model = Item
+		fields = [ 'name','generic_name','category','item_type',
+					'medical_type','measurement_unit','code',
+					'available_in_appointment'
+		]
+		widgets = {
+			'name': forms.TextInput(attrs={
+			'class' : 'forms form-control',
+				}),
+			'generic_name': forms.TextInput(attrs={
+			'class' : 'forms form-control',
+				}),
+
+			'category': forms.Select(attrs={
+			'class' : 'select2 form-control',
+				}),
+			'item_type': forms.Select(attrs={
+			'class' : 'select2 form-control',
+				}),
+			'medical_type': forms.Select(attrs={
+			'class' : 'select2 form-control',
+				}),
+			'measurement_unit': forms.TextInput(attrs={
+			'class' : 'forms form-control',
+				}),
+			'code': forms.TextInput(attrs={
+			'class' : 'forms form-control',
+				}),
+			'available_in_appointment': forms.CheckboxInput(attrs={
+				'class': '',
+			})
+
+
+			}
+
+
+class EditItemForm(forms.ModelForm):
+	def __init__(self, *args, **kwargs):
+		item_id = kwargs.pop('item_id')
+		item = Item.objects.get(id=item_id)
+		#print('plannnn ',resource.id)
+		super(EditItemForm, self).__init__(*args, **kwargs)
+		for f in self.fields:
+			if hasattr(item,f):
+				value = getattr(item,f)
+				self.fields[f].initial = value
+
+	class Meta:
+		model = Item
+		fields = [ 'name','generic_name','category','item_type',
+					'medical_type','measurement_unit','code',
+					'available_in_appointment'
+		]
+		widgets = {
+			'name': forms.TextInput(attrs={
+			'class' : 'forms form-control',
+				}),
+			'generic_name': forms.TextInput(attrs={
+			'class' : 'forms form-control',
+				}),
+
+			'category': forms.Select(attrs={
+			'class' : 'select2 form-control',
+				}),
+			'item_type': forms.Select(attrs={
+			'class' : 'select2 form-control',
+				}),
+			'medical_type': forms.Select(attrs={
+			'class' : 'select2 form-control',
+				}),
+			'measurement_unit': forms.TextInput(attrs={
+			'class' : 'forms form-control',
+				}),
+			'code': forms.TextInput(attrs={
+			'class' : 'forms form-control',
+				}),
+			'available_in_appointment': forms.CheckboxInput(attrs={
+				'class': '',
+			})
+
+
+			}
+
+class ItemPriceForm(forms.ModelForm):
+
+	class Meta:
+		model = ItemPrice
+		fields = [ 'sale_price','buy_price','discount_price'
+		]
+		widgets = {
+			'sale_price': forms.NumberInput(attrs={
+			'class' : 'forms form-control',
+				}),
+			'buy_price': forms.NumberInput(attrs={
+			'class' : 'forms form-control',
+				}),
+			'discount_price': forms.NumberInput(attrs={
+			'class' : 'forms form-control',
+				}),
+
+			}
+
+class EditItemPriceForm(forms.ModelForm):
+	def __init__(self, *args, **kwargs):
+		price_id = kwargs.pop('price_id')
+		price = ItemPrice.objects.get(id=price_id)
+		#print('plannnn ',resource.id)
+		super(EditItemPriceForm, self).__init__(*args, **kwargs)
+		for f in self.fields:
+			if hasattr(price,f):
+				value = getattr(price,f)
+				self.fields[f].initial = value
+
+	class Meta:
+		model = ItemPrice
+		fields = [ 'sale_price','buy_price','discount_price'
+		]
+		widgets = {
+			'sale_price': forms.NumberInput(attrs={
+			'class' : 'forms form-control',
+				}),
+			'buy_price': forms.NumberInput(attrs={
+			'class' : 'forms form-control',
+				}),
+			'discount_price': forms.NumberInput(attrs={
+			'class' : 'forms form-control',
+				}),
+
+			}
+
+
+class AssociateItemForm(forms.ModelForm):
+
+	class Meta:
+		model = Item
+		fields = [ 'drug','lab_test']
+		widgets = {
+
+			'drug': forms.Select(attrs={
+			'class' : 'select2 form-control',
+				}),
+			'lab_test': forms.Select(attrs={
+			'class' : 'select2 form-control',
+				}),
+
+			}

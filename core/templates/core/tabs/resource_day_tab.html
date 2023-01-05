@@ -1,9 +1,9 @@
 {% load custom_dict %}
                 <div class="tab-pane active" id="resource-day-tab">
                     <div class="card col-md-12" style="overflow-y:scroll;overflow-x:scroll; height: 600px;width: 1100px;">
+                        <!--
                         <div class="card-head " >
-                                   <!-- <button  class="btn btn-circle" data-toggle="modal" data-target="#createBuildingModal">
-                                    </button> -->
+                                
                                 <div class="row">
                                         <a href="" data-toggle="modal" data-target="#addResourceModal{{patient.id}}">
                                         <div class="row" style="padding-left:30px;">
@@ -16,8 +16,46 @@
                                         </div>
                                         </a>
 
-                                </div>
+                                        <div>
+                                            d
+                                        </div>
 
+                                </div>
+                        </div>-->
+                       <!-- <div class="card-box col-md-12" id="search-plan-id" >
+                           <div class="row" style="padding-bottom: 10px;">
+                               <div style="padding-right:10px;">
+                                    <label><small>Look For</small></label>
+                               </div>
+                               <div class="pull-right">
+                                    <a onclick="closeSearchDiv()"> <i class="fa fa-times"></i></a> 
+                               </div>
+
+                            </div>
+                        </div>
+                    -->
+                        <div class="card-head " >
+                                   <!-- <button  class="btn btn-circle" data-toggle="modal" data-target="#createBuildingModal">
+                                    </button> -->
+                                <div class="row">
+                                    <a data-toggle="modal" data-target="#treatmentPlanForm">
+                                    <div class="row" style="padding-left:30px;">
+                                        <div>
+                                        <a href="" data-toggle="modal" data-target="#createResourceModal">
+                                        <i class="fa fa-plus fa-1x"></i> 
+                                         </a>
+                                         </div>
+                                            <div style="padding-left:7px;padding-right: 8px;">
+                                                <a href="" data-toggle="modal" data-target="#addResourceModal{{patient.id}}">
+
+                                                <label><small> Schedule Resource </small></label>
+                                                </a>
+
+                                            </div>
+                                    </div>
+                                    </a>
+
+                                </div>
                         </div>
                         <div class="card-body">
                                         <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;">
@@ -40,6 +78,7 @@
                                                                 {% for time in hour_list %}
                                                                     {% is_scheduled time resource.id %}
                                                                     {% if result %}
+                                                                    
                                                                     {% include "core/modals/edit_resource_form.html" %}
 
                                                                     <td style="width:50px;" class="text-center">

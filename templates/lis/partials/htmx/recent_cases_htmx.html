@@ -1,0 +1,37 @@
+                                    <div id="#recent_cases_htmx" class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 300px;width: 580px;">
+                                             <div class="row">
+                                                 <div class="col">
+                                                     <div class="" style="padding-left: 35px;"><h5><b>{{total_request_count}}</b></h5></div>
+                                                     <div ><h5><b style="padding-left: 28px;">Count</b></h5></div>
+                                                 </div>
+                                                 <small>
+                                                    <select hx-get="{% url 'lab_dashboard' patient.id %}?id=PatientAlphabet" hx-trigger='click'  hx-swap='innerHTML' hx-target='#drug_price_tab' hx-include="[name='last_x_days']"   name="last_x_days" id="">
+                                                        <option value="7" id="">Last 7 Days</option>  
+                                                        <option value=30>Last 30 Days</option>   
+                                                        <option value=90>Last 90 Days</option>   
+                                                        <option value=0>All Time</option>   
+                                                        
+                                                    </select>
+                                                </small>
+
+                                             </div><hr>
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 580px;">
+                                            
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="gradeX odd">
+                                                    <th class= "text-center"><small>Request</small></th>
+                                                    <th class= "text-center"><small>Count</small></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for type,count in test_type_zip %}
+                                                    <tr style="height: 40px;">
+                                                        <td class= "text-center" style="width:300px"><small> {{ type }}</small></td>
+                                                        <td class= "text-center" style="width:300px"><small> {{ count }} </small></td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                            
+                                        </table>
+
+                                    </div>

@@ -41,17 +41,25 @@
 
 {% block page_content %}
 {% load custom_dict %}
+    {% include "core/modals/add_drug_prescription.html" %}
+    {% include "core/modals/repeat_drug_prescription6.html" %}
+    {% include "outpatient_app/partials/filter_by_date.html" %}
+    {% include 'core\modals\add_patient_document.html' %}
+    {% include 'core\modals\add_patient_image.html' %}
+    {% include "inpatient_app/partials/modals/patient_treatment_plan_form.html" %}
+    {% include "inpatient_app/partials/modals/filter_treatment_plan.html" %}
+{% include "inpatient_app/partials/treatment_plan_modal.html" %}
+{% include "inpatient_app/partials/treatment_plan_form.html" %}
 
 
-<div class="card card-box  " style="background-color: white;" >
+<div class="  " style="background-color: white;" >
     
     <div class="col-md-12" >
-        <div class="" style="padding-right: 40px;">
-            <div class="card-head col-md-12 border-bottom-0" style="background-color: #eef1f5; padding-bottom: 10px;padding-left: 20px;">
+        <div class="">
+            <div class="card-head  border-bottom-0" style="background-color: #eef1f5; padding-bottom: 10px;padding-left: 0px;width: 1228px;">
                 <div class="row">
-                        <div>
+                        <div style="padding-left: 20px;">
                                 {{patient.full_name}}                             
-
                             <a href="{% url 'core:edit_patient' patient.id %}"> <i class="fa fa-edit"></i> </a>
                             {%is_admitted patient.id %}
                             {% if result %}
@@ -63,39 +71,45 @@
                 </div>
             </div>
         </div>
-        <div class="row" style="padding-left: 13px;">    
-            <div class="col col-md-2 card card-box" >
+        <div style="padding-top: 20px;"></div>
+        <div class="row"> 
+           <div style="width: 15px;"></div>
+
+            <div class="col col-md-2 card card-box" style="padding-top: 15px;">
             <div class="">
                 <fieldset>
                     <legend> </legend>
                         <ul class="nav nav-tabs tabs-left">
                             <li class="nav-item" style="height:33px;">
-                                <a href="#drug-price-tab" data-toggle="tab" class="active"><small>Dashboard</small></a>
+                                <a href="#patient-dashboard-tab" data-toggle="tab" class="active"><small>Dashboard</small></a>
                             </li>
                             <li class="nav-item" style="height:33px;">
-                                <a href="{% url 'core:patient_chart_history' patient.id %}" > <small>History</small> </a>
+                                <a href="#patient-history-tab5" data-toggle="tab"  > <small>History</small> </a>
                             </li>
+                            <!--
                             <li class="nav-item" style="height:33px;">
                                 <a href="{% url 'core:patient_activites' patient.id %}" > <small>Timeline</small> </a>
                             </li>
+                            -->
                             <li class="nav-item" style="height:33px;">
-                                <a href="{% url 'core:patient_activites' patient.id %}" > <small>Activities</small> </a>
+                                <a href="#patient-timeline-tab" data-toggle="tab"><small>Timeline</small></a>
+                            </li>
+
+                            <li class="nav-item" style="height:33px;">
+                                <a href="#patient-activities-tab" data-toggle="tab"><small>Activities</small></a>
                             </li>
                             <li class="nav-item" style="height:33px;">
                                 <a href="#consultation-list-tab" data-toggle="tab"> <small>Consultation</small> </a>
                             </li>
-
-                        </ul>
-                    
-                </fieldset>
-            </div>
-            <div class="">
-                <fieldset>
-                    <legend></legend>
-                        <ul class="nav nav-tabs tabs-left">
+                            <hr style="color: grey;border: solid;border-width: 2px; border-color: darkgrey;" class="border-bottom-0 border-left-0 border-right-0" >
                             <li class="nav-item" style="height:33px;">
                                 <a href="#document-list-tab" data-toggle='tab'> <small>Documents</small> </a>
                             </li>
+                            <li class="nav-item" style="height:33px;">
+                                <a href="#image-list-tab" data-toggle='tab'> <small>Images</small> </a>
+                            </li>
+                            <hr style="color: grey;border: solid;border-width: 2px; border-color: darkgrey;" class="border-bottom-0 border-left-0 border-right-0" >
+
                             <li class="nav-item" style="height:33px;">
                                 <a href="#prescription-list-tab" data-toggle='tab'> <small>Medication</small> </a>
                             </li>
@@ -112,33 +126,27 @@
              
              <div class="" style="padding-top: 15px;">
             <div class="col">
-                <div class="col-md-12">
-                            <div class="row col-md-12" >
-                                   <ul class="nav nav-tabs">
-                                      <li class="nav-item"><a class="nav-link active show"
-                                        href="#patient-dashboard-tab" data-toggle="tab"><small>Summary</small></a></li>
-                                      <li class="nav-item"><a class="nav-link" href="#patient-lists-tab"
-                                        data-toggle="tab"><small>Lists</small></a></li>
-                                      <li class="nav-item"><a class="nav-link" href="#patient-demo-values-tab8"
-                                        data-toggle="tab"><small>Demo Values</small></a></li>
-
-                                    </ul>
-
-                           </div>
-              </div>
              <!-- <div class="col-md-2"></div>-->
-            <div class="tab-content col-md-12" >
+            <div class="tab-content" style="width: 971px;" >
 
                 {% include "core/tabs/patient_dashboard_tab.html" %}
 
-        
                 {% include "core/tabs/patient_lists_tab.html" %}
 
                 {% include "core/tabs/patient_demo_values_tab2.html" %}
 
                 {% include "core/tabs/consultation_list_tab.html" %}
 
+
+                {% include "core/tabs/patient_activities_tab.html" %}
+
+                {% include "core/tabs/patient_timeline_tab.html" %}
+
                 {% include "core/tabs/document_list_tab.html" %}
+
+                {% include "core/tabs/patient_chart_history_tab.html" %}
+
+                {% include "core/tabs/image_list_tab.html" %}
                 
                 {% include "core/tabs/prescription_list_tab.html" %}
 

@@ -27,4 +27,6 @@ admin.site.register(PatientStayDurationPrediction)
 admin.site.register(WardStayDuration)
 admin.site.register(WardDischargeSummary)
 admin.site.register(IPDTreatmentPlan)
+admin.site.register(PerformPlan)
+admin.site.register(VitalSignPlan)
 

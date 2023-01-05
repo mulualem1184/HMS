@@ -1,0 +1,179 @@
+
+
+{% extends "base.html" %}
+{% load static %}
+{% block title %} Fill Supply Form {% endblock %}
+{% load crispy_forms_tags %}
+{% block style %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.0/themes/smoothness/jquery-ui.css"> 
+
+{% endblock %}
+{% block page_content %}
+                        <div class="panel-body">
+                            <div class="tab-content">
+                                <div class="tab-pane active fontawesome-demo" id="drug-form-tab">
+  
+    <div class="" style="width: 100%;">
+        <div class="card card-box">
+            <div class="card-head">
+                <header>Drug Profile Form</header>
+                <button id = "panel-button2" 
+                       class = "mdl-button mdl-js-button mdl-button--icon pull-right" 
+                       data-upgraded = ",MaterialButton">
+                       <i class = "material-icons">more_vert</i>
+                    </button>
+                    <ul class = "mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect"
+                       data-mdl-for = "panel-button2">
+                       <li class = "mdl-menu__item"><i class="material-icons">assistant_photo</i>Action</li>
+                       <li class = "mdl-menu__item"><i class="material-icons">print</i>Another action</li>
+                       <li class = "mdl-menu__item"><i class="material-icons">favorite</i>Something else here</li>
+                    </ul>
+            </div>
+            <div class="card-body " id="bar-parent1">
+       
+    <h4 class=" card-body"><b>   </b></h4>
+        
+        <form action="{% url 'create_drug' item.id %}" method="POST">
+      {% csrf_token %}
+
+
+        <div class="form-row">
+            <div class="form-group col-md-6 mb-0">
+        {{drug_profile_form.commercial_name|as_crispy_field}}
+            </div>
+            <div class="form-group col-md-6 mb-0">
+                {{drug_profile_form.generic_name|as_crispy_field}}      
+            </div>
+
+        </div>
+        
+        <div class="form-row">
+
+              <div class="form-group col-md-6 mb-0">
+              {{drug_profile_form.NDC|as_crispy_field}}      
+              </div>
+              <div class="form-group col-md-6 mb-0">
+              {{drug_profile_form.tier|as_crispy_field}}      
+              </div>
+        </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-6">
+        
+    {{route_form.route|as_crispy_field}}
+        </div>
+        <div class="form-group col-md-6">
+          {{dosage_model_form.dosage_form|as_crispy_field}}
+        </div>
+      
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-md-6">
+        
+    {{dosage_model_form.age_range|as_crispy_field}}
+        </div>
+        <div class="form-group col-md-6">
+          {{dosage_model_form.weight_range|as_crispy_field}}
+        </div>
+      
+      </div> 
+
+      <div class="form-row">
+        <div class="form-group col-md-6">
+        
+    {{dosage_model_form.dosage_amount|as_crispy_field}}
+        </div>
+        <div class="form-group col-md-6">
+          {{dosage_model_form.unit|as_crispy_field}}
+        </div>
+      
+      </div>
+      
+        <div style="width: 100%" class="row">
+   
+        <input type="submit" class=" btn" name="Create">
+        <button class="btn" style="padding-left: 10px;"> <a href="{% url 'items' %}">Skip</a> </button>
+
+        </div>
+          
+            </form>
+
+                            </div>
+
+{% block script %}
+<script>
+
+  const addMoreBtn = document.getElementById('add-more')
+  const totalNewForms = document.getElementById('id_form-TOTAL_FORMS')
+  
+  addMoreBtn.addEventListener('click', add_new_form)
+
+
+
+  function add_new_form(event){
+    if (event){
+      console.log('yooo')
+      event.preventDefault()
+    }
+
+ 
+    const currentAdditionalForms = document.getElementsByClassName('additional-form')
+
+    const currentFormCount = currentAdditionalForms.length 
+    console.log(currentFormCount)
+    
+    const formCopyTarget = document.getElementById('additional-form-list')
+    const emptyFormEl = document.getElementById('empty-form').cloneNode(true)
+    emptyFormEl.setAttribute('class','additional-form') 
+    emptyFormEl.setAttribute('id', currentFormCount) 
+    const regex = new RegExp('__prefix__', 'g')
+    emptyFormEl.innerHTML = emptyFormEl.innerHTML.replace(regex, currentFormCount)
+    totalNewForms.setAttribute('value', currentFormCount + 1)
+
+    formCopyTarget.append(emptyFormEl)    
+  }
+
+
+
+  const addMoreSideEffectBtn = document.getElementById('add-more-contraindication')
+  const totalNewForms2 = document.getElementById('id_form-TOTAL_FORMS')
+
+  addMoreSideEffectBtn.addEventListener('click', add_new_side_effect_form)
+
+    
+
+  function add_new_side_effect_form(event) {
+    console.log()
+    if (event){
+      console.log('ypp')
+    }
+
+    const currentAdditionalForms = document.getElementsByClassName('additional-contraindication-form')
+    const currentFormCount = currentAdditionalForms.length 
+    console.log(currentFormCount)
+    
+    const formCopyTarget = document.getElementById('additional-contraindication-form-list')
+    const emptyFormEl = document.getElementById('empty-contraindication-form').cloneNode(true)
+    emptyFormEl.setAttribute('class','additional-contraindication-form') 
+    emptyFormEl.setAttribute('id', currentFormCount) 
+    const regex = new RegExp('__prefix__', 'g')
+    emptyFormEl.innerHTML = emptyFormEl.innerHTML.replace(regex, currentFormCount)
+    totalNewForms2.setAttribute('value', currentFormCount + 1)
+
+    formCopyTarget.append(emptyFormEl)    
+ 
+
+ }
+
+
+ </script> 
+
+
+{% endblock %}
+
+
+{% endblock %}
+

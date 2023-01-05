@@ -4,11 +4,15 @@ from core.models import *
 from pharmacy_app.models import *
 from django.contrib import messages
 from .forms import *
+from pharmacy_app.forms import *
 from django.shortcuts import redirect
 from django.contrib import messages
 from datetime import datetime
+from datetime import timedelta
 
 from django.forms.models import modelformset_factory
+from django.views import View
+from dateutil.tz import UTC
 
 # Create your views here.
 def ServiceFormPage(request):
@@ -439,7 +443,7 @@ def PartialReconcilation(request, debt_id):
 				reconcilation = CashierReconcilation.objects.get(debt=debt)
 			except:
 				reconcilation = CashierReconcilation()
-				reconcilation.finance_employee = Employee.objects.get(user_profile=request.user, designation__name='Finance Personnel')
+				reconcilation.finance_employee = Employee.objects.get(user_profile=request.user)
 				reconcilation.debt = debt
 
 			if debt.cash_debt - amount > -1:
@@ -472,3 +476,893 @@ def PartialReconcilation(request, debt_id):
 
 	}
 	return render(request,'billing_app/partial_reconcilation_form.html',context)
+
+
+class Invoices(View):
+
+	def get(self, *args, **kwargs):
+
+		invoices = Invoice.objects.filter(active=True,estimate=False,receipt=False)[::-1]
+
+
+		if self.request.htmx:
+			print('HTMX','\n')
+			value = self.request.GET.get('last_x_days')
+			status_value = self.request.GET.get('status_value')
+			if status_value == 'Open':
+				invoices = Invoice.objects.filter(paid=False,active=True)
+			elif status_value == 'Closed':
+				invoices = Invoice.objects.filter(paid=True,active=True)
+			else:
+				invoices = Invoice.objects.filter(active=True)
+
+
+			today = datetime.now(UTC)
+			if value == None:
+				print('')
+			elif value == '0':
+				invoices = Invoice.objects.filter(active=True)
+
+			else:
+				last_x_day = today - timedelta(days=int(value))
+				invoices = invoices.filter(registered_on__range=[last_x_day,today],active=True)
+			invoices = invoices[::-1]
+			context2 = {
+						'invoices':invoices,
+						'invoice_form':InvoiceForm(),
+						'payment_form':PaymentForm()
+
+			}
+			return render(self.request,'billing_app/partials/htmx/invoice_list_htmx.html', context2)
+
+		context = {'invoices':invoices,
+					'invoice_form':InvoiceForm(),
+					'payment_form':PaymentForm()
+					}
+
+		return render(self.request, 'billing_app/invoices.html',context)
+
+class Payments(View):
+
+	def get(self, *args, **kwargs):
+
+		payments = Payment.objects.all()[::-1]
+		invoices = Invoice.objects.all()
+		if self.request.htmx:
+			value = self.request.GET.get('last_x_days')
+			status_value = self.request.GET.get('status_value')
+			if status_value == 'Open':
+				payments = Payment.objects.filter(active=True)
+			else:
+				payments = Payment.objects.filter(active=True)
+
+
+			today = datetime.now()
+			if value == None:
+				print('')
+			elif value == '0':
+				payments = Payment.objects.filter(active=True)
+
+			else:
+				last_x_day = today - timedelta(days=int(value))
+				payments = payments.filter(registered_on__range=[last_x_day,today],active=True)
+
+			context2 = {
+						'payments':payments,
+						'invoices':invoices,
+						'invoice_form':InvoiceForm(),
+						'prepayment_form':PrePaymentForm()
+
+			}
+			return render(self.request,'billing_app/partials/htmx/payment_list_htmx.html', context2)
+
+		context = {'payments':payments,
+					'invoices':invoices,
+					'invoice_form':InvoiceForm(),
+					'prepayment_form':PrePaymentForm()
+					}
+
+		return render(self.request, 'billing_app/payments.html',context)
+
+
+class Receipts(View):
+
+	def get(self, *args, **kwargs):
+
+		receipts = Invoice.objects.filter(due_date__isnull=True)
+
+		context = {'receipts':receipts,
+					'invoice_form':InvoiceForm(),
+					'payment_form':PaymentForm(),
+					}
+
+		return render(self.request, 'billing_app/receipts.html',context)
+
+
+class Estimates(View):
+
+	def get(self, *args, **kwargs):
+
+		estimates = Invoice.objects.filter(due_date__isnull=True,estimate=True)
+
+		context = {'estimates':estimates,
+					'invoice_form':InvoiceForm(),
+					'payment_form':PaymentForm(),
+					}
+
+		return render(self.request, 'billing_app/estimates.html',context)
+
+class AddInvoice(View):
+
+	def get(self, *args, **kwargs):
+
+		item_sales = ItemSaleInfo.objects.filter(temp_active=True,active=True)
+
+		context = {
+					'invoice_form':InvoiceForm(),
+					'item_form':ItemSaleInfoForm(),
+					'item_sales':item_sales
+					}
+
+		return render(self.request, 'billing_app/add_invoice.html',context)
+
+
+class AddReceipt(View):
+
+	def get(self, *args, **kwargs):
+
+		item_sales = ItemSaleInfo.objects.filter(temp_active=True,active=True)
+
+		context = {
+					'receipt': True,
+					'invoice_form':InvoiceForm(),
+					'item_form':ItemSaleInfoForm(),
+					'item_sales':item_sales
+					}
+
+		return render(self.request, 'billing_app/add_receipt.html',context)
+
+class AddEstimate(View):
+
+	def get(self, *args, **kwargs):
+
+		item_sales = ItemSaleInfo.objects.filter(temp_active=True,active=True)
+
+		context = {
+					'invoice_form':InvoiceForm(),
+					'item_form':ItemSaleInfoForm(),
+					'item_sales':item_sales
+					}
+
+		return render(self.request, 'billing_app/add_estimate.html',context)
+
+
+class RecievePayment(View):
+	def post(self, *args, **kwargs):
+		invoice_id = kwargs['invoice_id']
+		invoice = Invoice.objects.get(id=invoice_id)
+		payment_form = PaymentForm(self.request.POST)
+		if payment_form.is_valid():
+			payment = payment_form.save(commit=False)
+			payment.active = True
+			payment.patient = invoice.patient
+			payment.registered_on = datetime.now()
+			payment.registered_by = Employee.objects.get(user_profile=self.request.user)
+			if payment.amount_paid > invoice.unpaid_amount:
+				messages.error(self.request, 'Payment Cannot Exceed Invoiced Amount')
+				return redirect('invoices')
+
+			reconcilation = InvoiceReconcilation()
+			reconcilation.invoice = invoice
+			reconcilation.payment = payment
+			reconcilation.amount_paid = payment.amount_paid
+			reconcilation.registered_on = datetime.now()
+			reconcilation.registered_by = Employee.objects.get(user_profile=self.request.user)
+
+			cashier_debt = CashierDebt()
+			cashier_debt.cashier = 	Employee.objects.get(user_profile=self.request.user)
+			cashier_debt.cash_debt = payment.amount_paid
+			cashier_debt.date = datetime.now()
+			cashier_debt.save()
+			if invoice.unpaid_amount == 0:
+				reconcilation.fully_paid = True
+				invoice.paid = True
+			else:
+				print('')
+
+			for info in invoice.item_info.all():
+				if info.item.lab_test == None:
+					print('')
+				else:
+					lab_test = LaboratoryTest.objects.filter(test_type=info.item.lab_test)
+					for test in lab_test:
+						print(test,test,'\n')
+						test.paid=True
+						test.save()
+
+				info.temp_active = False
+				info.save()
+			invoice.save()
+			payment.save()
+			payment.invoice.add(invoice)
+			payment.save()
+			reconcilation.save()
+			messages.success(self.request, 'Payment Successfully Recieved')
+			return redirect('invoices')
+		else:
+			messages.error(self.request, str(payment_form.errors))
+			return redirect('invoices')
+
+
+class ReceivePrePayment(View):
+	def post(self, *args, **kwargs):
+		payment_form = PrePaymentForm(self.request.POST)
+		if payment_form.is_valid():
+			payment = payment_form.save(commit=False)
+			payment.active = True
+			payment.pre_payment = True
+			payment.registered_on = datetime.now()
+			payment.registered_by = Employee.objects.get(user_profile=self.request.user)
+			payment.save()
+			messages.success(self.request, 'Pre Payment Successfully Recieved')
+			return redirect('payments')
+		else:
+			messages.error(self.request, str(payment_form.errors))
+			return redirect('payments')
+
+
+
+class ReconcileInvoices(View):
+	def post(self, *args, **kwargs):
+		#payment_id = kwargs['payment_id']
+		#payment = Payment.objects.get(id=payment_id)
+		invoice_ids = [int(id) for id in self.request.POST.getlist('invoices')]
+		payment_ids = [int(id) for id in self.request.POST.getlist('payments')]
+		payments = []
+		invoices = []
+		for invoice_id in invoice_ids:
+			invoices.append(Invoice.objects.get(id=invoice_id))
+		for payment_id in payment_ids:
+			payments.append(Payment.objects.get(id=payment_id))
+
+		#invoices = self.request.POST.getlist('invoices')
+		#payments = self.request.POST.getlist('payments')
+		patient_array = []
+		count = 0
+		for invoice in invoices:
+			print('patient: i',invoice)
+			if invoice.patient in patient_array:
+				if count > 1:
+					messages.error(self.request, "Cannot Recoincile Invoice And Payment With Different Patient")
+					return redirect('payments')
+				else:
+					print('')
+			else:
+				patient_array.append(invoice.patient)
+				count += 1
+		for payment  in payments:
+			if count > 1:
+				messages.error(self.request, "Cannot Recoincile Invoice And Payment With Different Patient")
+				return redirect('payments')
+
+			if payment.patient in patient_array:
+					print('')
+
+			else:
+				patient_array.append(payment.patient)
+				count += 1
+
+		if count > 1:
+			messages.error(self.request, "Cannot Recoincile Invoice And Payment With Different Patient")
+			return redirect('payments')
+
+		for invoice in invoices:
+			for payment in payments:			
+				if invoice.unpaid_amount > 0:
+					if payment.remaining_amount > 0:
+						print('')
+					else:
+						messages.error(self.request, str(invoice)+"Cannot be Reconciled Due To Insufficient Funds")
+						return redirect('payments')
+					print('remaining: ',payment.remaining_amount,'\n')
+					print('unpaid: ',invoice.unpaid_amount,'\n')
+					if payment.remaining_amount > invoice.unpaid_amount:
+						print('hererere')
+						reconcilation = InvoiceReconcilation()
+						reconcilation.invoice = invoice
+						reconcilation.payment = payment
+						print('unpaid: ',invoice.unpaid_amount,'\n')
+						reconcilation.amount_paid = invoice.unpaid_amount
+						reconcilation.registered_on = datetime.now()
+						reconcilation.registered_by = Employee.objects.get(user_profile=self.request.user)
+						reconcilation.fully_paid = True
+						invoice.paid = True
+						payment.invoice.add(invoice)
+						payment.save()
+						invoice.save()
+					else:
+						reconcilation = InvoiceReconcilation()
+						reconcilation.invoice = invoice
+						reconcilation.payment = payment
+						reconcilation.amount_paid = payment.remaining_amount
+						reconcilation.registered_on = datetime.now()
+						reconcilation.registered_by = Employee.objects.get(user_profile=self.request.user)
+						payment.invoice.add(invoice)
+						payment.save()
+
+					reconcilation.save()
+
+			messages.success(self.request, 'Invoices Successfully Reconciled!')
+			return redirect('invoices')
+
+class EditInvoice(View):
+
+	def get(self, *args, **kwargs):
+
+		item_sales = ItemSaleInfo.objects.filter(temp_active=True,active=True)
+		patient_id = kwargs['patient_id']
+		patient = Patient.objects.get(id=patient_id)
+		invoice_form = InvoiceForm(initial={'patient':patient})
+		context = {
+					'invoice_form':invoice_form,
+					'item_form':ItemSaleInfoForm(),
+					'item_sales':item_sales,
+					'patient':patient,
+					'edit':True,
+					}
+
+		return render(self.request, 'billing_app/add_invoice.html',context)
+
+
+class EditEstimate(View):
+
+	def get(self, *args, **kwargs):
+
+		item_sales = ItemSaleInfo.objects.filter(temp_active=True,active=True)
+		patient_id = kwargs['patient_id']
+		patient = Patient.objects.get(id=patient_id)
+		invoice_form = InvoiceForm(initial={'patient':patient})
+		context = {
+					'invoice_form':invoice_form,
+					'item_form':ItemSaleInfoForm(),
+					'item_sales':item_sales,
+					'patient':patient,
+					'edit':True,
+					}
+
+		return render(self.request, 'billing_app/add_estimate.html',context)
+
+class ConvertEstimateToInvoice(View):
+
+	def get(self, *args, **kwargs):
+
+		invoice_id = kwargs['invoice_id']
+		estimate = Invoice.objects.get(id=invoice_id)
+		estimate.estimate = False
+		estimate.save()
+		messages.success(self.request, "Successfully Converted")
+		return redirect('add_invoice')
+
+		return redirect('estimates')
+
+class EditInvoice2(View):
+
+	def get(self, *args, **kwargs):
+
+		invoice_id = kwargs['invoice_id']
+
+		invoice = Invoice.objects.get(id=invoice_id)
+		invoice_form = InvoiceForm(initial={'patient':invoice.patient})
+		context = {'invoice':invoice,
+					'invoice_form':invoice_form,
+					'item_form':ItemSaleInfoForm(),
+					'patient':invoice.patient,
+					'edit':True,
+					}
+
+		return render(self.request, 'billing_app/edit_invoice2.html',context)
+
+class EditReceipt(View):
+
+	def get(self, *args, **kwargs):
+		item_sales = ItemSaleInfo.objects.filter(temp_active=True,active=True)
+		patient_id = kwargs['patient_id']
+		patient = Patient.objects.get(id=patient_id)
+		invoice_form = InvoiceForm(initial={'patient':patient})
+		context = {
+					'invoice_form':invoice_form,
+					'item_form':ItemSaleInfoForm(),
+					'item_sales':item_sales,
+					'patient':patient,
+					'receipt':True,
+					'edit':True
+					}
+
+		return render(self.request, 'billing_app/add_receipt.html',context)
+
+
+class AddItemSaleInfo(View):
+
+	def post(self, *args, **kwargs):
+		url_arg = kwargs['url_arg']
+
+		invoice_form = InvoiceForm(self.request.POST)
+		item_form = ItemSaleInfoForm(self.request.POST)
+		if invoice_form.is_valid():
+			if item_form.is_valid():
+				item_sale_info = item_form.save(commit=False)
+				invoice_form = invoice_form.save(commit=False)
+				item_sale_info.temp_active = True
+				item_sale_info.active = True
+				item_sale_info.save()
+				if url_arg == 'R':
+					return redirect('edit_receipt',invoice_form.patient.id)
+				elif url_arg == 'E':
+					return redirect('edit_estimate',invoice_form.patient.id)
+
+				else:
+					return redirect('edit_invoice',invoice_form.patient.id)
+			else:
+				messages.error(self.request, str(item_form.errors))
+				return redirect('add_invoice')
+		else:
+			messages.error(self.request, str(invoice_form.errors))
+			return redirect('add_invoice')
+
+
+
+
+class DeleteItemSaleInfo(View):
+
+	def get(self, *args, **kwargs):
+
+		patient_id = kwargs['patient_id']
+		item_info_id = kwargs['item_info_id']
+		item_info = ItemSaleInfo.objects.get(id=item_info_id)
+		item_info.active = False
+		item_info.save()
+		messages.success(self.request, "Successfully Deleted!")
+		return redirect('edit_invoice',patient_id)
+
+class SaveInvoice(View):
+	def post(self, *args, **kwargs):
+		patient_id = kwargs['patient_id']
+		patient = Patient.objects.get(id=patient_id)
+		due_date = datetime.strptime(self.request.POST.get('due_date') or str(datetime.now().date()),  '%Y-%m-%d')
+		item_sale_list = self.request.POST.getlist('item_sales')
+		for item_sale in item_sale_list:
+			print(item_sale,'\n')		
+		invoice_form = Invoice()
+		invoice_form.active = True
+		invoice_form.patient = patient
+		invoice_form.due_date = due_date
+		invoice_form.registered_on = datetime.now()
+		invoice_form.registered_by = Employee.objects.get(user_profile=self.request.user)
+
+
+		invoice_form.save()
+		for item_sale in item_sale_list:
+			invoice_form.item_info.add(item_sale)
+			sale_info = ItemSaleInfo.objects.get(id=int(item_sale))
+			sale_info.temp_active = False
+			sale_info.save()
+		invoice_form.save()
+		return redirect('invoices')
+
+
+class SaveReceipt(View):
+	def post(self, *args, **kwargs):
+		patient_id = kwargs['patient_id']
+		patient = Patient.objects.get(id=patient_id)
+		item_sale_list = self.request.POST.getlist('item_sales')
+		for item_sale in item_sale_list:
+			print(item_sale,'\n')		
+		invoice_form = Invoice()
+		invoice_form.active = True
+		invoice_form.patient = patient
+		invoice_form.receipt = True
+		invoice_form.registered_on = datetime.now()
+		invoice_form.registered_by = Employee.objects.get(user_profile=self.request.user)
+		invoice_form.save()
+		for item_sale in item_sale_list:
+			invoice_form.item_info.add(item_sale)
+		invoice_form.save()
+		return redirect('receipts')
+
+
+class SaveEstimate(View):
+	def post(self, *args, **kwargs):
+		patient_id = kwargs['patient_id']
+		patient = Patient.objects.get(id=patient_id)
+		item_sale_list = self.request.POST.getlist('item_sales')
+		for item_sale in item_sale_list:
+			print(item_sale,'\n')		
+		invoice_form = Invoice()
+		invoice_form.active = True
+		invoice_form.patient = patient
+		invoice_form.estimate = True
+		invoice_form.registered_on = datetime.now()
+		invoice_form.registered_by = Employee.objects.get(user_profile=self.request.user)
+		invoice_form.save()
+		for item_sale in item_sale_list:
+			invoice_form.item_info.add(item_sale)
+		invoice_form.save()
+		return redirect('estimates')
+
+class Items(View):
+
+	def get(self, *args, **kwargs):
+		search_consultation = self.request.GET.get('search-consultation',None)
+
+		items = Item.objects.all()
+		item_form = CreateItemForm()
+		price_form = ItemPriceForm()
+		print('\n','\n','ssesees: ',search_consultation,'\n')
+		if search_consultation == None:
+			print('')
+		else:
+			items = items.filter(name__icontains=search_consultation)
+		associate_form = AssociateItemForm()
+		associate_form.fields["drug"].queryset = Item.objects.first().return_unassociated_drugs
+		associate_form.fields["lab_test"].queryset = Item.objects.first().return_unassociated_lab_tests
+
+		context = {
+					'items':items,
+					'item_form':item_form,
+					'price_form':price_form,
+					'associate_form':associate_form,
+
+					}
+
+		return render(self.request, 'billing_app/items.html',context)
+
+
+class AssociateDrugItem(View):
+
+	def post(self, *args, **kwargs):
+
+		associate_form = AssociateItemForm(self.request.POST)
+		if associate_form.is_valid():
+			drug = associate_form.save(commit=False)
+			price.registered_on = datetime.now()
+			price.registered_by = Employee.objects.get(user_profile=self.request.user)
+			item.price_info = price
+			item.active = True
+			item.registered_on = datetime.now()
+			item.registered_by = Employee.objects.get(user_profile=self.request.user)
+			price.save()
+			item.save()
+
+			if item.medical_type == '2':
+				return redirect('create_drug',item.id)
+			elif item.medical_type == '6':
+				return redirect('create_lab_test_item',item.id)
+			else:
+				return redirect('items')
+		else:
+			messages.error(self.request, str(item_form.errors))
+			return redirect('items')
+
+class CreateItem(View):
+
+	def post(self, *args, **kwargs):
+
+		item_form = CreateItemForm(self.request.POST)
+		price_form = ItemPriceForm(self.request.POST)
+		if item_form.is_valid():
+			if price_form.is_valid():
+				item = item_form.save(commit=False)
+				price = price_form.save(commit=False)
+				if price.discount_price:
+					if price.sale_price < price.discount_price:
+						messages.error(self.request, "Discount Price Cannot Exceed Sale Price")
+						return redirect('items')
+				if price.buy_price:
+					if price.sale_price < price.buy_price:
+						messages.error(self.request, "Discount Price Cannot Exceed Sale Price")
+						return redirect('items')
+
+				price.active= True
+				price.registered_on = datetime.now()
+				price.registered_by = Employee.objects.get(user_profile=self.request.user)
+				item.price_info = price
+				item.active = True
+				item.registered_on = datetime.now()
+				item.registered_by = Employee.objects.get(user_profile=self.request.user)
+				price.save()
+				item.save()
+
+				if item.medical_type == '2':
+					return redirect('create_drug',item.id)
+				elif item.medical_type == '6':
+					return redirect('create_lab_test_item',item.id)
+				else:
+					return redirect('items')
+			else:
+				messages.error(self.request, str(price_form.errors))
+				return redirect('items')
+		else:
+			messages.error(self.request, str(item_form.errors))
+			return redirect('items')
+
+
+class AssociateDrugItem(View):
+
+	def post(self, *args, **kwargs):
+		item_id = kwargs['item_id']
+		item = Item.objects.get(id=item_id)
+		associate_form = AssociateItemForm(self.request.POST)
+		if associate_form.is_valid():
+			associate = associate_form.save(commit=False)
+			item.drug = associate.drug 
+			item.save()
+			messages.success(self.request,'Drug Successfully Created!')
+			return redirect('items')
+
+		else:
+			messages.error(self.request, str(item_form.errors))
+			return redirect('items')
+
+class CreateDrug(View):
+
+	def get(self, *args, **kwargs):
+		item_id = kwargs['item_id']
+		item = Item.objects.get(id=item_id)
+		drug_profile_form = DrugProfileForm(initial={'commercial_name':item.name,'generic_name':item.generic_name})
+		route_form = RouteForm()
+		dosage_model_form = DosageForm()
+
+		context = {
+					'item':item,
+					'drug_profile_form':drug_profile_form,
+					'route_form':route_form,
+					'dosage_model_form':dosage_model_form,
+
+					}
+		return render(self.request, 'pharmacy_app/create_drug.html',context)
+
+	def post(self, *args, **kwargs):
+		item_id = kwargs['item_id']
+		item = Item.objects.get(id=item_id)
+	
+		drug_profile_form = DrugProfileForm(self.request.POST)
+		route_form = RouteForm(self.request.POST)
+		dosage_model_form = DosageForm(self.request.POST)
+
+
+		drug_profile_form= DrugProfileForm(self.request.POST)
+		if drug_profile_form.is_valid():
+			drug_profile_model = drug_profile_form.save(commit=False)
+			drug_profile_model.registered_by = self.request.user
+			drug_profile_model.save()
+		else:
+			print('drug profile form error', drug_profile_form.errors)
+		
+		route_form = RouteForm(self.request.POST)
+		if route_form.is_valid():
+			route_model = route_form.save(commit=False)
+			route_model.drug = drug_profile_model
+			route_model.registered_by = self.request.user
+			route_model.save()
+		else:
+			print('route form error', route_form.errors)
+		
+		dosage_model_form = DosageForm(self.request.POST)
+		if dosage_model_form.is_valid():
+			dosage_model = dosage_model_form.save(commit=False)
+			dosage_model.drug = route_model
+			item.drug = dosage_model
+			dosage_model.save()
+			item.save()
+			messages.success(self.request,'Drug Successfully Created!')
+			return redirect('items')
+		else:
+			print('dosage error is' , dosage_model_form.errors)
+			messages.error(self.request,str(dosage_model_form.errors))
+		context = {
+					'items':items,
+					'item_form':item_form,
+					'price_form':price_form,
+
+					}
+
+		return render(self.request, 'billing_app/create_drug.html',context)
+
+
+class BillingDashboard(View):
+
+	def get(self, *args, **kwargs):
+		day = datetime.now()
+		this_month = datetime.now().month
+		last_month = (datetime.now() -timedelta(days=30)).month
+
+		
+		
+		before_date = day - timedelta(days=7)
+		patient_array = []
+		billable_patients = BillableItem.objects.filter(registered_on__range=[before_date,day],active=True)
+		billable_patients1 = []
+		for b in billable_patients:
+			if b.patient in billable_patients1:
+				print('')
+			else:
+				billable_patients1.append(b.patient)
+		print(billable_patients1)
+		invoices = Invoice.objects.filter(registered_on__range=[before_date,day])
+		payments = Payment.objects.filter(registered_on__range=[before_date,day])
+		receipts = Invoice.objects.filter(registered_on__range=[before_date,day],receipt=True)
+		paid_invoice = invoices.filter(paid=True).count()
+		not_paid_invoice = invoices.filter(paid=False).count()
+		payment_count = receipts.count() + payments.count()
+
+
+		month_array = []
+		credit_array = []
+		debit_array = []
+		balance_array = []
+
+		credit = 0
+		debit = 0
+		for invoice in invoices:
+			if invoice.registered_on.month == 12:
+				month_str = str(invoice.registered_on.year) + " - " + str(invoice.registered_on.month)
+				if month_str in month_array:
+					print('k')
+				else:
+					credit = 0
+					month_array.append(month_str)
+					invoice_list = Invoice.objects.filter(registered_on__month=12)
+					for invoice in invoice_list:
+						credit += invoice.total_amount
+					credit_array.append(credit)
+					print('credit: ', credit,'\n')
+
+					debit = 0
+					payment_list = Payment.objects.filter(registered_on__month=12)
+					for payment in payment_list:
+						debit += payment.amount_paid
+					debit_array.append(debit)
+					balance_array.append(debit - credit) 
+
+		sold_items = ItemSaleInfo.objects.filter(active=True)
+		item_count = sold_items.values('item').distinct().count()
+		balance_zip = zip(month_array,debit_array,credit_array,balance_array)
+
+		context = {'billable_patients': billable_patients,
+					'billable_patients1':billable_patients1,
+
+					'invoices':invoices,
+					'payments':payments,
+					'receipts':receipts,
+					'paid_invoice':paid_invoice,
+					'not_paid_invoice':not_paid_invoice,
+					'payment_count':payment_count,
+
+					'balance_zip':balance_zip,
+					'debit':debit,
+					'credit':credit,
+					'balance':debit - credit,
+					'sold_items':sold_items,
+					'item_count':item_count,
+
+					}
+
+		return render(self.request, 'billing_app/billing_dashboard.html',context)
+
+
+class PatientBilling(View):
+
+	def get(self, *args, **kwargs):
+		patient_id = kwargs['patient_id']
+		patient = Patient.objects.get(id=patient_id)
+		this_month = datetime.now().month
+		last_month = (datetime.now() -timedelta(days=30)).month
+
+		day = datetime.now()
+		
+		before_date = day - timedelta(days=7)
+
+		billable_patients = BillableItem.objects.filter(registered_on__range=[before_date,day],active=True)
+		invoices = Invoice.objects.filter(registered_on__range=[before_date,day],patient=patient)
+		payments = Payment.objects.filter(registered_on__range=[before_date,day],patient=patient)
+		receipts = Invoice.objects.filter(registered_on__range=[before_date,day],receipt=True,patient=patient)
+		paid_invoice = invoices.filter(paid=True).count()
+		not_paid_invoice = invoices.filter(paid=False).count()
+		payment_count = receipts.count() + payments.count()
+
+		month_array = []
+		credit_array = []
+		debit_array = []
+		balance_array = []
+
+		credit = 0
+		debit = 0
+		for invoice in invoices:
+			if invoice.registered_on.month == this_month:
+				month_str = str(invoice.registered_on.year) + " - " + str(invoice.registered_on.month)
+				if month_str in month_array:
+					print('k')
+				else:
+					credit = 0
+					month_array.append(month_str)
+					invoice_list = Invoice.objects.filter(registered_on__month=this_month,patient=patient)
+					for invoice in invoice_list:
+						credit += invoice.total_amount
+					credit_array.append(credit)
+					debit = 0
+					payment_list = Payment.objects.filter(registered_on__month=this_month,patient=patient)
+					for payment in payment_list:
+						debit += payment.amount_paid
+					debit_array.append(debit)
+					balance_array.append(debit - credit) 
+
+		sold_items = ItemSaleInfo.objects.filter(active=True)
+		item_count = sold_items.values('item').distinct().count()
+
+		balance_zip = zip(month_array,debit_array,credit_array,balance_array)
+
+		lab_items = Item.objects.filter(medical_type='6')
+		type_array = []
+		for lab in lab_items:
+			if lab.lab_test in type_array:
+				print('')
+			else:
+				type_array.append(lab.lab_test)
+		order_list = Order.objects.all()
+		unpaid_orders_array = []
+		for order in order_list:
+			unpaid_orders = order.test_set.filter(paid=False)
+			if unpaid_orders:
+				for u in unpaid_orders:
+					#print(u,'\n')
+					if u.order not in unpaid_orders_array:
+						unpaid_orders_array.append(u.order)
+
+		context = {'billable_items': billable_patients,
+					'invoices':invoices,
+					'payments':payments,
+					'receipts':receipts,
+					'paid_invoice':paid_invoice,
+					'not_paid_invoice':not_paid_invoice,
+					'payment_count':payment_count,
+					'patient':patient,
+					'payment_form':PaymentForm(),
+					'invoice_form':InvoiceForm(),
+					'prepayment_form':PrePaymentForm(),
+					'balance_zip':balance_zip,
+					'debit':debit,
+					'credit':credit,
+					'balance':debit - credit,
+					'sold_items':sold_items,
+					'item_count':item_count,
+					'unpaid_orders_array':unpaid_orders_array,
+					'type_array':type_array,
+
+					}
+
+		return render(self.request, 'billing_app/patient_billing.html',context)
+
+class PrepareBillableItem(View):
+	def post(self, *args, **kwargs):
+		patient_id = kwargs['patient_id']
+		patient = Patient.objects.get(id=patient_id)
+		item_list = self.request.POST.getlist('items')
+		item_ids = [int(id) for id in self.request.POST.getlist('items')]
+		item_list = []
+		for invoice_id in item_ids:
+			item_list.append(BillableItem.objects.get(id=invoice_id))
+
+		for item in item_list:
+			print(item,'\n')
+			print(item.item,'\n')
+			item_sale_info = ItemSaleInfo()
+			item_sale_info.item = item.item
+			item_sale_info.quantity = 1
+			item_sale_info.temp_active = True
+			item_sale_info.active = True
+			item.active=False
+			item.save()
+			item_sale_info.save()
+		return redirect('edit_invoice', patient_id)
+
+

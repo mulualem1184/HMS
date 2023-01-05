@@ -1,0 +1,57 @@
+{% load custom_dict %}
+            <div class="tab-pane" id="lab-test-result-tab">
+
+                                    <div class="" style="overflow-y:scroll;overflow-x:scroll;background-color: white; width: 1250px;height: 400px;">
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 1250px;">
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="gradeX odd">
+                                                    <th class="text-center"><small>Test type</small></th>
+                                                    <th class="text-center"><small>Result</small></th>
+                                                    <th class="text-center"><small>Result Type</small></th>
+                                                    <th class="text-center"><small>Value</small></th>
+                                                    <th class="text-center"><small>Registered By</small></th>
+                                                    <th class="text-center"><small>View</small></th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for test in test_type_set %}
+                                                {% include "lis/partials/modals/add_test_result.html" %}
+                                                {% get_result_form test.id %}
+                                                    <tr>
+                                                        <td class="text-center" style="width:300px;"><small> {{ test.test_type }} </small></td>
+                                                        {% if test.has_specimen %}
+                                                        <td class="text-center" style="width:300px;"><small> <a href="{% url 'enter-test-result' test.id %}"> Result </a> </small></td>
+                                                        {% endif %}
+                                                    </tr>
+
+                                                    {% if result_entry_form %}
+                                                    {% for result in results %}
+                                                    {% if result.test == test %}
+                                                    {% include "lis/partials/modals/view_lab_result.html" %}
+
+                                                    <tr>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td class="text-center" style="width:300px;"><small> {{result.result_type}} </small></td>
+                                                        <td class="text-center" style="width:300px;"><small> {{result.value}} </small></td>
+                                                        <td class="text-center" style="width:300px;"><small> {{result.reported_by}} </small></td>
+                                                        <td class="text-center" style="width:300px;"><small><a href="" data-toggle="modal" data-target="#viewLabResultModal{{result.id}}"> <i class="fa fa-eye"></i></a> </small></td>
+
+
+                                                        <!--<td class="text-center" style="width:300px;"><small>  <a href="" data-toggle="modal" data-target="#addResultModal{{test.id}}"> Add Result </a> </small></td>-->
+                                                    </tr>
+                                                    {% else %}
+                                                    {% endif %}
+                                                    {% endfor %}
+                                                    {% else %}
+                                                    {% endif %}
+
+
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+
+
+                                    </div>
+</div>

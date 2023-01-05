@@ -1,43 +1,272 @@
-            <div class="tab-pane active" id="consultation-list-tab">
-                    <div class="row">
+{% load custom_dict %}
+<div class="tab-pane" id="patient-activities-tab">
 
-                        <div class="col-md-6" id="dispensary-supplied-drug-table-id" >
-                            <div class="card" style="height: 270px;width: 500px;">
-                                    <div class="card-head">
-                                        <header><small>Field Values</small></header>
-                                    </div>
-                                    <div class="card-body">
-                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;">
-                                            <thead style="background-color: lightgrey;">
-                                                <tr class="">
-                                                    <th class="text-center"><small> Cholestrol</small></th>
-                                                    <th class="text-center"><small> HDL </small></th>
-                                                    <th class="text-center"><small> LDL </small></th>
-                                                    <th class="text-center"><small> TGO </small></th>
-                                                    <th class="text-center"><small> TGP </small></th>
-                     
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {% for value in demo_value_list %}
-                                                    <tr class="" style="height:40px;">
-                                                        <td style="width:300px" class="text-center">
-                                                            <small>
-                                                                <a href="" data-toggle="modal" data-target="#editDemoValuesModal">{{ value.cholestrol}}</a> 
-                                                            </small>
-                                                        </td>
-                                                        <td style="width:300px;" class="text-center"><small> {{value.HDL}}</small> </td>
-                                                        <td style="width:300px;" class="text-center"><small> {{value.LDL}}</small> </td>
-                                                        <td style="width:300px;" class="text-center"><small> {{value.TGO}}</small> </td>
-                                                        <td style="width:300px;" class="text-center"><small> {{value.TGP}}</small> </td>                                                     
-                                                    </tr>
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
+                <div class="">
+                            <div class="card card-head" style="width: 1009px;">
 
-                                    </div>
+                                   <!-- <button  class="btn btn-circle" data-toggle="modal" data-target="#createBuildingModal">
+                                    </button> -->
+                                <div class="row">
+                                            <small style="padding-left: 50px;"> <span><a href="{% url 'core:add_patient_consultation' patient.id %}">Add Consultation</a></span> </small> 
+                                           |<small style=""> <span><a href data-toggle='modal' data-target='#filterByDateModal'><i class="fa fa-filter"></i></a></span> </small>| 
+                                           <small style="padding-left: 20px;" onclick="searchActivities()"> <i class="fa fa-search"></i><label style="padding-left: 10px;">Search</label></small>
+                                            <small style="padding-left: 550px;">                           
+                                                <i class="fa fa-print"></i>
+                                                <label>Print/Export</label>
+                                            </small>
+                                </div>
+                            </div>
+                </div>
+                        <div class="card card-box col-md-8" id="search-activities-id" style="display:none;">
+                           <div class="row" style="padding-bottom: 10px;">
+                               <div style="padding-right:10px;">
+                                    <label><small>Look For</small></label>
+                               </div>
+                               <form method="GET" id="search-activities-form-id">
+                                   <div>
+                                        <input type="text" list="patient_data_list" name="search-activities" id="search-activities" class="col-md-6"> 
+                                        <small><button type="submit" >Find Now</button></small> 
+
+                                   </div>
+                               </form>
+                               <div class="pull-right">
+                                    <a onclick="closeSearchActivitiesDiv()"> <i class="fa fa-times"></i></a> 
+                               </div>
                             </div>
                         </div>
+
+           <div class=" card card-body" style="overflow-y:scroll;overflow-x:scroll;height: 350px;width: 1009px;">
+                    <div class="col">
+                     {% for object in timeline_objects %}
+                            {% is_in_date_array object.registered_on date_array %}
+                            <div  id="activities_date" style="background-color: lightgrey;" class="col-md-12">
+                                {% if is_in_array %}                                    
+                                {% else %}
+                                <b>{{object.registered_on.date}}</b>
+                                {% endif %}
+                            </div>
+                            <div style="padding-left: 50px;">
+                        {% if object.title %}
+                            <div onload="dateArray({{object.registered_on.date}})"></div>
+                            <div class="row">
+                                <div style="padding-left: 0px;" class="col-md-2">
+                                    <small><b>Consultation:</b></small><br>                                
+                                </div>
+                                <div style="" class="col-md-2">
+                                    <small><a  data-toggle="collapse" data-target="#activities_target{{object.id}}"> {{object.title}}</a></small><br>                                
+                                </div>
+                            </div>
+                            {% for ob in object.clinical_finding.all %}
+                                <div class="row">
+                                    <div style="padding-left: 0px;" class="col-md-2">
+                                        <small><b>Clinical Finding:</b></small><br>                                
+                                    </div>
+                                    <div class="col-md-2">
+                                        <small> <a  data-toggle="collapse" data-target="#trytarget{{object.id}}"  >{{ob}}</a></small><br>                                
+                                    </div>
+
+                                </div>
+                            {% endfor %}
+                            {% for ob in object.diagnoses.all %}
+                                <div class="row">
+                                    <div style="padding-left: 0px;" class="col-md-2">
+                                        <small><b>Diagnosis:</b></small><br>                                
+                                    </div>
+                                    <div style="padding-left: 0px;" class="col-md-2">
+                                        <small><a  data-toggle="collapse" data-target="#trytarget{{object.id}}"  > {{ob}}</a></small><br>                                
+                                    </div>
+
+                                </div>
+                            {% endfor %}
+                        {% elif object.clinical_finding %}
+                            <div class="row">
+                            <div class="col-md-2">
+                                <small><b>Clinical Finding:</b></small> 
+                            </div>
+                            <div style="padding-left: 0px;" class="col-md-2">
+                                <small>{{object.clinical_finding}}</small>
+                            </div>
+
+                            </div>
+                                                      
+                        {% elif object.modelName == 'PatientSurgery' %}
+                            <div class="row">
+                                <div style="padding-left: 15px;" class="col-md-2">
+                                    <small><b><a  data-toggle="collapse" data-target="#surgeryacttarget{{object.id}}">Surgery:</a></b></small><br>                                
+                                </div>
+                                <div style="padding-left: 0px;" class="col-md-2">
+                                    <small> {{object.note}}</small><br>                                
+                                </div>
+                            </div>
+
+                        {% elif object.modelName == 'PatientAllergy' %}
+                            <div class="row">
+                                <div style="padding-left: 15px;" class="col-md-2">
+                                    <small><b><a  data-toggle="collapse" data-target="#allergyacttarget{{object.id}}">Allergy:</a></b></small><br>                                
+                                </div>
+                                <div style="padding-left: 0px;" class="col-md-2">
+                                    <small> {{object.allergy}}</small><br>                                
+                                </div>
+                            </div>
+
+                            {% elif object.modelName == 'PatientTreatment' %}
+                            <div class="row">
+                                <div style="padding-left: 15px;" class="col-md-2">
+                                    <small><b><a  data-toggle="collapse" data-target="#treatmentacttarget{{object.id}}">Treatment:</a></b></small><br>                                
+                                </div>
+                                <div style="padding-left: 0px;" class="col-md-2">
+                                    <small> {{object.treatment}}</small><br>                                
+                                </div>
+                            </div>
+
+
+                        {% elif object.modelName == 'PatientDemoValues' %}
+                            <div class="row">
+                                <div style="padding-left: 15px;" class="col-md-2">
+                                    <small><b><a  data-toggle="collapse" data-target="#activities_target{{object.id}}">Cholestrol:</a></b></small><br>                                
+                                </div>
+                                <div style="padding-left: 0px;" class="col-md-2">
+                                    <small> {{object.cholestrol}}</small><br>                                
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div style="padding-left: 15px;" class="col-md-2">
+                                    <small><b><a  data-toggle="collapse" data-target="#activities_target{{object.id}}">HDL:</a></b></small><br>                                
+                                </div>
+                                <div style="padding-left: 0px;" class="col-md-2">
+                                    <small> {{object.HDL}}</small><br>                                
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div style="padding-left: 15px;" class="col-md-2">
+                                    <small><b><a  data-toggle="collapse" data-target="#activities_target{{object.id}}">LDL:</a></b></small><br>                                
+                                </div>
+                                <div style="padding-left: 0px;" class="col-md-2">
+                                    <small> {{object.LDL}}</small><br>                                
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div style="padding-left: 15px;" class="col-md-2">
+                                    <small><b><a  data-toggle="collapse" data-target="#activities_target{{object.id}}">TGO:</a></b></small><br>                                
+                                </div>
+                                <div style="padding-left: 0px;" class="col-md-2">
+                                    <small> {{object.TGP}}</small><br>                                
+                                </div>
+                            </div>
+
+                        {% endif %}
                     </div>
+                     {% endfor %}
+                    </div>
+
+
+
             
-        </div>
+</div>
+
+                        {% for object in timeline_objects %}
+                            <div id="activities_target{{object.id}}" class="collapse"> 
+
+                            {% if object.modelName == 'PatientTreatment' %}
+                                <div class="card card-box">
+                                    <div class="card-head">
+                                        <a  data-toggle="collapse" data-target="#activities_target{{object.id}}"  > {{object.treatment}}</a>            
+                                    </div>
+                                    <div class="card-body">
+                                        <small><b>Treatment Name:</b> {{object.treatment}}</small><br>
+                                        <small><b>Detail</b> {{object.detail}}</small><br>                                                                                        
+                                    </div>
+                                </div>  
+                            {% elif object.modelName == 'PatientDemoValues' %}
+                                <div class="card card-box">
+                                    <div class="card-head">
+                                        <a  data-toggle="collapse" data-target="#activities_target{{object.id}}"  > {{object}}</a>            
+                                    </div>
+                                    <div class="card-body">
+                                        <small><b>Cholestrol:</b> {{object.cholestrol}}</small><br>
+                                        <small><b>HDL</b> {{object.HDL}}</small><br>                                                                                        
+                                    </div>
+                                </div>  
+
+
+                                {% elif object.modelName == 'PatientConsultation' %}
+                                    <div class="card-head">
+                                         {{object.title}}            
+                                    </div>
+                                    <div class="card-body">
+                                        {% if object.condition %}
+                                        <small><b>Condition</b> {{object.condition}}</small><br>
+                                        {% endif %}
+
+                                        {% if object.compliant %}
+                                            {% for ob in object.compliant.all %}
+                                            <small><b>Complaint</b> {{ob.compliant}}</small><br>
+                                            {% endfor %}
+                                        {% endif %}
+
+                                            {% for ob in object.clinical_finding.all %}
+                                                <small><b>Clinical Finding:</b> {{ob.clinical_finding}}</small><br>
+                                            {% endfor %}
+
+                                            {% for ob in object.diagnoses.all %}
+                                                <small><b>Diagnosis:</b> {{ob.diagnoses}}</small><br>
+                                            {% endfor %}
+
+                                        {% if object.systems_review %}
+                                        {% for ob in object.systems_review.all %}
+                                        <small><b>General</b> {{ob.general}}</small><br>
+                                        {% endfor %}
+                                        {% endif %}
+                                    </div>
+                                {% endif %}
+
+                        </div>
+                        {% endfor %}
+                        {% for object in timeline_objects %}
+                            <div id="surgeryacttarget{{object.id}}" class="collapse"> 
+                                {% if object.modelName == 'PatientSurgery' %}
+                                    <div class="card-head">
+                                        <a  data-toggle="collapse" data-target="#surgeryacttarget{{object.id}}"  > Surgery</a>            
+                                    </div>
+                                    <div class="card-body">
+                                        <small><p>{{object.note}}</p></small>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        {% for object in timeline_objects %}
+                            <div id="allergyacttarget{{object.id}}" class="collapse"> 
+                                {% if object.modelName == 'PatientAllergy' %}
+                                    <div class="card-head">
+                                        <a  data-toggle="collapse" data-target="#allergyacttarget{{object.id}}"  > Allergy</a>            
+                                    </div>
+                                    <div class="card-body">
+                                        <small><p>{{object.allergy}}</p></small>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+
+</div>
+
+
+<script type="text/javascript">
+    
+        function searchActivities() {
+               document.getElementById('search-activities-id').style.display = 'block';          
+                showingModal = true;
+            }
+
+        function closeSearchActivitiesDiv() {
+               document.getElementById('search-activities-id').style.display = 'none';          
+               
+                showingModal = true;
+            }
+
+        function checkDateArray() {
+            alert('dks');
+            document.getElementById("activities_date").innerHTML=splitText;
+                showingModal = true;
+            }
+
+</script>

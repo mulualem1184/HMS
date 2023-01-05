@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+    Result type
+{% endblock %}
+{% block style %}
+    <style>
+        .hiddenBox {
+            display: none;
+        }
+    </style>
+{% endblock %}
+{% block page_content %}
+
+<div class="col-md-9" style="overflow-y:scroll;overflow-x:scroll;background-color: white;height: 600px;">
+    <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 900px;">
+        <thead style="background-color: lightgrey;">
+        <tr>
+            <th class="text-center"><small>#</small></th>
+            <th class="text-center"><small>Sex</small></th>
+            <th class="text-center"><small>Age Range</small></th>
+            <th class="text-center"><small>Value Range</small></th>
+            <th class="text-center"><small>Measurement Unit</small></th>
+
+            <th class="text-center"><small>Delete</small></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for range in range_list %}
+
+            <tr>
+                <td class="text-center" style="width:300px;"> <small>{{ forloop.counter }}</small> </td>
+                <td class="text-center" style="width:300px;"><small> {{ range.sex }}</small> </td>
+                <td class="text-center" style="width:300px;"> <small>{{ range.min_age }} - {{range.max_age}}</small> </td>
+                <td class="text-center" style="width:300px;"> <small>{{ range.min_value }} - {{range.max_value}}</small> </td>
+                <td class="text-center" style="width:300px;"> <small>{{ range.m_unit }}</small> </td>
+
+                <td class="text-center" style="width:300px;">
+                    <a href="" data-toggle="modal" data-target="#deleteResultTypeModal{{rt.id}}">
+                       <small> <i class="fa fa-trash"></i> </small>
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+
+{% endblock %}
+{% block scripts %}
+    <script>
+    </script>
+{% endblock %}

@@ -1,0 +1,34 @@
+            <div class="tab-pane" id="patient-history-tab5">
+             
+                            <div class="row " style="width: 900px;" >
+                            <ul class="nav nav-tabs">
+                                    <li class="nav-item">
+                                        <a class="nav-link active show" href="#patint-tab" data-toggle="tab"><small> Medical History</small></a></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#cust" data-toggle="tab"><small> Surgical History</small></a></li>
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#social-history-tab" data-toggle="tab"><small>Social History</small></a></li>
+
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="#family-history-tab" data-toggle="tab"><small>Family History</small></a></li>
+
+                            </ul>
+
+                           </div>
+
+
+                <div class="tab-content " style="width: 900px;" >
+                    {% include "core/tabs/edit_patient_medical_history_tab.html" %}
+
+                       <div class="tab-pane" id="cust">
+                            djjj
+                       </div>
+                    {% include "core/tabs/edit_patient_social_history_tab.html" %}
+
+                    {% include "core/tabs/edit_patient_family_history_tab.html" %}
+                    {% include "core/tabs/edit_patient_surgery_history_tab.html" %}
+
+                </div>
+
+             <!-- <div class="col-md-2"></div>-->
+    </div>

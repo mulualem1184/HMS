@@ -1,0 +1,29 @@
+{% load static %}
+<div class="modal fade" id="viewSpecimenModal{{specimen.id}}" tabindex="-1" role="dialog" aria-labelledby="viewSpecimenModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="viewSpecimenLabel">Specimen Info</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <small>Collected by: {{ specimen.collected_by }}</small><br>
+                <small> Collected at: {{ specimen.collected_at }} </small><br>
+                <small> Sample Type: <b> {{ specimen.sample_type }}</b></small> <br>
+                <small> Sample Volume: {{ specimen.sample_volume }}</small> <br>
+                <small> Container type: {{ specimen.container_type }}</small><br>
+                <small> Accession number: {{ specimen.accession_number }} </small> <br>
+                    Barcode image: 
+                    <div class='row' style="width: 50px;height: 50px;">
+                        <img src="/media/{{specimen.barcode_image}}" width="300px" height="150px" alt="Barcode"><br> <br>
+                    </div> <br> <br><br>
+                   <!-- <a href="{% url 'view-specimen-image' specimen.id %}" target="_blank"> <button class="btn btn-primary">Print</button> </a>-->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

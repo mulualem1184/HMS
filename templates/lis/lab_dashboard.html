@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{%  load custom_dict %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+    <style>
+        .quick-launch-container {
+            display: inline-block;
+            margin-left: 5px;
+            padding-left: 5px;
+            margin-right: 7px;
+            border: black;
+            border-width: 10px;
+        }
+        .quick-launch-label {
+            display: block;
+            color: black;
+            font-weight: bold;
+        }
+        fieldset {
+            padding-bottom: 10px;
+            width: 150px; 
+            border: 2px solid; 
+            border-radius: 5px; 
+            border-color: #0a7e37;
+        }
+        legend {
+            color: black;
+            width: max-content;
+            font-size: 14px;
+        }
+        .add-allergy {
+            position: absolute;
+            bottom: 0;
+            right: 3px;
+        }
+    </style>
+
+
+{% endblock %}
+{% block title %} Laboratory Requests {% endblock %}
+
+{% block page_content %}
+<head>
+    <script type="text/javascript" src="{% static "fusioncharts/fusioncharts.js" %}"></script>
+    <script type="text/javascript" src="{% static "fusioncharts/fusioncharts.charts.js" %}"></script>
+    <script type="text/javascript" src="{% static "fusioncharts/themes/fusioncharts.theme.fusion.js" %}"></script>
+
+</head>
+
+            <div class="tab-pane" id="">
+                    <div class="col-md-12">
+                                <div class="row col-md-12" >
+                                       <ul class="nav nav-tabs">
+                                          <li class="nav-item"><a class="nav-link active"
+                                            href="#lab-dashboard-tab" data-toggle="tab"><small>Dashboard</small></a></li>
+                                          <li class="nav-item"><a class="nav-link" href="#lab-stats-tab"
+                                            data-toggle="tab"><small>Stats</small></a></li>
+
+                                        </ul>
+
+                               </div>
+                  </div>
+
+            <div class="tab-content">
+
+                {% include "lis/partials/tabs/lab_dashboard_tab.html" %}
+                {% include "lis/partials/tabs/lab_stats_tab.html" %}
+
+            </div>
+
+    </div>
+
+
+<script type="text/javascript">
+    
+        function searchConsultation() {
+               document.getElementById('search-consultation-id').style.display = 'block';          
+                showingModal = true;
+            }
+
+        function closeSearchConsultationDiv() {
+               document.getElementById('search-consultation-id').style.display = 'none';          
+               
+                showingModal = true;
+            }
+
+
+</script>
+{% endblock %}

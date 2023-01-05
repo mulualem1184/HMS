@@ -1,0 +1,50 @@
+<!-- Large Model -->
+{% load custom_dict %}
+
+<div class="modal fade" id="addResultModal{{test.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+              <form action="{% url 'enter-test-result' test.id %}" method="POST">
+
+          <div class="modal-header">
+
+                <h4 class="modal-title center">
+
+                        <button class="btn " type="submit"><i class="fa fa-save"></i>Save And Close{{test.id}}</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <!--
+                <button type="button" onclick="OpenModal9()">dsss</button>
+                -->
+                </h4>
+          </div>
+          <div class="modal-body">
+                {% csrf_token %}
+                    {% for field in result_entry_form %}
+                        {% if field.widget_type == 'checkbox' %}
+                            <div class="form-group row col-md-8 col-sm-10" style="padding-left: 60px;">
+                                <div class="checkbox checkbox-black">
+                                    <label for="checkboxbg1">
+                                        {{ field.label }} <span style="padding-right: 40px;"></span>
+                                    </label>
+                                    {{ field }}
+                                </div>
+                            </div>
+                        {% else %}
+                            <div class="form-group row col-md-8 col-sm-10">
+                                <label for="{{ field.id_for_label }}" class="col-sm-2 control-label"> {{ field.label }} </label>
+                                <div class="col-sm-10 form-outline">
+                                    {{ field }}
+                                </div>
+                                <div id="{{ field.id_for_label }}" class="form-text" style="color: rgb(173, 174, 184);">
+                                    {% if field.widget_type == 'number' %}
+                                        Normal range is {% get_dict_elt nranges field.id_for_label %} <br>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+              </form>
+          </div>
+      </div>
+  </div>
+</div>

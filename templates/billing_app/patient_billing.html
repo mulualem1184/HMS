@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+    <style>
+        .quick-launch-container {
+            display: inline-block;
+            margin-left: 5px;
+            padding-left: 5px;
+            margin-right: 7px;
+            border: black;
+            border-width: 10px;
+        }
+        .quick-launch-label {
+            display: block;
+            color: black;
+            font-weight: bold;
+        }
+        fieldset {
+            padding-bottom: 10px;
+            width: 150px; 
+            border: 2px solid; 
+            border-radius: 5px; 
+            border-color: #0a7e37;
+        }
+        legend {
+            color: black;
+            width: max-content;
+            font-size: 14px;
+        }
+        .add-allergy {
+            position: absolute;
+            bottom: 0;
+            right: 3px;
+        }
+    </style>
+
+
+{% endblock %}
+{% block title %} Patient Dashboard {% endblock %}
+
+{% block page_content %}
+{% load custom_dict %}
+
+
+<div class="  " style="background-color: white;" >
+    
+    <div class="col-md-12" >
+        <div class="">
+            <div class="card-head  border-bottom-0" style="background-color: #eef1f5; padding-bottom: 10px;padding-left: 0px;width: 1228px;">
+                <div class="row">
+                        <div style="padding-left: 20px;">
+                                {{patient.full_name}}                             
+                            <a href="{% url 'core:edit_patient' patient.id %}"> <i class="fa fa-edit"></i> </a>
+                            {%is_admitted patient.id %}
+                            {% if result %}
+                                <a style="padding-left: 20px;" href="{% url 'discharge_summary_form' patient.id %}"> Discharge </a>
+                            {% endif %}
+                        </div>
+                        <div>
+                        </div>                    
+                </div>
+            </div>
+        </div>
+
+        <div style="padding-top: 20px;"></div>
+        <div class="row"> 
+           <div style="width: 15px;"></div>
+
+            <div class="col col-md-2 card card-box" style="padding-top: 15px;">
+            <div class="">
+                <fieldset>
+                    <legend> Dashboard </legend>
+                        <ul class="nav nav-tabs tabs-left">
+                            <li class="nav-item" style="height:33px;">
+                                <a href="#patient-billing-dashboard-tab" data-toggle="tab" class="active"><small>Dashboard</small></a>
+                            </li>
+                            <li class="nav-item" style="height:33px;">
+                                <a href="#patient-billable-item-tab" data-toggle="tab"  > <small>Billable Items</small> </a>
+                            </li>
+                        </ul>
+                    
+                </fieldset>
+            </div>
+            <div class="">
+                <fieldset>
+                    <legend> Transactions </legend>
+                        <ul class="nav nav-tabs tabs-left">
+                            <li class="nav-item" style="height:33px;">
+                                <a href="#patient-invoice-tab" data-toggle="tab" ><small>Invoices</small></a>
+                            </li>
+                            <li class="nav-item" style="height:33px;">
+                                <a href="#patient-payment-tab" data-toggle="tab"  > <small>Payment</small> </a>
+                            </li>
+                            <li class="nav-item" style="height:33px;">
+                                <a href="#patient-receipt-tab" data-toggle="tab"  > <small>Receipt</small> </a>
+                            </li>
+                        </ul>
+                </fieldset>
+            </div>
+
+            <div class="">
+                <fieldset>
+                    <legend> Balance Sheet </legend>
+                        <ul class="nav nav-tabs tabs-left">
+                            <li class="nav-item" style="height:33px;">
+                                <a href="#patient-balance-sheet-tab" data-toggle="tab" ><small>Balance Sheet</small></a>
+                            </li>
+                        </ul>
+                </fieldset>
+            </div>
+
+            </div>
+             
+             <div class="" style="padding-top: 15px;">
+            <div class="col">
+             <!-- <div class="col-md-2"></div>-->
+            <div class="tab-content" style="width: 971px;" >
+
+                {% include "billing_app/partials/tabs/patient_billing_dashboard_tab.html" %}
+                {% include "billing_app/partials/tabs/patient_billing_stats_tab.html" %}
+                {% include "billing_app/partials/tabs/patient_billable_items.html" %}
+
+                {% include "billing_app/partials/tabs/patient_invoice_tab.html" %}
+                {% include "billing_app/partials/tabs/patient_payment_tab.html" %}
+                {% include "billing_app/partials/tabs/patient_receipt_tab.html" %}
+                {% include "billing_app/partials/tabs/patient_balance_sheet_tab.html" %}
+
+
+            </div>
+            </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+{% endblock %}
+
+{% block scripts %}
+    <script>
+
+
+    </script>
+{% endblock %}

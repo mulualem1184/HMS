@@ -221,8 +221,10 @@ def PharmacyReport(request):
 		print('total_quantity :', total_quantity,'\n')
 
 		drug_array.append(drug)
-		if InventoryThreshold.objects.get(drug=drug):
+		try:
 			threshold = InventoryThreshold.objects.get(drug = drug)
+		except:
+			threshold = InventoryThreshold.objects.filter().first()
 		print('ddddddddddd',total_quantity, 'ccccccccccccc',threshold.threshold)
 		#if drug quantity in shelf and dispensary is less than its threshold it is in low stock level
 		if total_quantity < threshold.threshold:
@@ -2627,8 +2629,9 @@ def PharmacistDrugRequest(request, row):
 
 		row=row
 		request_form2 = DrugRequestForm(request.POST) 
+		print('rowss')
 		if request_form2.is_valid():
-			print('Hes Sir')
+			print('works')
 			request_model = request_form2.save(commit=False)
 			request_model.dispensary = DispensaryPharmacist.objects.get(pharmacist__user_profile=request.user, active=True)
 			request_model.active = True
@@ -2923,18 +2926,26 @@ def PharmacyReport1(request):
 			stock_quantity_array.append(stock_quantity)
 
 			#print(drug, 'stock quantity: ', stock_quantity,'\n')
+			if shelf_quantity == None:
+				shelf_quantity = 0
+			if stock_quantity == None:
+				stock_quantity = 0
 
 			total_quantity = shelf_quantity + stock_quantity
 			total_quantity_array.append(total_quantity)
 			#print('total_quantity :', total_quantity,'\n')
 
 			drug_array.append(drug)
-			drug_price_array.append(DrugPrice.objects.get(drug=drug))
+			drug_price_array.append(DrugPrice.objects.filter().first())
+
+			#drug_price_array.append(DrugPrice.objects.get(drug=drug))
 			inventory_zip = zip(drug_array, total_quantity_array,drug_price_array)
 			dataSource["data"].append({"label": str(drug), "value": total_quantity})
 			print('drug: ',drug,'qua: ',total_quantity,'\n')
-			if InventoryThreshold.objects.get(drug=drug):
+			try:
 				threshold = InventoryThreshold.objects.get(drug = drug)
+			except:
+				threshold = InventoryThreshold.objects.filter().last()
 			#print('ddddddddddd',total_quantity, 'ccccccccccccc',threshold.threshold)
 			#if drug quantity in shelf and dispensary is less than its threshold it is in low stock level
 			if total_quantity < threshold.threshold:
@@ -3032,7 +3043,9 @@ def PharmacyReport1(request):
 			drugs_taken.append(patient_prescriptions.count())
 			patient2.append(patient)
 			for p in patient_prescriptions:
-				drug_price = DrugPrice.objects.get(drug=drug,active='active')
+				#drug_price = DrugPrice.objects.get(drug=drug,active='active')
+				drug_price = DrugPrice.objects.filter().last()
+
 				cost_sum = cost_sum + drug_price.selling_price
 			cost.append(cost_sum)
 	poly_pharmacy_zip = zip(patients,active_drugs)

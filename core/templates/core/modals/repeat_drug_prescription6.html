@@ -5,9 +5,10 @@
 <div class="modal fade" id="repeatDrugPrescriptionModal6{{patient.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog " role="document">
         <div class="modal-content">
-            <div class="modal-header">
                 <form method="POST" action="{% url 'core:add_prescription' patient.id %}" >
                         {% csrf_token %}
+
+            <div class="modal-header">
 
                 <h4 class="modal-title center">
                         <button class="btn " type="submit">Save And Closse</button>
@@ -78,9 +79,10 @@
 
                     </div>
 
-                </form>
 
             </div>
+                </form>
+
         </div>
     </div>
 </div>

@@ -1,0 +1,47 @@
+    <div id="drug_price_tab">
+                                    <div class="card card-box" style="overflow-y:scroll;overflow-x:scroll;background-color: white; width: 1250px;height: 600px;">
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 1250px;">
+                                            
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="gradeX odd">
+                                                    <th class= "text-center"><small>Date</small></th>
+                                                    <th class= "text-center"><small>Patient</small></th>
+                                                    <th class= "text-center"><small>No of Items</small></th>
+                                                    <th class= "text-center"><small>Total Amount</small></th>
+                                                    <th class= "text-center"><small>Unpaid Amount</small></th>
+                                                    <th class= "text-center"><small>Payment</small></th>
+                                                    <th class= "text-center"><small>Delete</small></th>
+
+                                                </tr>
+                                            </thead>
+                        <tbody>
+                            {% for invoice in invoices %}
+                            {% include 'billing_app\partials\modals\recieve_payment.html' %}
+                            {% include 'billing_app\partials\modals\view_payment.html' %}
+
+                                <tr style="height: 40px;">
+                                    <td class= "text-center" style="width:100px"><small><a href="{% url 'edit_invoice2' invoice.id %}" > {{ invoice.registered_on }}</a></small></td>
+                                    <td class= "text-center" style="width:100px"><small> {{ invoice.patient }}</small></td>
+                                    <td class= "text-center" style="width:100px"><small> {{ invoice.no_of_items }}</small></td>
+                                    <td class= "text-center" style="width:100px"><small> {{ invoice.total_amount }} </small></td>
+                                    <td class= "text-center" style="width:100px"><small> {{ invoice.unpaid_amount }} </small></td>
+                                    <td class= "text-center" style="width:100px">
+                                        <small>
+                                        {% if invoice.unpaid_amount == 0 %} 
+                                            <a href="" data-toggle='modal' data-target='#viewPayment{{invoice.id}}'>
+                                                <i class="fa fa-check green"></i>
+                                            </a> 
+                                        {% else %}
+                                            <a href="" data-toggle='modal' data-target='#recievePayment{{invoice.id}}'>Payment</a>
+                                        {% endif %}
+                                        </small>
+                                    </td>
+                                    <td class= "text-center" style="width:100px"><small> <a href=""><i class="fa fa-trash"></i> </a></small></td>
+
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+              
+                                    </div>
+    </div>

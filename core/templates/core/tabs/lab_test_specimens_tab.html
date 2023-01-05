@@ -1,0 +1,65 @@
+{% load custom_dict %}
+            <div class="tab-pane" id="lab-test-specimen-tab">
+
+                                    <div class="" style="overflow-y:scroll;overflow-x:scroll;background-color: white; width: 1250px;height: 400px;">
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 1250px;">
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="gradeX odd">
+                                                    <th class= "text-center"><small>Test</small></th>
+                                                    <th class= "text-center"><small>Add Specimen</small></th>
+                                                    <th class= "text-center"><small>Collected by</small></th>
+                                                    <th class= "text-center"><small>Sample Type</small></th>
+                                                    <th class= "text-center"><small>Sample Volume</small></th>
+                                                    <th class= "text-center"><small>Collected At</small></th>
+                                                    <th class= "text-center"><small>View</small></th>
+                                                    <th class= "text-center"><small>Edit</small></th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for test in test_type_set %}
+                                                {% include "lis/partials/modals/add_specimen_form.html" %}
+
+                                                    <tr>
+                                                        <td class="text-center" style="width:300px;"><small> {{ test.test_type }} </small></td>
+                                                        <td class="text-center" style="width:100px;"><small>  <a href="" data-toggle="modal" data-target="#addSpecimenModal{{test.id}}"> Add Specimen </a> </small></td>
+
+                                                        <!--
+                                                        {% if test.specimen %}
+                                                        
+                                                        <td class="text-center" style="width:300px;"><small>  <a href="" data-toggle="modal" data-target="#viewSpecimenModal{{test.id}}"> {{test.test_type.name}} Specimen </a> </small></td>
+                                                        {% else %}
+                                                        <td class="text-center" style="width:300px;"><small>  <a href="" data-toggle="modal" data-target="#addSpecimenModal{{test.id}}"> Add Specimen Info </a> </small></td>
+                                                        {% endif %}-->
+                                                    </tr>
+
+                                                    {% for specimen in test.specimen.all %}
+                                                    {% if specimen.active %}
+                                                    {% include "lis/partials/modals/view_specimen_modal.html" %}
+
+                                                        {% return_edit_specimen_form specimen.id %}
+                                                        <tr>
+                                                            <td class= "text-center" style="width:300px"><small>  </small></td>
+                                                            <td class= "text-center" style="width:300px"><small>  </small></td>
+                                                            <td class= "text-center" style="width:300px"><small> {{ specimen.collected_by.full_name }} </small></td>
+                                                            <td class= "text-center" style="width:300px"><small> {{ specimen.sample_type }} </small></td>
+                                                            <td class= "text-center" style="width:100px"><small> {{ specimen.sample_volume}} </small></td>
+                                                            <td class= "text-center" style="width:300px"><small> {{ specimen.collected_at }} </small></td>
+                                                            <td class="text-center" style="width:100px;"><small>  <a href="" data-toggle="modal" data-target="#viewSpecimenModal{{specimen.id}}">  View </a> </small></td>
+                                                            {% if edit_specimen_form %}
+                                                            {% include "lis/partials/modals/edit_specimen_form.html" %}
+
+                                                            <td class="text-center" style="width:100px;"><small>  <a href="" data-toggle="modal" data-target="#editSpecimenModal{{specimen.id}}">  Edit </a> </small></td>
+                                                            {% endif %}
+                                                        </tr>
+                                                    {% endif %}
+                                                    {% endfor %}
+
+
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+
+
+                                    </div>
+</div>

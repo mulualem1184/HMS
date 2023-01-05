@@ -1,5 +1,5 @@
 {% load custom_dict %}
-<div class="modal fade" id="editResourceModal{{resource.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="editResourceModal{resource.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog " role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -14,14 +14,14 @@
                                             {% return_edit_resource_form resource.id %}
 
             <div class="modal-body">
-
+                <!--
                     <div class="form-group row col-md-12">
                         <label for="labsection" class="col-md-3 control-label"><small>Patient</small></label>
                         <div class="col-md-9">
-                            <small> Patient Seventy</small>
+                            <small> {{schedule.patient}}</small>
                         </div>
                     </div>
-
+                -->
                     <div class="form-group row col-md-12">
                         <label for="labsection" class="col-md-3 control-label"><small>Resource</small></label>
                         <div class="col-md-9">

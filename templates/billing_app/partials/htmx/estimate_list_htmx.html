@@ -1,0 +1,38 @@
+    <div id="drug_price_tab">
+                                    <div class="card card-box" style="overflow-y:scroll;overflow-x:scroll;background-color: white; width: 1230px;height: 600px;">
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 1230px;">
+                                            
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="gradeX odd">
+                                                    <th class= "text-center"><small>Registered On</small></th>
+                                                    <th class= "text-center"><small>Patient</small></th>
+                                                    <th class= "text-center"><small>No of Items</small></th>
+                                                    <th class= "text-center"><small>Total Amount</small></th>
+                                                    <th class= "text-center"><small>Unpaid Amount</small></th>
+                                                    <th class= "text-center"><small>Convert To Invoice</small></th>
+                                                    <th class= "text-center"><small>Delete</small></th>
+                                                </tr>
+                                            </thead>
+                        <tbody>
+                            {% for estimate in estimates %}
+
+                                <tr style="height: 40px;">
+                                    <td class= "text-center" style="width:100px"><small><a href="{% url 'edit_estimate' estimate.id %}" > {{ estimate.registered_on }}</a></small></td>
+                                    <td class= "text-center" style="width:100px"><small> {{ estimate.patient }}</small></td>
+                                    <td class= "text-center" style="width:100px"><small> {{ estimate.no_of_items }}</small></td>
+                                    <td class= "text-center" style="width:100px"><small> {{ estimate.total_amount }} </small></td>
+                                    <td class= "text-center" style="width:100px"><small> {{ estimate.unpaid_amount }} </small></td>
+                                    <td class= "text-center" style="width:100px">
+                                        <small>
+                                            <a href="{% url 'convert_estimate_to_invoice' estimate.id %}">Convert To Invoice</a>
+                                        </small>
+                                    </td>
+                                    <td class= "text-center" style="width:100px"><small> <a href=""><i class="fa fa-trash"> </i></a> </small></td>
+
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+              
+                                    </div>
+    </div>

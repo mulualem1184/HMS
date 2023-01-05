@@ -15,7 +15,8 @@
                 Sample Volume: {{ test.specimen.sample_volume }} <br>
                 Container type: {{ test.specimen.container_type }}<br>
                 Accession number: {{ test.specimen.accession_number }} <br>
-                {% if test.specimen %}
+                
+                {% if test.specim %}
                     Barcode image: 
                     <div class='row' style="width: 50px;height: 50px;">
                         <img src="/media/{{test.specimen.barcode_image}}" width="300px" height="150px" alt="Barcode"><br> <br>

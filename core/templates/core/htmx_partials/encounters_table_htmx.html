@@ -1,0 +1,24 @@
+                                    <div id="drug_price_tab" class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 550px;width: 1200px;">
+                                            <table id="encounter_table"  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 580px;">                                               
+                                                <thead style="background-color: lightgrey;">
+                                                    <tr class="gradeX odd">
+                                                        <th class= "text-center"><small>Month</small></th>
+                                                        <th class= "text-center"><small>Patients</small></th>
+                                                        <th class= "text-center"><small>Encounters</small></th>
+
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for month,patient_count, encounter in encounter_zip %}
+                                                        <tr style="height: 40px;">
+                                                            <td class= "text-center" style="width:300px"><small> {{ month }} </small></td>
+                                                            <td class= "text-center" style="width:300px"><small> {{ patient_count }} </small></td>
+                                                            <td class= "text-center" style="width:300px"><small> {{ encounter }} </small></td>
+
+                                                        </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                            
+                                            </table>
+
+                                    </div>

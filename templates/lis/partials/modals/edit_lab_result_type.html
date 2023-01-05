@@ -1,0 +1,51 @@
+{% load crispy_forms_tags %}
+<div class="modal fade" id="editResultType{{rt.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                                <form method="POST" id="form_sample_1" class="form-horizontal" enctype="multipart/form-data">
+
+                <h4 class="modal-title center">
+
+                        <button class="btn " type="submit"><i class="fa fa-save"></i>Save And Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <!--
+                <button type="button" onclick="OpenModal9()">dsss</button>
+                -->
+                </h4>
+            </div>
+
+                {% csrf_token %}
+                <div class="modal-body">
+                    
+                    <div class="col-md-12 col-sm-12 col-lg-12">
+                        <div class="">
+                            <div class="" id="bar-parent">
+                                    {% csrf_token %}
+                                    <div class="form-body">
+                                        {% for field in edit_result_type_form %}
+                                                <div class="form-group row">
+                                                    <label class="control-label col-md-3" for="{{ field.id_for_label }}" >
+                                                        {{ field.label }}<span >  </span>
+                                                    </label>
+                                                    <div class="col-md-5">
+                                                        {{ field }}
+                                                    </div>
+                                                </div>
+                                        {% endfor %}
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                                </form>
+
+        </div>
+    </div>
+</div>
+<script >
+  $(document).ready(function() {
+    $('#bed-id').select2();
+});
+  </script>

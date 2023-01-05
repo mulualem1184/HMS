@@ -41,48 +41,68 @@
 
 {% block page_content %}
 {% include "inpatient_app/partials/treatment_plan_form.html" %}
+{% include "core/modals/add_drug_prescription.html" %}
+{% include "core/modals/repeat_drug_prescription6.html" %}
+{% include "outpatient_app/partials/filter_by_date.html" %}
+{% include 'core\modals\add_patient_document.html' %}
+{% include 'core\modals\add_patient_image.html' %}
+
+{% include "inpatient_app/partials/treatment_plan_modal.html" %}
+{% include "inpatient_app/partials/modals/patient_treatment_plan_form.html" %}
+{% include "inpatient_app/partials/modals/filter_treatment_plan.html" %}
 
 
-<div class="card card-box  " style="background-color: white;" >
+<div class="  " style="background-color: white;" >
     
     <div class="col-md-12" >
-        <div class="" style="padding-right: 40px;">
-            <div class="card-head col-md-12 border-bottom-0" style="background-color: #eef1f5; padding-bottom: 10px;padding-left: 20px;">
-                <div class="row">
+        <div class="" style="">
+            <div class="card-head border-bottom-0" style="background-color: #eef1f5; padding-bottom: 10px;padding-left: 20px;width: 1228px;">
+                <!--<div class="row">
                         <div>
-                                {{patient.full_name}}                             
-
+                            
+                            <a style="padding-left: 25px;" href="{% url 'core:patient_dashboard' patient.id %}">{{patient.full_name}}</a>                             
                             <a href="{% url 'core:edit_patient' patient.id %}"> <i class="fa fa-edit"></i> </a>
 
                         </div>
                         <div>
                         </div>                    
+                </div>-->
+                <div class="row">
+                        <div style="padding-left: 20px;">
+                                {{patient.full_name}}                             
+                            <a href="{% url 'core:edit_patient' patient.id %}"> <i class="fa fa-edit"></i> </a>
+                        </div>
+                        <div>
+                        </div>                    
                 </div>
+
             </div>
         </div>
-        <div class="row" style="">    
+
+        <div class="row" style="padding-top: 25px;">    
+            <div style="width: 15px;"></div>
             <div class="col col-md-2 card card-box" >
             <div class="">
                 <fieldset>
                     <legend> </legend>
                         <ul class="nav nav-tabs tabs-left">
                             <li class="nav-item" style="height:33px;">
-                                <a href="#medical-activities-tab" data-toggle="tab" class="active"><small>Medical Activities</small></a>
+                                <a href="#patient-activities-tab" data-toggle="tab" class="active"><small>Medical Activities</small></a>
                             </li>
                             <li class="nav-item" style="height:33px;">
                                 <a  href="#consultation-list-tab" data-toggle="tab"> <small>Consultation</small> </a>
                             </li>
                             <li class="nav-item" style="height:33px;">
-                                <a href="#activities-diagnoses-tab" data-toggle="tab" > <small>Diagnoses</small> </a>
+                                <a href="#diagnosis-list-tab" data-toggle="tab" > <small>Diagnosis</small> </a>
                             </li>
-                            <hr style="background-color: black">
+                            <hr style="color: grey;border: solid;border-width: 2px; border-color: darkgrey;" class="border-bottom-0 border-left-0 border-right-0" >
                             <li class="nav-item" style="height:33px;">
                                 <a href="#document-list-tab" data-toggle='tab'> <small>Documents</small> </a>
                             </li>
                             <li class="nav-item" style="height:33px;">
                                 <a href="#image-list-tab" data-toggle='tab'> <small>Images</small> </a>
                             </li>
-                            <hr style="background-color: black">
+                            <hr style="color: grey;border: solid;border-width: 2px; border-color: darkgrey;" class="border-bottom-0 border-left-0 border-right-0" >
                             <li class="nav-item" style="height:33px;">
                                 <a href="#prescription-list-tab" data-toggle='tab'> <small>Prescriptions</small> </a>
                             </li>
@@ -92,7 +112,7 @@
                             <li class="nav-item" style="height:33px;">
                                 <a href="#treatment-plan-list-tab" data-toggle='tab'> <small>Treatment Plans</small> </a>
                             </li>
-                            <hr style="background-color: black">
+                            <hr style="color: grey;border: solid;border-width: 2px; border-color: darkgrey;" class="border-bottom-0 border-left-0 border-right-0" >
                             <li class="nav-item" style="height:33px;">
                                 <a href="#medical-certificate-list-tab" data-toggle='tab'> <small>Medical Certificates</small> </a>
                             </li>
@@ -107,20 +127,22 @@
                     
                 </fieldset>
             </div>
-                        <ul class="nav nav-tabs tabs-left">
-
-                        </ul>
                     
 
             </div>
              
              <!-- <div class="col-md-2"></div>-->
-            <div class="tab-content col-md-10" >
+             <div class="" style="padding-top: 15px;">
+                <div class="col">
+            
+            <div class="tab-content" style="width: 971px;">
+                {% include "core/tabs/patient_activities_tab.html" %}
                 {% include "core/tabs/medical_activities_tab.html" %}
                 {% include "core/tabs/consultation_list_tab.html" %}
                 {% include "core/tabs/document_list_tab.html" %}
                 {% include "core/tabs/image_list_tab.html" %}
                 {% include "core/tabs/prescription_list_tab.html" %}
+                {% include "core/tabs/diagnosis_list_tab.html" %}
 
                 {% include "core/tabs/treatment_plan_list_tab.html" %}
                 {% include "core/tabs/treatment_list_tab.html" %}
@@ -129,6 +151,8 @@
                 {% include "core/tabs/patient_material_list.html" %}
 
             </div>
+            </div>
+        </div>
         </div>
 
     </div>

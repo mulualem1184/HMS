@@ -3,7 +3,7 @@ from django.forms import ModelForm
 from django.forms.forms import Form
 
 from .models import (LaboratoryTest, LaboratoryTestResultType, LaboratoryTestType, NormalRange, Order,
-                     ReferredTestResult, SampleType, Specimen, LabEmployee)
+                     ReferredTestResult, SampleType, Specimen, LabEmployee,LaboratoryTestResult,LaboratorySection)
 
 
 class SpecimenForm(ModelForm):
@@ -32,6 +32,57 @@ class SpecimenForm(ModelForm):
                 'class': 'form-control'
             }),
         }
+
+
+class LaboratorySectionForm(ModelForm):
+
+    class Meta:
+        model = LaboratorySection
+        fields = [
+            'name'
+        ]
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control'
+            }),
+        }
+
+class EditSpecimenForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        specimen_id = kwargs.pop('specimen_id')
+        specimen = Specimen.objects.get(id=specimen_id)
+        super(EditSpecimenForm, self).__init__(*args, **kwargs)
+        for f in self.fields:
+            if hasattr(specimen,f):
+                value = getattr(specimen,f)
+                self.fields[f].initial = value
+
+    class Meta:
+        model = Specimen
+        fields = [
+            'collected_by', 'collected_at', 'sample_type',
+            'sample_volume','container_type'
+        ]
+        widgets = {
+            'collected_by': forms.Select(attrs={
+                'class': 'form-control'
+            }),
+            'collected_at': forms.DateTimeInput(attrs={
+                'class': 'form-control',
+            }),
+            'sample_type': forms.Select(attrs={
+                'class': 'form-control',
+            }),
+            'sample_volume': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': 0,
+            }),
+            'container_type': forms.TextInput(attrs={
+                'class': 'form-control'
+            }),
+        }
+
+
         
 
 class OrderForm(ModelForm):
@@ -47,7 +98,7 @@ class OrderForm(ModelForm):
 
     class Meta:
         model = Order
-        fields = ['patient_id', 'priority',]
+        fields = ['patient_id']
         widgets = {
             'priority': forms.Select(attrs={
                 'class': 'form-control',
@@ -71,6 +122,18 @@ class LaboratoryTestForm(ModelForm):
 
         }
 
+
+class SelectTestForm(ModelForm):
+    class Meta:
+        model = LaboratoryTestResult
+        fields = ['test']
+        widgets = {
+            'test': forms.Select(attrs={
+                'class': 'form-control select2',
+                'style': '',
+            }),
+
+        }
 
 class ResultEntryForm(Form):
 
@@ -127,6 +190,45 @@ class LabTestTypeForm(ModelForm):
         }
 
 
+class EditLabTestTypeForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        test_type_id = kwargs.pop('test_type_id')
+        test_type = LaboratoryTestType.objects.get(id=test_type_id)
+        super(EditLabTestTypeForm, self).__init__(*args, **kwargs)
+        for f in self.fields:
+            if hasattr(test_type,f):
+                value = getattr(test_type,f)
+                self.fields[f].initial = value
+
+    class Meta:
+        model = LaboratoryTestType
+        fields = [
+            'section', 'name', 'price',
+            'tat', 'is_available',
+        ]
+        widgets = {
+            'section': forms.Select(attrs={
+                'class': 'form-control',
+            }),
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Name of Test type'
+            }),
+            'price': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': '0',
+                'placeholder': 'Price in ETB'
+            }),
+            'tat': forms.NumberInput(attrs={
+                'class': 'form-control',
+                'min': '0',
+                'placeholder': 'amount of time it takes to complete this test in hours'
+            }),
+            'is_available': forms.Select(attrs={
+                'class': 'form-control',
+            }),
+        }
+
 class SampleTypeForm(ModelForm):
 
     class Meta:
@@ -157,6 +259,27 @@ class LabTestResultTypeForm(ModelForm):
             })
         }
 
+
+class EditLabTestResultTypeForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        result_type_id = kwargs.pop('result_type_id')
+        result_type = LaboratoryTestResultType.objects.get(id=result_type_id)
+        super(EditLabTestResultTypeForm, self).__init__(*args, **kwargs)
+        for f in self.fields:
+            if hasattr(result_type,f):
+                value = getattr(result_type,f)
+                self.fields[f].initial = value
+
+    class Meta:
+        model = LaboratoryTestResultType
+        fields = [
+            'name'
+        ]
+        widgets = {
+            'name': forms.TextInput(attrs={
+                'class': 'form-control',
+            }),
+        }
     
 class NormalRangeForm(ModelForm):
 

@@ -1,0 +1,94 @@
+            <div class="tab-pane active" id="billing-stats-tab">
+
+                    <div class="row" style="padding-left: 15px;">
+
+                            <div class="card"  >
+                                    <div class="card-head">
+                                        <header><small>Sales Overview</small></header>
+                                    </div>
+                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 600px;width: 580px;">
+                                             <div class="row">
+                                                 <div class="col-md-3">
+                                                     <div class=""><h5><b>{{credit}}</b></h5></div>
+                                                     <div ><h5><b style="">Credit</b></h5></div>
+                                                 </div>
+                                                 <div class="col-md-3">
+                                                     <div><h5><b class="">{{debit}}</b></h5></div>
+                                                     <div><h5><b style="">Debit</b></h5></div>
+                                                 </div>
+                                                 <div class="col-md-3">
+                                                     <div><h5><b class="">{{balance}}</b></h5></div>
+                                                     <div><h5><b style="">Balance</b></h5></div>
+                                                 </div>
+
+                                             </div><hr>
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 580px;">
+                                            
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="gradeX odd">
+                                                    <th class= "text-center"><small>Month</small></th>
+                                                    <th class= "text-center"><small>Debit</small></th>
+                                                    <th class= "text-center"><small>Credit</small></th>
+                                                    <th class= "text-center"><small>Balance</small></th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for month,debit,credit,balance in balance_zip %}
+                                                    <tr style="height: 40px;">
+                                                        <td class= "text-center" style="width:300px"><small> {{ month }}</small></td>
+                                                        <td class= "text-center" style="width:300px"><small> {{ debit }} </small></td>
+                                                        <td class= "text-center" style="width:300px"><small> {{ credit }} </small></td>
+                                                        <td class= "text-center" style="width:300px"><small> {{balance }} </small></td>
+
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                            
+                                        </table>
+
+                                    </div>
+                            </div>
+                            <div class="" style="width: 10px;"></div>
+
+                            <div class="card"  >
+                                    <div class="card-head">
+                                        <header><small>Sold Items</small></header>
+                                    </div>
+                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 600px;width: 580px;">
+                                             <div class="row">
+                                                 <div class="col">
+                                                     <div><h5><b class="">{{item_count}}</b></h5></div>
+                                                     <div><h5><b style="">Items</b></h5></div>
+                                                 </div>
+
+                                             </div><hr>
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 580px;">
+                                            
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="gradeX odd">
+                                                    <th class= "text-center"><small>Item</small></th>
+                                                    <th class= "text-center"><small>Measurement Unit</small></th>
+                                                    <th class= "text-center"><small>Quantity</small></th>
+                                                    <th class= "text-center"><small>Unit Price</small></th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for item in sold_items %}
+                                                    <tr style="height: 40px;">
+                                                        <td class= "text-center" style="width:300px"><small> {{ item.item }}</small></td>
+                                                        <td class= "text-center" style="width:300px"><small> {{ item.item.measurement_unit }} </small></td>
+                                                        <td class= "text-center" style="width:300px"><small> {{ item.quantity }} </small></td>
+                                                        <td class= "text-center" style="width:300px"><small> {{ item.item.price_info.sale_price }} </small></td>
+
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                            
+                                        </table>
+
+                                    </div>
+                            </div>
+                    </div>
+                </div>

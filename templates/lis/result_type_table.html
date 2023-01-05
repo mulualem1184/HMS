@@ -1,30 +1,49 @@
-<table class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded">
-    <thead>
+{% load custom_dict %}
+<div class="col-md-9" style="overflow-y:scroll;overflow-x:scroll;background-color: white;height: 600px;">
+    <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 900px;">
+        <thead style="background-color: lightgrey;">
         <tr>
-            <th class="mdl-data-table__cell--non-numeric">#</th>
-            <th class="mdl-data-table__cell--non-numeric">Name</th>
-            <th class="mdl-data-table__cell--non-numeric">Input type</th>
-            <th class="mdl-data-table__cell--non-numeric">Actions</th>
+            <th class="text-center"><small>#</small></th>
+            <th class="text-center"><small>Name</small></th>
+            <th class="text-center"><small>Input type</small></th>
+            <th class="text-center"><small>Edit</small></th>
+
+            <th class="text-center"><small>Add Normal Range</small></th>
+            <th class="text-center"><small>Ranges</small></th>
+
+            <th class="text-center"><small>Delete</small></th>
         </tr>
     </thead>
     <tbody>
         {% for rt in rt_list %}
             {% include 'lis/add_normal_range_modal.html' %}
+            {% include 'lis/partials/modals/delete_result_type.html' %}
+                    {% return_edit_result_type_form rt.id %}
+            {% include 'lis/partials/modals/edit_lab_result_type.html' %}
+
             <tr>
-                <td class="mdl-data-table__cell--non-numeric"> {{ forloop.counter }} </td>
-                <td class="mdl-data-table__cell--non-numeric"> {{ rt.name }} </td>
-                <td class="mdl-data-table__cell--non-numeric"> {{ rt.input_type }} </td>
-                <td class="mdl-data-table__cell--non-numeric">
+                <td class="text-center" style="width:300px;"> <small>{{ forloop.counter }}</small> </td>
+                <td class="text-center" style="width:300px;"><small> {{ rt.name }}</small> </td>
+                <td class="text-center" style="width:300px;"> <small>{{ rt.input_type }}</small> </td>
+                <td class="text-center" style="width:300px;"> <small><a href="" data-toggle="modal" data-target="#editResultType{{rt.id}}">
+                 <i class="fa fa-edit"></i></a></small> </td>
+
+                <td class="text-center" style="width:300px;"> 
                     {% if rt.input_type == 'NUMBER' %}
                         <a href="#" data-toggle="modal" data-target="#modal{{rt.id}}">
-                            <i class="fa fa-plus"></i>
+                           <small> <i class="fa fa-plus"></i> </small>
                         </a>
                     {% endif %}
-                    <a href="{% url 'remove_lab_test_result_type' rt.id %}">
-                        <i class="fa fa-remove"></i>
+                </td>
+                <td class="text-center" style="width:300px;"><a href="{% url 'lab_result_ranges' rt.id %}"> <small>View Ranges</small></a> </td>
+
+                <td class="text-center" style="width:300px;">
+                    <a href="" data-toggle="modal" data-target="#deleteResultTypeModal{{rt.id}}">
+                       <small> <i class="fa fa-trash"></i> </small>
                     </a>
                 </td>
             </tr>
         {% endfor %}
     </tbody>
 </table>
+</div>

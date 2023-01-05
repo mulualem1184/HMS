@@ -25,6 +25,15 @@
                     {% if plan.appointment %}
                     <p><small><b>Appointment:</b> {{plan.appointment.appointment_time}}</small></p>
                     {% endif %}
+                    {% if plan.vital_sign_options.temperature %}
+                    <p><small><b>Vital Sign:</b>Temperature</small></p>
+                    {% elif plan.vital_sign_options.blood_pressure %}
+                    <p><small><b>Vital Sign:</b>Blood Pressure</small></p>
+                    {% elif plan.vital_sign_options.glucose %}
+                    <p><small><b>Vital Sign:</b>Glucose Level</small></p>
+                    {% elif plan.vital_sign_options.oxygen_saturation %}
+                    <p><small><b>Vital Sign:</b>Oxygen Saturation</small></p>
+                    {% endif %}
 
                 </div>
 

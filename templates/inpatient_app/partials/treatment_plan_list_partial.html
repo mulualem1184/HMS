@@ -101,7 +101,9 @@
                                         <th class="text-center"><small> View </small></th>
                                         <th class="text-center"><small> Edit </small></th>
                                         <th class="text-center"><small> Delete </small></th>
-                                        <th class="text-center"><small> Status </small></th>
+                                        <!--<th class="text-center"><small> Status </small></th>-->
+                                        <th class="text-center"><small> Action </small></th>
+
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -111,14 +113,26 @@
                                 {% include "inpatient_app/partials/delete_dialog_box.html" %}
                                 {% include "inpatient_app/partials/change_plan_status.html" %}
                                 {% include "inpatient_app/partials/modals/treatment_plan_action.html" %}
+                                {% include "inpatient_app/partials/modals/add_vital_sign.html" %}
 
                                         <tr class="" style="height:40px;">
                                             <td style="width:200px;" class="text-center" ><a href="{% url 'core:activities' plan.patient.id %}"> <small>{{ plan.patient}} </small></a></td>
-                                            <td style="width:200px;" class="text-center"><small><a href="" data-toggle='modal' data-target= '#treatmentPlanActionModal{{plan.id}}' > {{plan.registered_on}}</a></small> </td>
+                                        {% if plan.vital_sign_options.temperature %}
+                                            <td style="width:200px;" class="text-center"><small><a href="{% url 'temperature_plan_progress' plan.id %}"> {{plan.registered_on}}</a></small> </td>
+                                        {% elif plan.vital_sign_options.blood_pressure %}
+                                            <td style="width:200px;" class="text-center"><small><a href="{% url 'blood_pressure_plan_progress' plan.id %}"> {{plan.registered_on}}</a></small> </td>
+                                        {% elif plan.vital_sign_options.oxygen_saturation %}
+                                            <td style="width:200px;" class="text-center"><small><a href="{% url 'oxygen_saturation_plan_progress' plan.id %}"> {{plan.registered_on}}</a></small> </td>
+                                        {% elif plan.vital_sign_options.glucose %}
+                                            <td style="width:200px;" class="text-center"><small><a href="{% url 'glucose_level_plan_progress' plan.id %}"> {{plan.registered_on}}</a></small> </td>
+                                        {% else %}
+                                            <td style="width:200px;" class="text-center"><small><a href="{% url 'treatment_plan_progress' plan.id %}"> {{plan.registered_on}}</a></small> </td>
+                                        {% endif %}
                                             <td style="width:100px;" class="text-center"><small> <a href="" data-toggle='modal' data-target= '#viewTreatmentPlanModal{{plan.id}}' ><i class="fa fa-eye"></i></a>  </small> </td>
                                             <td style="width:100px;" class="text-center"><small> <a href="" data-toggle="modal" data-target="#editTreatmentPlanModal{{plan.id}}"  ><i class="fa fa-edit"></i></a></small></td>
                                             <td style="width:100px;" class="text-center"><small>  <a href="" data-target="#deleteTreatmentPlanModal{{plan.id}}" data-toggle='modal'  ><i class="fa fa-trash"></i></a></small></td>
-                                            <td style="width:200px;" class="text-center"><small>{{plan.status}}  <a href="" data-toggle='modal' data-target= '#changePlanStatusModal{{plan.id}}' > <i class="fa fa-edit"></i></a></small></td>
+                                            <td style="width:200px;" class="text-center"><small><a href="" data-toggle='modal' data-target= '#treatmentPlanActionModal{{plan.id}}' > Action</a></small> </td>
+                                            <!--<td style="width:200px;" class="text-center"><small>{{plan.status}}  <a href="" data-toggle='modal' data-target= '#changePlanStatusModal{{plan.id}}' > <i class="fa fa-edit"></i></a></small></td>-->
 
                                         </tr>
                                     {% endfor %}

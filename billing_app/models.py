@@ -6,6 +6,8 @@ from lis.models import *
 from inpatient_app.models import Bed, WardTeamBed,RoomPrice,WardStayDuration
 from staff_mgmt.models import Employee
 from core.models import PatientInsurance,PatientTreatment
+from django.db.models import Sum
+
 #from pharmacy_app.models import DrugPrescription
 
 class PatientInsuranceDetail(models.Model):
@@ -268,3 +270,200 @@ class Treatment(models.Model):
 		return str(self.name)
 
 
+class ItemCategory(models.Model):
+
+	name = models.CharField(max_length=5000, blank=True)	
+	active = models.BooleanField(default=False)
+	registered_by = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
+	registered_on = models.DateTimeField(null=True)
+	def __str__(self):
+		return str(self.name)
+
+class ItemPrice(models.Model):
+	sale_price = models.IntegerField(blank=True, null=True)
+	buy_price = models.IntegerField(blank=True, null=True)
+	discount_price = models.IntegerField(blank=True, null=True)
+	active = models.BooleanField(default=False)
+	registered_by = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
+	registered_on=models.DateTimeField(auto_now_add=True)
+
+
+
+class Item(models.Model):
+	item_type_choices = {('1','Inventory'),
+						('2','Service'),
+	}
+
+	medical_type_choices = {('1','Treatment'),
+						('2','Drug'),
+						('3','Surgery'),
+						('4','Material'),
+						('5','Inpatient Accommodation'),
+						('6','Laboratory Test'),
+						('7','Imaging Test'),
+						('8','Laboratory Material'),
+
+	}
+
+	name = models.CharField(max_length=5000)	
+	generic_name = models.CharField(max_length=5000)	
+	category = models.ForeignKey(ItemCategory, on_delete=models.CASCADE, blank=True, null=True)
+	item_type = models.CharField(max_length=500, choices=item_type_choices, null=True)
+	medical_type = models.CharField(max_length=500, choices=medical_type_choices, null=True)
+	drug = models.ForeignKey(to=Dosage, on_delete=models.SET_NULL, null=True,blank=True)
+	lab_test = models.ForeignKey(to=LaboratoryTestType, on_delete=models.SET_NULL, null=True,blank=True)
+	price_info = models.ForeignKey(ItemPrice, on_delete=models.CASCADE, blank=True, null=True)
+	measurement_unit = models.CharField(max_length=5000,null=True,blank=True)	
+	code = models.CharField(max_length=5000, blank=True,null=True)
+	active = models.BooleanField(default=False)
+	available_in_appointment = models.BooleanField(default=False)
+	registered_by = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
+	registered_on = models.DateTimeField(null=True)
+	def __str__(self):
+		return str(self.name)
+
+
+	@property
+	def return_unassociated_drugs(self):
+		drug_items = Item.objects.filter(medical_type='2')
+		drug_array = []
+		for item in drug_items:
+			if item.drug == None:
+				print('')
+			else:
+				drug_array.append(item.drug.id) 
+		drugs = Dosage.objects.exclude(id__in=drug_array)
+		return drugs
+
+	@property
+	def return_unassociated_lab_tests(self):
+		lab_test_items = Item.objects.filter(medical_type='6')
+		lab_test_array = []
+		for item in lab_test_items:
+			if item.lab_test == None:
+				print('')
+			else:
+				lab_test_array.append(item.lab_test.id) 
+		lab_tests = LaboratoryTestType.objects.exclude(id__in=lab_test_array)
+		return lab_tests
+
+class ItemSaleInfo(models.Model):
+
+	item = models.ForeignKey(to=Item, on_delete=models.SET_NULL, null=True)
+	quantity = models.IntegerField(null=True, blank=True)
+	discount = models.BooleanField(default=False)
+	active = models.BooleanField(default=False)
+	temp_active = models.BooleanField(default=True)
+
+class BillableItem(models.Model):
+	item = models.ForeignKey(to=Item, on_delete=models.SET_NULL, null=True)
+	patient = models.ForeignKey(to=Patient, on_delete=models.SET_NULL, null=True)
+	active = models.BooleanField(default=False)
+	registered_on = models.DateTimeField(null=True)
+
+class Invoice(models.Model):
+	item_type_choices = {('1','Inventory'),
+						('2','Service'),
+	}
+
+	medical_type_choices = {('1','Treatment'),
+						('2','Drug'),
+						('3','Surgery'),
+						('4','Material'),
+						('5','Inpatient Accommodation'),
+						('6','Laboratory Test'),
+						('7','Imaging Test'),
+						('8','Laboratory Material'),
+
+	}
+
+	patient = models.ForeignKey(to=Patient, on_delete=models.SET_NULL, null=True)
+	item_info = models.ManyToManyField(ItemSaleInfo,null=True,blank=True)
+	discount = models.BooleanField(default=False)
+	active = models.BooleanField(default=False)
+	paid = models.BooleanField(default=False)
+	due_date = models.DateTimeField(null=True)
+	registered_by = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
+	registered_on = models.DateTimeField(null=True)
+	receipt = models.BooleanField(default=False)
+	estimate = models.BooleanField(default=False)
+
+	def __str__(self):
+		return str(self.patient) + " - " + str(self.item_info)
+
+	@property
+	def no_of_items(self):
+		count = self.item_info.all().count()
+		return count
+
+	@property
+	def total_amount(self):
+		amount = 0
+		for info in self.item_info.all():
+			amount += info.quantity * info.item.price_info.sale_price
+		return amount
+	"""
+	@property
+	def open_invoices(self):
+		invoices = []
+		for invoice in self.objects.all():
+			invoice += info.quantity * info.item.price_info.sale_price
+		return amount
+	"""
+	"""
+	@property
+	def unpaid_amount(self):
+		amount = 0
+		paid_amount = 0
+		for info in self.item_info.all():
+			amount += info.quantity * info.item.price_info.sale_price
+		payments = self.paid_invoice.filter(active=True)
+		paid_amount_dict = payments.aggregate(Sum('amount_paid'))
+		paid_amount = paid_amount_dict['amount_paid__sum']
+		#print('paid_amount: ',paid_amount,'\n')		
+		if paid_amount == None:
+			paid_amount = 0
+		return  amount - paid_amount
+	"""
+	@property
+	def unpaid_amount(self):
+		amount = 0
+		paid_amount = 0
+		for info in self.item_info.all():
+			amount += info.quantity * info.item.price_info.sale_price
+		reconcilations = self.reconciled_invoice.filter(payment__isnull=False)
+		reconciled_amount_dict = reconcilations.aggregate(Sum('amount_paid'))
+		reconciled_amount = reconciled_amount_dict['amount_paid__sum']
+		#print('reconciled_amount: ',reconciled_amount,'\n')		
+		if reconciled_amount == None:
+			reconciled_amount = 0
+		return  amount - reconciled_amount
+
+class Payment(models.Model):
+	patient = models.ForeignKey(to=Patient, on_delete=models.SET_NULL, null=True)
+	invoice = models.ManyToManyField(Invoice,null=True,blank=True,related_name='paid_invoice')
+	amount_paid = models.IntegerField(null=True, blank=True)
+	pre_payment = models.BooleanField(default=False)
+	active = models.BooleanField(default=False)
+	registered_by = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
+	registered_on = models.DateTimeField(null=True)
+
+	@property
+	def remaining_amount(self):
+		amount = self.amount_paid
+		reconcilations = self.reconciled_payment.all()
+		reconciled_amount_dict = reconcilations.aggregate(Sum('amount_paid'))
+		reconciled_amount = reconciled_amount_dict['amount_paid__sum']
+		#print('reconciled_amount: ',reconciled_amount,'\n')		
+		if reconciled_amount == None:
+			reconciled_amount = 0
+		return  amount - reconciled_amount
+
+class InvoiceReconcilation(models.Model):
+	invoice = models.ForeignKey(Invoice, on_delete= models.SET_NULL, null=True,related_name='reconciled_invoice')
+	payment = models.ForeignKey(Payment, on_delete= models.SET_NULL, null=True,related_name='reconciled_payment')
+	amount_paid = models.IntegerField(null=True)
+	fully_paid = models.BooleanField(default=False)
+	active = models.BooleanField(default=False)
+	registered_by = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
+	registered_on = models.DateTimeField(null=True)

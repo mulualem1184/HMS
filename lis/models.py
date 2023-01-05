@@ -47,9 +47,18 @@ class Specimen(models.Model):
     sample_volume = models.FloatField(null=True, blank=True)
     accession_number = models.CharField(max_length=50, blank=True, default='')
     barcode_image = models.ImageField(blank=True, upload_to=barcode_image_upload_path)
+    active = models.BooleanField(default=True)
 
     def __str__(self):
         return f'{self.id}'
+
+    def patient_specimens(self,patient_id):
+        patient = Patient.objects.get(id=patient_id)
+        print('patient:', patient,'\n')
+        specimen_list = Specimen.objects.first().test_set.filter(order__patient=patient)        
+        for spe in specimen_list:
+            print('Specimen: ',spe,'\n')
+        return specimen_list
 
 
 class LaboratorySection(models.Model):
@@ -73,12 +82,16 @@ class LaboratoryTestType(models.Model):
 
     section = models.ForeignKey(to=LaboratorySection, null=True, on_delete=models.SET_NULL,related_name='test_section')
     name = models.CharField(max_length=1000, unique=True, blank=False, null=False)
-    price = models.FloatField(null=False)
-    tat = models.FloatField(verbose_name='TAT', help_text="amount of time it takes to complete this test in hours")
+    price = models.FloatField(null=True,blank=True)
+    tat = models.FloatField(verbose_name='TAT', help_text="amount of time it takes to complete this test in hours",null=True,blank=True)
     is_available = models.BooleanField(default=True, blank=True,choices=TEST_AVAILABLE_CHOICES   )
 
     def __str__(self):
-        return f"{self.name} [{self.section.name}]"
+        if self.section:
+            return f"{self.name} [{self.section.name}]"
+        else:
+            return f"{self.name}"
+
 
 class LaboratoryTestPrice(models.Model):
 
@@ -104,9 +117,9 @@ class Order(models.Model):
         ('EMERGENCY', 'EMERGENCY'),
     ]
     patient:Patient = models.ForeignKey(to=Patient, on_delete=models.CASCADE)
-    ordered_by = models.ForeignKey(to=User, on_delete=models.SET_NULL, null=True)
+    ordered_by = models.ForeignKey(to=Employee, on_delete=models.SET_NULL, null=True)
     ordered_at = models.DateTimeField(auto_now_add=True)
-    priority = models.CharField(max_length=50, default='NORMAL', choices=PRIORITY_CHOICES)
+    priority = models.CharField(max_length=50, default='NORMAL', choices=PRIORITY_CHOICES,blank=True,null=True)
     comments = models.TextField(default="", blank=True, null=True)
 
     def __str__(self):
@@ -132,7 +145,10 @@ class Order(models.Model):
         total_price:float = 0.0
         for test in self.test_set.all():
             if test.test_type.is_available:
-                total_price += test.price
+                if test.price:
+                    total_price += test.price
+                else:
+                    total_price += 100
         return total_price
 
     @property
@@ -197,7 +213,7 @@ class LaboratoryTest(models.Model):
 
     order:Order = models.ForeignKey(to=Order, on_delete=models.CASCADE, related_name="test_set")
     test_type:LaboratoryTestType = models.ForeignKey(to=LaboratoryTestType, on_delete=models.DO_NOTHING)
-    specimen:Specimen = models.ForeignKey(to=Specimen, null=True, on_delete=models.CASCADE, related_name='test_set', blank=True)
+    specimen:Specimen = models.ManyToManyField(to=Specimen, related_name='test_set', blank=True)
     special_instructions:str = models.TextField(default='', blank=True)
     paid:bool = models.BooleanField(default=False)
     status = models.CharField(max_length=50,default='PENDING', choices=STATUS_CHOICES, blank=True)
@@ -235,6 +251,13 @@ class LaboratoryTest(models.Model):
     def patient(self):
         return self.order.patient
 
+    @property
+    def has_specimen(self):
+        # checks if test has specimen
+        if self.specimen.all().count() > 0:
+            return True
+        else:
+            return False
 
 class LaboratoryTestResultType(models.Model):
     """
@@ -252,12 +275,13 @@ class LaboratoryTestResultType(models.Model):
     test_type = models.ForeignKey(to=LaboratoryTestType, on_delete=models.CASCADE)
     name = models.CharField(max_length=500, null=False, blank=False, default='result')
     input_type = models.CharField(max_length=15, choices=INPUT_TYPE_CHOICES, default='TEXT')
+    active = models.BooleanField(default=True)
 
     class Meta:
         unique_together = ('name', 'test_type') 
 
     def __str__(self):
-        return f"[{self.test_type.name}] {self.name}"
+        return f" {self.input_type}"
 
 
 class NormalRange(models.Model):

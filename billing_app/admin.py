@@ -19,6 +19,16 @@ admin.site.register(CashierReconcilation)
 admin.site.register(Treatment)
 admin.site.register(RoomBillDetail)
 admin.site.register(DrugBill)
+admin.site.register(Item)
+admin.site.register(ItemSaleInfo)
+admin.site.register(Invoice)
+admin.site.register(Payment)
+admin.site.register(ItemPrice)
+admin.site.register(ItemCategory)
+admin.site.register(InvoiceReconcilation)
+admin.site.register(BillableItem)
+
+
 
 
 

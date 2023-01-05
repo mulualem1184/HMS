@@ -5,6 +5,9 @@ from staff_mgmt.models import Employee
 from django import template
 from outpatient_app.models import *
 from lis.models import *
+from datetime import  timedelta
+from datetime import  datetime
+from dateutil.tz import UTC
 
 # Create your models here.
 class HospitalUnit(models.Model):
@@ -147,8 +150,17 @@ class Bed(models.Model):
 		beds = Bed.objects.filter(patient__isnull=False)
 		patients = []
 		for bed in beds:
-			patients.append(bed.patient.id)
+			patients.append(bed.patient)
 		return patients
+
+	@property
+	def return_outpatients(self):
+		beds = Bed.objects.filter(patient__isnull=False)
+		patient_id = []
+		for bed in beds:
+			patient_id.append(bed.patient.id)
+
+		return Patient.objects.filter().exclude(id__in=patient_id)
 
 	@property
 	def used_bed_amount(self):
@@ -624,6 +636,29 @@ class InpatientMedicalAdministration(models.Model):
 	administration_on = models.DateTimeField(auto_now_add=True, null=True)
 
 
+class VitalSignPlan(models.Model):
+
+	temperature = models.BooleanField(default=False)
+	blood_pressure = models.BooleanField(default=False)
+	oxygen_saturation = models.BooleanField(default=False)
+	glucose = models.BooleanField(default=False)
+	pulse_rate = models.BooleanField(default=False)
+
+	active = models.BooleanField(default=False)
+	registered_on = models.DateTimeField(null=True)
+
+class TolerableTimeDifference(models.Model):
+	time_units=(
+		('Minutes','Minutes'),
+		('Hours','Hours'),
+		('Days','Days'),
+		('Weeks','Weeks'),
+		)
+
+	tolerable_earliness_unit = models.CharField(choices=time_units, max_length = 50, blank=True, null=True)
+	tolerable_earliness = models.IntegerField(blank=True, null=True)
+	tolerable_lateness_unit = models.CharField(choices=time_units, max_length = 50, blank=True, null=True)
+	tolerable_lateness = models.IntegerField(blank=True, null=True)
 
 class IPDTreatmentPlan(models.Model):
 	view_status=(
@@ -635,14 +670,16 @@ class IPDTreatmentPlan(models.Model):
 	name = models.CharField(max_length=5000, blank=True)
 	status = models.CharField(choices=view_status, max_length = 50, blank=True, null=True)
 	start_time = models.DateTimeField(null=True,blank=True)
-	end_time = models.DateTimeField(null=True,blank=True)
-	
+	end_time = models.DateTimeField(null=True,blank=True)	
 	description = models.CharField(max_length=5000, blank=True)
 	stay_duration = models.ForeignKey(WardStayDuration, on_delete=models.CASCADE,null=True,blank=True)
 	prescription = models.ForeignKey(DrugPrescription, on_delete=models.CASCADE, null=True, blank=True)
 	treatment = models.ForeignKey('core.PatientTreatment', on_delete=models.CASCADE, null=True, blank=True)
 	appointment = models.ForeignKey(PatientAppointment, on_delete=models.CASCADE, null=True, blank=True)
+	vital_sign = models.ManyToManyField(PatientVitalSign)
 	recurrence = models.ForeignKey(Recurrence, on_delete=models.CASCADE, null=True, blank=True)
+	vital_sign_options = models.ForeignKey(VitalSignPlan, on_delete=models.CASCADE, null=True, blank=True)
+	tolerable_difference = models.ForeignKey(TolerableTimeDifference, on_delete=models.CASCADE, null=True, blank=True)
 
 	active = models.BooleanField(default=False)
 	registered_on = models.DateTimeField(null=True)
@@ -651,8 +688,48 @@ class IPDTreatmentPlan(models.Model):
 
 
 class PerformPlan(models.Model):
-	plan = models.ForeignKey(IPDTreatmentPlan, on_delete=models.CASCADE, null=True, blank=True)
+	plan = models.ForeignKey(IPDTreatmentPlan, on_delete=models.CASCADE, null=True, blank=True,related_name='performed_plan')
+	note = models.CharField(max_length=2000, blank=True)
 	registered_by = models.ForeignKey(to=Employee, on_delete=models.SET_NULL, null=True, blank=True)
 	registered_on = models.DateTimeField(null=True)
 	def __str__(self):
 		return str(self.plan.patient)
+
+	def is_performed(self,day,plan_id):
+		plan = IPDTreatmentPlan.objects.get(id=plan_id)
+		print('\n','dayplan: ',plan.registered_on.date,'sentdate: ',day.date)
+		after_date = day + timedelta(hours=12)
+		before_date = day - timedelta(hours=12)
+
+		if plan.recurrence.hourly:
+			after_date = day + timedelta(minutes=30)
+			before_date = day - timedelta(minutes=30)
+		elif plan.recurrence.daily:
+			after_date = day + timedelta(hours=12)
+			before_date = day - timedelta(hours=12)
+		if plan.tolerable_difference:
+			if plan.tolerable_difference.tolerable_lateness_unit=='Hours':
+				after_date = day + timedelta(hours=plan.tolerable_difference.tolerable_lateness)
+			elif plan.tolerable_difference.tolerable_lateness_unit=='Days':
+				after_date = day + timedelta(days=plan.tolerable_difference.tolerable_lateness)
+			elif plan.tolerable_difference.tolerable_lateness_unit=='Minutes':
+				after_date = day + timedelta(minutes=plan.tolerable_difference.tolerable_lateness)
+			if plan.tolerable_difference.tolerable_earliness_unit=='Hours':
+				before_date = day + timedelta(hours=plan.tolerable_difference.tolerable_earliness)
+			elif plan.tolerable_difference.tolerable_earliness_unit=='Days':
+				before_date = day + timedelta(days=plan.tolerable_difference.tolerable_earliness)
+			elif plan.tolerable_difference.tolerable_earliness_unit=='Minutes':
+				before_date = day + timedelta(minutes=plan.tolerable_difference.tolerable_earliness)
+
+
+		performed = plan.performed_plan.filter(registered_on__range=[before_date,after_date]).exists()
+		print('inperformed: ',performed,'\n')
+
+		#scheduled_resources = resource.scheduled_resource.filter(start_time__lte=day, end_time__gte=day).exists()
+		if day > datetime.now(UTC):
+			performed = 'not_yet'  
+
+		if performed ==True:
+			return True
+		elif performed == False:
+			return False

@@ -1,0 +1,31 @@
+{% load crispy_forms_tags %}
+<div class="modal fade" id="associateDrug{{item.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+                                    {% csrf_token %}
+            <form action="{% url 'associate_drug_item' item.id %}" method="POST">
+
+            <div class="modal-header">
+                <h4 class="modal-title center">
+
+                        <button class="btn " type="submit"><i class="fa fa-save"></i>Save And Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+            </div>
+                {% csrf_token %}
+                <div class="modal-body">
+                      <div class="col">
+                        <div class="row">
+                              <div class="form-group col-md-4">
+                                   <small>{{ associate_form.drug|as_crispy_field }}</small>                                    
+                              </div>
+                        </div>
+
+                      </div>
+
+                </div>
+        </div>
+                    </form>
+
+    </div>
+</div>

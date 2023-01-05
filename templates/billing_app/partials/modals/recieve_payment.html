@@ -1,0 +1,60 @@
+{% load crispy_forms_tags %}
+<div class="modal fade" id="recievePayment{{invoice.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+                                    {% csrf_token %}
+            <form action="{% url 'recieve_payment' invoice.id %}" method="POST">
+
+            <div class="modal-header">
+                <h4 class="modal-title center">
+
+                        <button class="btn " type="submit"><i class="fa fa-save"></i>Save And Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+
+            </div>
+                {% csrf_token %}
+                <div class="modal-body">
+                      <div class="col">
+                        {% for info in invoice.item_info.all %}
+                        <div class="row">
+                              <div class="form-group col-md-4">  
+                                    <small>Item: <b> {{info.item}}</b></small>
+                              </div>
+                              <div class="form-group col-md-4">  
+                                    <small>Quantity: <b>{{info.quantity}}</b></small>
+                              </div>
+                              <div class="form-group col-md-4">  
+                                    <small>Price: <b>{{info.item.price_info.sale_price}}</b></small>
+                              </div>
+                        </div>
+                        {% endfor %}
+
+                        <div class="row">
+                              <div class="form-group col-md-6">  
+                                    <small>Patient: <b> {{invoice.patient}}</b></small>
+                              </div>
+                              <div class="form-group col-md-6">  
+                                    <small>Due Date: <b>{{invoice.due_date}}</b></small>
+                              </div>
+                        </div>
+
+                        <div class="row">
+                              <div class="form-group col-md-6">  
+                                    <small>Total Amount: <b> {{invoice.total_amount}}</b></small>
+                              </div>
+                              <div class="form-group col-md-6">  
+                                    <small>Unpaid Amount: <b>{{invoice.unpaid_amount}}</b></small>
+                              </div>
+                        </div>
+                        <hr>
+                              <div class="form-group col-md-6">  
+                                <small>{{payment_form.amount_paid|as_crispy_field}}</small>
+                              </div>
+                      </div>
+
+                </div>
+        </div>
+                    </form>
+
+    </div>
+</div>

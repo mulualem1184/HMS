@@ -1,47 +1,62 @@
 
             <div class="tab-pane active" id="patient-dashboard-tab">
+                    <div class="col-md-12">
+                                <div class="row col-md-12" >
+                                       <ul class="nav nav-tabs">
+                                          <li class="nav-item"><a class="nav-link active"
+                                            href="#patient-dashboard-tab" data-toggle="tab"><small>Summary</small></a></li>
+                                          <li class="nav-item"><a class="nav-link" href="#patient-lists-tab"
+                                            data-toggle="tab"><small>Lists</small></a></li>
+                                          <li class="nav-item"><a class="nav-link" href="#patient-demo-values-tab8"
+                                            data-toggle="tab"><small>Demo Values</small></a></li>
 
-                    <div class="row">
+                                        </ul>
 
-                        <div class="col-md-6" id="dispensary-supplied-drug-table-id" >
-                            <div class="card"  style="height: 270px;">
+                               </div>
+                  </div>
+
+                    <div class="row" style="padding-left: 15px;">
+
+                        <div class="" id="dispensary-supplied-drug-table-id" >
+                            <div class="card"  >
                                     <div class="card-head">
                                         <header><small>Demographics</small></header>
                                     </div>
-                                    <div class="card-body">
-                                             <small><b>Full Name:</b> {{patient.full_name}}</small></br>
-                                             <small><b>Gender</b> {{patient.sex}}</small></br>
+                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 270px;width: 483px;">
+                                             <small><b>Full Name:</b> {{patient.full_name}}</small><br>
+                                             <small><b>Gender</b> {{patient.sex}}</small><br>
                                              <!--<small><b>Date Of Birth</b> {{patient.dob}}</small></br>-->
-                                             <small><b>Address:</b> {{patient.adress}}</small></br>
-                                             <small><b>Phone Number:</b> {{patient.phone_number}}</small></br>
+                                             <small><b>Address:</b> {{patient.adress}}</small><br>
+                                             <small><b>Phone Number:</b> {{patient.phone_number}}</small><br>
 
-                                             <small><b>Blood Group:</b> </small></br>
-                                             <small><b>Last Visit:</b> {% if last_visit %} {{last_visit.registered_on}} {% else %} {{last_ward_visit.admission_date}} {% endif %}</small></br>
+                                             <small><b>Blood Group:</b> </small><br>
+                                             <small><b>Last Visit:</b> {% if last_visit %} {{last_visit.registered_on}} {% else %} {{last_ward_visit.admission_date}} {% endif %}</small><br>
                                     </div>
                             </div>
                         </div>
-                        <div class="col-md-6" id="dispensary-supplied-drug-table-id" >
-                            <div class="card" style="height: 270px;">
+                        <div style="width: 15px;"></div>
+                        <div class="" id="dispensary-supplied-drug-table-id" >
+                            <div class="card" >
                                     <div class="card-head">
                                         <header><small>Notes</small></header>
                                     </div>
-                                    <div class="card-body">
+                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 270px;width: 483px;">
                                              <p><small></small></p>
                                              <p><small></small></p>
                                              <p><small></small></p>
                                              <p><small></small></p>
                                              <p><small></small></p>
-
                                     </div>
                             </div>
                         </div>
-
-                        <div class="col-md-6" id="dispensary-supplied-drug-table-id">
-                            <div class="card" style="height: 270px;">
+                    </div>
+                    <div class="row" style="padding-left: 15px;">
+                        <div class="" id="dispensary-supplied-drug-table-id">
+                            <div class="card" >
                                     <div class="card-head">
                                         <header><small>Appointment and Treatment</small></header>
                                     </div>
-                                    <div class="card-body">
+                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 270px;width: 483px;">
                                         <div class="add-allergy">
                                             {% include "core/modals/schedule_stuff_form.html" %}
                                            <small> <span><a href="" data-toggle="modal" data-target="#scheduleStuffModal{{patient.id}}">Schedule Appointment</a></span> </small>
@@ -50,16 +65,17 @@
                                     </div>
                             </div>
                         </div>
-                        <div class="col-md-6" id="dispensary-supplied-drug-table-id">
-                            <div class="card" style="height: 270px;">
+                        <div style="width: 15px;"></div>
+                        <div  id="dispensary-supplied-drug-table-id">
+                            <div class="card" >
                                     <div class="card-head">
                                         <header><small>Allergies</small></header>
                                     </div>
-                                    <div class="card-body">
+                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 270px;width: 483px;">
                                         {% for allergy in allergy_list %}
                                             {% if allergy.active == True %}
                                                 {% include "core/modals/edit_allergy_form.html" %}
-                                                 <small><b><a href="" data-toggle="modal" data-target="#editAllergyModal{{allergy.id}}">{{allergy.allergy}}</a></b> </small></br>
+                                                 <small><b><a href="" data-toggle="modal" data-target="#editAllergyModal{{allergy.id}}">{{allergy.allergy}}</a></b> </small><br>
                                             {% endif %}
                                         {% endfor %}
                                         <div class="add-allergy">
@@ -69,7 +85,7 @@
                                     </div>
                             </div>
                         </div>
-
                     </div>
-            
+
           </div>
+

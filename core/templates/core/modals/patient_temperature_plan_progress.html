@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+    <style>
+        .quick-launch-container {
+            display: inline-block;
+            margin-left: 5px;
+            padding-left: 5px;
+            margin-right: 7px;
+            border: black;
+            border-width: 10px;
+        }
+        .quick-launch-label {
+            display: block;
+            color: black;
+            font-weight: bold;
+        }
+        fieldset {
+            padding-bottom: 10px;
+            width: 150px; 
+            border: 2px solid; 
+            border-radius: 5px; 
+            border-color: #0a7e37;
+        }
+        legend {
+            color: black;
+            width: max-content;
+            font-size: 14px;
+        }
+        .add-allergy {
+            position: absolute;
+            bottom: 0;
+            right: 3px;
+        }
+        .fc-toolbar-title {
+        font-size: 10em;
+        margin: 0;
+    }
+    </style>
+
+
+    <link href="{% static 'fullcalendar/main.css' %}" rel="stylesheet" type="text/css" />
+
+{% endblock %}
+{% block title %} Resources {% endblock %}
+{% block page_content %}
+
+{% load custom_dict %}
+<head>
+    <script type="text/javascript" src="{% static "fusioncharts/fusioncharts.js" %}"></script>
+    <script type="text/javascript" src="{% static "fusioncharts/fusioncharts.charts.js" %}"></script>
+    <script type="text/javascript" src="{% static "fusioncharts/themes/fusioncharts.theme.fusion.js" %}"></script>
+
+</head>
+
+        <div class="row">
+                                            
+
+                    <div class="col-md-3">
+                             <div class="card">
+                                 <div class="card-body ">
+                                    <div class="panel-body">
+                                        <small> <div id="calendar" > </div></small>
+                                    </div>
+                                 </div>
+                             </div>
+                        
+                    </div>
+                    <div class="col-md-9">
+                                <div class="row col-md-12" >
+                                       <ul class="nav nav-tabs">
+                                          <li class="nav-item"><a class="nav-link active show"
+                                            href="#temperature-plan-progress-chart" data-toggle="tab"><small>Temperature Chart</small></a></li>
+                                          <li class="nav-item"><a class="nav-link" href="#treatment-plan-progress-table"
+                                            data-toggle="tab"><small>Table</small></a></li>
+                                          <li class="nav-item"><a class="nav-link" href="#patient-temperature-chart"
+                                            data-toggle="tab"><small>Patient Temperature Progress</small></a></li>
+
+                                            <!--
+                                          <li class="nav-item"><a class="nav-link" href="#vital-sign-chart"
+                                            data-toggle="tab"><small>Vital Sign</small></a></li>
+`                                           -->
+                                        </ul>
+
+                               </div>
+
+                            <div class="tab-content col-md-12" >
+                                {% include "inpatient_app/partials/tabs/temperature_plan_progress_tab.html" %}
+                                {% include "inpatient_app/partials/tabs/treatment_plan_progress_tab.html" %}
+                                {% include "inpatient_app/partials/modals/patient_temperature_chart.html" %}
+
+
+                            </div>
+
+                    </div>
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'fullcalendar/main.js' %}" ></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+          initialView: 'dayGridMonth',
+          initialDate: '{{ initial_date | safe }}',
+          eventOrder: 'color,start',
+          title: '',
+
+        });
+        calendar.render();
+      });
+    </script>
+{% endblock %}
+

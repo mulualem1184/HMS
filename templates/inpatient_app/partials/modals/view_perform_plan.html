@@ -1,0 +1,55 @@
+{% load crispy_forms_tags %}
+
+<div class="modal fade" id="viewPerformedPlan{{performance.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title center">View Detail</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-2 control-label"><Small>Performed By</small></label>
+                        <div class="col-md-4">
+                            <small>{{performance.registered_by}}</small>
+                        </div>
+                    </div>
+
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-2 control-label"><small>Time</small></label>
+                        <div class="col-md-4">
+                            <small>{{performance.registered_on}}</small>
+                        </div>
+
+                    </div>
+                    <div class="form-group row col-md-12">
+                        <label for="labsection" class="col-md-2 control-label">Note</label>
+                        <div class="col-md-8">
+                            <small>{{assessment_form.other_assessment}}</small>
+                        </div>
+                    </div>
+
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--
+<div class="col-md-8">
+<div class="modal fade" id="filteripdReportModal" tabindex="-1" role="dialog" aria-labelledby="setAccessionNumberLabel" aria-hidden="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+            </div>
+            <div class="modal-body">
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+-->

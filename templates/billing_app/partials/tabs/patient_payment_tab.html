@@ -1,0 +1,82 @@
+
+            <div class="tab-pane " id="patient-payment-tab">
+                            {% include 'billing_app\partials\modals\receive_prepayment.html' %}
+                            {% include 'billing_app\partials\modals\reconcile_invoices.html' %}
+
+                    <div class="row">
+
+                        <div class="col-md-12" id="dispensary-supplied-drug-table-id" >
+                            <div class="card" style="width: 1000px;padding-right: 30px;">
+                            <div class="card-head" >
+                                   <!-- <button  class="btn btn-circle" data-toggle="modal" data-target="#createBuildingModal">
+                                    </button> -->
+                                <div class="row">
+                                            <small style="padding-left: 50px;"> <span><a href="" data-toggle='modal' data-target='#receivePrePayment'>Recieve Prepayment</a></span> </small> 
+                                           |<small style="padding-left: 50px;"> <span><a href="" data-toggle='modal' data-target='#reconcileInvoices'>Reconcile Invoices</a></span> </small>
+                                            <small style="padding-left: 550px;">                           
+                                                <i class="fa fa-print"></i>
+                                                <label>Print/Export</label>
+                                            </small>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="card card-box col-md-8" id="search-consultation-id" style="display:none;">
+                           <div class="row" style="padding-bottom: 10px;">
+                               <div style="padding-right:10px;">
+                                    <label><small>Look For</small></label>
+                               </div>
+                               <form method="GET" id="search-consultation-form-id">
+                                   <div>
+                                        <input type="text" list="patient_data_list" name="search-consultation" id="search-consultation" class="col-md-6"> 
+                                        <small><button type="submit" >Find Now</button></small> 
+
+                                   </div>
+                               </form>
+                               <div class="pull-right">
+                                    <a onclick="closeSearchConsultationDiv()"> <i class="fa fa-times"></i></a> 
+                               </div>
+
+                            </div>
+                        </div>
+
+                <div class="card card-box" style="overflow-y:scroll;overflow-x:scroll;background-color: white; width: 1000px;height: 600px;">
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 1000px;">
+                                            
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="gradeX odd">
+                                                    <th class= "text-center"><small>Id</small></th>
+                                                    <th class= "text-center"><small>Amount Paid</small></th>
+                                                    <th class= "text-center"><small>Amount Remaining</small></th>
+                                                    <th class= "text-center"><small>Pre Payment</small></th>
+                                                    <th class= "text-center"><small>Recoincile</small></th>
+                                                    <th class= "text-center"><small>Date</small></th>
+                                                </tr>
+                                            </thead>
+                        <tbody>
+                            {% for payment in payments %}
+
+                                <tr style="height: 40px;">
+                                    <td class= "text-center" style="width:100px"><small> {{ payment.id }}</small></td>
+                                    <td class= "text-center" style="width:100px"><small> {{ payment.amount_paid }} </small></td>
+                                    <td class= "text-center" style="width:100px"><small> {{ payment.remaining_amount }} </small></td>
+
+                                    <td class= "text-center" style="width:100px"><small><a href="" data-toggle='modal' data-target='#reconcileInvoices{{payment.id}}' onclick="displayReconcile()"> Reconcile</a> </small></td>
+                                    <td class= "text-center" style="width:100px"><small>{{ payment.pre_payment }} </small></td>
+                                    <td class= "text-center" style="width:100px"><small> {{ payment.registered_on }} </small></td>
+                                </tr>
+
+                            {% endfor %}
+                        </tbody>
+                        
+                    </table>
+                </div>
+
+                        </div>
+                    </div>
+
+          </div>
+
+<

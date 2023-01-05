@@ -1,53 +1,108 @@
+{% load custom_dict %}
                                                 {% include "core/modals/add_treatment_form.html" %}
 
             <div class="tab-pane" id="treatment-list-tab">
                     <div class="row">
 
-                        <div class="col-md-6" id="dispensary-supplied-drug-table-id" >
-                            <div class="card" style="height: 270px;width: 500px;">
-                                    <div class="card-head">
-                                           <small> <span><a href="" data-toggle="modal" data-target="#addTreatmentModal{{patient.id}}">Add Treatment</a></span> </small>
+                        <div class="col-md-12"  >
+                            <div class="card card-head" style="width: 1009px;">
+                                        <div  >
 
-                                    </div>
-                                    <div class="card-body">
-                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;">
-                                            <thead style="background-color: lightgrey;">
-                                                <tr class="">
-                                                    <th class="text-center"><small> Treatment</small></th>
-                                                    <th class="text-center"><small> Detail</small></th>
-                                                    <th class="text-center"><small> Registered on</small></th>
-                     
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {% for treatment in treatment_list %}
-                                                {% include "core/modals/edit_treatment_form.html" %}
+                                            <div class="row">
+                                                        <small style="padding-left: 50px;"> <span><a href="" data-toggle="modal" data-target="#addTreatmentModal{{patient.id}}">Add Treatment</a></span></span> </small> |
 
-                                                    <tr class="" style="height:40px;">
-                                                        <td style="width:300px" class="text-center">
-                                                            <small>
-                                                               <a href="" data-toggle="modal" data-target="#editTreatmentModal{{treatment.id}}"> {{treatment.treatment}}</a>
-                                                            </small>
-                                                        </td>
-                                                        <td style="width:300px" class="text-center">
-                                                            <small>
-                                                                {{treatment.detail}} 
-                                                            </small>
-                                                        </td>
-                                                        <td style="width:300px" class="text-center">
-                                                            <small>
-                                                                {{treatment.registered_on}} 
-                                                            </small>
-                                                        </td>
+                                                       <small style=""> <span><a href data-toggle='modal' data-target='#filterByDateModal'><i class="fa fa-filter"></i></a></span> </small>| 
+                                                       <small style="padding-left: 20px;" onclick="searchTreatment()"> <i class="fa fa-search"></i><label style="padding-left: 10px;">Search</label></small>
+                                                        <small style="padding-left: 550px;">                           
+                                                            <i class="fa fa-print"></i>
+                                                            <label>Print/Export</label>
+                                                        </small>
 
-                                                    </tr>
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
-
-                                    </div>
+                                            </div>
+                                        </div>
                             </div>
+                        <div class="card card-box col-md-8" id="search-treatment-id" style="display:none;">
+                           <div class="row" style="padding-bottom: 10px;">
+                               <div style="padding-right:10px;">
+                                    <label><small>Look For</small></label>
+                               </div>
+                               <form method="GET" id="">
+                                   <div>
+                                        <input type="text" list="patient_data_list" name="search-treatment" id="search-treatment" class="col-md-6"> 
+                                        <small><button type="submit" >Find Now</button></small> 
+
+                                   </div>
+                               </form>
+                               <div class="pull-right">
+                                    <a onclick="closeSearchTreatmentDiv()"> <i class="fa fa-times"></i></a> 
+                               </div>
+
+                            </div>
+                        </div>
+
+                            <div class="card card-box" style="overflow-y:scroll;overflow-x:scroll;background-color: white; width: 1009px;height: 400px;">
+                                <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 900px;">
+                                    <thead style="background-color: lightgrey;">
+                                        <tr class="">
+                                            <th class="text-center"><small> Treatment</small></th>
+                                            <th class="text-center"><small> Detail</small></th>
+                                            <th class="text-center"><small> Registered on</small></th>
+             
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for treatment in treatment_list %}
+                                        {% include "core/modals/edit_treatment_form.html" %}
+                                                {% is_in_date_array treatment.registered_on date_array %}
+                                                    {% if is_in_array %}                                    
+                                                    {% else %}
+                                                    <tr class="" style="height:40px;">
+                                                        <td>
+                                                        <b>{{treatment.registered_on.date}}</b>
+                                                        </td>
+                                                    </tr>
+                                                    {% endif %}
+
+                                            <tr class="" style="height:40px;">
+                                                <td style="width:300px" class="text-center">
+                                                    <small>
+                                                       <a href="" data-toggle="modal" data-target="#editTreatmentModal{{treatment.id}}"> {{treatment.treatment}}</a>
+                                                    </small>
+                                                </td>
+                                                <td style="width:300px" class="text-center">
+                                                    <small>
+                                                        {{treatment.detail}} 
+                                                    </small>
+                                                </td>
+                                                <td style="width:300px" class="text-center">
+                                                    <small>
+                                                        {{treatment.registered_on}} 
+                                                    </small>
+                                                </td>
+
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+
+                            </div>
+
                         </div>
                     </div>
             
         </div>
+
+<script type="text/javascript">
+    
+        function searchTreatment() {
+               document.getElementById('search-treatment-id').style.display = 'block';          
+                showingModal = true;
+            }
+
+        function closeSearchTreatmentDiv() {
+               document.getElementById('search-treatment-id').style.display = 'none';          
+               
+                showingModal = true;
+            }
+
+</script>

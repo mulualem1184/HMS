@@ -1,0 +1,74 @@
+            <div class="tab-pane active" id="requested-tests-tab">
+                                    <div class="card card-box" style="overflow-y:scroll;overflow-x:scroll;background-color: white; width: 1250px;height: 600px;">
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 1250px;">
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="gradeX odd">
+                                                    <th class="text-center"><small>Test Id</small></th>
+                                                    <th class="text-center"><small>Order Id</small></th>
+                                                    <th class="text-center"><small>Priority</small></th>
+                                                    <th class="text-center"><small>Ordered at</small></th>
+                                                    <th class="text-center"><small>Test type</small></th>
+                                                    <th class="text-center"><small>Lab. Section</small></th>
+                                                    <th class="text-center"><small>Status</small></th>
+                                                    <th class="text-center"><small>Price</small></th>
+                                                    <th class="text-center"><small>Paid</small></th>
+                                                    <!--<th class="text-center"><small>Action</small></th>-->
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for test in test_type_set %}
+                                                    <tr>
+                                                        <td class="text-center" style="width:250px;"><small> {{ test.id }}</small></td>
+                                                        <td class="text-center" style="width:250px;"><small> {{ test.order.id }} </small></td>
+                                                        <td class="text-center" style="width:250px;"><small> {{ None }} </small></td>
+                                                        <td class="text-center" style="width:250px;"><small> {{ test.ordered_at }} </small></td>
+                                                        <td class="text-center" style="width:250px;"><small> {{ test.test_type.name }} </small></td>
+                                                        <td class="text-center" style="width:250px;"><small> {{ test.test_type.section }} </small></td>
+                                                        <td class="text-center" style="width:250px;"><small>
+                                                            {% if test.status == 'FAIL' %}
+                                                                <span class="label label-sm label-success "> {{ test.status }} </span>
+                                                            {% else %}
+                                                                <span class="label label-sm label-info "> {{ test.status }} </span>
+                                                            {% endif %}
+                                                        </small></td>
+                                                        <td class="text-center" style="width:250px;"><small> {{ test.price }} </small></td>
+                                                        <td class="text-center" style="width:250px;"><small>
+                                                            {% if test.paid == True %}
+                                                                <i class="fa fa-check" style="color: green;"></i>
+                                                                <span style="display: none;">True</span>
+                                                            {% else %}
+                                                                <i class="fa fa-times" style="color: red;"></i>
+                                                                <span style="display: none;">False</span>
+                                                            {% endif %}
+                                                        </small></td>
+                                                        <!--
+                                                        <td class="text-center" style="width:250px;"><small>
+                                                            <div class="btn-group btn-group-circle">
+                                                                <button type="button" class="btn btn-primary">Actions</button>
+                                                                <button type="button" class="btn btn-circle-right btn-primary dropdown-toggle m-r-20" data-toggle="dropdown" aria-expanded="false">
+                                                                    <i class="fa fa-angle-down"></i>
+                                                                </button>
+                                                                <ul class="dropdown-menu" role="menu" x-placement="bottom-start" style="position: absolute; transform: translate3d(79px, 34px, 0px); top: 0px; left: 0px; will-change: transform;">
+                                                                    <li> <a href="{% url 'view-test' test.id %}">View</a> </li>
+                                                                    <li> <a href="{% url 'view-test-result' test.id %}">View Test Result</a></li>
+                                                                    <li> <a href="{% url 'enter-test-result' test.id %}">Enter Result</a> </li>
+                                                                    <li>
+                                                                        {% if test.paid == True %}
+                                                                            <a href="{% url 'toggle-test-paid-status' test.id%}">Mark as Unpaid</a>
+                                                                        {% else %}
+                                                                            <a href="{% url 'toggle-test-paid-status' test.id%}">Mark as paid</a>
+                                                                        {% endif %}
+                                                                    </li>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </small></td>
+                                                    -->
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+
+
+                                    </div>
+</div>

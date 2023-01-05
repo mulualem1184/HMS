@@ -1,0 +1,88 @@
+    <style>
+        .right-position {
+            position: absolute;
+            right: 3px;
+        }
+    </style>
+
+            <div class="tab-pane active" id="home-dashboard-tab">
+                    <div class="col-md-12">
+                                <div class="row col-md-12" >
+                                       <ul class="nav nav-tabs">
+                                          <li class="nav-item"><a class="nav-link active show"
+                                            href="#home-dashboard-tab" data-toggle="tab"><small>Dashboard</small></a></li>
+                                          <li class="nav-item"><a class="nav-link" href="#home-stats-tab"
+                                            data-toggle="tab"><small>Lists</small></a></li>
+                                        </ul>
+                               </div>
+                  </div>
+
+                    <div class="row" style="padding-left: 15px;">
+
+                        <div class="" id="dispensary-supplied-drug-table-id">
+                            <div class="card" >
+                                    <div class="card-head">
+                                        <header><small>My Tasks </small></header>
+
+                                    </div>
+                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 270px;width: 560px;">
+                                        {% for task in task_list %}
+                                                <div class="row">
+                                                {% include "core/modals/edit_task.html" %}
+
+                                                    <div>
+                                                         <small><b><a href="" data-toggle="modal" data-target="#editTask{{task.id}}">{{task.task}}</a></b> </small><br>
+                                                    </div>
+                                                    <div class="right-position">
+                                                   <small> {{task.registered_on}}</small>
+                                                    </div>
+                                                </div>
+
+                                        {% endfor %}
+
+                                        <div class="add-allergy">
+                                                {% include "core/tabs/create_task.html" %}
+                                           <small> <span><a href="" data-toggle="modal" data-target="#createTask">Add Tasks</a></span> </small>
+                                        </div>
+
+                                    </div>
+                            </div>
+                        </div>
+
+                        <div style="width: 15px;"></div>
+
+                        <div class="" id="dispensary-supplied-drug-table-id" >
+                            <div class="card" >
+                                    <div class="card-head">
+                                        <header><small>Messages - Inbox</small></header>
+                                    </div>
+                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 270px;width: 560px;">
+                                             <p><small></small></p>
+                                             <p><small></small></p>
+                                             <p><small></small></p>
+                                             <p><small></small></p>
+                                             <p><small></small></p>
+                                    </div>
+                            </div>
+                        </div>
+
+                        <div  id="dispensary-supplied-drug-table-id">
+                            <div class="card" >
+                                    <div class="card-head">
+                                        <header><small>Recent Patients</small></header>
+                                    </div>
+                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 270px;width: 560px;">
+                                        {% for patient in patient_list %}
+                                                 <small><b><a href="" data-toggle="modal" data-target="#editAllergyModal{{allergy.id}}">{{patient}} ({{patient.title}})</a></b> </small><br>
+                                        {% endfor %}
+
+                                    </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row" style="padding-left: 15px;">
+                    </div>
+
+          </div>
+

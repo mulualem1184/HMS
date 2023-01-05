@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{%  load custom_dict %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+    <style>
+        .quick-launch-container {
+            display: inline-block;
+            margin-left: 5px;
+            padding-left: 5px;
+            margin-right: 7px;
+            border: black;
+            border-width: 10px;
+        }
+        .quick-launch-label {
+            display: block;
+            color: black;
+            font-weight: bold;
+        }
+        fieldset {
+            padding-bottom: 10px;
+            width: 150px; 
+            border: 2px solid; 
+            border-radius: 5px; 
+            border-color: #0a7e37;
+        }
+        legend {
+            color: black;
+            width: max-content;
+            font-size: 14px;
+        }
+        .add-allergy {
+            position: absolute;
+            bottom: 0;
+            right: 3px;
+        }
+    </style>
+
+
+{% endblock %}
+{% block title %} Laboratory Requests {% endblock %}
+
+{% block page_content %}
+
+    <div class="col-md-12" id="" >
+                            <div class="card" style="width: 1250px;padding-right: 30px;">
+                            <div class="card-head" >
+                                   <!-- <button  class="btn btn-circle" data-toggle="modal" data-target="#createBuildingModal">
+                                    </button> -->
+                                <div class="row">
+                                            <small style="padding-left: 50px;"> <span><a href="" data-toggle="modal" data-target="#addSpecimenToTestModal">Add Specimen</a></span> </small> 
+                                           <small style=""> <span><a href data-toggle='modal' data-target='#filterByDateModal'></a></span> </small>| 
+                                           <small style="padding-left: 20px;" onclick="searchConsultation()"> <i class="fa fa-search"></i><label style="padding-left: 10px;">Search</label></small>
+                                            <small style="padding-left: 550px;">                           
+                                                <i class="fa fa-print"></i>
+                                                <label>Print/Export</label>
+                                            </small>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="card card-box col-md-8" id="search-consultation-id" style="display:none;">
+                           <div class="row" style="padding-bottom: 10px;">
+                               <div style="padding-right:10px;">
+                                    <label><small>Look For</small></label>
+                               </div>
+                               <form method="GET" id="search-consultation-form-id">
+                                   <div>
+                                        <input type="text" list="patient_data_list" name="search-consultation" id="search-consultation" class="col-md-6"> 
+                                        <small><button type="submit" >Find Now</button></small> 
+
+                                   </div>
+                               </form>
+                               <div class="pull-right">
+                                    <a onclick="closeSearchConsultationDiv()"> <i class="fa fa-times"></i></a> 
+                               </div>
+
+                            </div>
+                        </div>
+
+                                    <div class="" style="overflow-y:scroll;overflow-x:scroll;background-color: white; width: 1250px;height: 600px;">
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 1250px;">
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="gradeX odd">
+                                                    <th class="text-center"><small>Test type</small></th>
+                                                    <th class="text-center"><small>Result</small></th>
+                                                    <th class="text-center"><small>Result Type</small></th>
+                                                    <th class="text-center"><small>Value</small></th>
+                                                    <th class="text-center"><small>Registered By</small></th>
+                                                    <th class="text-center"><small>View</small></th>
+
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+
+                                                    {% for result in result_list %}
+                                                    {% include "lis/partials/modals/view_lab_result.html" %}
+                                                    <tr>
+                                                        <td class="text-center" style="width:300px;"><small> {{ result.test.test_type }} </small></td>
+                                                        <td class="text-center" style="width:300px;"><small> <a href="{% url 'enter-test-result' result.test.id %}"> Result </a> </small></td>
+                                                        <td class="text-center" style="width:300px;"><small> {{result.result_type}} </small></td>
+                                                        <td class="text-center" style="width:300px;"><small> {{result.value}} </small></td>
+                                                        <td class="text-center" style="width:300px;"><small> {{result.reported_by}} </small></td>
+                                                        <td class="text-center" style="width:300px;"><small><a href="" data-toggle="modal" data-target="#viewLabResultModal{{result.id}}"> <i class="fa fa-eye"></i></a> </small></td>
+
+
+                                                        <!--<td class="text-center" style="width:300px;"><small>  <a href="" data-toggle="modal" data-target="#addResultModal{{test.id}}"> Add Result </a> </small></td>-->
+                                                    </tr>
+                                                    {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+
+    </div>
+
+
+
+<script type="text/javascript">
+    
+        function searchConsultation() {
+               document.getElementById('search-consultation-id').style.display = 'block';          
+                showingModal = true;
+            }
+
+        function closeSearchConsultationDiv() {
+               document.getElementById('search-consultation-id').style.display = 'none';          
+               
+                showingModal = true;
+            }
+
+
+</script>
+{% endblock %}

@@ -1,0 +1,119 @@
+
+            <div class="tab-pane active" id="patient-billing-dashboard-tab">
+                    <div class="col-md-12">
+                                <div class="row col-md-12" >
+                                       <ul class="nav nav-tabs">
+                                          <li class="nav-item"><a class="nav-link active"
+                                            href="#patient-billing-dashboard-tab" data-toggle="tab"><small>Summary</small></a></li>
+                                          <li class="nav-item"><a class="nav-link" href="#patient-billing-stats-tab"
+                                            data-toggle="tab"><small>Stats</small></a></li>
+
+                                        </ul>
+
+                               </div>
+                  </div>
+
+                    <div class="row" style="padding-left: 15px;">
+
+                        <div class="" id="dispensary-supplied-drug-table-id" >
+                            <div class="card"  >
+                                    <div class="card-head">
+                                        <header><small>Description</small></header>
+                                    </div>
+                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 270px;width: 483px;">
+                                             <small><b>Full Name:</b> {{patient.full_name}}</small><br>
+                                             <small><b>Gender</b> {{patient.sex}}</small><br>
+                                             <!--<small><b>Date Of Birth</b> {{patient.dob}}</small></br>-->
+                                             <small><b>Address:</b> {{patient.adress}}</small><br>
+                                             <small><b>Phone Number:</b> {{patient.phone_number}}</small><br>
+
+                                             <small><b>Blood Group:</b> </small><br>
+                                             <small><b>Last Visit:</b> {% if last_visit %} {{last_visit.registered_on}} {% else %} {{last_ward_visit.admission_date}} {% endif %}</small><br>
+                                    </div>
+                            </div>
+                        </div>
+                        <div style="width: 15px;"></div>
+                        <div class="" id="dispensary-supplied-drug-table-id" >
+                            <div class="card" >
+                                    <div class="card-head">
+                                        <header><small>Billing Notes</small></header>
+                                    </div>
+                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 270px;width: 483px;">
+                                             <p><small></small></p>
+                                             <p><small></small></p>
+                                             <p><small></small></p>
+                                             <p><small></small></p>
+                                             <p><small></small></p>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row" style="padding-left: 15px;">
+                        <div class="" id="dispensary-supplied-drug-table-id">
+                            <div class="card" >
+                                    <div class="card-head">
+                                        <header><small>Sales Invoice</small></header>
+                                    </div>
+                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 270px;width: 483px;">
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 580px;">
+                                            
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="gradeX odd">
+                                                    <th class= "text-center"><small>Date</small></th>
+                                                    <th class= "text-center"><small>Total Amount</small></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for invoice in invoices %}
+                                                    <tr style="height: 40px;">
+                                                        <td class= "text-center" style="width:300px"><small> {{ invoice.registered_on }}</small></td>
+                                                        <td class= "text-center" style="width:300px"><small> {{ invoice.total_amount }} </small></td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                            
+                                        </table>
+                                        
+
+                                    </div>
+                            </div>
+                        </div>
+                        <div style="width: 15px;"></div>
+                        <div  id="dispensary-supplied-drug-table-id">
+                            <div class="card" >
+                                    <div class="card-head">
+                                        <header><small>Payments</small></header>
+                                    </div>
+                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 270px;width: 483px;">
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 580px;">
+                                            
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="gradeX odd">
+                                                    <th class= "text-center"><small>Date</small></th>
+                                                    <th class= "text-center"><small>Total Amount</small></th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for receipt in receipts %}
+                                                    <tr style="height: 40px;">
+                                                        <td class= "text-center" style="width:300px"><small> {{ receipt.registered_on }}</small></td>
+                                                        <td class= "text-center" style="width:300px"><small> {{ receipt.total_amount }} </small></td>
+                                                    </tr>
+                                                {% endfor %}
+                                                {% for payment in payments %}
+                                                    <tr style="height: 40px;">
+                                                        <td class= "text-center" style="width:300px"><small> {{ payment.registered_on }}</small></td>
+                                                        <td class= "text-center" style="width:300px"><small> {{ payment.amount_paid }} </small></td>
+                                                    </tr>
+                                                {% endfor %}
+
+                                            </tbody>
+                                            
+                                        </table>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+
+          </div>
+

@@ -1,0 +1,85 @@
+
+            <div class="tab-pane " id="patient-invoice-tab">
+
+                    <div class="row">
+
+                        <div class="col-md-12" id="dispensary-supplied-drug-table-id" >
+                            <div class="card" style="width: 1000px;padding-right: 30px;">
+                            <div class="card-head" >
+                                   <!-- <button  class="btn btn-circle" data-toggle="modal" data-target="#createBuildingModal">
+                                    </button> -->
+                                <div class="row">
+                                            <small style="padding-left: 50px;"> <span><a href="{% url 'add_invoice' %}">Add Invoice</a></span> </small> 
+                                           <small style=""> <span><a href data-toggle='modal' data-target='#filterByDateModal'></a></span> </small>| 
+                                            <small style="padding-left: 550px;">                           
+                                                <i class="fa fa-print"></i>
+                                                <label>Print/Export</label>
+                                            </small>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="card card-box col-md-8" id="search-consultation-id" style="display:none;">
+                           <div class="row" style="padding-bottom: 10px;">
+                               <div style="padding-right:10px;">
+                                    <label><small>Look For</small></label>
+                               </div>
+                               <form method="GET" id="search-consultation-form-id">
+                                   <div>
+                                        <input type="text" list="patient_data_list" name="search-consultation" id="search-consultation" class="col-md-6"> 
+                                        <small><button type="submit" >Find Now</button></small> 
+
+                                   </div>
+                               </form>
+                               <div class="pull-right">
+                                    <a onclick="closeSearchConsultationDiv()"> <i class="fa fa-times"></i></a> 
+                               </div>
+
+                            </div>
+                        </div>
+
+                                    <div class="card card-box" style="overflow-y:scroll;overflow-x:scroll;background-color: white; width: 1000px;height: 600px;">
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 1000px;">
+                                            
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="gradeX odd">
+                                                    <th class= "text-center"><small>Id</small></th>
+                                                    <th class= "text-center"><small>No of Items</small></th>
+                                                    <th class= "text-center"><small>Total Amount</small></th>
+                                                    <th class= "text-center"><small>Unpaid Amount</small></th>
+                                                    <th class= "text-center"><small>Payment</small></th>
+                                                </tr>
+                                            </thead>
+                        <tbody>
+                            {% for invoice in invoices %}
+                            {% include 'billing_app\partials\modals\recieve_payment.html' %}
+
+                                <tr style="height: 40px;">
+                                    <td class= "text-center" style="width:100px"><small> {{ invoice.id }}</small></td>
+                                    <td class= "text-center" style="width:100px"><small> {{ invoice.no_of_items }}</small></td>
+                                    <td class= "text-center" style="width:100px"><small> {{ invoice.total_amount }} </small></td>
+                                    <td class= "text-center" style="width:100px"><small> {{ invoice.unpaid_amount }} </small></td>
+                                    <td class= "text-center" style="width:100px">
+                                        <small>
+                                        {% if invoice.unpaid_amount == 0 %} 
+                                            <i class="fa fa-check green"></i> 
+                                        {% else %}
+                                            <a href="" data-toggle='modal' data-target='#recievePayment{{invoice.id}}'>Payment</a>
+                                        {% endif %}
+                                        </small>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+              
+                                    </div>
+
+                        </div>
+                    </div>
+
+          </div>
+

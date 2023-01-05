@@ -1,56 +1,106 @@
+{% load custom_dict %}
             <div class="tab-pane" id="prescription-list-tab">
+
                     <div class="row">
+                        <div class="col-md-12" id="dispensary-supplied-drug-table-id" >
+                        <div class="card card-head" style="width: 1009px;">
 
-                        <div class="col-md-6" id="dispensary-supplied-drug-table-id" >
-                            <div class="card" style="height: 270px;width: 500px;">
-                                    <div class="card-head">
-                                        <header>
-                                            <small>
-                                                <small><i onclick="addImageForm2({{treatment.id}})" class="fa fa-plus"></i>Add Prescription</small>
-                                            </small>
-                                            <small>
-                                                <small><i onclick="addImageForm2({{treatment.id}})" class="fa fa-plus"></i>Repeat Prescription</small>
-                                            </small>
+                                        <div class="row">
+                                                    <small style="padding-left: 50px;"> <span><a href="" data-toggle="modal" data-target="#repeatDrugPrescriptionModal{{patient.id}}">Repeat</a></span> </small> |
+                                                    <small style="padding-left: 0px;"> <span><a href="" data-toggle="modal" data-target="#repeatDrugPrescriptionModal6{{patient.id}}">Prescribe</a></span> </small> 
 
-                                        </header>
-                                    </div>
-                                    <div class="card-body">
-                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;">
-                                            <thead style="background-color: lightgrey;">
-                                                <tr class="">
-                                                    <th class="text-center"><small> Drug</small></th>
-                                                    <th class="text-center"><small> Duration</small></th>
-                                                    <th class="text-center"><small> Registered on</small></th>
-                     
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {% for prescription in prescription_list %}
-                                                    <tr class="" style="height:40px;">
-                                                        <td style="width:300px" class="text-center">
-                                                            <small>
-                                                                {{prescription.drug}}
-                                                            </small>
-                                                        </td>
-                                                        <td style="width:300px" class="text-center">
-                                                            <small>
-                                                                {{prescription.info.duration}} {{prescription.info.duration_unit}}
-                                                            </small>
-                                                        </td>
-                                                        <td style="width:300px" class="text-center">
-                                                            <small>
-                                                                {{prescription.registered_on}} 
-                                                            </small>
-                                                        </td>
+                                                   |<small style=""> <span><a href data-toggle='modal' data-target='#filterByDateModal'><i class="fa fa-filter"></i></a></span> </small>| 
+                                                   <small style="padding-left: 20px;" onclick="searchPrescription()"> <i class="fa fa-search"></i><label style="padding-left: 10px;">Search</label></small>
+                                                    <small style="padding-left: 550px;">                           
+                                                        <i class="fa fa-print"></i>
+                                                        <label>Print/Export</label>
+                                                    </small>
+                                        </div>
+                        </div>
+                        <div class="card card-box col-md-8" id="search-prescription-id" style="display:none;">
+                           <div class="row" style="padding-bottom: 10px;">
+                               <div style="padding-right:10px;">
+                                    <label><small>Look Fosr</small></label>
+                               </div>
+                               <form method="GET" id="">
+                                   <div>
+                                        <input type="text" list="patient_data_list" name="search-prescription" id="search-prescription" class="col-md-6"> 
+                                        <small><button type="submit" >Find Now</button></small> 
 
-                                                    </tr>
-                                                {% endfor %}
-                                            </tbody>
-                                        </table>
+                                   </div>
+                               </form>
+                               <div class="pull-right">
+                                    <a onclick="closeSearchPrescriptionDiv()"> <i class="fa fa-times"></i></a> 
+                               </div>
 
-                                    </div>
                             </div>
+                        </div>
+
+                            <div class="card card-box" style="overflow-y:scroll;overflow-x:scroll;background-color: white; width: 1009px;height: 400px;">
+                                <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 1009px;">
+                                    <thead style="background-color: lightgrey;">
+                                        <tr class="">
+                                            <th class="text-center"><small> Drug</small></th>
+                                            <th class="text-center"><small> Duration</small></th>
+                                            <th class="text-center"><small> Registered on</small></th>
+             
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for prescription in prescription_list %}
+                                        {% return_edit_prescription_form prescription.info.id %}
+                                        {% include 'core/modals/edit_prescription_form.html' %}
+                                                {% is_in_date_array prescription.registered_on prescription_date_array %}
+                                                    {% if is_in_array %}                                    
+                                                    {% else %}
+                                                    <tr class="" style="height:40px;">
+                                                        <td>
+                                                        <b>{{prescription.registered_on.date}}</b>
+                                                        </td>
+                                                    </tr>
+                                                    {% endif %}
+
+                                            <tr class="" style="height:40px;">
+                                                <td style="width:300px" class="text-center">
+                                                    <small>
+                                                        <a href="" data-toggle="modal" data-target="#editDrugPrescriptionModal{{prescription.id}}">
+                                                        {{prescription.info.drug}}</a>
+                                                    </small>
+                                                </td>
+                                                <td style="width:300px" class="text-center">
+                                                    <small>
+                                                        {{prescription.info.duration}} {{prescription.info.duration_unit}}
+                                                    </small>
+                                                </td>
+                                                <td style="width:300px" class="text-center">
+                                                    <small>
+                                                        {{prescription.registered_on}} 
+                                                    </small>
+                                                </td>
+
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+
+                            </div>
+
                         </div>
                     </div>
             
         </div>
+
+<script type="text/javascript">
+    
+        function searchPrescription() {
+               document.getElementById('search-prescription-id').style.display = 'block';          
+                showingModal = true;
+            }
+
+        function closeSearchPrescriptionDiv() {
+               document.getElementById('search-prescription-id').style.display = 'none';          
+               
+                showingModal = true;
+            }
+
+</script>

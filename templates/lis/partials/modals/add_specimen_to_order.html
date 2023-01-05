@@ -1,0 +1,39 @@
+<!-- Large Model -->
+<div class="modal fade" id="addSpecimenToTestModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+              <form action="{% url 'add_specimen_to_test' patient.id %}" method="POST">
+
+          <div class="modal-header">
+
+                <h4 class="modal-title center">
+
+                        <button class="btn " type="submit"><i class="fa fa-save"></i>Save And Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <!--
+                <button type="button" onclick="OpenModal9()">dsss</button>
+                -->
+                </h4>
+          </div>
+          <div class="modal-body">
+                {% csrf_token %}
+                    <div class="form-group row col-md-11 col-sm-10">
+                      <label for="{{ select_order_form.test.id_for_label }}" class="col-sm-3 control-label"><small> {{ select_test_form.test.label }}</small> </label>
+                      <div class="col-sm-9">
+                          {{ select_test_form.test }}
+                      </div>
+                    </div>
+
+                {% for field in specimen_form %}
+                    <div class="form-group row col-md-11 col-sm-10">
+                      <label for="{{ field.id_for_label }}" class="col-sm-3 control-label"><small> {{ field.label }}</small> </label>
+                      <div class="col-sm-9">
+                          {{ field }}
+                      </div>
+                    </div>
+                {% endfor %}
+              </form>
+          </div>
+      </div>
+  </div>
+</div>

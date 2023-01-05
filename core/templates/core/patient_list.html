@@ -41,6 +41,14 @@
 
 {% block page_content %}
 
+<datalist id="patient_data_list" >
+    {% for patient in patient_list %}
+        <option value="{{patient}}" >
+            ID = {{patient.id}}
+        </option>
+    {% endfor %}    
+</datalist>
+
 
                     <div class="" style="padding-bottom:30px;">
                         <div class=" card col-md-12 " >
@@ -61,8 +69,7 @@
                                     </a>
 
                                 </div>
-                               <div style="padding-left:50px;" onclick="searchPlan()">
-                                    
+                               <div style="padding-left:50px;" onclick="searchPatient()">                                    
                                         <i class="fa fa-search"></i>
                                         <label><small>Search</small></label>
                                      
@@ -77,7 +84,7 @@
 
                                 <div class="pull-right" style="padding-left:10px;" >
                                         <input type="checkbox" class="hidden" hx-get="{% url 'whole_ward_view' %}?id=PlanStatus" hx-trigger='click'  hx-swap='innerHTML' hx-target='#treatment-plan-tab' hx-include="[name='plan_status']"  value="Dismissed" name="plan_status" id="dismissed_cb">
-                                        <label for="dismissed_cb"><small>Active</small></label>                                    
+                                        <label for="dismissed_cb"><small>Active</small></label> 
                                 </div>
 
                                 <div class="pull-right" style="padding-left:10px;" >
@@ -85,32 +92,33 @@
                                         <label for="completed_cb"><small>Inactive</small></label>                                    
                                 </div>
                                 <div class="pull-right" style="padding-left:10px;" >
-                                        <input type="checkbox" class="hidden" hx-get="{% url 'whole_ward_view' %}?id=PlanStatus" hx-trigger='click'  hx-swap='innerHTML' hx-target='#treatment-plan-tab' hx-include="[name='plan_status']"  value="Completed" name="plan_status" id="completed_cb">
-                                        <label for="completed_cb"><small>All</small></label>                                    
+                                        <input type="checkbox" class="hidden" hx-get="{% url 'core:patient_list' 'None' %}?id=PlanStatus8" hx-trigger='click'  hx-swap='innerHTML' hx-target='#drug_price_tab' hx-include="[name='all_ward_status']"  value="Completed" name="all_ward_status" id="all_departments_id">
+                                        <label for="all_departments_id"><small>All</small></label>                                    
                                 </div>
 
                                 <div class="pull-right" style="padding-left:10px;" >
-                                        <input type="checkbox" class="hidden" hx-get="{% url 'whole_ward_view' %}?id=PlanStatus" hx-trigger='click'  hx-swap='innerHTML' hx-target='#treatment-plan-tab' hx-include="[name='plan_status']"  value="Dismissed" name="plan_status" id="dismissed_cb">
-                                        <label for="dismissed_cb"><small>Outpatient</small></label>                                    
+                                        <input type="checkbox" class="hidden" hx-get="{% url 'core:patient_list' 'None'%}?id=PlanStatus3" hx-trigger='click'  hx-swap='innerHTML' hx-target='#drug_price_tab' hx-include="[name='ward_status_outpatient']"  value="Outpatient" name="ward_status_outpatient" id="outpatient_id">
+                                        <label for="outpatient_id"><small>Outpatient</small></label>                                    
                                 </div>
 
                                 <div class="pull-right" style="padding-left:10px;" >
-                                        <input type="checkbox" class="hidden" hx-get="{% url 'whole_ward_view' %}?id=PlanStatus" hx-trigger='click'  hx-swap='innerHTML' hx-target='#treatment-plan-tab' hx-include="[name='plan_status']"  value="Completed" name="plan_status" id="completed_cb">
-                                        <label for="completed_cb"><small>Inpatient</small></label>                                    
+                                        <input type="checkbox" class="hidden" hx-get="{% url 'core:patient_list' 'None' %}?id=PlanStatus1" hx-trigger='click'  hx-swap='innerHTML' hx-target='#drug_price_tab' hx-include="[name='ward_status']"  value="Inpatient" name="ward_status" id="inpatient_id">
+                                        <label for="inpatient_id"><small>Inpatient</small></label>                                    
                                 </div>
 
 
                         </div>
                         </div>
-                        <div class="card card-box col-md-8" id="search-plan-id" style="display:none;">
+
+                        <div class="card card-box col-md-8" id="search-patient-id" style="display:none;">
                            <div class="row" style="padding-bottom: 10px;">
                                <div style="padding-right:10px;">
                                     <label><small>Look For</small></label>
                                </div>
-                               <form method="GET" id="search-plan-form-id">
+                               <form method="GET" id="search-patient-form-id">
                                    <div>
-                                        <input type="text" list="patient_data_list" name="search-plan" id="search-plan" class="col-md-6"> 
-                                        <small><button type="button" onclick="submitPlanSearchForm()">Find Now</button></small> 
+                                        <input type="text" list="patient_data_list" value="{{patient.id}}" name="search-patient" id="search-patient" class="col-md-6"> 
+                                        <small><button type="Submit" >Find Now</button></small> 
 
                                    </div>
                                </form>
@@ -120,37 +128,15 @@
 
                             </div>
                         </div>
-                            <div class="row">    
-                                <div class="" id="treatment-plan-table-id" style="overflow-y:scroll;overflow-x:scroll; height: 600px;width: 1100px;">
-                                    <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;">
-                                        <thead style="background-color: lightgrey;">
-                                            <tr class="">
-                                                <th class="text-center"><small> Patient </small></th>
-                                                <th class="text-center"><small> Age </small></th>
-                                                <th class="text-center"><small> Address </small></th>
-                                                <th class="text-center"><small> Entry Date </small></th>
-                                                <th class="text-center"><small> Edit </small></th>
-                                                <th class="text-center"><small> Delete </small></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for patient in patient_list %}
-                                                <tr class="" style="height:40px;">
-                                                    <td style="width:300px;" class="text-center" > <a href="{% url 'core:patient_dashboard' patient.id %}"> <small>{{ patient.full_name}} </small></a></td>
-                                                    <td style="width:300px;" class="text-center"><small> {% if patient.age %} {{patient.age}} {% else %} 23 {% endif %}</small> </td>
-                                                    <td style="width:300px;" class="text-center"><small> {{patient.region}}</small> </td>
-                                                    <td style="width:300px;" class="text-center"><small> {{patient.registered_at}}</small> </td>
-                                                    <td style="width:300px;" class="text-center"><small><a href="{% url 'core:edit_patient' patient.id %}"> <i class="fa fa-edit"></i></a></small> </td>
-                                                    <td style="width:300px;" class="text-center"><small><i class="fa fa-delete"></i></small> </td>
-                                                </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="col-md-1">
+
+                            <div class="row" style="padding-left: 18px;">    
+                                    {% include 'core\htmx_partials\patient_list_htmx.html' %}
+
+                                <div class="" style="width: 50px;">
+
                                     {% for letter in small_letters %}
                                     <div>
-                                            <input type="checkbox" class="hidden" hx-get="{% url 'core:patient_list' %}?id=PatientAlphabet" hx-trigger='click'  hx-swap='innerHTML' hx-target='#treatment-plan-tab' hx-include="[name='alphabet']"  value="{{letter}}" name="alphabet" id="letter{{letter}}">
+                                            <input type="checkbox" class="hidden" hx-get="{% url 'core:patient_list' 'None' %}?id=PatientAlphabet" hx-trigger='click'  hx-swap='innerHTML' hx-target='#drug_price_tab' hx-include="[name='alphabet']"  value="{{letter}}" name="alphabet" id="letter{{letter}}" unchecked>
                                             <div style="background-color: #eef1f5;width: 20px;padding-left: 5px;margin: 0px;" >
                                                 <label class="text-center" for="letter{{letter}}"><small>{{letter}}</small></label>                                    
                                             </div>
@@ -166,6 +152,15 @@
 {% block scripts %}
     <script>
 
+        function searchPatient() {
+               document.getElementById('search-patient-id').style.display = 'block';          
+            }
+
+        function closeSearchDiv() {
+               document.getElementById('search-patient-id').style.display = 'none';          
+               
+                showingModal = true;
+            }
 
     </script>
 {% endblock %}

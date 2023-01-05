@@ -1,0 +1,49 @@
+    <div id="drug_price_tab">
+<div class="" id="treatment-plan-table-id" style="overflow-y:scroll;overflow-x:scroll; height: 600px;width: 1170px;">
+    <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;">
+        <thead style="background-color: lightgrey;">
+            <tr class="">
+                <th class="text-center"><small> Patient </small></th>
+                <th class="text-center"><small> Age </small></th>
+                <th class="text-center"><small> Address </small></th>
+                <th class="text-center"><small> Entry Date </small></th>
+                <th class="text-center"><small> Edit </small></th>
+                <th class="text-center"><small> Delete </small></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for patient in patient_list %}
+                                    {% include 'core\modals\delete_patient.html' %}
+
+                <tr class="" style="height:40px;">
+                    {% if url_arg == 'resources' %}
+                    <td style="width:300px;" class="text-center" > <a href="{% url 'core:resources' patient.id %}"> <small>{{ patient.full_name}} </small></a></td>
+                    {% elif url_arg == 'activities' %}
+                    <td style="width:300px;" class="text-center" > <a href="{% url 'core:activities' patient.id %}"> <small>{{ patient.full_name}} </small></a></td>
+                    {% elif url_arg == 'checkins' %}
+                    <td style="width:300px;" class="text-center" > <a href="{% url 'core:checkins' patient.id %}"> <small>{{ patient.full_name}} </small></a></td>
+                    {% elif url_arg == 'consultations' %}
+                    <td style="width:300px;" class="text-center" > <a href="{% url 'core:consultations' patient.id %}"> <small>{{ patient.full_name}} </small></a></td>
+                    {% elif url_arg == 'patient_billing' %}
+                    <td style="width:300px;" class="text-center" > <a href="{% url 'patient_billing' patient.id %}"> <small>{{ patient.full_name}} </small></a></td>
+
+                    {% elif url_arg == 'patient_dashboard' %}
+                    <td style="width:300px;" class="text-center" > <a href="{% url 'core:patient_dashboard' patient.id %}"> <small>{{ patient.full_name}} </small></a></td>
+
+                    {% else %}
+                    <td style="width:300px;" class="text-center" > <a href="{% url 'core:patient_dashboard' patient.id %}"> <small>{{ patient.full_name}} </small></a></td>
+
+                    {% endif %}
+
+
+                    <td style="width:300px;" class="text-center"><small> {% if patient.age %} {{patient.age}} {% else %} 23 {% endif %}</small> </td>
+                    <td style="width:300px;" class="text-center"><small> {{patient.region}}</small> </td>
+                    <td style="width:300px;" class="text-center"><small> {{patient.registered_at}}</small> </td>
+                    <td style="width:300px;" class="text-center"><small><a href="{% url 'core:edit_patient' patient.id %}"> <i class="fa fa-edit"></i></a></small> </td>
+                    <td style="width:300px;" class="text-center"><small><a href="" data-toggle="modal" data-target="#deletePatientModal{{patient.id}}"> <i class="fa fa-trash"></i></a></small> </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+    </div>

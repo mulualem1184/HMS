@@ -7,6 +7,12 @@ from .views import *
 urlpatterns = [
 
  	path('hospital_structure/', views.HospitalStructure, name="hospital_structure"),
+ 	path('treatment_plan_progress/<int:plan_id>', views.TreatmentPlanProgress, name="treatment_plan_progress"),
+ 	path('temperature_plan_progress/<int:plan_id>', views.TemperaturePlanProgress, name="temperature_plan_progress"),
+ 	path('blood_pressure_plan_progress/<int:plan_id>', views.BloodPressurePlanProgress, name="blood_pressure_plan_progress"),
+ 	path('oxygen_saturation_plan_progress/<int:plan_id>', views.OxygenSaturationPlanProgress, name="oxygen_saturation_plan_progress"),
+ 	path('glucose_level_plan_progress/<int:plan_id>', views.GlucoseLevelPlanProgress, name="glucose_level_plan_progress"),
+
  	path('whole_ward_view/', views.WholeWardView, name="whole_ward_view"),
  	path('admit_patient_to_ward/<int:bed_id>/<str:value>/', views.AdmitPatientToWard, name="admit_patient_to_ward"),
  	path('edit_ward_admission/<int:bed_id>', views.EditWardAdmission, name="edit_ward_admission"),
@@ -15,6 +21,11 @@ urlpatterns = [
  	path('save_treatment_plan/', views.SaveTreatmentPlan, name="save_treatment_plan"),
  	path('save_treatment_plan2/', views.SaveTreatmentPlan2, name="save_treatment_plan2"),
  	path('delete_treatment_plan/<int:plan_id>/', views.DeleteTreatmentPlan, name="delete_treatment_plan"),
+
+ 	path('add_patient_temperature/<int:plan_id>', views.AddPatientTemperature, name="add_patient_temperature"),
+ 	path('add_patient_blood_pressure/<int:plan_id>', views.AddPatientBloodPressure, name="add_patient_blood_pressure"),
+ 	path('add_patient_oxygen_saturation/<int:plan_id>', views.AddPatientOxygenSaturation, name="add_patient_oxygen_saturation"),
+ 	path('add_patient_glucose_level/<int:plan_id>', views.AddPatientGlucoseLevel, name="add_patient_glucose_level"),
 
  	path('edit_treatment_plan/<int:plan_id>', views.EditTreatmentPlan, name="edit_treatment_plan"),
  	path('change_plan_status/<int:plan_id>', views.ChangePlanStatus, name="change_plan_status"),

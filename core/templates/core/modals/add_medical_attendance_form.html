@@ -2,7 +2,7 @@
     <div class="modal-dialog " role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <form method="POST" action="{% url 'core:add_medical_certificate' patient.id %}" >
+                <form method="POST" action="{% url 'core:add_medical_attendance' patient.id %}" >
                         {% csrf_token %}
 
                 <h4 class="modal-title center">
@@ -24,11 +24,11 @@
                     <div class="form-group row col-md-12">
                         <label for="start_date" class="col-md-2 control-label"><small> Start Time</small> </label>
                         <div class="col-md-4">
-                            <input type="Time" name="start_date" id="start_date" class="form-control">
+                            <input type="Time" name="end_time" id="start_time" class="form-control">
                         </div>
                         <label for="start_date" class="col-md-2 control-label"><small> End Time</small> </label>
                         <div class="col-md-4">
-                            <input type="Time" name="start_date" id="start_date" class="form-control">
+                            <input type="Time" name="end_time" id="end_time" class="form-control">
                         </div>
 
                     </div>

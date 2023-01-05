@@ -226,6 +226,21 @@ class File(models.Model):
 
     file = models.FileField(upload_to=file_upload_location)
 
+class PatientFile(models.Model):
+
+    patient = models.ForeignKey(Patient, on_delete= models.SET_NULL, null=True)
+    file = models.ForeignKey(File, on_delete= models.SET_NULL, null=True)
+    active = models.BooleanField(default=True)
+    registered_by = models.ForeignKey(Employee, on_delete= models.SET_NULL, null=True)
+    registered_on = models.DateTimeField(null=True)
+
+class PatientImage(models.Model):
+    patient = models.ForeignKey(Patient, on_delete= models.SET_NULL, null=True)
+    image = models.ForeignKey(Image, on_delete= models.SET_NULL, null=True)
+    active = models.BooleanField(default=True)
+    registered_by = models.ForeignKey(Employee, on_delete= models.SET_NULL, null=True)
+    registered_on = models.DateTimeField(null=True)
+
 class Resource(models.Model):
     resource = models.CharField(max_length=5000, blank=True)
     private = models.BooleanField(default=True)
@@ -238,13 +253,22 @@ class Resource(models.Model):
 
     def is_scheduled(self,day,resource_id):
         resource = Resource.objects.get(id=resource_id)
-        print('resource:',resource)
-        print('day:', day)
+        #print('resource:',resource)
+        #print('day:', day)
         scheduled_resources = resource.scheduled_resource.filter(start_time__lte=day, end_time__gte=day).exists()
         if scheduled_resources:
             return True
         else:
             return False
+
+
+class Task(models.Model):
+    task = models.CharField(max_length=5000, blank=True)
+    registered_by = models.ForeignKey(Employee, on_delete= models.SET_NULL, null=True)
+    registered_on = models.DateTimeField(null=True)
+
+    def __str__(self):
+        return  str(self.treatment)
 
 class Treatment(models.Model):
     treatment = models.CharField(max_length=5000, blank=True)
@@ -326,6 +350,7 @@ class Recurrence(models.Model):
 
     days = models.ManyToManyField(Day,blank=True)
     daily_choices = models.CharField(max_length=100, null=True, blank=True, choices=DAILY_CHOICES)
+    hourly = models.BooleanField(default=False)
     daily = models.BooleanField(default=False)
     weekly = models.BooleanField(default=False)
     monthly = models.BooleanField(default=False)
@@ -336,6 +361,7 @@ class Recurrence(models.Model):
     yearly_choices = models.CharField(max_length=100, null=True, blank=True, choices=YEARLY_CHOICES)
     recurrence_count = models.IntegerField(null=True, blank=True)
     recurrence_threshold = models.IntegerField(null=True, blank=True)
+    hourly_range = models.IntegerField(null=True, blank=True)
 
     active = models.BooleanField(default=False)
 
@@ -349,10 +375,12 @@ class PatientRecurrence(models.Model):
 
     days = models.ManyToManyField(Day)
     daily_choices = models.CharField(max_length=100, null=True, blank=True, choices=DAILY_CHOICES)
+    hourly = models.BooleanField(default=False)
     daily = models.BooleanField(default=False)
     weekly = models.BooleanField(default=False)
     monthly = models.BooleanField(default=False)
     yearly = models.BooleanField(default=False)
+    hourly_range = models.IntegerField(null=True, blank=True)
     recurrence_amount = models.IntegerField(null=True, blank=True)
     recurrence_count = models.IntegerField(null=True, blank=True)
 
@@ -398,6 +426,10 @@ class PatientDemoValues(models.Model):
     registered_by = models.ForeignKey(Employee, on_delete= models.SET_NULL, null=True)
     registered_on = models.DateTimeField(null=True)
 
+    @property
+    def modelName(self):
+        return "PatientDemoValues"
+
 class PatientCheckin(models.Model):
     status_choices = (
         ('Admitted', 'Admitted'),
@@ -431,6 +463,9 @@ class PatientResource(models.Model):
     registered_by = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
     registered_on = models.DateTimeField(null=True)
 
+    def str(self):
+        return self.patient
+
 
 class PatientNote(models.Model):
 
@@ -447,6 +482,10 @@ class PatientAllergy(models.Model):
     active = models.BooleanField(default=True)
     registered_by = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
     registered_on = models.DateTimeField(null=True)
+    @property
+    def modelName(self):
+        return "PatientAllergy"
+
 class Tag(models.Model):
     name = models.CharField(max_length=200, null=True)
 
@@ -504,6 +543,27 @@ class PatientTreatment(models.Model):
     def __str__(self):
         return  str(self.patient) + str(self.treatment)
 
+    @property
+    def modelName(self):
+        return "PatientTreatment"
+
+class PatientDiagnosis(models.Model):
+    patient = models.ForeignKey(Patient, on_delete=models.SET_NULL, null=True, blank=True)
+    tags = models.ManyToManyField(Tag)
+    diagnosis = models.CharField(max_length=5000, blank=True)
+    detail = models.CharField(max_length=10000, blank=True)
+    active = models.BooleanField(default=True)
+    registered_by = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
+    registered_on = models.DateTimeField(null=True)
+
+    def __str__(self):
+        return  str(self.patient) + str(self.treatment)
+
+    @property
+    def modelName(self):
+        return "PatientTreatment"
+
+
 class PatientSurgery(models.Model):
 
     patient = models.ForeignKey(Patient, on_delete=models.SET_NULL, null=True, blank=True)
@@ -515,6 +575,9 @@ class PatientSurgery(models.Model):
 
     def __str__(self):
         return  str(self.patient) 
+    @property
+    def modelName(self):
+        return "PatientSurgery"
 
 
 class ScheduleStuff(models.Model):
@@ -688,6 +751,10 @@ class PatientConsultation(models.Model):
 
     def __str__(self):
         return "cons" + str(self.patient) 
+
+    @property
+    def modelName(self):
+        return "PatientConsultation"
 
 class PatientPaymentStatus(models.Model):
     payment_status = (

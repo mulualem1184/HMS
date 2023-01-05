@@ -1,5 +1,5 @@
 from django import forms
-from .models import Patient, PatientVitalSign, PatientPaymentStatus, InsuranceDetail,PatientAllergy,PatientClinicalFinding,PatientTreatment,Image,File,PatientParaclinicalFinding,PatientSurgery,PatientBloodGroup,PatientNote,PatientMedicalHistory,PatientSocialHistory,PatientFamilyHistory,PatientOccupation,AdditionalPatientInfo,PersonInfo,Copayer,PatientFamilyMedic,PatientReferrer,Occupation,PatientConsultation,ReviewOfSystems,PatientSurgeryHistory,PhysicalExam,PatientDemoValues,ScheduleStuff,MedicalCertificate,PatientMaterial,PatientCheckin,PatientResource,Recurrence,Resource
+from .models import Patient, PatientVitalSign, PatientPaymentStatus, InsuranceDetail,PatientAllergy,PatientClinicalFinding,PatientTreatment,Image,File,PatientParaclinicalFinding,PatientSurgery,PatientBloodGroup,PatientNote,PatientMedicalHistory,PatientSocialHistory,PatientFamilyHistory,PatientOccupation,AdditionalPatientInfo,PersonInfo,Copayer,PatientFamilyMedic,PatientReferrer,Occupation,PatientConsultation,ReviewOfSystems,PatientSurgeryHistory,PhysicalExam,PatientDemoValues,ScheduleStuff,MedicalCertificate,PatientMaterial,PatientCheckin,PatientResource,Recurrence,Resource,PatientDiagnosis,Task
 from dal import autocomplete
 from inpatient_app.models import IPDTreatmentPlan
 class PatientForm(forms.ModelForm):
@@ -44,6 +44,68 @@ class VitalSignForm(forms.ModelForm):
             }),
             'temperature_unit': forms.Select(attrs={
                 'class' : 'form-control select2',
+            }),
+
+        }
+
+class TemperatureForm(forms.ModelForm):
+    class Meta:
+        model = PatientVitalSign
+        fields = [
+            'temperature', 'temperature_unit',
+        ]
+        widgets = {            
+            'temperature': forms.NumberInput(attrs={
+                'class' : 'form-control forms',
+            }),
+            'temperature_unit': forms.Select(attrs={
+                'class' : 'form-control select2',
+            }),
+
+        }
+
+class BloodPressureForm(forms.ModelForm):
+    class Meta:
+        model = PatientVitalSign
+        fields = [
+            'systolic_blood_pressure', 'diastolic_blood_pressure', 
+        ]
+        widgets = {            
+            'systolic_blood_pressure': forms.NumberInput(attrs={
+                'class' : 'form-control forms',
+            }),
+            'diastolic_blood_pressure': forms.NumberInput(attrs={
+                'class' : 'form-control forms',
+            }),
+
+        }
+
+
+class GlucoseLevelForm(forms.ModelForm):
+    class Meta:
+        model = PatientVitalSign
+        fields = [
+            'blood_glucose_level', 'glucose_level_unit', 
+        ]
+        widgets = {            
+            'blood_glucose_level': forms.NumberInput(attrs={
+                'class' : 'form-control forms',
+            }),
+            'glucose_level_unit': forms.Select(attrs={
+                'class' : 'form-control select2',
+            }),
+
+        }
+
+class OxygenSaturationForm(forms.ModelForm):
+    class Meta:
+        model = PatientVitalSign
+        fields = [
+            'oxygen_saturation',  
+        ]
+        widgets = {            
+            'oxygen_saturation': forms.NumberInput(attrs={
+                'class' : 'form-control forms',
             }),
 
         }
@@ -204,12 +266,27 @@ class PatientTreatmentForm(forms.ModelForm):
 
             }
 
+class PatientDiagnosisForm(forms.ModelForm):    
+    class Meta:
+        model = PatientDiagnosis
+        fields = [ 'diagnosis', 'detail']
+        
+        widgets = {
+            'diagnosis': forms.TextInput(attrs={
+                'class' : 'form-control forms',
+            }),
+            'detail': forms.Textarea(attrs={
+                'class' : 'form-control forms',
+            }),
+
+            }
+
 class EditPatientTreatmentForm(forms.ModelForm):    
     def __init__(self, *args, **kwargs):
         planid = kwargs.pop('planid')
         plan = IPDTreatmentPlan.objects.get(id=planid)
-        print('plannnn ',plan.id)
-        print('pspspspsjnjjjjjj',plan.treatment)
+        #print('plannnn ',plan.id)
+        #print('pspspspsjnjjjjjj',plan.treatment)
         treatment = plan.treatment
         super(EditPatientTreatmentForm, self).__init__(*args, **kwargs)
         for f in self.fields:
@@ -336,7 +413,7 @@ class PatientMedicalHistoryForm(forms.ModelForm):
                 value = getattr(medical_history,f)
                 self.fields[f].initial = value
 
-            print(f)
+            #print(f)
 
         """
         if medical_history.high_blood_pressure:
@@ -467,7 +544,7 @@ class PatientSocialHistoryForm(forms.ModelForm):
             if hasattr(social_history,f):
                 value = getattr(social_history,f)
                 self.fields[f].initial = value
-                print(f,'\n')
+                #print(f,'\n')
 
     class Meta:
         model = PatientSocialHistory
@@ -513,7 +590,7 @@ class PatientFamilyHistoryForm(forms.ModelForm):
             if hasattr(family_history,f):
                 value = getattr(family_history,f)
                 self.fields[f].initial = value
-                print(f,'\n')
+                #print(f,'\n')
 
     class Meta:
         model = PatientFamilyHistory
@@ -726,8 +803,8 @@ class EditPatientCheckinForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         checkinid = kwargs.pop('checkinid')
         checkin = PatientCheckin.objects.get(id=checkinid)
-        print('plannnn ',plan.id)
-        print('pspspspsjnjjjjjj',plan.treatment)
+        #print('plannnn ',plan.id)
+        #print('pspspspsjnjjjjjj',plan.treatment)
         treatment = plan.treatment
         super(EditPatientCheckinForm, self).__init__(*args, **kwargs)
         for f in self.fields:
@@ -789,11 +866,24 @@ class PatientResourceForm(forms.ModelForm):
 
             }
 
+class TaskForm(forms.ModelForm):    
+
+    class Meta:
+        model = Task
+        fields = [ 'task' ]
+        
+        widgets = {
+            'task': forms.TextInput(attrs={
+                'class' : 'form-control forms',
+            }),
+
+            }
+
 class EditPatientResourceForm(forms.ModelForm):    
     def __init__(self, *args, **kwargs):
         resource_id = kwargs.pop('resource_id')
         resource = PatientResource.objects.get(id=resource_id)
-        print('plannnn ',resource.id)
+        #print('plannnn ',resource.id)
         super(EditPatientResourceForm, self).__init__(*args, **kwargs)
         for f in self.fields:
             if hasattr(resource,f):
@@ -868,6 +958,39 @@ class MedicalCertificateForm(forms.ModelForm):
         ]
         
         widgets = {
+            'reason': forms.TextInput(attrs={
+                'class' : 'form-control forms',
+            }),
+            'certificate_type': forms.Select(attrs={
+                'class' : 'form-control select2',
+            }),
+            'remarks': forms.Textarea(attrs={
+                'class' : 'form-control forms',
+            }),
+
+            }
+
+class EditMedicalCertificateForm(forms.ModelForm):    
+    def __init__(self, *args, **kwargs):
+        certificateid = kwargs.pop('certificateid')
+        certificate= MedicalCertificate.objects.get(id=certificateid)
+        #print('pcertifnnn ',certificate)
+        #print('pspspspsjnjjjjjj',plan.treatment)
+        super(EditMedicalCertificateForm, self).__init__(*args, **kwargs)
+        for f in self.fields:
+            if hasattr(certificate,f):
+                value = getattr(certificate,f)
+                self.fields[f].initial = value
+
+    class Meta:
+        model = MedicalCertificate
+        fields = [ 'patient','reason','certificate_type','remarks'
+        ]
+        
+        widgets = {
+            'patient': forms.Select(attrs={
+                'class' : 'form-control select2',
+            }),
             'reason': forms.TextInput(attrs={
                 'class' : 'form-control forms',
             }),
@@ -1621,9 +1744,14 @@ class RecurrenceForm(forms.ModelForm):
         fields = [
             'days', 'daily_choices', 'daily',
             'weekly', 'monthly','yearly','recurrence_threshold','recurrence_amount',
-            'monthly_day','every_int','yearly_choices'
+            'monthly_day','every_int','yearly_choices',
+            'hourly_range'
         ]
         widgets = {            
+            'hourly_range': forms.NumberInput(attrs={
+                'class' : 'form-control forms',
+            }),
+
             'recurrence_amount': forms.NumberInput(attrs={
                 'class' : 'form-control forms',
             }),
@@ -1662,3 +1790,4 @@ class RecurrenceForm(forms.ModelForm):
             })
 
         }
+

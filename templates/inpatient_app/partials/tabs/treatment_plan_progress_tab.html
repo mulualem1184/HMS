@@ -1,0 +1,95 @@
+{% load custom_dict %}
+                <div class="tab-pane" id="treatment-plan-progress-table">
+                    <div class="card col-md-12" style="overflow-y:scroll;overflow-x:scroll; height: 600px;width: 1100px;">
+                        <div class="card-head " >
+                                <div class="row">
+                                        <a href="" data-toggle="modal" data-target="#addResourceModal{{patient.id}}">
+                                        <div class="row" style="padding-left:30px;">
+                                        </div>
+                                        </a>
+                                </div>
+
+                        </div>
+                        <div class="card-body">
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;">
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="">
+                                                    <th class="text-center"><small> Times</small></th>
+                                                    {% if plan.recurrence.hourly %}
+                                                    {% for day in time_list %}
+                                                    <th class="text-center"><small> {{day}}</small></th>
+                                                    {% endfor %}
+
+                                                    {% elif plan.recurrence.daily %}
+                                                    {% for day in time_list %}
+                                                    <th class="text-center"><small> {{day.date}}</small></th>
+                                                    {% endfor %}
+
+                                                    {% endif %}
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                    <tr class="" style="height:40px;">
+                                                        <td style="width:100px" class="text-center">
+                                                            <small>
+                                                                <a href="" >{{ resource}}</a> 
+                                                            </small>
+                                                        </td>
+                                                                {% for day in time_list %}
+                                                                    {% is_performed day plan.id %}
+                                                                    {% if performed == True %}
+                                                                      {% include "inpatient_app/partials/modals/view_perform_plan.html" %}
+                              
+                                                                    <td style="width:50px;" class="text-center">
+                                                                        <a data-toggle="modal" data-target="#viewPerformedPlan{{performance.id}}"> 
+                                                                            
+                                                                              <i class="fa fa-check"></i> 
+                                                                            
+                                                                        </a> 
+                                                                    </td>
+                                                                
+                                                                {% else %}
+                                                                    {% if performed == 'None' %}
+                                                                    <td style="width:50px;" class="text-center">
+                                                                        <a style="padding-top: 5px;" data-toggle="modal" data-target="#addResourceModal{{patient.id}}">
+                                                                             <label style="height: 10px;background-color: white;color: white; "> d</label>
+                                                                             
+                                                                        </a>
+                                                                    </td>
+                                                                    {% else %}
+                                                                    <td style="width:50px;" class="text-center">
+                                                                        <a style="padding-top: 5px;" data-toggle="modal" >
+                                                                             <label style="height: 10px;background-color: white;color: white; "> d</label>
+                                                                            <i class="fa fa-times"></i> 
+                                                                        </a>
+                                                                    </td>
+
+                                                                    {% endif %}
+                                                                {% endif %}
+                                                                {% endfor %}
+                                                        
+
+                                                    </tr>
+                                            </tbody>
+                                        </table>
+                            
+                                    <div class="card card-body">
+                                            <label><b>Performed At</b></label>
+
+                                {% for performed in performed_list %}
+                                              {% include "inpatient_app/partials/modals/view_perform_plan2.html" %}
+                                        <div class="row">
+                                             <small><b>{{forloop.counter}}:</b> {{performed.registered_on}}</small><br>
+                                             <!--
+                                        <small><div style="padding-right: 20px;">{{forloop.counter}}</div>
+                                        <a data-toggle="modal" data-target="#viewPerformedPlan2{{performed.id}}">                                       
+                                              {{performed.registered_on}}     
+                                        </a></small> <br>-->
+                                        </div>
+                                {% endfor %}
+                                    </div>
+
+                        </div>
+
+                    </div>
+                </div>

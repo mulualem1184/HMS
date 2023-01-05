@@ -5,40 +5,40 @@
                                         {% for category in category_list %}
 
                                         <div class="col-md-12" style="padding-top:30px;">
-                                        <legend class="panel panel-heading panel-heading-gray"> 
+                                            <legend class="col-md-12 panel panel-heading panel-heading-gray"> 
 
-                                             <div class="row">       
-                                                    <div>
-                                                        
-                                                    <b>{{category}}</b>
-                                                        
-                                                   </div>
-                                                    <div style="padding-left:5px;">
-                                                        <p style="color: grey;"><small> Used Beds/Total Beds:</small></p> 
-                                                    </div>
-                                                    <div style="padding-left:5px;">
-                                                        <p ><small>{{category.used_bed_amount}}/{{category.total_bed_amount}}</small></p> 
-                                                    </div>
-
-                                                    <div style="padding-left:20px;">
-
-                                                        <p style="color: grey;"><small>Expected Discharges in next 24hrs: </small></p> 
-                                                    </div>
-                                                    <div style="padding-left:5px;">
-                                                        <p ><small>0 </small></p> 
-                                                    </div>
-
+                                                 <div class="row">       
+                                                        <div>
+                                                            
+                                                        <b>{{category}}</b>
+                                                            
+                                                       </div>
+                                                        <div style="padding-left:5px;">
+                                                            <p style="color: grey;"><small> Used Beds/Total Beds:</small></p> 
+                                                        </div>
+                                                        <div style="padding-left:5px;">
+                                                            <p ><small>{{category.used_bed_amount}}/{{category.total_bed_amount}}</small></p> 
                                                         </div>
 
-                                        </legend>
+                                                        <div style="padding-left:20px;">
+
+                                                            <p style="color: grey;"><small>Expected Discharges in next 24hrs: </small></p> 
+                                                        </div>
+                                                        <div style="padding-left:5px;">
+                                                            <p ><small>0 </small></p> 
+                                                        </div>
+
+                                                            </div>
+
+                                            </legend>
                                         </div>
-                <div style="padding-left:50px;">
+                                        <div style="padding-left:50px;">
 
                                         {% for ward in category.sp_category.all %}
                                             {% if ward.by_gender in gender_value%}
                             
 
-                                <div class="card card-box col-md-10" >
+                                <div class="card card-box col-md-11" >
                                         <div class="col" style="padding-bottom:30px;">
                                         <small>
                                         <b>{{ ward}} 

@@ -77,14 +77,14 @@
                             <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;">
                                 <thead style="background-color: lightgrey;">
                                     <tr class="">
-                                        <th style="background-color: #eef1f5;width: 70px;"><small><b>Ward</b></small></th>
-                                        <th style="background-color: #eef1f5;width: 250px;"><small><b>Room</b></small></th>
+                                        <th style="background-color: #eef1f5;" class="text-center"><small><b>Ward</b></small></th>
+                                        <th style="background-color: #eef1f5;" class="text-center"><small><b>Room</b></small></th>
                                         <th class="text-center" style="background-color: #eef1f5;width: 50px;"><small><b> Bed </b></small></th>
                                     {% for day in day_list %}                                        
                                         <th style="width: 50px; " style="background-color: #eef1f5;" class="text-center">
                                                 <div class="col">
                                                     <div>
-                                                        <small>{% if day.date|date:'l' == 'Sunday'%}   {{day.date}} {% endif %} </small>
+                                                        <small>{% if day.date|date:'ldd' == 'Sunday'%}   {{day.date}} {% endif %} </small>
                                                     </div>
                                                 
                                                     <div>
@@ -117,7 +117,7 @@
                                         <tr class="" style="height:40px;" id="bedd{{ward.id}}">
                                             <td style="background-color: #eef1f5;width: 70px;"></td>
                                             <td style="background-color: #eef1f5;width: 250px;" ></td>
-                                            <td style="background-color: #eef1f5;" style="width:50px;" class="text-center" > <small>{{ bed}} </small></td>
+                                            <td style="background-color: #eef1f5;" style="width:50px;" class="text-center" > <small>b </small></td>
                                             {% for day in day_list %}
                                             {%get_something day bed.id %}
                                             {% if result %}

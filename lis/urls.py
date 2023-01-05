@@ -8,7 +8,9 @@ from .views import (AddNormalRange, AddSampleType, AddSpecimen, CancelOrder,
                     ReportPage, SetSpecimenForTest, ToggleTestPaidStatus,
                     UpdateTestStatus, ViewOrder, ViewOrderList,
                     ViewSpecimenImage, ViewTest, ViewTestList, ViewTestResult, LaboratoryList,
-                    AssignLabEmployee
+                    AssignLabEmployee,Specimens,AddSpecimenToTest,EditSpecimen,
+                    DeleteSpecimen, LabDashboard,EditSpecimen2,LabResultRanges,
+                    LabResults,CreateLabTestItem
                     )
 
 urlpatterns = [
@@ -39,7 +41,21 @@ urlpatterns = [
     path('add-normal-range/<int:id>', AddNormalRange.as_view(), name='add_normal_range'),
     path('report', ReportPage.as_view(), name='lis_report'),
 
+    path('lab_result_ranges/<int:result_type_id>', LabResultRanges.as_view(), name='lab_result_ranges'),
+    path('lab_results/<int:patient_id>', LabResults.as_view(), name='lab_results'),
+
     path('laboratory_list', LaboratoryList, name='laboratory_list'),
     path('assign_lab_employee', AssignLabEmployee, name='assign_lab_employee'),
+
+    path('add_specimen_to_test/<int:patient_id>', AddSpecimenToTest.as_view(), name='add_specimen_to_test'),
+    path('edit_specimen/<int:order_id>/<int:specimen_id>', EditSpecimen.as_view(), name='edit_specimen'),
+    path('edit_specimen2/<int:patient_id>/<int:specimen_id>', EditSpecimen2.as_view(), name='edit_specimen2'),
+    
+    path('delete_specimen/<int:order_id>/<int:specimen_id>', DeleteSpecimen.as_view(), name='delete_specimen'),
+
+    path('specimens/<int:patient_id>', Specimens.as_view(), name='specimens'),
+
+    path('lab_dashboard/<int:patient_id>', LabDashboard.as_view(), name='lab_dashboard'),
+    path('create_lab_test_item/<int:item_id>', CreateLabTestItem.as_view(), name='create_lab_test_item'),
 
 ]

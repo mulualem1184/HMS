@@ -5,17 +5,31 @@
         }
     </style>
 
-            <div class="tab-pane" id="patient-lists-tab">
-                                            {% include "core/modals/repeat_drug_prescription6.html" %}
+            <div class="tab-pane active" id="patient-lists-tab">
+                    <div class="col-md-12">
+                                <div class="row col-md-12" >
+                                       <ul class="nav nav-tabs">
+                                          <li class="nav-item"><a class="nav-link "
+                                            href="#patient-dashboard-tab" data-toggle="tab"><small>Summary</small></a></li>
+                                          <li class="nav-item"><a class="nav-link active" href="#patient-lists-tab"
+                                            data-toggle="tab"><small>Lists</small></a></li>
+                                          <li class="nav-item"><a class="nav-link" href="#patient-demo-values-tab8"
+                                            data-toggle="tab"><small>Demo Values</small></a></li>
+
+                                        </ul>
+
+                               </div>
+                  </div>
 
                     <div class="row">
 
+                        <div style="width: 15px;"></div>
                         <div  id="dispensary-supplied-drug-table-id" >
                             <div class="card"  >
                                     <div class="card-head">
                                         <header><small>Consultations</small></header>
                                     </div>
-                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 130px;width: 250px;">
+                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 130px;width: 316px;">
                                         <div class="add-allergy">
                                            <small> <span><a href="{% url 'core:add_patient_consultation' patient.id %}" >Add Consultation</a></span> </small>
                                         </div>
@@ -29,13 +43,13 @@
                                     <div class="card-head">
                                         <header><small>Clinical Findings</small></header>
                                     </div>
-                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 130px;width: 250px;">
+                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 130px;width: 316px;">
                                         {% for finding in clinical_finding_list %}
                                             {% if finding.active == True %}
                                                 {% include "core/modals/edit_clinical_finding_form.html" %}
                                                 <div class="row">
                                                     <div>
-                                                         <small><b><a href="" data-toggle="modal" data-target="#editClinicalFindingModal{{finding.id}}">{{finding.clinical_finding}}</a></b> </small></br>
+                                                         <small><b><a href="" data-toggle="modal" data-target="#editClinicalFindingModal{{finding.id}}">{{finding.clinical_finding}}</a></b> </small><br>
                                                     </div>
                                                     <div class="right-position">
                                                     <small>{{finding.registered_on}}</small>
@@ -59,13 +73,13 @@
                                     <div class="card-head">
                                         <header><small>Treatments</small></header>
                                     </div>
-                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 130px;width: 250px;">
+                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 130px;width: 316px;">
                                         {% for treatment in treatment_list %}
                                             {% if treatment.active == True %}
                                                 {% include "core/modals/edit_treatment_form.html" %}
                                                 <div class="row">
                                                     <div>
-                                                         <small><b><a href="" data-toggle="modal" data-target="#editTreatmentModal{{treatment.id}}">{{treatment.treatment}}</a></b> </small></br>
+                                                         <small><b><a href="" data-toggle="modal" data-target="#editTreatmentModal{{treatment.id}}">{{treatment.treatment}}</a></b> </small><br>
                                                     </div>
                                                     <div class="right-position">
                                                     <small>{{treatment.registered_on}}</small>
@@ -85,19 +99,20 @@
                         </div>
                     </div>
                     <div class="row">
+                        <div style="width: 15px;"></div>
 
                         <div  id="dispensary-supplied-drug-table-id">
                             <div class="card" >
                                     <div class="card-head">
                                         <header><small>Allergies</small></header>
                                     </div>
-                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 130px;width: 250px;">
+                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 130px;width: 316px;">
                                         {% for allergy in allergy_list %}
                                             {% if allergy.active == True %}
                                                 {% include "core/modals/edit_allergy_form.html" %}
                                                 <div class="row">
                                                     <div>
-                                                         <small><b><a href="" data-toggle="modal" data-target="#editAllergyModal{{allergy.id}}">{{allergy.allergy}}</a></b> </small></br>
+                                                         <small><b><a href="" data-toggle="modal" data-target="#editAllergyModal{{allergy.id}}">{{allergy.allergy}}</a></b> </small><br>
                                                     </div>
                                                     <div class="right-position">
                                                    <small> {{allergy.registered_on}}</small>
@@ -120,13 +135,13 @@
                                     <div class="card-head">
                                         <header><small>Paraclinical Findings</small></header>
                                     </div>
-                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 130px;width: 250px;">
+                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 130px;width: 316px;">
                                         {% for finding in para_list %}
                                             {% if finding.active == True %}
                                                 {% include "core/modals/edit_paraclinical_finding_form.html" %}
                                                 <div class="row">
                                                     <div>
-                                                         <small><b><a href="" data-toggle="modal" data-target="#editParaclinicalFindingModal{{finding.id}}">{{finding.note}}</a></b> </small></br>
+                                                         <small><b><a href="" data-toggle="modal" data-target="#editParaclinicalFindingModal{{finding.id}}">{{finding.note}}</a></b> </small><br>
                                                     </div>
                                                     <div class="right-position">
                                                     <small>{{finding.registered_on}}</small>
@@ -150,10 +165,9 @@
                                     <div class="card-head">
                                         <header><small>Medication </small></header>
                                     </div>
-                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 130px;width: 250px;">
+                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 130px;width: 316px;">
 
                                         <div class="add-allergy">
-                                            {% include "core/modals/add_drug_prescription.html" %}
                                            <small> <span><a href="" data-toggle="modal" data-target="#repeatDrugPrescriptionModal6{{patient.id}}">Repeat</a></span> </small> |
                                            <small> <span><a href="" data-toggle="modal" data-target="#repeatDrugPrescriptionModal{{patient.id}}">Add </a></span> </small>
                                         </div>
@@ -163,12 +177,14 @@
 
                     </div>
                     <div class="row">
+                        <div style="width: 15px;"></div>
+
                         <div  id="dispensary-supplied-drug-table-id">
                             <div class="card" >
                                     <div class="card-head">
                                         <header><small>Diagnosis and Condition</small></header>
                                     </div>
-                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 130px;width: 250px;">
+                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 130px;width: 316px;">
 
                                     </div>
                             </div>
@@ -180,18 +196,18 @@
                                     <div class="card-head">
                                         <header><small>Documents</small></header>
                                     </div>
-                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 130px;width: 250px;">
+                                    <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 130px;width: 316px;">
                                         {% for image in image_list %}
                                                 <div class="row">
                                                     <div>
-                                                         <small><b><a href="{{ image.image.url }}" target="_blank">{{image.image}}</a></b> </small></br>
+                                                         <small><b><a href="{{ image.image.url }}" target="_blank">{{image.image}}</a></b> </small><br>
                                                      </div>
                                                  </div>
                                         {% endfor %}
                                         {% for file in file_list %}
                                                 <div class="row">
                                                     <div>
-                                                         <small><b><a href="{{ file.file.url }}" target="_blank">{{file.file}}</a></b> </small></br>
+                                                         <small><b><a href="{{ file.file.url }}" target="_blank">{{file.file}}</a></b> </small><br>
                                                      </div>
                                                  </div>
                                         {% endfor %}
@@ -201,7 +217,7 @@
                         </div>
                         <div style="width: 15px;"></div>
                         <div  id="dispensary-supplied-drug-table-id">
-                            <div class="card" style="height: 170px;width: 250px;">
+                            <div class="card" style="height: 170px;width: 316px;">
                                     <div class="card-head">
                                         <header><small>Surgeries</small></header>
                                     </div>
@@ -211,10 +227,10 @@
                                                 {% include "core/modals/edit_surgery_form.html" %}
                                                 <div class="row">
                                                     <div>
-                                                         <small><b><a href="" data-toggle="modal" data-target="#editSurgeryForm{{surgery.id}}">{{surgery.note}}</a></b> </small></br>
+                                                         <small><b><a href="" data-toggle="modal" data-target="#editSurgeryForm{{surgery.id}}">{{surgery.note}}</a></b> </small><br>
                                                      </div>
                                                      <div class="right-position">
-                                                         <small>{{surgery.registered_on}} </small></br>                                                    
+                                                         <small>{{surgery.registered_on}} </small><br>                                                    
                                                      </div>
                                                  </div>
                                             {% endif %}

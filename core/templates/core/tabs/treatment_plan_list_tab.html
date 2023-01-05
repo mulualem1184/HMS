@@ -1,14 +1,26 @@
-            <div class="tab-pane {% if treatment_tab  %} active {% else %}  {% endif %}" id="treatment-plan-list-tab">                    
-                        <div class=" card col-md-12 " >
 
-                        <div class="card-head " >
-                                   <!-- <button  class="btn btn-circle" data-toggle="modal" data-target="#createBuildingModal">
-                                    </button> -->
+            <div class="tab-pane {% if treatment_tab  %} active {% else %}  {% endif %}" id="treatment-plan-list-tab">                    
+                            <div class="card card-head" style="width: 1009px;">
+                                               <!-- <button  class="btn btn-circle" data-toggle="modal" data-target="#createBuildingModal">
+                                                </button> -->
+                                            <div class="row">
+                                                        <small style="padding-left: 50px;"><span><a href="" data-toggle="modal" data-target="#treatmentPlanForm">Add Entry</a></span></small> 
+                                                       |<small style=""> <span><a href data-toggle='modal' data-target='#filterByDateModal'><i class="fa fa-filter"></i></a></span> </small>| 
+                                                       <small style="padding-left: 20px;" onclick="searchMaterial()"> <i class="fa fa-search"></i><label style="padding-left: 10px;">Search</label></small>
+                                                        <small style="padding-left: 550px;">                           
+                                                            <i class="fa fa-print"></i>
+                                                            <label>Print/Export</label>
+                                                        </small>
+                                            </div>
+                            </div>
+                            <!--
+                        <div class="card card-head" style="width: 1009px;" >
+
                                 <div class="row">
-                                    <a data-toggle="modal" data-target="#treatmentPlanForm">
+                                    <a href="" data-toggle="modal" data-target="#patientTreatmentPlanForm">
                                     <div class="row" style="padding-left:30px;">
                                         <div>
-                                        <i class="fa fa-plus fa-1x"></i> 
+                                            <i class="fa fa-plus fa-1x"></i> 
                                          </div>
                                         <div style="padding-left:7px;padding-right: 8px;">
                                             <label><small> Add Entry </small></label>
@@ -17,12 +29,17 @@
                                     </a>
 
                                 </div>
-                               <div style="padding-left:50px;" onclick="searchPlan()">
+                               <div style="padding-left:30px;" onclick="searchPlan()">
                                     
                                         <i class="fa fa-search"></i>
                                         <label><small>Search</small></label>
                                      
                                 </div>
+                                   <div class=" col-md-1" style="padding-left:10px;">
+                                        <a href="" data-toggle="modal" data-target="#filterTreatmentPlanModal">
+                                            <i class="fa fa-filter"></i>
+                                        </a> 
+                                    </div>
 
                                    <div class="pull-right" style="padding-left:10px;">
                                         <a>
@@ -40,25 +57,8 @@
                                         <input type="checkbox" class="hidden" hx-get="{% url 'whole_ward_view' %}?id=PlanStatus" hx-trigger='click'  hx-swap='innerHTML' hx-target='#treatment-plan-tab' hx-include="[name='plan_status']"  value="Completed" name="plan_status" id="completed_cb">
                                         <label for="completed_cb"><small>Completed</small></label>                                    
                                 </div>
-                                <!--
-                                <div class="pull-right" style="padding-left:10px;" >
-                                        <label><small>Dismissed</small></label>                                    
-                                </div>
 
-                                <div class="pull-right" style="padding-left:10px;" >
-                                        <label><small>Completed</small></label>
-                                    
-                                </div>
-
-                               <div class="pull-right" style="padding-left:10px;" onclick="">
-                                    
-                                        <label><small>Today</small></label>
-                                     
-                                </div>-->
-
-
-                        </div>
-                        </div>
+                        </div>-->
                         <div class="card card-box col-md-8" id="search-plan-id" style="display:none;">
                            <div class="row" style="padding-bottom: 10px;">
                                <div style="padding-right:10px;">
@@ -72,18 +72,16 @@
                                    </div>
                                </form>
                                <div class="pull-right">
-                                    <a onclick="closeSearchDiv()"> <i class="fa fa-times"></i></a> 
+                                    <a onclick="closeSearchDiv3()"> <i class="fa fa-times"></i></a> 
                                </div>
 
                             </div>
                         </div>
 
-                        <div class="col-md-12 " id="treatment-plan-table-id">
-                             <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 500px;width: 900px;">
-                                                <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;">
+                            <div class="card card-box" style="overflow-y:scroll;overflow-x:scroll;background-color: white; width: 1009px;height: 400px;">
+                            <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;">
                                 <thead style="background-color: lightgrey;">
                                     <tr class="">
-                                        <th class="text-center"><small> Patient </small></th>
                                         <th class="text-center"><small> Registered on </small></th>
                                         <th class="text-center"><small> View </small></th>
                                         <th class="text-center"><small> Edit </small></th>
@@ -99,7 +97,6 @@
                                 {% include "inpatient_app/partials/change_plan_status.html" %}
 
                                         <tr class="" style="height:40px;">
-                                            <td style="width:200px;" class="text-center" > <small>{{ plan.patient}} </small></td>
                                             <td style="width:200px;" class="text-center"><small> {{plan.registered_on}}</small> </td>
                                             <td style="width:100px;" class="text-center"><small> <a href="" data-toggle='modal' data-target= '#viewTreatmentPlanModal{{plan.id}}' ><i class="fa fa-eye"></i></a>  </small> </td>
                                             <td style="width:100px;" class="text-center"><small> <a href="" data-toggle="modal" data-target="#editTreatmentPlanModal{{plan.id}}"  ><i class="fa fa-edit"></i></a></small></td>
@@ -110,7 +107,6 @@
                                     {% endfor %}
                                 </tbody>
                             </table>
-                        </div>
                         </div>
 
                     </div>
@@ -128,7 +124,7 @@
                 showingModal = true;
             }
 
-        function closeSearchDiv() {
+        function closeSearchDiv3() {
                document.getElementById('search-plan-id').style.display = 'none';          
                
                 showingModal = true;

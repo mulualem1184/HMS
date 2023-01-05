@@ -2,7 +2,7 @@
     {% for field in normal_range_form %}
         {% if field.widget_type == 'checkbox' %}
             <div class="form-group row">
-                <label class="control-label col-md-3" for="{{ field.id_for_label }}">
+                <label class="control-label col-md-4" for="{{ field.id_for_label }}">
                     {{ field.label }}
                 </label>
                 <div class="col-md-5">
@@ -11,11 +11,11 @@
             </div>
         {% else %}
             <div class="form-group row">
-                <label class="control-label col-md-3" for="{{ field.id_for_label }}" >
-                    {{ field.label }}<span class="required"> * </span>
+                <label class="control-label col-md-4" for="{{ field.id_for_label }}" >
+                    <small>{{ field.label }}</small><span class="required"> * </span>
                 </label>
                 <div class="col-md-5">
-                    {{ field }}
+                    <small> {{ field }}</small>
                 </div>
             </div>
         {% endif %}

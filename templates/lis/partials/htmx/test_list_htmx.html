@@ -1,0 +1,73 @@
+                                    <div id="drug_price_tab" class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 550px;width: 1200px;">
+                                             <div class="row">
+                                                 <div class="col">
+                                                     <div class="text-center"><h5><b>{{pending_test_count}}</b></h5></div>
+                                                     <div ><h5><b style="padding-left: 232px;">Pending</b></h5></div>
+                                                 </div>
+                                                 <div class="col">
+                                                     <div><h5><b class="text-center" style="padding-right: 10px;">{{completed_test_count}}</b></h5></div>
+                                                     <div><h5><b style="padding-left: 0px;">Completed</b></h5></div>
+                                                 </div>
+                                                 <small>
+                                                    <select hx-get="{% url 'lab_dashboard' patient.id %}?id=PatientAlphabet" hx-trigger='click'  hx-swap='innerHTML' hx-target='#drug_price_tab' hx-include="[name='last_x_days']"   name="last_x_days" id="">
+                                                        <option value="7" id="">Last 7 Days</option>  
+                                                        <option value=30>Last 30 Days</option>   
+                                                        <option value=90>Last 90 Days</option>   
+                                                        <option value=0>All Time</option>   
+                                                        
+                                                    </select>
+                                                </small>
+
+                                             </div><hr>
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 1200px;">
+                                            
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="gradeX odd">
+                                                    {% if process_payment %}
+                                                        <th class= "text-center"><small><!-- Checkboxes to select orders as paid --></small></th>
+                                                    {% endif %}
+                                                    <th class= "text-center"><small>Id</small></th>
+                                                    <th class= "text-center"><small>Ordered by</small></th>
+                                                    <th class= "text-center"><small>Priority</small></th>
+                                                    <th class= "text-center"><small>Ordered at</small></th>
+                                                    <th class= "text-center"><small>Number of tests</small></th>
+                                                    <th class= "text-center"><small>Progress</small></th>
+                                                    <th class= "text-center"><small>Price</small></th>
+                                                    <th class= "text-center"><small>Actions</small></th>
+                                                </tr>
+                                            </thead>
+                        <tbody>
+                            {% for test in test_list %}
+                            {% if test.order.is_complete %}
+                            {% else %}
+                                <tr style="height: 40px;">
+                                    {% if process_payment %}
+                                        <td class= "text-center" style="width:100px"><small>
+                                            <label class="rt-chkbox rt-chkbox-single rt-chkbox-outline">
+                                                <input type="checkbox" name='orders' value="{{ test.order.id }}" class="checkboxes" />
+                                                <span></span>
+                                            </label>
+                                        </small></td>
+                                    {% endif %}
+                                    <td class= "text-center" style="width:300px"><small> {{ test.order.id }}</small></td>
+                                    <td class= "text-center" style="width:300px"><small> {{ test.order.ordered_by.full_name }} </small></td>
+                                    <td class= "text-center" style="width:300px"><small> 
+                                        {% if test.order.priority == 'EMERGENCY' %}
+                                            <span class="badge badge-danger"> {{ test.order.priority }} </span> 
+                                        {% else %}
+                                            <span class="badge badge-info"> {{ test.order.priority }} </span>
+                                        {% endif %}
+                                    </small></td>
+                                    <td class= "text-center" style="width:300px"><small> {{ test.order.ordered_at }} </small></td>
+                                    <td class= "text-center" style="width:100px"><small> {{ test.order.no_of_tests }} </small></td>
+                                    <td class= "text-center" style="width:300px"><small> {{ test.order.progress }} </small></td>
+                                    <td class= "text-center" style="width:300px"><small> {{ test.order.total_price }} </small></td>
+                                    <td class= "text-center" style="width:300px"><small><a href="{% url 'core:add_lab_case' test.order.id %}">View</a></small></td>
+                                </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                        
+                    </table>
+
+                                    </div>

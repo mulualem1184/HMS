@@ -35,8 +35,9 @@ from rest_framework.response import Response
 from rest_framework.renderers import TemplateHTMLRenderer
 from collections import OrderedDict
 from .fusioncharts import FusionCharts
-from core.forms import PatientTreatmentForm,RecurrenceForm
-
+from core.forms import PatientTreatmentForm,RecurrenceForm,TemperatureForm,BloodPressureForm,GlucoseLevelForm,OxygenSaturationForm
+from dateutil.rrule import *
+from dateutil.tz import UTC
 # Create your views here.
 def HospitalStructure(request):
 	"""
@@ -88,6 +89,609 @@ def HospitalStructure(request):
 				}
 	return render(request,'inpatient_app/hospital_structure.html',context)
 
+
+def TreatmentPlanProgress(request, plan_id):	
+
+	progress_chart = OrderedDict()
+	demo_chart = OrderedDict()
+
+	chartConfig = OrderedDict()
+	chartConfig["caption"] = "Drugs Sold Today"
+	chartConfig["subCaption"] = "In Unit"
+	chartConfig["numberSuffix"] = " Units"
+	chartConfig["theme"] = "fusion"
+	chartConfig["numVisiblePlot"] = "8",
+	chartConfig["flatScrollBars"] = "1",
+	chartConfig["scrollheight"] = "1",
+	chartConfig["type"] = "pie2d",
+
+	
+	progress_chart["chart"] = chartConfig
+	progress_chart["chart"] = {
+		"caption":'Plan Progress',
+		"subCaption":'In Unit',
+		"numberSuffix":'Times',
+		'theme':'fusion',
+	}
+	progress_chart["data"] = []
+
+
+	demo_chart["chart"] = chartConfig
+	"""
+	demo_chart["dataset"] = []
+	demo_chart["categories"] = []
+	data = {}
+	category = {}
+	data_array = []
+	category_array = []
+
+	data.update({'seriesname':'Systolic'})
+	for sign in PatientVitalSign.objects.all():
+		data_array.append({'value':sign.systolic_blood_pressure})
+		data.update({'data':data_array})
+		category_array.append({'label':str(sign.registered_on)})
+		category.update({'category':[category_array]})
+
+	demo_chart["dataset"].append(data)
+	demo_chart["categories"].append(category)
+
+	data = {}
+	category = {}
+	data_array = []
+	category_array = []
+
+	data.update({'seriesname':'Diastolic'})
+	for sign in PatientVitalSign.objects.all():
+		data_array.append({'value':sign.systolic_blood_pressure})
+		data.update({'data':data_array})
+		category_array.append({'label':str(sign.registered_on)})
+		category.update({'category':[category_array]})
+	demo_chart["dataset"].append(data)
+	demo_chart["categories"].append(category)
+
+	demo_chart = FusionCharts("msline", "demo_chart88s", "1000", "500", "demo_line_container", "json", demo_chart)
+	"""
+	demo_chart["dataset"] = []
+	demo_chart["categories"] = []
+	
+	data = {}
+	category = {}
+	data.update({'seriesname':'Temprature'})
+	#data.update({'data':[{'seriesname':'dd'},{'seriesname':"ee"}]})
+	data.update({'data':[{'value':30},{'value':37},{'value':35}]})
+	category.update({'category':[{'label':"2022-11-03"},{'label':"2022-11-03"},{'label':"2022-11-04"}]})
+	demo_chart["dataset"].append(data)
+	demo_chart["categories"].append(category)
+
+	data = {}
+	category = {}
+	data.update({'seriesname':'systolic_blood_pressure'})
+	#data.update({'data':[{'seriesname':'dd'},{'seriesname':"ee"}]})
+	data.update({'data':[{'value':80},{'value':90},{'value':80}]})
+	category.update({'category':[{'label':"2022-11-03"},{'label':"2022-11-03"},{'label':"2022-11-04"}]})
+	demo_chart["dataset"].append(data)
+	demo_chart["categories"].append(category)
+
+	#3
+
+	data = {}
+	category = {}
+	data.update({'seriesname':'Diastolic Blood Pressure'})
+	#data.update({'data':[{'seriesname':'dd'},{'seriesname':"ee"}]})
+	data.update({'data':[{'value':120},{'value':110},{'value':130}]})
+	category.update({'category':[{'label':"2022-11-03"},{'label':"2022-11-03"},{'label':"2022-11-04"}]})
+	demo_chart["dataset"].append(data)
+	demo_chart["categories"].append(category)
+
+	#4
+	data = {}
+	category = {}
+	data.update({'seriesname':'Oxygen Saturation'})
+	#data.update({'data':[{'seriesname':'dd'},{'seriesname':"ee"}]})
+	data.update({'data':[{'value':5},{'value':3},{'value':4}]})
+	category.update({'category':[{'label':"2022-11-03"},{'label':"2022-11-03"},{'label':"2022-11-04"}]})
+	demo_chart["dataset"].append(data)
+	demo_chart["categories"].append(category)
+
+	#5
+	data = {}
+	category = {}
+	data.update({'seriesname':'Glucose Level Unit'})
+	#data.update({'data':[{'seriesname':'dd'},{'seriesname':"ee"}]})
+	data.update({'data':[{'value':4},{'value':4},{'value':3}]})
+	category.update({'category':[{'label':"2022-11-03"},{'label':"2022-11-03"},{'label':"2022-11-04"}]})
+	demo_chart["dataset"].append(data)
+	demo_chart["categories"].append(category)
+	demo_chart = FusionCharts("msline", "demo_chart88", "800", "600", "demo_line_container", "json", demo_chart)
+
+	plan = IPDTreatmentPlan.objects.get(id=plan_id)
+	plan_performed = PerformPlan.objects.filter(plan=plan).count()
+	performed_list = PerformPlan.objects.filter(plan=plan)
+	
+	progress_chart["data"].append({"label": 'Threshold', "value": plan.recurrence.recurrence_threshold})
+	progress_chart["data"].append({"label": 'Times Performed', "value": plan_performed})
+	progress_chart = FusionCharts("bar2d", "discharge_chart", "800", "400", "progress_chart_container", "json", progress_chart)
+
+	ratio = (plan_performed / plan.recurrence.recurrence_threshold) *100
+	plan_until = plan.start_time + timedelta(days=plan.recurrence.recurrence_threshold)
+	time_list = []
+	if plan.recurrence.daily:
+		time_list = list(rrule(DAILY, plan.start_time,until=plan_until))
+	elif plan.recurrence.hourly:
+		first = plan.start_time
+		time_list.append(first)
+		for i in range(1,plan.recurrence.recurrence_threshold + 1):
+			first = first + timedelta(hours=plan.recurrence.hourly_range)
+			time_list.append(first)
+	elif plan.recurrence.weekly:
+		first = plan.start_time
+		time_list.append(first)
+		for day in plan.recurrence.days.all():
+			print('dayyyss: ',day,'\n')
+			if day.name == "Monday":
+				next_monday = plan.start_time + timedelta((0-plan.start_time.weekday()) % 7 )
+				
+				print('next_monday: ', next_monday,'\n')
+
+	#friday = today + datetime.timedelta( (4-today.weekday()) % 7 )
+	elif plan.recurrence.monthly:
+		first = plan.start_time
+		time_list.append(first)
+		for i in range(1,plan.recurrence.recurrence_threshold + 1):
+			first = first + timedelta(hours=plan.recurrence.hourly_range)
+			time_list.append(first)
+
+	now_today = datetime.now()
+	context = {'plan': plan,
+				'performed_list':performed_list,
+				'progress_chart':progress_chart.render(),
+				'ratio':ratio,
+				'time_list':time_list,
+				'demo_chart':demo_chart.render(),
+				'amount_performed':plan_performed,
+				'amount_required':plan.recurrence.recurrence_threshold,
+				'initial_date': str(now_today),
+
+				}
+	return render(request,'core/modals/treatment_plan_progress.html',context)
+
+def TemperaturePlanProgress(request,plan_id):
+	progress_chart = OrderedDict()
+	demo_chart = OrderedDict()
+	temperature_chart = OrderedDict()
+
+	chartConfig = OrderedDict()
+	chartConfig["caption"] = ""
+	chartConfig["subCaption"] = "In Unit"
+	chartConfig["numberSuffix"] = " Units"
+	chartConfig["theme"] = "fusion"
+	chartConfig["numVisiblePlot"] = "8",
+	chartConfig["flatScrollBars"] = "1",
+	chartConfig["scrollheight"] = "1",
+	chartConfig["type"] = "pie2d",
+
+	
+	progress_chart["chart"] = chartConfig
+	progress_chart["chart"] = {
+		"caption":'Plan Progress',
+		"subCaption":'In Unit',
+		"numberSuffix":'Times',
+		'theme':'fusion',
+	}
+	progress_chart["data"] = []
+
+	temperature_chart["data"] = []
+	temperature_chart["chart"] = chartConfig
+	temperature_chart["chart"] = {
+		"caption":'Temperature',
+		"subCaption":'In Celcius',
+		"numberSuffix":' Celcius',
+		'theme':'fusion',
+	}
+
+	demo_chart["chart"] = chartConfig
+
+	plan = IPDTreatmentPlan.objects.get(id=plan_id)
+	plan_performed = PerformPlan.objects.filter(plan=plan).count()
+	performed_list = PerformPlan.objects.filter(plan=plan)
+	lastest_temperatures = PatientVitalSign.objects.filter(temperature__isnull=False,systolic_blood_pressure__isnull=True)[:5]	
+	for temp in plan.vital_sign.all():
+		temperature_chart["data"].append({"label": str(temp.registered_on.year) + "-"+ str(temp.registered_on.month) + "-" + str(temp.registered_on.day), "value": temp.temperature})
+
+	today = datetime.now(UTC)
+
+	expected_progress = 0
+	progress_chart["data"].append({"label": 'Threshold', "value": plan.recurrence.recurrence_threshold})
+
+	temperature_chart = FusionCharts("line", "temperature_chart", "800", "400", "patient_temperature_chart_container", "json", temperature_chart)
+
+	ratio = (plan_performed / plan.recurrence.recurrence_threshold) *100
+	plan_until = plan.start_time + timedelta(days=plan.recurrence.recurrence_threshold)
+	time_list = []
+	expected_progress_count = 0
+	if plan.recurrence.daily:
+		time_list = list(rrule(DAILY, plan.start_time,until=plan_until))
+		expected_progress = list(rrule(DAILY, plan.start_time,until=today))
+		for pr in expected_progress:
+			if pr < today:
+				expected_progress_count = expected_progress_count + 1
+		progress_chart["data"].append({"label": 'Times Should Have Been Performed', "value": expected_progress_count})
+		progress_chart["data"].append({"label": 'Times Performed', "value": plan_performed})
+
+	elif plan.recurrence.hourly:
+		first = plan.start_time
+		time_list.append(first)
+		for i in range(1,plan.recurrence.recurrence_threshold + 1):
+			first = first + timedelta(hours=plan.recurrence.hourly_range)
+			time_list.append(first)
+	elif plan.recurrence.weekly:
+		first = plan.start_time
+		time_list.append(first)
+		for day in plan.recurrence.days.all():
+			print('dayyyss: ',day,'\n')
+			if day.name == "Monday":
+				next_monday = plan.start_time + timedelta((0-plan.start_time.weekday()) % 7 )
+				
+				print('next_monday: ', next_monday,'\n')
+
+
+	#friday = today + datetime.timedelta( (4-today.weekday()) % 7 )
+	elif plan.recurrence.monthly:
+		first = plan.start_time
+		time_list.append(first)
+		for i in range(1,plan.recurrence.recurrence_threshold + 1):
+			first = first + timedelta(hours=plan.recurrence.hourly_range)
+			time_list.append(first)
+
+
+	progress_chart = FusionCharts("bar2d", "discharge_chart", "800", "400", "progress_chart_container", "json", progress_chart)
+
+	now_today = datetime.now()
+	print('exxxxxxx: ',expected_progress)
+	context = {'plan': plan,
+				'performed_list':performed_list,
+				'progress_chart':progress_chart.render(),
+				'temperature_chart':temperature_chart.render(),
+				'ratio':ratio,
+				'time_list':time_list,
+				'amount_performed':plan_performed,
+				'amount_required':plan.recurrence.recurrence_threshold,
+				'initial_date': str(now_today),
+
+				}
+	return render(request,'core/modals/patient_temperature_plan_progress.html',context)
+
+def OxygenSaturationPlanProgress(request,plan_id):
+	progress_chart = OrderedDict()
+	demo_chart = OrderedDict()
+	oxygen_saturation_chart = OrderedDict()
+
+	chartConfig = OrderedDict()
+	chartConfig["caption"] = ""
+	chartConfig["subCaption"] = "In Unit"
+	chartConfig["numberSuffix"] = " Units"
+	chartConfig["theme"] = "fusion"
+	chartConfig["numVisiblePlot"] = "8",
+	chartConfig["flatScrollBars"] = "1",
+	chartConfig["scrollheight"] = "1",
+	chartConfig["type"] = "pie2d",
+
+	
+	progress_chart["chart"] = chartConfig
+	progress_chart["chart"] = {
+		"caption":'Plan Progress',
+		"subCaption":'In Unit',
+		"numberSuffix":'Times',
+		'theme':'fusion',
+	}
+	progress_chart["data"] = []
+
+	oxygen_saturation_chart["data"] = []
+	oxygen_saturation_chart["chart"] = chartConfig
+	oxygen_saturation_chart["chart"] = {
+		"caption":'oxygen_saturation',
+		"subCaption":'In Celcius',
+		"numberSuffix":' Celcius',
+		'theme':'fusion',
+	}
+
+	demo_chart["chart"] = chartConfig
+
+	plan = IPDTreatmentPlan.objects.get(id=plan_id)
+	plan_performed = PerformPlan.objects.filter(plan=plan).count()
+	performed_list = PerformPlan.objects.filter(plan=plan)
+	#lastest_oxygen_saturations = PatientVitalSign.objects.filter(oxygen_saturation__isnull=False,systolic_blood_pressure__isnull=True)[:5]	
+	for temp in plan.vital_sign.all():
+		oxygen_saturation_chart["data"].append({"label": str(temp.registered_on.year) + "-"+ str(temp.registered_on.month) + "-" + str(temp.registered_on.day), "value": temp.oxygen_saturation})
+
+	today = datetime.now(UTC)
+
+	expected_progress = 0
+	progress_chart["data"].append({"label": 'Threshold', "value": plan.recurrence.recurrence_threshold})
+
+	oxygen_saturation_chart = FusionCharts("line", "oxygen_saturation_chart", "800", "400", "patient_oxygen_saturation_chart_container", "json", oxygen_saturation_chart)
+
+	ratio = (plan_performed / plan.recurrence.recurrence_threshold) *100
+	plan_until = plan.start_time + timedelta(days=plan.recurrence.recurrence_threshold-1)
+	time_list = []
+	expected_progress_count = 0
+	if plan.recurrence.daily:
+		time_list = list(rrule(DAILY, plan.start_time,until=plan_until))
+		expected_progress = list(rrule(DAILY, plan.start_time,until=today))
+		for pr in expected_progress:
+			if pr < today:
+				if expected_progress_count < plan.recurrence.recurrence_threshold:
+					expected_progress_count = expected_progress_count + 1
+		progress_chart["data"].append({"label": 'Times Should Have Been Performed', "value": expected_progress_count})
+		progress_chart["data"].append({"label": 'Times Performed', "value": plan_performed})
+
+	elif plan.recurrence.hourly:
+		first = plan.start_time
+		time_list.append(first)
+		for i in range(1,plan.recurrence.recurrence_threshold + 1):
+			first = first + timedelta(hours=plan.recurrence.hourly_range)
+			time_list.append(first)
+	elif plan.recurrence.weekly:
+		first = plan.start_time
+		time_list.append(first)
+		for day in plan.recurrence.days.all():
+			print('dayyyss: ',day,'\n')
+			if day.name == "Monday":
+				next_monday = plan.start_time + timedelta((0-plan.start_time.weekday()) % 7 )
+				
+				print('next_monday: ', next_monday,'\n')
+
+
+	#friday = today + datetime.timedelta( (4-today.weekday()) % 7 )
+	elif plan.recurrence.monthly:
+		first = plan.start_time
+		time_list.append(first)
+		for i in range(1,plan.recurrence.recurrence_threshold + 1):
+			first = first + timedelta(hours=plan.recurrence.hourly_range)
+			time_list.append(first)
+
+
+	progress_chart = FusionCharts("bar2d", "discharge_chart", "800", "400", "progress_chart_container", "json", progress_chart)
+
+	now_today = datetime.now()
+	print('exxxxxxx: ',expected_progress)
+	context = {'plan': plan,
+				'performed_list':performed_list,
+				'progress_chart':progress_chart.render(),
+				'oxygen_saturation_chart':oxygen_saturation_chart.render(),
+				'ratio':ratio,
+				'time_list':time_list,
+				'amount_performed':plan_performed,
+				'amount_required':plan.recurrence.recurrence_threshold,
+				'initial_date': str(now_today),
+
+				}
+	return render(request,'inpatient_app/patient_oxygen_saturation_progress.html',context)
+
+def GlucoseLevelPlanProgress(request,plan_id):
+	progress_chart = OrderedDict()
+	demo_chart = OrderedDict()
+	blood_glucose_level_chart = OrderedDict()
+
+	chartConfig = OrderedDict()
+	chartConfig["caption"] = ""
+	chartConfig["subCaption"] = "In Unit"
+	chartConfig["numberSuffix"] = " Units"
+	chartConfig["theme"] = "fusion"
+	chartConfig["numVisiblePlot"] = "8",
+	chartConfig["flatScrollBars"] = "1",
+	chartConfig["scrollheight"] = "1",
+	chartConfig["type"] = "pie2d",
+
+	
+	progress_chart["chart"] = chartConfig
+	progress_chart["chart"] = {
+		"caption":'Plan Progress',
+		"subCaption":'In Unit',
+		"numberSuffix":'Times',
+		'theme':'fusion',
+	}
+	progress_chart["data"] = []
+
+	blood_glucose_level_chart["data"] = []
+	blood_glucose_level_chart["chart"] = chartConfig
+	blood_glucose_level_chart["chart"] = {
+		"caption":'blood_glucose_level',
+		"subCaption":'In Celcius',
+		"numberSuffix":' Celcius',
+		'theme':'fusion',
+	}
+
+	demo_chart["chart"] = chartConfig
+
+	plan = IPDTreatmentPlan.objects.get(id=plan_id)
+	plan_performed = PerformPlan.objects.filter(plan=plan).count()
+	performed_list = PerformPlan.objects.filter(plan=plan)
+	#lastest_blood_glucose_levels = PatientVitalSign.objects.filter(blood_glucose_level__isnull=False,systolic_blood_pressure__isnull=True)[:5]	
+	for temp in plan.vital_sign.all():
+		print('\n','blood glucpse level: ',temp.blood_glucose_level)
+		blood_glucose_level_chart["data"].append({"label": str(temp.registered_on.year) + "-"+ str(temp.registered_on.month) + "-" + str(temp.registered_on.day), "value": temp.blood_glucose_level})
+
+	today = datetime.now(UTC)
+
+	expected_progress = 0
+	progress_chart["data"].append({"label": 'Threshold', "value": plan.recurrence.recurrence_threshold})
+
+	blood_glucose_level_chart = FusionCharts("line", "blood_glucose_level_chart", "800", "400", "patient_blood_glucose_level_chart_container", "json", blood_glucose_level_chart)
+
+	ratio = (plan_performed / plan.recurrence.recurrence_threshold) *100
+	plan_until = plan.start_time + timedelta(days=plan.recurrence.recurrence_threshold)
+	time_list = []
+	expected_progress_count = 0
+	if plan.recurrence.daily:
+		time_list = list(rrule(DAILY, plan.start_time,until=plan_until))
+		expected_progress = list(rrule(DAILY, plan.start_time,until=today))
+		for pr in expected_progress:
+			if pr < today:
+				expected_progress_count = expected_progress_count + 1
+		progress_chart["data"].append({"label": 'Times Should Have Been Performed', "value": expected_progress_count})
+		progress_chart["data"].append({"label": 'Times Performed', "value": plan_performed})
+
+	elif plan.recurrence.hourly:
+		first = plan.start_time
+		time_list.append(first)
+		for i in range(1,plan.recurrence.recurrence_threshold + 1):
+			first = first + timedelta(hours=plan.recurrence.hourly_range)
+			time_list.append(first)
+	elif plan.recurrence.weekly:
+		first = plan.start_time
+		time_list.append(first)
+		for day in plan.recurrence.days.all():
+			print('dayyyss: ',day,'\n')
+			if day.name == "Monday":
+				next_monday = plan.start_time + timedelta((0-plan.start_time.weekday()) % 7 )
+				
+				print('next_monday: ', next_monday,'\n')
+
+
+	#friday = today + datetime.timedelta( (4-today.weekday()) % 7 )
+	elif plan.recurrence.monthly:
+		first = plan.start_time
+		time_list.append(first)
+		for i in range(1,plan.recurrence.recurrence_threshold + 1):
+			first = first + timedelta(hours=plan.recurrence.hourly_range)
+			time_list.append(first)
+
+
+	progress_chart = FusionCharts("bar2d", "discharge_chart", "800", "400", "progress_chart_container", "json", progress_chart)
+
+	now_today = datetime.now()
+	print('exxxxxxx: ',expected_progress)
+	context = {'plan': plan,
+				'performed_list':performed_list,
+				'progress_chart':progress_chart.render(),
+				'blood_glucose_level_chart':blood_glucose_level_chart.render(),
+				'ratio':ratio,
+				'time_list':time_list,
+				'amount_performed':plan_performed,
+				'amount_required':plan.recurrence.recurrence_threshold,
+				'initial_date': str(now_today),
+
+				}
+	return render(request,'inpatient_app/patient_blood_glucose_level_progress.html',context)
+
+def BloodPressurePlanProgress(request,plan_id):
+	progress_chart = OrderedDict()
+	demo_chart = OrderedDict()
+	systolic_blood_pressure_chart = OrderedDict()
+	diastolic_blood_pressure_chart = OrderedDict()
+
+	chartConfig = OrderedDict()
+	chartConfig["caption"] = ""
+	chartConfig["subCaption"] = "In Unit"
+	chartConfig["numberSuffix"] = " Units"
+	chartConfig["theme"] = "fusion"
+	chartConfig["numVisiblePlot"] = "8",
+	chartConfig["flatScrollBars"] = "1",
+	chartConfig["scrollheight"] = "1",
+	chartConfig["type"] = "pie2d",
+
+	
+	progress_chart["chart"] = chartConfig
+	progress_chart["chart"] = {
+		"caption":'Plan Progress',
+		"subCaption":'In Unit',
+		"numberSuffix":'Times',
+		'theme':'fusion',
+	}
+	progress_chart["data"] = []
+
+	systolic_blood_pressure_chart["data"] = []
+	systolic_blood_pressure_chart["chart"] = chartConfig
+	systolic_blood_pressure_chart["chart"] = {
+		"caption":'systolic_blood_pressure',
+		"subCaption":'In Celcius',
+		"numberSuffix":' Celcius',
+		'theme':'fusion',
+	}
+	diastolic_blood_pressure_chart["data"] = []
+	diastolic_blood_pressure_chart["chart"] = chartConfig
+	diastolic_blood_pressure_chart["chart"] = {
+		"caption":'diastolic_blood_pressure',
+		"subCaption":'In Units',
+		"numberSuffix":' Units',
+		'theme':'fusion',
+	}
+
+	plan = IPDTreatmentPlan.objects.get(id=plan_id)
+	plan_performed = PerformPlan.objects.filter(plan=plan).count()
+	performed_list = PerformPlan.objects.filter(plan=plan)
+	#lastest_systolic_blood_pressures = PatientVitalSign.objects.filter(systolic_systolic_blood_pressure__isnull=False,systolic_systolic_blood_pressure__isnull=False,temperature__isnull=True)[:5]
+	for temp in plan.vital_sign.all():
+		systolic_blood_pressure_chart["data"].append({"label": str(temp.registered_on.year) + "-"+ str(temp.registered_on.month) + "-" + str(temp.registered_on.day), "value": temp.systolic_blood_pressure})
+		diastolic_blood_pressure_chart["data"].append({"label": str(temp.registered_on.year) + "-"+ str(temp.registered_on.month) + "-" + str(temp.registered_on.day), "value": temp.diastolic_blood_pressure})
+
+	today = datetime.now(UTC)
+
+	expected_progress = 0
+	progress_chart["data"].append({"label": 'Threshold', "value": plan.recurrence.recurrence_threshold})
+
+	systolic_blood_pressure_chart = FusionCharts("line", "systolic_blood_pressure_chart", "800", "400", "patient_systolic_blood_pressure_chart_container", "json", systolic_blood_pressure_chart)
+	diastolic_blood_pressure_chart = FusionCharts("line", "systolic_blood_pressure_chart", "800", "400", "patient_diastolic_blood_pressure_chart_container", "json", diastolic_blood_pressure_chart)
+
+	ratio = (plan_performed / plan.recurrence.recurrence_threshold) *100
+	plan_until = plan.start_time + timedelta(days=plan.recurrence.recurrence_threshold)
+	time_list = []
+	expected_progress_count = 0
+	if plan.recurrence.daily:
+		time_list = list(rrule(DAILY, plan.start_time,until=plan_until))
+		expected_progress = list(rrule(DAILY, plan.start_time,until=today))
+		for pr in expected_progress:
+			if pr < today:
+				expected_progress_count = expected_progress_count + 1
+		progress_chart["data"].append({"label": 'Times Should Have Been Performed', "value": expected_progress_count})
+		progress_chart["data"].append({"label": 'Times Performed', "value": plan_performed})
+
+	elif plan.recurrence.hourly:
+		first = plan.start_time
+		time_list.append(first)
+		for i in range(1,plan.recurrence.recurrence_threshold + 1):
+			first = first + timedelta(hours=plan.recurrence.hourly_range)
+			time_list.append(first)
+	elif plan.recurrence.weekly:
+		first = plan.start_time
+		time_list.append(first)
+		for day in plan.recurrence.days.all():
+			print('dayyyss: ',day,'\n')
+			if day.name == "Monday":
+				next_monday = plan.start_time + timedelta((0-plan.start_time.weekday()) % 7 )
+				
+				print('next_monday: ', next_monday,'\n')
+
+
+	#friday = today + datetime.timedelta( (4-today.weekday()) % 7 )
+	elif plan.recurrence.monthly:
+		first = plan.start_time
+		time_list.append(first)
+		for i in range(1,plan.recurrence.recurrence_threshold + 1):
+			first = first + timedelta(hours=plan.recurrence.hourly_range)
+			time_list.append(first)
+
+
+	progress_chart = FusionCharts("bar2d", "discharge_chart", "800", "400", "progress_chart_container", "json", progress_chart)
+
+	now_today = datetime.now()
+	print('exxxxxxx: ',expected_progress)
+	context = {'plan': plan,
+				'performed_list':performed_list,
+				'progress_chart':progress_chart.render(),
+				'systolic_blood_pressure_chart':systolic_blood_pressure_chart.render(),
+				'diastolic_blood_pressure_chart':diastolic_blood_pressure_chart.render(),
+
+				'ratio':ratio,
+				'time_list':time_list,
+				'amount_performed':plan_performed,
+				'amount_required':plan.recurrence.recurrence_threshold,
+				'initial_date': str(now_today),
+
+				}
+	return render(request,'inpatient_app/patient_blood_pressure_progress.html',context)
+
 def WholeWardView(request):
 	start_date = datetime.strptime(request.GET.get('start_date') or '1970-10-01', '%Y-%m-%d')
 	end_date = datetime.strptime(request.GET.get('end_date') or str(datetime.now().date()),  '%Y-%m-%d')
@@ -108,6 +712,7 @@ def WholeWardView(request):
 
 	active_tab = None
 	print(plan_text)
+
 	if plan_text == None:
 		print('')
 	else:
@@ -125,6 +730,7 @@ def WholeWardView(request):
 	elif filtered_status == '4':
 		plan_list = plan_list.filter(status='Dismissed')
 		active_tab = 'plan_tab'
+
 
 	if filtered_patient_id == None:
 		print('none 2')
@@ -172,6 +778,16 @@ def WholeWardView(request):
 	appointment_form = AppointmentForm()
 	patient_treatment_form = PatientTreatmentForm()
 	recurrence_form = RecurrenceForm()
+	sign_form = VitalSignForm()
+	perform_plan_form = PerformPlanForm()
+	temperature_form = TemperatureForm()
+	blood_pressure_form = BloodPressureForm()
+	glucose_level_form = GlucoseLevelForm()
+	oxygen_saturation_form = OxygenSaturationForm()
+	tolerable_form = TolerableDifferenceForm()
+	print('dsdsdsdsdsfff',tolerable_form)
+	records_submenu = True
+	inpatients_tab = True
 
 
 	if request.htmx:
@@ -382,6 +998,8 @@ def WholeWardView(request):
 	context = {'patient_list':patient_list,
 				'bed_list':bed_list,
 				'ward_list':ward_list,
+				'records_submenu':records_submenu,
+				'inpatients_tab':inpatients_tab,
 
 				'building_list':building_list,
 				'category_list':category_list,
@@ -389,6 +1007,7 @@ def WholeWardView(request):
 
 				'patient_form':patient_form,
 				'patient_form2':patient_form2,
+				'tolerable_form':tolerable_form,
 
 				#'prediction_form':prediction_form,
 				'appointment_form':appointment_form,
@@ -400,6 +1019,7 @@ def WholeWardView(request):
 				'treatment_plan_form':treatment_plan_form,
 				'prescription_form':prescription_form,
 				'info_form2':info_form2,
+				'sign_form':sign_form,
 
 				'plan_list':plan_list,
 				'active_tab':active_tab,
@@ -407,13 +1027,34 @@ def WholeWardView(request):
 				'dynamic_treatment_form':dynamic_treatment_form,
 				'manual_treatment_form':manual_treatment_form,
 				'patient_treatment_form':patient_treatment_form,
+				'perform_plan_form':perform_plan_form,
 
+				'temperature_form':temperature_form,
+				'blood_pressure_form':blood_pressure_form,
+				'glucose_level_form':glucose_level_form,
+				'oxygen_saturation_form':oxygen_saturation_form,
 
 	}
 	return render(request,'inpatient_app/whole_ward_view.html', context)
 
 
 def PatientList(request):
+	"""
+	patient_name = request.GET.get('patient_input',None)
+	patient = None
+	found = False
+	for patient1 in Patient.objects.all():
+		if found == False:
+			if patient1.full_name == patient_name:
+				print(patient1.full_name," : ",patient_name,'\n')
+				print('found it')
+				found = True
+				patient = patient1
+	print(patient)	
+	if patient==None:
+		messages.error(request,'Invalid Patient Input!')
+		return redirect('whole_ward_view')
+	"""
 	beds = Bed.objects.filter(patient__isnull=False)
 	patients = Patient.objects.filter(inpatient='yes')
 	allocated_patients = []
@@ -603,18 +1244,19 @@ def SaveTreatmentPlan2(request):
 		patient_name = request.POST.get('patient_input',None)
 		patient = None
 		found = False
-		for patient in Patient.objects.all():
+		for patient1 in Patient.objects.all():
 			if found == False:
-				#print(patient.full_name," : ",patient_name,'\n')
-				if patient.full_name == patient_name:
-					#print('found it')
+				print(patient1.full_name," : ",patient_name,'\n')
+				if patient1.full_name == patient_name:
+					print('found it')
 					found = True
-					patient = patient
-		#print(patient)	
+					patient = patient1
+		print(patient)	
 		if patient==None:
 			messages.error(request,'Invalid Patient Input!')
 			return redirect('whole_ward_view')
 		plan_form = IPDTreatmentPlanForm(request.POST)
+		tolerable_form = TolerableDifferenceForm(request.POST)
 		chosen_action = int(request.POST.get('action_select')) or 'None'
 		chosen_recurrence = int(request.POST.get('recurrence')) or 'None'
 		print('chosen: ',chosen_recurrence)
@@ -628,6 +1270,9 @@ def SaveTreatmentPlan2(request):
 			plan_model.name = 'nameesf'
 			plan_model.description = 'descdksks'
 
+			if tolerable_form.is_valid():
+				tolerable_model = tolerable_form.save()
+			plan_model.tolerable_difference = tolerable_model
 			if chosen_recurrence == 1:
 				print('chosen_recurrence1')
 				recurrence_form = RecurrenceForm(request.POST)
@@ -648,6 +1293,10 @@ def SaveTreatmentPlan2(request):
 					recurrence_model = recurrence_form.save(commit=False)
 					recurrence_model.weekly = True
 					recurrence_model.active=True
+					for day in recurrence_form['days'].value():
+						print('dayyyyyyy: ',day,'\n')
+					#print(recurrence_model.days,'ddddd')
+					
 					plan_model.recurrence = recurrence_model
 					recurrence_model.save()
 
@@ -667,6 +1316,15 @@ def SaveTreatmentPlan2(request):
 				if recurrence_form.is_valid():
 					recurrence_model = recurrence_form.save(commit=False)
 					recurrence_model.yearly = True
+					recurrence_model.active=True
+					plan_model.recurrence = recurrence_model
+					recurrence_model.save()
+			elif chosen_recurrence == 5:
+				print('chosen_recurrence4')
+				recurrence_form = RecurrenceForm(request.POST)
+				if recurrence_form.is_valid():
+					recurrence_model = recurrence_form.save(commit=False)
+					recurrence_model.hourly = True
 					recurrence_model.active=True
 					plan_model.recurrence = recurrence_model
 					recurrence_model.save()
@@ -730,7 +1388,7 @@ def SaveTreatmentPlan2(request):
 							treatment_model.registered_on = datetime.now()
 							plan_model.treatment = treatment_model	
 							treatment_model.save()
-							plan_model.save()
+							#plan_model.save()
 							messages.success(request,'Successful')
 							return redirect('whole_ward_view')
 							"""
@@ -742,38 +1400,6 @@ def SaveTreatmentPlan2(request):
 							messages.error(request,str(treatment_plan_form.errors))
 							return redirect('whole_ward_view')
 
-					"""
-					manual_treatment_form = ManualTreatmentForm(request.POST)
-					if manual_treatment_form:
-						if manual_treatment_form.is_valid():
-							
-							treatment_model = manual_treatment_form.save(commit=False)
-							if treatment_model.name:
-								treatment_model.active=True
-								treatment_model.registered_on = datetime.now()
-								plan_model.treatment = treatment_model	
-								treatment_model.save()
-								plan_model.save()
-								messages.success(request,'Successful')
-								return redirect('whole_ward_view')
-
-						else:
-							messages.error(request,str(manual_treatment_form.errors))
-							return redirect('whole_ward_view')
-				
-					dynamic_treatment_form = DynamicTreatmentForm(request.POST)
-					if dynamic_treatment_form.is_valid():
-						treatment_model = dynamic_treatment_form.save(commit=False)
-						treatment_model = treatment_model.treatment
-						plan_model.treatment = treatment_model
-						treatment_model.save()
-						plan_model.save()
-						messages.success(request,'Successfuld')
-						return redirect('whole_ward_view')
-					else:
-						messages.error(request,str(dynamic_treatment_form.errors))
-						return redirect('whole_ward_view')
-					"""
 				elif chosen_action == 3:
 					appointment_date = datetime.strptime(request.POST.get('appointment_date') or str(datetime.now().date()),  '%Y-%m-%d')
 
@@ -791,7 +1417,40 @@ def SaveTreatmentPlan2(request):
 					#else:
 					#messages.error(request,str(dynamic_treatment_form.errors))
 					#return redirect('whole_ward_view')
+				elif chosen_action == 4:
+					vital_sign_option = int(request.POST.get('vital_sign_options')) or 'None'
+					sign_plan = VitalSignPlan()
+					plan_model.vital_sign_options = sign_plan 
+					if vital_sign_option == 1:
+						#sign_plan = VitalSignPlan()
+						sign_plan.temperature = True
+						sign_plan.blood_pressure = True
+						sign_plan.oxygen_saturation = True
+						sign_plan.glucose = True
+						sign_plan.pulse_rate = True
+						sign_plan.active = True
+						sign_plan.save()
+						plan_model.save()
 
+					elif vital_sign_option == 2:
+						sign_plan.temperature = True
+						sign_plan.save()
+						plan_model.save()
+					elif vital_sign_option == 3:
+						sign_plan.blood_pressure = True
+						sign_plan.save()
+						plan_model.save()
+					elif vital_sign_option == 4:
+						sign_plan.oxygen_saturation = True
+						sign_plan.save()
+						plan_model.save()
+					elif vital_sign_option == 5:
+						sign_plan.glucose = True
+						sign_plan.save()
+						plan_model.save()
+					messages.success(request,'Successfuld')
+					return redirect('whole_ward_view')
+					
 
 		else:
 			messages.error(request,str(plan_form.errors))
@@ -896,6 +1555,72 @@ def ChangePlanStatus(request, plan_id):
 	#plan.status='Completed'
 	
 	#plan.end_time = datetime.now()
+	today = datetime.now()
+	print('\n','first: ',today.date(),'\n')
+	day = None
+	time_list = []
+	if plan.recurrence.daily:
+		time_list = list(rrule(DAILY, plan.start_time,until=plan_until))
+	elif plan.recurrence.hourly:
+		first = plan.start_time
+		time_list.append(first)
+		for i in range(1,plan.recurrence.recurrence_threshold + 1):
+			first = first + timedelta(hours=plan.recurrence.hourly_range)
+			time_list.append(first)
+	for t in time_list:
+		if t.date() == today.date():
+			day = t
+	if plan.recurrence.daily:
+		performed_today = PerformPlan.objects.filter(registered_on__date=today.date(),plan=plan).exists()
+		if performed_today:
+			messages.error(request, 'Todays Treatment Applied Already!')
+			return redirect('whole_ward_view')
+	elif plan.recurrence.hourly:
+		hour_before = today - timedelta(hours=1)
+		if plan.tolerable_difference:
+			if plan.tolerable_difference.tolerable_lateness_unit=='Hours':
+				after_date = day + timedelta(hours=plan.tolerable_difference.tolerable_lateness)
+				if (today + timedelta(hours=plan.tolerable_difference.tolerable_lateness)) > after_date:
+					messages.error(request, 'Time For Applying Treatment Has Passed!')
+					return redirect('whole_ward_view')
+
+			elif plan.tolerable_difference.tolerable_lateness_unit=='Days':
+				after_date = day + timedelta(days=plan.tolerable_difference.tolerable_lateness)
+				if (today + timedelta(days=plan.tolerable_difference.tolerable_lateness)) > after_date:
+					messages.error(request, 'Todays Treatment Applied Already!')
+					return redirect('whole_ward_view')
+
+			elif plan.tolerable_difference.tolerable_lateness_unit=='Minutes':
+				after_date = day + timedelta(minutes=plan.tolerable_difference.tolerable_lateness)
+				if (today + timedelta(minutes=plan.tolerable_difference.tolerable_lateness)) > after_date:
+					messages.error(request, 'Todays Treatment Applied Already!')
+					return redirect('whole_ward_view')
+
+			if plan.tolerable_difference.tolerable_earliness_unit=='Hours':
+				before_date = day - timedelta(hours=plan.tolerable_difference.tolerable_earliness)
+				if (today - timedelta(hours=plan.tolerable_difference.tolerable_earliness)) < before_date:
+					messages.error(request, 'Time For Applying Treatment Has Not Come Yet!')
+					return redirect('whole_ward_view')
+
+			elif plan.tolerable_difference.tolerable_earliness_unit=='Days':
+				before_date = day - timedelta(days=plan.tolerable_difference.tolerable_earliness)
+				if (today - timedelta(days=plan.tolerable_difference.tolerable_earliness)) < after_date:
+					messages.error(request, 'Time For Applying Treatment Has Not Come Yet!')
+					return redirect('whole_ward_view')
+
+			elif plan.tolerable_difference.tolerable_earliness_unit=='Minutes':
+				before_date = day - timedelta(minutes=plan.tolerable_difference.tolerable_earliness)
+				if (today - timedelta(minutes=plan.tolerable_difference.tolerable_earliness)) < after_date:
+					messages.error(request, 'Time For Applying Treatment Has Not Come Yet!')
+					return redirect('whole_ward_view')
+
+			performed_hour_before = PerformPlan.objects.filter(registered_on__range=[before_date,after_date],plan=plan).exists()
+		#else:
+		#	#performed_hour_before = PerformPlan.objects.filter(registered_on__range=[hour_before,today],plan=plan).exists()
+		#if performed_hour_before:
+			messages.error(request, 'Todays Treatment Applied Already!')
+			return redirect('whole_ward_view')
+
 	perform = PerformPlan()
 	perform.plan = plan
 	perform.registered_on = datetime.now()
@@ -1250,16 +1975,16 @@ def PatientListForDoctor(request):
 
 	# Now loop the kingdoms, to get all organisms in each.
 	for k in Kingdom.objects.all():
-	    # Append the tuple of OptGroup Name, Organism.
-	    form.fields['organism'].choices = form.fields['organism'].choices.append(
-	        (
-	            k.name, # First tuple part is the optgroup name/label
-	            list( # Second tuple part is a list of tuples for each option.
-	                (o.id, o.name) for o in Organism.objects.filter(kingdom=k).order_by('name')
-	                # Each option itself is a tuple of id and name for the label.
-	            )
-	        )
-	    )
+		# Append the tuple of OptGroup Name, Organism.
+		form.fields['organism'].choices = form.fields['organism'].choices.append(
+			(
+				k.name, # First tuple part is the optgroup name/label
+				list( # Second tuple part is a list of tuples for each option.
+					(o.id, o.name) for o in Organism.objects.filter(kingdom=k).order_by('name')
+					# Each option itself is a tuple of id and name for the label.
+				)
+			)
+		)
 
 	
 	bed_form = BedForm()
@@ -2404,16 +3129,114 @@ def VitalSignFormModalPage(request,patient_id, role_id):
 				last_sign.save()
 			except:
 				last_sign = None
-			vital_sign_model.active = 'active'
+			vital_sign_model.active = True
+			vital_sign_model.registered_on = datetime.now()
 			vital_sign_model.save()
 			messages.success(request, ' Successfully Assigned!')
 			if role_id == 1:
 				return redirect('doctor_chart_view', patient_id)
+			elif role_id == 3:
+				return redirect('whole_ward_view')
 			else:
 				return redirect('nurse_chart_view',patient_id)
+
 		else:
 			messages.error(request, str(vital_form.errors))
-			return redirect('doctor_chart_view', patient_id)
+			return redirect('whole_ward_view')
+
+def AddPatientTemperature(request,plan_id):
+	plan = IPDTreatmentPlan.objects.get(id=plan_id)
+	if request.method == 'POST':
+		temperature_form = TemperatureForm(request.POST)
+		if temperature_form.is_valid():
+			vital_sign_model = temperature_form.save(commit=False)
+			vital_sign_model.patient=plan.patient
+			vital_sign_model.active = True
+			vital_sign_model.registered_on = datetime.now()
+			perform = PerformPlan()
+			perform.plan = plan
+			perform.registered_on = datetime.now()
+			perform.registered_by = Employee.objects.get(user_profile=request.user)
+			plan.recurrence.recurrence_threshold = plan.recurrence.recurrence_threshold + 1
+			vital_sign_model.save()
+			plan.vital_sign.add(vital_sign_model)
+			plan.save()
+			perform.save()
+			messages.success(request, 'Temperature Successfully Added!')
+			return redirect('whole_ward_view')
+		else:
+			messages.error(request, str(temperature_form.errors))
+			return redirect('whole_ward_view')
+def AddPatientBloodPressure(request,plan_id):
+	plan = IPDTreatmentPlan.objects.get(id=plan_id)
+	if request.method == 'POST':
+		blood_pressure_form = BloodPressureForm(request.POST)
+		if blood_pressure_form.is_valid():
+			vital_sign_model = blood_pressure_form.save(commit=False)
+			vital_sign_model.patient=plan.patient
+			vital_sign_model.active = True
+			vital_sign_model.registered_on = datetime.now()
+			perform = PerformPlan()
+			perform.plan = plan
+			perform.registered_on = datetime.now()
+			perform.registered_by = Employee.objects.get(user_profile=request.user)
+			vital_sign_model.save()
+			plan.vital_sign.add(vital_sign_model)
+			plan.save()
+			perform.save()
+			messages.success(request, 'Blood Pressure Successfully Added!')
+			return redirect('whole_ward_view')
+
+		else:
+			messages.error(request, str(blood_pressure_form.errors))
+			return redirect('whole_ward_view')
+
+def AddPatientGlucoseLevel(request,plan_id):
+	plan = IPDTreatmentPlan.objects.get(id=plan_id)
+	if request.method == 'POST':
+		glucose_level_form = GlucoseLevelForm(request.POST)
+		if glucose_level_form.is_valid():
+			vital_sign_model = glucose_level_form.save(commit=False)
+			vital_sign_model.patient=plan.patient
+			vital_sign_model.active = True
+			vital_sign_model.registered_on = datetime.now()
+			perform = PerformPlan()
+			perform.plan = plan
+			perform.registered_on = datetime.now()
+			perform.registered_by = Employee.objects.get(user_profile=request.user)
+			vital_sign_model.save()
+			plan.vital_sign.add(vital_sign_model)
+			plan.save()
+			perform.save()
+			messages.success(request, 'Temperature Successfully Added!')
+			return redirect('whole_ward_view')
+
+		else:
+			messages.error(request, str(glucose_level_form.errors))
+			return redirect('whole_ward_view')
+
+def AddPatientOxygenSaturation(request,plan_id):
+	plan = IPDTreatmentPlan.objects.get(id=plan_id)
+	if request.method == 'POST':
+		oxygen_saturation_form = OxygenSaturationForm(request.POST)
+		if oxygen_saturation_form.is_valid():
+			vital_sign_model = oxygen_saturation_form.save(commit=False)
+			vital_sign_model.patient=plan.patient
+			vital_sign_model.active = True
+			vital_sign_model.registered_on = datetime.now()
+			messages.success(request, 'Temperature Successfully Added!')
+			perform = PerformPlan()
+			perform.plan = plan
+			perform.registered_on = datetime.now()
+			perform.registered_by = Employee.objects.get(user_profile=request.user)
+			vital_sign_model.save()
+			plan.vital_sign.add(vital_sign_model)
+			plan.save()
+			perform.save()
+			return redirect('whole_ward_view')
+		else:
+			messages.error(request, str(oxygen_saturation_form.errors))
+			return redirect('whole_ward_view')
 
 def DoctorChartView(request, patient_id):
 	"""
@@ -3361,6 +4184,7 @@ def InpatientReport(request):
 
 	dataSource["chart"] = chartConfig
 	dataSource["data"] = []
+
 
 	admission_chart["chart"] = chartConfig
 	admission_chart["chart"] = {

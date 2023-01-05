@@ -646,9 +646,42 @@ class IPDTreatmentPlanForm(forms.ModelForm):
 			'description': forms.Textarea(attrs={
 			'class' : 'form-control forms',
 			'id' : ''
+				}),		
+			}
+
+class TolerableDifferenceForm(forms.ModelForm):
+	class Meta:
+		model = TolerableTimeDifference
+		fields = ['tolerable_earliness','tolerable_earliness_unit',
+					'tolerable_lateness','tolerable_lateness_unit'
+		]
+		widgets = {			
+			'tolerable_earliness': forms.NumberInput(attrs={
+			'class' : 'form-control forms',
+				}),
+			'tolerable_lateness': forms.NumberInput(attrs={
+			'class' : 'form-control forms',
+				}),
+			'tolerable_lateness_unit': forms.Select(attrs={
+			'class' : 'form-control select2',
+				}),
+			'tolerable_earliness_unit': forms.Select(attrs={
+			'class' : 'form-control select2',
 				}),
 
-		
+			}
+
+class PerformPlanForm(forms.ModelForm):
+	class Meta:
+		model = PerformPlan 
+		fields = [
+					'note',
+					]
+		widgets = {			
+			'note': forms.Textarea(attrs={
+			'class' : 'form-control forms',
+			'id' : ''
+				}),		
 			}
 
 class ManualTreatmentForm(forms.ModelForm):

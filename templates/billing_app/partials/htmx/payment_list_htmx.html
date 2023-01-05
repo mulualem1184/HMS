@@ -1,0 +1,36 @@
+    <div id="drug_price_tab">
+
+                                    <div class="card card-box" style="overflow-y:scroll;overflow-x:scroll;background-color: white; width: 1250px;height: 600px;">
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 1250px;">
+                                            
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="gradeX odd">
+                                                    <th class= "text-center"><small>Date</small></th>
+                                                    <th class= "text-center"><small>Patient</small></th>
+                                                    <th class= "text-center"><small>Amount Paid</small></th>
+                                                    <th class= "text-center"><small>Amount Remaining</small></th>
+                                                    <th class= "text-center"><small>Pre Payment</small></th>
+                                                    <th class= "text-center"><small>Date</small></th>
+                                                </tr>
+                                            </thead>
+                        <tbody>
+                            {% for payment in payments %}
+
+                                <tr style="height: 40px;">
+                                    <td class= "text-center" style="width:100px"><small> {{ payment.registered_on }}</small></td>
+                                    <td class= "text-center" style="width:100px"><small> {{ payment.patient }}</small></td>
+                                    <td class= "text-center" style="width:100px"><small> {{ payment.amount_paid }} </small></td>
+                                    <td class= "text-center" style="width:100px"><small> {{ payment.remaining_amount }} </small></td>
+
+                                    <td class= "text-center" style="width:100px"><small>{{ payment.pre_payment }} </small></td>
+                                    <td class= "text-center" style="width:100px"><small> {{ payment.registered_on }} </small></td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                        
+                    </table>
+
+              
+                                    </div>
+
+</div>

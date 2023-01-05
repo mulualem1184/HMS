@@ -1,17 +1,22 @@
 <div class="modal fade md" id="modal{{ rt.id }}" tabindex="-1" role="dialog" aria-labelledby="setAccessionNumberLabel" aria-hidden="false">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
+                <form method="POST"  action="{% url 'add_normal_range' rt.id %}" id="form_sample_1" class="form-horizontal" enctype="multipart/form-data">
+
             <div class="modal-header">
-                <h4 class="modal-title" id="setAccessionNumberLabel">Add Normal Range for {{ rt.name }}</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+
+                <h4 class="modal-title center">
+
+                        <button class="btn " type="submit"><i class="fa fa-save"></i>Save And Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <!--
+                <button type="button" onclick="OpenModal9()">dsss</button>
+                -->
+                </h4>
             </div>
             <div class="modal-body">
-                <form method="POST"  action="{% url 'add_normal_range' rt.id %}" id="form_sample_1" class="form-horizontal" enctype="multipart/form-data">
                     {% csrf_token %}
                     {% include "lis/normal_range_form.html" %}
-                    <button type="submit" class="btn btn-primary" style="margin-left: 75px;">Add</button>
                 </form>
             </div>
         </div>

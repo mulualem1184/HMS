@@ -1,0 +1,97 @@
+{% load crispy_forms_tags %}
+<div class="modal fade" id="reconcileInvoices" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fluid col-md-6" role="document">
+        <div class="modal-content">
+                                    {% csrf_token %}
+            <form action="{% url 'reconcile_invoices' %}" method="POST">
+
+            <div class="modal-header">
+                <h4 class="modal-title center">
+
+                        <button class="btn " type="submit"><i class="fa fa-save"></i>Save And Close</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </h4>
+            </div>
+                {% csrf_token %}
+            <div class="modal-body">
+            <div class="row" style="padding-left: 50px;">
+                <div class="card card-body" style="overflow-y:scroll;overflow-x:scroll;background-color: white; width: 700px;height: 600px;">
+                    <div class="card-head">
+                        <b>Invoices</b>
+                    </div>
+                    <table id="reconcile-invoices-id"  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 650px;">
+                        
+                        <thead style="background-color: lightgrey;">
+                            <tr class="gradeX odd">
+                                <th class= "text-center"><small>Check</small></th>
+                                <th class= "text-center"><small>Id</small></th>
+                                <th class= "text-center"><small>Patient</small></th>
+                                <th class= "text-center"><small>No of Items</small></th>
+                                <th class= "text-center"><small>Total Amount</small></th>
+                                <th class= "text-center"><small>Unpaid Amount</small></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for invoice in invoices %}
+                                        {% if invoice.unpaid_amount == 0 %} 
+                                        {% else %}
+
+                                <tr style="height: 40px;">
+                                    
+                                    <td class= "text-center" style="width:100px"><small><input type="checkbox"  name="invoices" value="{{invoice.id}}" ></small></td>
+                                    <td class= "text-center" style="width:100px"><small> {{ invoice.id }}</small></td>
+                                    <td class= "text-center" style="width:100px"><small> {{ invoice.patient }}</small></td>
+                                    <td class= "text-center" style="width:100px"><small> {{ invoice.no_of_items }}</small></td>
+                                    <td class= "text-center" style="width:100px"><small> {{ invoice.total_amount }} </small></td>
+                                    <td class= "text-center" style="width:100px"><small> {{ invoice.unpaid_amount }} </small></td>
+                                </tr>
+                                    {% endif %}
+
+                            {% endfor %}
+                        </tbody>
+                        
+                    </table>
+                    </div>
+                <div class="card card-body row border-left-0" style="overflow-y:scroll;overflow-x:scroll;background-color: white; width: 650px;height: 600px;">
+                    <div class="card-head">
+                        <b>Payment</b>
+                    </div>
+                    <table id="reconcile-invoices-id"  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 600px;">
+                        
+                        <thead style="background-color: lightgrey;">
+                            <tr class="gradeX odd">
+                                <th class= "text-center"><small>Check</small></th>
+                                <th class= "text-center"><small>Patient</small></th>
+                                <th class= "text-center"><small>Amount Paid</small></th>
+                                <th class= "text-center"><small>Amount Remaining</small></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for payment in payments %}
+                                        {% if payment.remaining_amount == 0 %} 
+                                        {% else %}
+
+                                <tr style="height: 40px;">
+                                    
+                                    <td class= "text-center" style="width:100px"><small><input type="checkbox"  name="payments" value="{{payment.id}}" ></small></td>
+                                    <td class= "text-center" style="width:100px"><small> {{ payment.patient }}</small></td>
+                                    <td class= "text-center" style="width:100px"><small> {{ payment.amount_paid }}</small></td>
+                                    <td class= "text-center" style="width:100px"><small> {{ payment.remaining_amount }} </small></td>
+                                </tr>
+                                    {% endif %}
+
+                            {% endfor %}
+                        </tbody>
+                        
+                    </table>
+                    </div>              
+                </div>
+
+                </div>
+                    </form>
+
+        </div>
+
+    </div>
+</div>
+

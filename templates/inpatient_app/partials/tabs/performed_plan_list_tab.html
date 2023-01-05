@@ -1,0 +1,55 @@
+{% load custom_dict %}
+                <div class="tab-pane" id="performed-treatment-plan-tab">
+                    <div class="card col-md-12" style="overflow-y:scroll;overflow-x:scroll; height: 600px;width: 1100px;">
+                        <div class="card-head " >
+                                <div class="row">
+                                        <a href="" data-toggle="modal" data-target="#addResourceModal{{patient.id}}">
+                                        <div class="row" style="padding-left:30px;">
+                                        </div>
+                                        </a>
+                                </div>
+
+                        </div>
+                        <div class="card-body">
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;">
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="">
+                                                    <div class="col"> 
+                                                    <div>
+                                                        <th class="text-center"><small> Performed</small></th>
+                                                    </div>
+                                                    {% for performed in performed_list %}
+                                                    <div>
+                                                        <th class="text-center"><small> Time</small></th>
+                                                    </div>
+                                                    {% endfor %}
+                                                    </div>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                    <tr class="" style="height:40px;">
+                                                        <td style="width:100px" class="text-center">
+                                                            <small>
+                                                                <a href="" ></a> 
+                                                            </small>
+                                                        </td>
+                                                                {% for performed in performed_list %}
+                                                                              {% include "inpatient_app/partials/modals/view_perform_plan2.html" %}
+                                                                    
+                                                                    <td style="width:50px;" class="text-center">
+                                                                        <a data-toggle="modal" data-target="#viewPerformedPlan2{{performed.id}}"> 
+                                                                      
+                                                                              <small>{{performed.registered_on}}</small>     
+                                                                        </a> 
+                                                                    </td>
+                                                                {% endfor %}
+                                                        
+
+                                                    </tr>
+                                            </tbody>
+                                        </table>
+                            
+                        </div>
+
+                    </div>
+                </div>

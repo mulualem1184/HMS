@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Patient, TextMessage, PatientVitalSign, InsuranceDetail,PatientPaymentStatus,PatientTreatment,Image,File,PatientParaclinicalFinding,PersonInfo,PatientNote,PatientFamilyMedic,PatientBarcode,PatientDemoValues,PatientConsultation,ReviewOfSystems,Compliant,Treatment,Material,Recommendation,ParaclinicalFinding,ClinicalFinding,Diagnoses,PhysicalExam,PatientMaterial,PatientClinicalFinding,PatientCheckin,Resource,PatientResource,Recurrence,Day
+from .models import Patient, TextMessage, PatientVitalSign, InsuranceDetail,PatientPaymentStatus,PatientTreatment,Image,File,PatientParaclinicalFinding,PersonInfo,PatientNote,PatientFamilyMedic,PatientBarcode,PatientDemoValues,PatientConsultation,ReviewOfSystems,Compliant,Treatment,Material,Recommendation,ParaclinicalFinding,ClinicalFinding,Diagnoses,PhysicalExam,PatientMaterial,PatientClinicalFinding,PatientCheckin,Resource,PatientResource,Recurrence,Day,PatientImage,PatientFile
 
 
 
@@ -46,3 +46,5 @@ admin.site.register(Resource)
 admin.site.register(PatientResource)
 admin.site.register(Recurrence)
 admin.site.register(Day)
+admin.site.register(PatientFile)
+admin.site.register(PatientImage)

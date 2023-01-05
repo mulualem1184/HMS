@@ -34,5 +34,8 @@ class GeneralReport:
         self.test_list = test_list
         self.time_frame = time_frame
         self.total_no_tests = len(test_list)
-        self.avg_per_day = self.total_no_tests/self.time_frame
-        self.total_price = self.test_type.price * self.total_no_tests
+        #self.avg_per_day = self.total_no_tests/self.time_frame
+        self.avg_per_day = self.total_no_tests
+
+        #self.total_price = self.test_type.price * self.total_no_tests
+        #self.total_price = 100

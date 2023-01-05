@@ -27,12 +27,6 @@ from django.forms.models import(
 ###
 
 class PatientRegistrationForm(forms.ModelForm):
-	DateInput = partial(forms.DateInput, {'class':'datepicker'})
-	patient = Patient.objects.all()
-
-	def __init__(self, *args, **kwargs):
-		super(PatientRegistrationForm, self).__init__(*args, **kwargs)
-		self.fields['first_name'].initial = patient
 	class Meta:
 		model = Patient
 		fields = ['first_name', 'last_name', 'sex', 'dob',
