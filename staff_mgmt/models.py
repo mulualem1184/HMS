@@ -20,6 +20,104 @@ class Department(models.Model):
         return self.name
 
 
+class MedicalPermission(models.Model):
+    view_patient_info = models.BooleanField(default=False)
+    write_patient_personal_info = models.BooleanField(default=False)
+    write_consultation = models.BooleanField(default=False)
+    view_consultation = models.BooleanField(default=False)
+    write_clinical_finding = models.BooleanField(default=False)
+    view_clinical_finding = models.BooleanField(default=False)
+    write_treatment = models.BooleanField(default=False)
+    view_treatment = models.BooleanField(default=False)
+    write_allergy = models.BooleanField(default=False)
+    view_allergy = models.BooleanField(default=False)
+    write_paraclinical_finding = models.BooleanField(default=False)
+    view_paraclinical_finding = models.BooleanField(default=False)
+    write_prescription = models.BooleanField(default=False)
+    view_prescription = models.BooleanField(default=False)
+    write_diagnosis = models.BooleanField(default=False)
+    view_diagnosis = models.BooleanField(default=False)
+    write_surgery = models.BooleanField(default=False)
+    view_surgery = models.BooleanField(default=False)
+    write_document = models.BooleanField(default=False)
+    view_document = models.BooleanField(default=False)
+    write_treatment_plan = models.BooleanField(default=False)
+    view_treatment_plan = models.BooleanField(default=False)
+    write_treatment_plan_action = models.BooleanField(default=False)
+    view_treatment_plan_action = models.BooleanField(default=False)
+    write_medical_certificate = models.BooleanField(default=False)
+    view_medical_certificate = models.BooleanField(default=False)
+    write_medical_attendance = models.BooleanField(default=False)
+    view_medical_attendance = models.BooleanField(default=False)
+
+
+class ComponentPermission(models.Model):
+    view_patient_record = models.BooleanField(default=False)
+    view_patient_chart = models.BooleanField(default=False)
+    view_ward = models.BooleanField(default=False)
+    view_laboratory = models.BooleanField(default=False)
+    view_lab_dashboard = models.BooleanField(default=False)
+
+    view_billing = models.BooleanField(default=False)
+    view_billing_dashboard = models.BooleanField(default=False)
+
+    view_cashier_reconcilation = models.BooleanField(default=False)
+
+    view_pharmacy = models.BooleanField(default=False)
+    view_staff = models.BooleanField(default=False)
+
+class WardPermission(models.Model):
+    write_ward_admission = models.BooleanField(default=False)
+    view_ward_admission = models.BooleanField(default=False)
+
+class LaboratoryPermission(models.Model):
+    write_lab_request = models.BooleanField(default=False)
+    view_lab_request = models.BooleanField(default=False)
+    write_lab_specimen = models.BooleanField(default=False)
+    view_lab_specimen = models.BooleanField(default=False)
+    write_lab_result = models.BooleanField(default=False)
+    view_lab_result = models.BooleanField(default=False)
+
+class SettingPermission(models.Model):
+    write_lab_test_type = models.BooleanField(default=False)
+    write_item = models.BooleanField(default=False)
+    write_ward_structure = models.BooleanField(default=False)
+    write_pharmacy_structure = models.BooleanField(default=False)
+
+class OtherPermission(models.Model):
+    write_checkin = models.BooleanField(default=False)
+    view_checkin = models.BooleanField(default=False)
+    write_resource = models.BooleanField(default=False)
+    view_resource = models.BooleanField(default=False)
+    write_material = models.BooleanField(default=False)
+    view_material = models.BooleanField(default=False)
+
+class BillingPermission(models.Model):
+    write_invoice = models.BooleanField(default=False)
+    view_invoice = models.BooleanField(default=False)
+    write_receipt = models.BooleanField(default=False)
+    view_receipt = models.BooleanField(default=False)
+    write_payment = models.BooleanField(default=False)
+    view_payment = models.BooleanField(default=False)
+
+class PharmacyPermission(models.Model):
+    write_drug_transfer_request = models.BooleanField(default=False)
+    view_drug_transfer_request = models.BooleanField(default=False)
+    write_first_transfer_request_approval = models.BooleanField(default=False)
+    write_second_transfer_request_approval = models.BooleanField(default=False)
+    write_relocate_item = models.BooleanField(default=False)
+    write_allocate_item = models.BooleanField(default=False)
+
+class Permissions(models.Model):
+
+    medical = models.ForeignKey(to=MedicalPermission, on_delete=models.CASCADE,null=True,blank=True)
+    component = models.ForeignKey(to=ComponentPermission, on_delete=models.CASCADE,null=True,blank=True)
+    ward = models.ForeignKey(to=WardPermission, on_delete=models.CASCADE,null=True,blank=True)
+    laboratory = models.ForeignKey(to=LaboratoryPermission, on_delete=models.CASCADE,null=True,blank=True)
+    setting = models.ForeignKey(to=SettingPermission, on_delete=models.CASCADE,null=True,blank=True)
+    billing = models.ForeignKey(to=BillingPermission, on_delete=models.CASCADE, null=True,blank=True)
+    pharmacy = models.ForeignKey(to=PharmacyPermission, on_delete=models.CASCADE,null=True,blank=True)
+
 class Designation(models.Model):
     """
     name: name of the type of staff e.g Doctor
@@ -29,6 +127,7 @@ class Designation(models.Model):
     name = models.CharField(max_length=100)
     department = models.ForeignKey(to=Department, on_delete=models.CASCADE)
     staff_code = models.CharField(max_length=50, verbose_name='Designation Code')
+    permission = models.ForeignKey(to=Permissions, on_delete=models.CASCADE, null=True,blank=True)
 
     class Meta:
         unique_together = ('name', 'staff_code')

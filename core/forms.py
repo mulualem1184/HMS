@@ -1,5 +1,5 @@
 from django import forms
-from .models import Patient, PatientVitalSign, PatientPaymentStatus, InsuranceDetail,PatientAllergy,PatientClinicalFinding,PatientTreatment,Image,File,PatientParaclinicalFinding,PatientSurgery,PatientBloodGroup,PatientNote,PatientMedicalHistory,PatientSocialHistory,PatientFamilyHistory,PatientOccupation,AdditionalPatientInfo,PersonInfo,Copayer,PatientFamilyMedic,PatientReferrer,Occupation,PatientConsultation,ReviewOfSystems,PatientSurgeryHistory,PhysicalExam,PatientDemoValues,ScheduleStuff,MedicalCertificate,PatientMaterial,PatientCheckin,PatientResource,Recurrence,Resource,PatientDiagnosis,Task
+from .models import Patient, PatientVitalSign, PatientPaymentStatus, InsuranceDetail,PatientAllergy,PatientClinicalFinding,PatientTreatment,Image,File,PatientParaclinicalFinding,PatientSurgery,PatientBloodGroup,PatientNote,PatientMedicalHistory,PatientSocialHistory,PatientFamilyHistory,PatientOccupation,AdditionalPatientInfo,PersonInfo,Copayer,PatientFamilyMedic,PatientReferrer,Occupation,PatientConsultation,ReviewOfSystems,PatientSurgeryHistory,PhysicalExam,PatientDemoValues,ScheduleStuff,MedicalCertificate,PatientMaterial,PatientCheckin,PatientResource,Recurrence,Resource,PatientDiagnosis,Task,Stock,StockShelf
 from dal import autocomplete
 from inpatient_app.models import IPDTreatmentPlan
 class PatientForm(forms.ModelForm):
@@ -1791,3 +1791,33 @@ class RecurrenceForm(forms.ModelForm):
 
         }
 
+
+
+class CreateStockForm(forms.ModelForm):    
+    class Meta:
+        model = Stock
+        fields = [ 'stock_type','name',                   
+        ]
+        widgets = {
+
+            'stock_type': forms.Select(attrs={
+            'class' : 'forms form-control select2',
+                }),
+            'name': forms.TextInput(attrs={
+            'class' : 'forms form-control',
+                }),
+            }
+
+class CreateStockShelfForm(forms.ModelForm):    
+    class Meta:
+        model = StockShelf
+        fields = [ 'stock','name',   ]
+        widgets = {
+
+            'stock': forms.Select(attrs={
+            'class' : 'forms form-control select2',
+                }),
+            'name': forms.TextInput(attrs={
+            'class' : 'forms form-control',
+                }),
+            }

@@ -1,0 +1,23 @@
+<div class="card card-body" style="padding-left: 20px;">
+     <div><small><b>Laboratory Previlages</b></small></div>
+    <div class="row" style="padding-left: 30px;">
+
+         {% for field in laboratory_view_form %}                                 
+         <div class="row" style="width: 230px;">
+            <!--<div>
+                <small>
+                    <label class="rt-chkbox rt-chkbox-single rt-chkbox-outline">
+                        <input type="checkbox" name='tests' value="{{ field.id }}" class="checkboxes"   />
+                        <span></span>
+                    </label>
+                </small>
+            </div>-->
+            <div><small>{{field}}</small></div>
+            <div style="margin-left: 10px;">
+               <small> {{field.label}}</small>
+            </div>
+         </div>
+         {% endfor %}
+    </div>
+</div>
+

@@ -139,5 +139,22 @@ urlpatterns = [
   path('drug_bill_report', DrugBillReport, name = 'drug_bill_report'),
 
   path('today_sale_report', TodaySaleReport, name ='today_sale_report'),
+  path('billed_drug_list', BilledDrugList.as_view(), name ='billed_drug_list'),
+  path('dispensed_list', DispensedList.as_view(), name ='dispensed_list'),
+  path('inventory_structures', InventoryStructures.as_view(), name ='inventory_structures'),
+  path('create_stock', CreateStock, name ='create_stock'),
+  path('create_stock_shelf', CreateStockShelf, name ='create_stock_shelf'),
+  path('pharmacy_inventory', PharmacyInventory.as_view(), name ='pharmacy_inventory'),
+  path('patient_drugs/<int:patient_id>', PatientDrugs.as_view(), name ='patient_drugs'),
+  path('transfer_request/', TransferRequests.as_view(), name ='transfer_request'),
+  path('transfer_request_form/<int:stock_id>', TransferRequestForm.as_view(), name ='transfer_request_form'),
+  path('add_transfer_item_form/<int:stock_id>', AddTransferItemForm.as_view(), name ='add_transfer_item_form'),
+  path('save_transfer_request/<int:stock_id>', SaveTransferRequest.as_view(), name ='save_transfer_request'),
+  path('transfer_request_first_approval/<int:request_id>', TransferRequestFirstApproval.as_view(), name ='transfer_request_first_approval'),
+  path('transfer_request_second_approval/<int:request_id>', TransferRequestSecondApproval.as_view(), name ='transfer_request_second_approval'),
+  path('stock_transfer_management/<int:request_id>', StockTransferManagement.as_view(), name ='stock_transfer_management'),
+  path('stock_allocation/<int:request_id>', StockAllocation.as_view(), name ='stock_allocation'),
+  path('save_item_relocation/<int:request_id>', SaveItemRelocation.as_view(), name ='save_item_relocation'),
+  path('save_threshold', SaveThreshold.as_view(), name='save_threshold'),
 
 ]

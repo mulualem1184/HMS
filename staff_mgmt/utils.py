@@ -1,7 +1,6 @@
 # utility functions and classes
 import random
 
-
 class TimeOverlapError(Exception):
     pass
 
@@ -33,3 +32,31 @@ def generate_random_color():
     g = random.randint(0, 120)
     b = random.randint(0, 255)
     return f'rgb({r},{g},{b})'
+
+
+def save_permission_form(self,form, designation,model_str):
+
+    form1 = form.save(commit=False)
+    try:
+        if model_str == 'M':
+            obj = designation.permission.medical
+        elif model_str == 'C':
+            obj = designation.permission.component
+            for f in form.changed_data:
+                try:
+                    print(self.request.POST[f],'\n')
+                    if self.request.POST[f] == 'on':
+                        value = True
+                except Exception as e:
+                    value = False
+                setattr(obj,f,value)                
+                print('has reached')
+
+            obj.save()
+            messages.success(self.request, "Permission Given successfully!")
+            return redirect('staff:assign_previlages', designation.id)
+        
+    except Exception as e:
+        obj.save()
+        messages.success(self.request, "Permission Given successfully!")
+        return redirect('staff:assign_previlages', designation.id)

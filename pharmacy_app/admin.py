@@ -59,7 +59,7 @@ admin.site.register(DispensaryDrug)
 admin.site.register(Procurement)
 admin.site.register(ProcurementDetail)
 admin.site.register(DrugImage)
-admin.site.register(InventoryThreshold)
+#admin.site.register(InventoryThreshold)
 admin.site.register(DrugAvailabilityStatus)
 
 admin.site.register(DrugRelocationTemp)

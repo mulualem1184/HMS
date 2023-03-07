@@ -462,3 +462,77 @@ class AssociateItemForm(forms.ModelForm):
 				}),
 
 			}
+
+"""
+class TransferRequestForm(forms.ModelForm):
+
+	class Meta:
+		model = TransferRequest
+		fields = [ 'source']
+		widgets = {
+			'patient': forms.Select(attrs={
+			'class' : 'select2 form-control',
+				}),
+			'due_date': forms.DateInput(attrs={
+			'class' : 'form-control forms',
+				}),
+
+			}
+"""
+
+
+class StockForm(forms.ModelForm):
+
+	class Meta:
+		model = TransferRequest
+		fields = [ 'source']
+		widgets = {
+			'source': forms.Select(attrs={
+			'class' : 'select2 form-control',
+				}),
+			}
+
+class DestinationStockForm(forms.ModelForm):
+
+	class Meta:
+		model = TransferRequest
+		fields = [ 'destination']
+		widgets = {
+			'source': forms.Select(attrs={
+			'class' : 'select2 form-control',
+				}),
+			}
+
+class ItemTransferInfoForm(forms.ModelForm):
+
+	class Meta:
+		model = ItemTransferInfo
+		fields = [ 'item', 'quantity']
+
+		widgets = {
+			'item': forms.Select(attrs={
+			'class' : 'select2 form-control',
+				}),
+			'quantity': forms.NumberInput(attrs={
+			'class' : 'forms form-control',
+				}),
+			}
+
+class ItemRelocationInfoForm(forms.ModelForm):
+
+	class Meta:
+		model = ItemRelocationInfo
+		fields = [ 'item', 'quantity','shelf']
+
+		widgets = {
+			'item': forms.Select(attrs={
+			'class' : 'select2 form-control',
+				}),
+			'quantity': forms.NumberInput(attrs={
+			'class' : 'forms form-control',
+				}),
+			'shelf': forms.Select(attrs={
+			'class' : 'select2 form-control',
+				}),
+
+			}

@@ -968,3 +968,45 @@ weight = models.FloatField(
     validators=[MinValueValidator(0.0), MaxValueValidator(1.0)],
 )
 """
+
+class Stock(models.Model):
+    stock_type = [
+        ('0','Main'),
+        ('1', 'Dispensary'),
+    ]
+    stock_type = models.CharField(max_length=10, choices=stock_type,null=True,blank=True)
+    name = models.CharField(max_length=1000, null=True)#needs choices
+    active = models.BooleanField(default=True)
+    registered_by = models.ForeignKey(Employee, on_delete= models.SET_NULL, null=True)
+    registered_on = models.DateTimeField(null=True)
+
+    def __str__(self):
+#       stock_no_string = str(self.stock_no)
+        return  self.name
+    
+class StockShelf(models.Model):
+    stock = models.ForeignKey(Stock, on_delete=models.SET_NULL,null=True,blank =True)
+    name = models.CharField(max_length=500,null=True)
+    active = models.BooleanField(default=True)
+    registered_by = models.ForeignKey(Employee, on_delete= models.SET_NULL, null=True)
+    registered_on = models.DateTimeField(null=True)
+
+    def __str__(self):
+#       stock_no_string = str(self.stock_no)
+        return  self.name
+
+
+
+"""
+class DrugRelocationTemp(models.Model):
+    drug = models.ForeignKey(Dosage, on_delete= models.SET_NULL, null=True) 
+    quantity = models.IntegerField(null=True)   
+    
+class DrugSupplyToDispensary(models.Model):
+    drug = models.ForeignKey(Dosage, on_delete= models.SET_NULL, null=True) 
+    quantity = models.IntegerField(null=True)   
+    dispensary = models.ForeignKey(Dispensary, on_delete= models.SET_NULL, null=True)   
+    registered_by = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
+    registered_on = models.DateTimeField(auto_now_add=True, null=True)
+
+    """

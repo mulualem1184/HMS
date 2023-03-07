@@ -20,14 +20,19 @@ from staff_mgmt.forms import (ChangePasswordForm, DepartmentForm,
                               EmployeeForm, FilterScheduleForm, LeaveForm,
                               ResetPasswordForm, UpdateAttendanceForm,
                               UpdateDepartmentHeadForm, UserForm,
-                              WorkShiftForm)
+                              WorkShiftForm,MedicalWritePermissionForm,MedicalViewPermissionForm,
+                              ComponentPermissionForm,LaboratoryViewPermissionForm,
+                              SettingPermissionForm,LaboratoryWritePermissionForm,BillingWritePermissionForm
+                              ,BillingViewPermissionForm,SettingPermissionForm,PharmacyPermissionForm,
+                              WardPermissionForm,OtherViewPermissionForm,OtherWritePermissionForm)
 from staff_mgmt.utils import (TimeOverlapError, generate_random_color,
-                              get_time_difference)
+                              get_time_difference,save_permission_form)
 
 from . import tasks as bg_tasks
 from .models import (Attendance, AttendanceReport, Department, DepartmentHead,
                      Designation, Employee, EmployeeDocument, ShiftType,
-                     StaffLeave, WorkShift)
+                     StaffLeave, WorkShift,Permissions,MedicalPermission)
+
 
 
 class AddDepartment(View):
@@ -792,3 +797,509 @@ class UpdateDepartmentHead(View):
         else:
             messages.error(self.request, "Error while assigning department head")
             return redirect('staff:update_department_head', department.id)
+
+
+
+class AssignPrevilages(View):
+
+    def get(self, *args, **kwargs):
+        designation_id = kwargs['designation_id']
+        designation = Designation.objects.get(id=designation_id)
+        #specimen_list = Specimen.objects.first().patient_specimens(patient_id)
+        """
+        try:
+            des = designation.permission.medical
+            print('exists')
+            medical_form = MedicalPermissionForm(designation_id=designation_id)
+            
+        except Exception as e:
+            raise e
+            #medical_form = MedicalPermissionForm()
+        """
+        medical_form = MedicalViewPermissionForm(designation_id=designation_id)
+        medical_write_form = MedicalWritePermissionForm(designation_id=designation_id)
+        component_form = ComponentPermissionForm(designation_id=designation_id)
+        laboratory_view_form = LaboratoryViewPermissionForm(designation_id=designation_id)
+        laboratory_write_form = LaboratoryWritePermissionForm(designation_id=designation_id)
+        setting_form = SettingPermissionForm(designation_id=designation_id)
+        billing_write_form = BillingWritePermissionForm(designation_id=designation_id)
+        billing_view_form = BillingViewPermissionForm(designation_id=designation_id)
+        pharmacy_form = PharmacyPermissionForm(designation_id=designation_id)
+        ward_form = WardPermissionForm(designation_id=designation_id)
+        other_form = OtherViewPermissionForm(designation_id=designation_id)
+
+        print(self.request.user.employee.designation)
+        """
+        for f in medical_form:
+            print(f,'\n')
+        """
+        context = {'designation':designation,
+                    'medical_form':medical_form,
+                    'component_form':component_form,
+                    'laboratory_view_form':laboratory_view_form,
+                    'laboratory_write_form':laboratory_write_form,
+                    'setting_form':setting_form,
+                    'billing_write_form':billing_write_form,
+                    'billing_view_form':billing_view_form,
+                    'other_form':other_form,
+
+                    }
+
+        return render(self.request, 'assign_previlages.html',context)
+    
+    def post(self, *args, **kwargs):
+        designation_id = kwargs['designation_id']
+        designation = Designation.objects.get(id=designation_id)
+        medical_form = MedicalViewPermissionForm(self.request.POST,designation_id=designation_id)
+        component_form = ComponentPermissionForm(self.request.POST,designation_id=designation_id)
+        laboratory_view_form = LaboratoryViewPermissionForm(self.request.POST,designation_id=designation_id)
+        setting_form = SettingPermissionForm(self.request.POST,designation_id=designation_id)
+        billing_write_form = BillingWritePermissionForm(self.request.POST,designation_id=designation_id)
+        billing_view_form = BillingViewPermissionForm(self.request.POST,designation_id=designation_id)
+        pharmacy_form = PharmacyPermissionForm(self.request.POST,designation_id=designation_id)
+        ward_form = WardPermissionForm(self.request.POST,designation_id=designation_id)
+        other_form = OtherViewPermissionForm(self.request.POST,designation_id=designation_id)
+
+        try:
+            permissions = designation.permission
+        except:
+            permissions = Permissions()
+
+        if medical_form.has_changed():
+            #save_permission_form(self,medical_form,designation,'M')
+            #print('reached')
+            
+            if medical_form.is_valid():
+                medical_form1 = medical_form.save(commit=False)
+                try:
+                    medical = designation.permission.medical
+                    for f in medical_form.changed_data:
+                        print(medical_form.changed_data,'\n')
+                        field = str(f)
+                        print(f,field,'\n')
+                        try:
+                            print(self.request.POST[f],'\n')
+                            if self.request.POST[f] == 'on':
+                                value = True
+                        except Exception as e:
+                            value = False
+                        setattr(medical,f,value)                
+                        print('has reached')
+
+                    medical.save()
+                    messages.success(self.request, "Permission Given successfully!")
+                    return redirect('staff:assign_previlages', designation.id)
+                    
+                except:
+                    if permissions == None:
+                        permissions = Permissions()
+                    permissions.medical = medical_form1
+                    designation.permission = permissions
+                    medical_form1.save()
+                    permissions.save()
+                    designation.save()
+
+                    messages.success(self.request, "Permission Given successfully!")
+                    return redirect('staff:assign_previlages', designation.id)
+            else:
+                print('Form Errors:', medical_form.errors)
+                messages.error(self.request, medical_form.errors)
+                return redirect('staff:assign_previlages',designation_id)
+            
+        if component_form.has_changed():
+            if component_form.is_valid():
+                component_form1 = component_form.save(commit=False)
+                try:
+                    component = designation.permission.component
+                    for f in component_form.changed_data:
+                        print(component_form.changed_data,'\n')
+                        try:
+                            if self.request.POST[f] == 'on':
+                                value = True
+                        except Exception as e:
+                            value = False
+                        setattr(component,f,value)                
+                    component.save()
+                    messages.success(self.request, "Permission Given successfully!")
+                    return redirect('staff:assign_previlages', designation.id)
+                    
+                except:
+                    if permissions == None:
+                        permissions = Permissions()
+
+                    permissions.component = component_form1
+                    designation.permission = permissions
+                    component_form1.save()
+                    permissions.save()
+                    designation.save()
+                    messages.success(self.request, "Component Permission Given successfully!")
+                    return redirect('staff:assign_previlages', designation.id)
+            else:
+                print('Form Errors:', component_form.errors)
+                messages.error(self.request, component_form.errors)
+                return redirect('staff:assign_previlages',designation_id)
+        if laboratory_view_form.has_changed():
+            print('b changed')
+            if laboratory_view_form.is_valid():
+                laboratory_view_form1 = laboratory_view_form.save(commit=False)
+                try:
+                    laboratory_view = designation.permission.laboratory
+                    for f in laboratory_view_form.changed_data:
+                        print(laboratory_view_form.changed_data,'\n')
+                        try:
+                            if self.request.POST[f] == 'on':
+                                value = True
+                        except Exception as e:
+                            value = False
+                        setattr(laboratory_view,f,value)                
+                    laboratory_view.save()
+                    messages.success(self.request, "Permission Given successfully!")
+                    return redirect('staff:assign_previlages', designation.id)
+                    
+                except Exception as e:
+                    permissions.laboratory = laboratory_view_form1
+                    designation.permission = permissions
+                    laboratory_view_form1.save()
+                    permissions.save()
+                    designation.save()
+                    messages.success(self.request, "Permission Given successfully!")
+                    return redirect('staff:assign_previlages', designation.id)
+            else:
+                print('Form Errors:', laboratory_view_form.errors)
+                messages.error(self.request, laboratory_view_form.errors)
+                return redirect('staff:assign_previlages',designation_id)
+        if billing_view_form.has_changed():
+            print('b changed')
+            if billing_view_form.is_valid():
+                billing_view_form1 = billing_view_form.save(commit=False)
+                try:
+                    billing_view = designation.permission.billing
+                    for f in billing_view_form.changed_data:
+                        print(billing_view_form.changed_data,'\n')
+                        try:
+                            if self.request.POST[f] == 'on':
+                                value = True
+                        except Exception as e:
+                            value = False
+                        setattr(billing_view,f,value)                
+                    billing_view.save()
+                    messages.success(self.request, "Permission Given successfully!")
+                    return redirect('staff:assign_previlages', designation.id)
+                    
+                except Exception as e:
+
+                    permissions.billing = billing_view_form1
+                    designation.permission = permissions
+                    billing_view_form1.save()
+                    permissions.save()
+                    designation.save()
+                    messages.success(self.request, "Component Permission Given successfully!")
+                    return redirect('staff:assign_previlages', designation.id)
+            else:
+                print('Form Errors:', billing_view_form.errors)
+                messages.error(self.request, billing_view_form.errors)
+                return redirect('staff:assign_previlages',designation_id)
+
+
+
+class AssignWritePrevilages(View):
+
+    def get(self, *args, **kwargs):
+        designation_id = kwargs['designation_id']
+        designation = Designation.objects.get(id=designation_id)
+        medical_write_form = MedicalWritePermissionForm(designation_id=designation_id)
+        laboratory_write_form = LaboratoryWritePermissionForm(designation_id=designation_id)
+        setting_form = SettingPermissionForm(designation_id=designation_id)
+        billing_write_form = BillingWritePermissionForm(designation_id=designation_id)
+        pharmacy_form = PharmacyPermissionForm(designation_id=designation_id)
+        ward_form = WardPermissionForm(designation_id=designation_id)
+        other_form = OtherWritePermissionForm(designation_id=designation_id)
+
+        """
+        for f in medical_form:
+            print(f,'\n')
+        """
+        context = {'designation':designation,
+                    'medical_write_form':medical_write_form,
+                    'laboratory_write_form':laboratory_write_form,
+                    'setting_form':setting_form,
+                    'billing_write_form':billing_write_form,
+                    'pharmacy_form':pharmacy_form,
+                    'ward_form':ward_form,
+                    'other_form':other_form,
+                    }
+
+        return render(self.request, 'assign_write_previlages.html',context)
+
+    def post(self, *args, **kwargs):
+        designation_id = kwargs['designation_id']
+        designation = Designation.objects.get(id=designation_id)
+        medical_form = MedicalWritePermissionForm(self.request.POST,designation_id=designation_id)
+        laboratory_form = LaboratoryWritePermissionForm(self.request.POST,designation_id=designation_id)
+        setting_form = SettingPermissionForm(self.request.POST,designation_id=designation_id)
+        billing_form = BillingWritePermissionForm(self.request.POST,designation_id=designation_id)
+        pharmacy_form = PharmacyPermissionForm(self.request.POST,designation_id=designation_id)
+        ward_form = WardPermissionForm(self.request.POST,designation_id=designation_id)
+        other_form = OtherWritePermissionForm(self.request.POST, designation_id=designation_id)
+
+        try:
+            permissions = designation.permission
+        except:
+            permissions = Permissions()
+
+        if medical_form.has_changed():
+            #save_permission_form(self,medical_form,designation,'M')
+            #print('reached')
+            
+            if medical_form.is_valid():
+                medical_form1 = medical_form.save(commit=False)
+                try:
+                    medical = designation.permission.medical
+                    for f in medical_form.changed_data:
+                        print(medical_form.changed_data,'\n')
+                        field = str(f)
+                        print(f,field,'\n')
+                        try:
+                            print(self.request.POST[f],'\n')
+                            if self.request.POST[f] == 'on':
+                                value = True
+                        except Exception as e:
+                            value = False
+                        setattr(medical,f,value)                
+                        print('has reached')
+
+                    medical.save()
+                    messages.success(self.request, "Permission Given successfully!")
+                    return redirect('staff:assign_write_previlages', designation.id)
+                    
+                except:
+                    if permissions == None:
+                        permissions = Permissions()
+                    permissions.medical = medical_form1
+                    designation.permission = permissions
+                    medical_form1.save()
+                    permissions.save()
+                    designation.save()
+
+                    messages.success(self.request, "Permission Given successfully!")
+                    return redirect('staff:assign_write_previlages', designation.id)
+            else:
+                print('Form Errors:', medical_form.errors)
+                messages.error(self.request, medical_form.errors)
+                return redirect('staff:assign_write_previlages',designation_id)
+
+
+        if ward_form.has_changed():
+            
+            if ward_form.is_valid():
+                ward_form1 = ward_form.save(commit=False)
+                try:
+                    ward = designation.permission.ward
+                    for f in ward_form.changed_data:
+                        print(ward_form.changed_data,'\n')
+                        field = str(f)
+                        print(f,field,'\n')
+                        try:
+                            print(self.request.POST[f],'\n')
+                            if self.request.POST[f] == 'on':
+                                value = True
+                        except Exception as e:
+                            value = False
+                        setattr(ward,f,value)                
+                        print('has reached')
+
+                    ward.save()
+                    messages.success(self.request, "Permission Given successfully!")
+                    return redirect('staff:assign_write_previlages', designation.id)
+                    
+                except:
+                    if permissions == None:
+                        permissions = Permissions()
+                    permissions.ward = ward_form1
+                    designation.permission = permissions
+                    ward_form1.save()
+                    permissions.save()
+                    designation.save()
+
+                    messages.success(self.request, "Permission Given successfully!")
+                    return redirect('staff:assign_write_previlages', designation.id)
+            else:
+                print('Form Errors:', ward_form.errors)
+                messages.error(self.request, ward_form.errors)
+                return redirect('staff:assign_write_previlages',designation_id)
+
+
+        if laboratory_form.has_changed():
+            
+            if laboratory_form.is_valid():
+                laboratory_form1 = laboratory_form.save(commit=False)
+                try:
+                    laboratory = designation.permission.laboratory
+                    for f in laboratory_form.changed_data:
+                        print(laboratory_form.changed_data,'\n')
+                        field = str(f)
+                        print(f,field,'\n')
+                        try:
+                            print(self.request.POST[f],'\n')
+                            if self.request.POST[f] == 'on':
+                                value = True
+                        except Exception as e:
+                            value = False
+                        setattr(laboratory,f,value)                
+                        print('has reached')
+
+                    laboratory.save()
+                    messages.success(self.request, "Permission Given successfully!")
+                    return redirect('staff:assign_write_previlages', designation.id)
+                    
+                except:
+                    if permissions == None:
+                        permissions = Permissions()
+                    permissions.laboratory = laboratory_form1
+                    designation.permission = permissions
+                    laboratory_form1.save()
+                    permissions.save()
+                    designation.save()
+
+                    messages.success(self.request, "Permission Given successfully!")
+                    return redirect('staff:assign_write_previlages', designation.id)
+            else:
+                print('Form Errors:', laboratory_form.errors)
+                messages.error(self.request, laboratory_form.errors)
+                return redirect('staff:assign_write_previlages',designation_id)
+
+        if setting_form.has_changed():
+            #save_permission_form(self,setting_form,designation,'M')
+            #print('reached')
+            
+            if setting_form.is_valid():
+                setting_form1 = setting_form.save(commit=False)
+                try:
+                    setting = designation.permission.setting
+                    for f in setting_form.changed_data:
+                        print(setting_form.changed_data,'\n')
+                        field = str(f)
+                        print(f,field,'\n')
+                        try:
+                            print(self.request.POST[f],'\n')
+                            if self.request.POST[f] == 'on':
+                                value = True
+                        except Exception as e:
+                            value = False
+                        setattr(setting,f,value)                
+                        print('has reached')
+
+                    setting.save()
+                    messages.success(self.request, "Permission Given successfully!")
+                    return redirect('staff:assign_write_previlages', designation.id)
+                    
+                except:
+                    if permissions == None:
+                        permissions = Permissions()
+                    permissions.setting = setting_form1
+                    designation.permission = permissions
+                    setting_form1.save()
+                    permissions.save()
+                    designation.save()
+
+                    messages.success(self.request, "Permission Given successfully!")
+                    return redirect('staff:assign_write_previlages', designation.id)
+            else:
+                print('Form Errors:', setting_form.errors)
+                messages.error(self.request, setting_form.errors)
+                return redirect('staff:assign_write_previlages',designation_id)
+
+        if billing_form.has_changed():            
+            if billing_form.is_valid():
+                billing_form1 = billing_form.save(commit=False)
+                try:
+                    billing = designation.permission.billing
+                    for f in billing_form.changed_data:
+                        print(billing_form.changed_data,'\n')
+                        field = str(f)
+                        print(f,field,'\n')
+                        try:
+                            print(self.request.POST[f],'\n')
+                            if self.request.POST[f] == 'on':
+                                value = True
+                        except Exception as e:
+                            value = False
+                        setattr(billing,f,value)                
+                        print('has reached')
+
+                    billing.save()
+                    messages.success(self.request, "Permission Given successfully!")
+                    return redirect('staff:assign_write_previlages', designation.id)
+                except:
+                    if permissions == None:
+                        permissions = Permissions()
+                    permissions.billing = billing_form1
+                    designation.permission = permissions
+                    billing_form1.save()
+                    permissions.save()
+                    designation.save()
+
+                    messages.success(self.request, "Permission Given successfully!")
+                    return redirect('staff:assign_write_previlages', designation.id)
+            else:
+                print('Form Errors:', billing_form.errors)
+                messages.error(self.request, billing_form.errors)
+                return redirect('staff:assign_write_previlages',designation_id)
+
+        if pharmacy_form.has_changed():            
+            if pharmacy_form.is_valid():
+                pharmacy_form1 = pharmacy_form.save(commit=False)
+                try:
+                    pharmacy = designation.permission.pharmacy
+                    for f in pharmacy_form.changed_data:
+                        print(pharmacy_form.changed_data,'\n')
+                        field = str(f)
+                        print(f,field,'\n')
+                        try:
+                            print(self.request.POST[f],'\n')
+                            if self.request.POST[f] == 'on':
+                                value = True
+                        except Exception as e:
+                            value = False
+                        setattr(pharmacy,f,value)                
+                        print('has reached')
+
+                    pharmacy.save()
+                    messages.success(self.request, "Permission Given successfully!")
+                    return redirect('staff:assign_write_previlages', designation.id)
+                except:
+                    if permissions == None:
+                        permissions = Permissions()
+                    permissions.pharmacy = pharmacy_form1
+                    designation.permission = permissions
+                    pharmacy_form1.save()
+                    permissions.save()
+                    designation.save()
+
+                    messages.success(self.request, "Permission Given successfully!")
+                    return redirect('staff:assign_write_previlages', designation.id)
+            else:
+                print('Form Errors:', pharmacy_form.errors)
+                messages.error(self.request, pharmacy_form.errors)
+                return redirect('staff:assign_write_previlages',designation_id)
+
+
+@method_decorator(login_required, 'dispatch')
+class EditSpecimen2(View):
+
+    def post(self, *args, **kwargs):
+        specimen_id = kwargs['specimen_id']
+
+        patient = Patient.objects.get(id=patient_id)
+        specimen = Specimen.objects.get(id=specimen_id)
+        specimen_form = EditSpecimenForm(self.request.POST,specimen_id=specimen.id)
+        if specimen_form.is_valid():
+            specimen_form = specimen_form.save(commit=False)            
+            specimen.sample_volume = specimen_form.sample_volume
+            specimen.save()
+            messages.success(self.request, "Specimen info edited successfully!")
+            return redirect('specimens', patient.id)
+        else:
+            print('Specimen Form Errors:', specimen_form.errors)
+            messages.error(self.request, specimen_form.errors)
+            return redirect('specimens',patient.id)

@@ -24,15 +24,33 @@
                     <div class="row">
 
                         <div style="width: 15px;"></div>
+                        
                         <div  id="dispensary-supplied-drug-table-id" >
                             <div class="card"  >
                                     <div class="card-head">
                                         <header><small>Consultations</small></header>
                                     </div>
                                     <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 130px;width: 316px;">
+                                    {% if user.employee.designation.permission.medical.view_consultation %}
+                                        {% for finding in consultation_list %}
+                                            {% if finding.active == True %}
+                                                <div class="row">
+                                                    <div>
+                                                         <small><b><a href="" data-toggle="modal" data-target="">{{finding}}</a></b> </small><br>
+                                                    </div>
+                                                    <div class="right-position">
+                                                    <small>{{finding.registered_on}}</small>
+                                                    </div>
+                                                </div>
+
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                    {% if user.employee.designation.permission.medical.write_consultation %}
                                         <div class="add-allergy">
                                            <small> <span><a href="{% url 'core:add_patient_consultation' patient.id %}" >Add Consultation</a></span> </small>
                                         </div>
+                                    {% endif %}
 
                                     </div>
                             </div>
@@ -44,6 +62,7 @@
                                         <header><small>Clinical Findings</small></header>
                                     </div>
                                     <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 130px;width: 316px;">
+                                    {% if user.employee.designation.permission.medical.view_clinical_finding %}
                                         {% for finding in clinical_finding_list %}
                                             {% if finding.active == True %}
                                                 {% include "core/modals/edit_clinical_finding_form.html" %}
@@ -58,11 +77,13 @@
 
                                             {% endif %}
                                         {% endfor %}
-
+                                    {% endif %}
+                                    {% if user.employee.designation.permission.medical.write_clinical_finding %}
                                         <div class="add-allergy">
                                                 {% include "core/modals/add_clinical_finding_form.html" %}
                                            <small> <span><a href="" data-toggle="modal" data-target="#addClinicalFindingModal{{patient.id}}">Add Clinical Findings</a></span> </small>
                                         </div>
+                                    {% endif %}
 
                                     </div>
                             </div>
@@ -74,6 +95,7 @@
                                         <header><small>Treatments</small></header>
                                     </div>
                                     <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 130px;width: 316px;">
+                                    {% if user.employee.designation.permission.medical.view_treatment %}
                                         {% for treatment in treatment_list %}
                                             {% if treatment.active == True %}
                                                 {% include "core/modals/edit_treatment_form.html" %}
@@ -88,12 +110,13 @@
 
                                             {% endif %}
                                         {% endfor %}
-
+                                    {% endif %}
+                                    {% if user.employee.designation.permission.medical.write_treatment %}
                                         <div class="add-allergy">
                                                 {% include "core/modals/add_treatment_form.html" %}
                                            <small> <span><a href="" data-toggle="modal" data-target="#addTreatmentModal{{patient.id}}">Add Treatment</a></span> </small>
                                         </div>
-
+                                    {% endif %}
                                     </div>
                             </div>
                         </div>
@@ -107,6 +130,7 @@
                                         <header><small>Allergies</small></header>
                                     </div>
                                     <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 130px;width: 316px;">
+                                    {% if user.employee.designation.permission.medical.view_allergy %}
                                         {% for allergy in allergy_list %}
                                             {% if allergy.active == True %}
                                                 {% include "core/modals/edit_allergy_form.html" %}
@@ -121,10 +145,13 @@
 
                                             {% endif %}
                                         {% endfor %}
+                                    {% endif %}
+                                    {% if user.employee.designation.permission.medical.write_allergy %}
                                         <div class="add-allergy">
                                             {% include "core/modals/add_allergy_form.html" %}
                                            <small> <span><a href="" data-toggle="modal" data-target="#addAllergyModal{{patient.id}}">Add Allergy</a></span> </small>
                                         </div>
+                                    {% endif %}
                                     </div>
                             </div>
                         </div>
@@ -136,6 +163,7 @@
                                         <header><small>Paraclinical Findings</small></header>
                                     </div>
                                     <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 130px;width: 316px;">
+                                    {% if user.employee.designation.permission.medical.view_paraclinical_finding %}
                                         {% for finding in para_list %}
                                             {% if finding.active == True %}
                                                 {% include "core/modals/edit_paraclinical_finding_form.html" %}
@@ -149,12 +177,13 @@
                                                 </div>
                                             {% endif %}
                                         {% endfor %}
-
+                                    {% endif %}
+                                    {% if user.employee.designation.permission.medical.write_paraclinical_finding %}
                                         <div class="add-allergy">
                                                 {% include "core/modals/add_paraclinical_finding_form.html" %}
                                            <small> <span><a href="" data-toggle="modal" data-target="#addParaclinicalModal{{patient.id}}">Add Paraclinical Finding</a></span> </small>
                                         </div>
-
+                                    {% endif %}
                                     </div>
                             </div>
                         </div>
@@ -167,11 +196,13 @@
                                     </div>
                                     <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 130px;width: 316px;">
 
+                                    {% if user.employee.designation.permission.medical.write_prescription %}
                                         <div class="add-allergy">
                                            <small> <span><a href="" data-toggle="modal" data-target="#repeatDrugPrescriptionModal6{{patient.id}}">Repeat</a></span> </small> |
                                            <small> <span><a href="" data-toggle="modal" data-target="#repeatDrugPrescriptionModal{{patient.id}}">Add </a></span> </small>
                                         </div>
                                     </div>
+                                    {% endif %}
                             </div>
                         </div>
 
@@ -197,6 +228,7 @@
                                         <header><small>Documents</small></header>
                                     </div>
                                     <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 130px;width: 316px;">
+                                    {% if user.employee.designation.permission.medical.view_document %}
                                         {% for image in image_list %}
                                                 <div class="row">
                                                     <div>
@@ -211,7 +243,7 @@
                                                      </div>
                                                  </div>
                                         {% endfor %}
-
+                                    {% endif %}
                                     </div>
                             </div>
                         </div>
@@ -222,6 +254,7 @@
                                         <header><small>Surgeries</small></header>
                                     </div>
                                     <div class="card-body">
+                                    {% if user.employee.designation.permission.medical.view_surgery %}
                                         {% for surgery in surgery_list %}
                                             {% if surgery.active == True %}
                                                 {% include "core/modals/edit_surgery_form.html" %}
@@ -235,12 +268,14 @@
                                                  </div>
                                             {% endif %}
                                         {% endfor %}
+                                    {% endif %}
 
+                                    {% if user.employee.designation.permission.medical.write_surgery %}
                                         <div class="add-allergy">
                                                 {% include "core/modals/add_surgery_form.html" %}
                                            <small> <span><a href="" data-toggle="modal" data-target="#addSurgeryModal{{patient.id}}">Add Surgery</a></span> </small>
                                         </div>
-
+                                    {% endif %}
                                     </div>
                             </div>
                         </div>

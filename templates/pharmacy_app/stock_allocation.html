@@ -1,0 +1,179 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+{%  load custom_dict %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+    <style>
+        .quick-launch-container {
+            display: inline-block;
+            margin-left: 5px;
+            padding-left: 5px;
+            margin-right: 7px;
+            border: black;
+            border-width: 10px;
+        }
+        .quick-launch-label {
+            display: block;
+            color: black;
+            font-weight: bold;
+        }
+        fieldset {
+            padding-bottom: 10px;
+            width: 150px; 
+            border: 2px solid; 
+            border-radius: 5px; 
+            border-color: #0a7e37;
+        }
+        legend {
+            color: black;
+            width: max-content;
+            font-size: 14px;
+        }
+        .add-allergy {
+            position: absolute;
+            bottom: 0;
+            right: 3px;
+        }
+    </style>
+
+
+{% endblock %}
+{% block title %} Stock Allocation {% endblock %}
+
+{% block page_content %}
+
+    {% include "pharmacy_app/partials/modals/add_relocation_item.html" %}
+                        <form action="{% url 'save_item_relocation' request.id %}" method="POST">
+                    {% csrf_token %}
+            <div class="tab-pane" id="consultation-list-tab">
+                    <div class="row">
+                        <div class="col-md-9" id="dispensary-supplied-drug-table-id" >
+                            <div class="card" style="width: 900px;padding-right: 30px;">
+                            <div class="card-head" >
+                                   <!-- <button  class="btn btn-circle" data-toggle="modal" data-target="#createBuildingModal">
+                                    </button> -->
+                                <div class="row">
+                                            <small style="padding-left: 50px;"><button type="submit" class="btn">Save Request</button></small>
+                                            <small style="padding-left: 50px;"> <span><a href="" data-toggle="modal" data-target="#addRelocationItem">Add Item</a></span> </small> 
+                                            <small style="padding-left: 250px;">                           
+                                                <i class="fa fa-print"></i>
+                                                <label>Print/Export</label>
+                                            </small>
+
+                                </div>
+
+                            </div>
+                            </div>
+
+                            <div class="card card-body " id="" style="width: 900px;">
+                               <div class="row" style="padding-bottom: 10px;">
+
+                                    <div class="col">
+                                        <div class="row">
+                                          <div class="form-group col-md-6">  
+                                                <small><b> {{stock}}</b></small>
+                                          </div>
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                                    <div class="card card-box" style="overflow-y:scroll;overflow-x:scroll;background-color: white; width: 900px;height: 600px;">
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 900px;">
+                                            
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="gradeX odd">
+                                                    <th class= "text-center"><small>Item Name</small></th>
+                                                    <th class= "text-center"><small>MU</small></th>
+                                                    <th class= "text-center"><small>Quantity</small></th>
+                                                    <th class= "text-center"><small>Unit Price</small></th>
+                                                    <th class= "text-center"><small>Discount</small></th>
+                                                    <th class= "text-center"><small>Remove</small></th>
+
+                                                </tr>
+                                            </thead>
+                                        <tbody>
+                                        {% for item in item_list %}
+                                            <tr style="height: 40px;">
+                                                <td class= "text-center" style="width:300px"><small> {{ item.item.name }}</small></td>
+                                                <td class= "text-center" style="width:300px"><small> {{ item.item.measurement_unit }} </small></td>
+                                                <td class= "text-center" style="width:300px"><small> {{ item.quantity }} </small></td>
+                                                <td class= "text-center" style="width:100px"><small> {{ item.item.price_info.sale_price }} </small></td>
+                                                <td class= "text-center" style="width:100px"><small> No </small></td>
+                                                <td class= "text-center" style="width:300px"><small> <a href=""> <i class="fa fa-trash"></i> </a> </small></td>
+                                                <input type="checkbox"  name="item_sales" class="hidden"  value="{{item.id}}" checked>
+                                            </tr>
+                                        {% endfor %}
+
+
+                                        </tbody>
+                            
+                            </table>
+
+
+                                    </div>
+
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card card-body " id="" style="width: 300px;">
+                               <div class="row" style="padding-bottom: 10px;">
+
+                                    <div class="col">
+                                        <div class="row">
+                                          <div class="form-group col-md-6">  
+                                                <small><b> Requested List</b></small>
+                                          </div>
+                                        </div>
+
+                                    </div>
+
+
+                                </div>
+                            </div>
+
+                            <div class="card card-box" style="overflow-y:scroll;overflow-x:scroll;background-color: white; width: 300px;height: 600px;">
+                                <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 300px;">                                    
+                                    <thead style="background-color: lightgrey;">
+                                        <tr class="gradeX odd">
+                                            <th class= "text-center"><small>Item Name</small></th>
+                                            <th class= "text-center"><small>Quantity</small></th>
+                                        </tr>
+                                    </thead>
+                                <tbody>
+                                {% for request in requested_list %}
+                                    <tr style="height: 40px;">
+                                        <td class= "text-center" style="width:300px"><small> {{ request.item }}</small></td>
+                                        <td class= "text-center" style="width:300px"><small> {{ request.quantity }} </small></td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                                </table>
+                            </div>
+                            
+                        </div>
+                    </div>
+                        </form>
+            
+        </div>
+
+
+<script type="text/javascript">
+    
+        function searchConsultation() {
+               document.getElementById('search-consultation-id').style.display = 'block';          
+                showingModal = true;
+            }
+
+        function closeSearchConsultationDiv() {
+               document.getElementById('search-consultation-id').style.display = 'none';          
+               
+                showingModal = true;
+            }
+
+
+</script>
+{% endblock %}

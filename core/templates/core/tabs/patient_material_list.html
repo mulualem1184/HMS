@@ -9,8 +9,10 @@
                                                <!-- <button  class="btn btn-circle" data-toggle="modal" data-target="#createBuildingModal">
                                                 </button> -->
                                             <div class="row">
+                                                {% if user.employee.designation.permission.other.write_material %}
                                                         <small style="padding-left: 50px;"><span><a href="" data-toggle="modal" data-target="#addPatientMaterialModal{{patient.id}}">Add Material</a></span></small> 
-                                                       |<small style=""> <span><a href data-toggle='modal' data-target='#filterByDateModal'><i class="fa fa-filter"></i></a></span> </small>| 
+                                                {% endif %}
+                                                       <small style="padding-left: 20px;"> <span><a href data-toggle='modal' data-target='#filterByDateModal'><i class="fa fa-filter"></i></a></span> </small>
                                                        <small style="padding-left: 20px;" onclick="searchMaterial()"> <i class="fa fa-search"></i><label style="padding-left: 10px;">Search</label></small>
                                                         <small style="padding-left: 550px;">                           
                                                             <i class="fa fa-print"></i>
@@ -38,6 +40,7 @@
                         </div>
 
                                     <div class="">
+                                    {% if user.employee.designation.permission.other.view_material %}
                                     <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 1009px;">
                                             <thead style="background-color: lightgrey;">
                                                 <tr class="">
@@ -90,7 +93,7 @@
                                                 {% endfor %}
                                             </tbody>
                                         </table>
-
+                                        {% endif %}
                                     </div>
                     </div>
             

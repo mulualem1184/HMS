@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{%  load custom_dict %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+    <style>
+        .quick-launch-container {
+            display: inline-block;
+            margin-left: 5px;
+            padding-left: 5px;
+            margin-right: 7px;
+            border: black;
+            border-width: 10px;
+        }
+        .quick-launch-label {
+            display: block;
+            color: black;
+            font-weight: bold;
+        }
+        fieldset {
+            padding-bottom: 10px;
+            width: 150px; 
+            border: 2px solid; 
+            border-radius: 5px; 
+            border-color: #0a7e37;
+        }
+        legend {
+            color: black;
+            width: max-content;
+            font-size: 14px;
+        }
+        .add-allergy {
+            position: absolute;
+            bottom: 0;
+            right: 3px;
+        }
+    </style>
+
+
+{% endblock %}
+{% block title %} Laboratory Requests {% endblock %}
+
+{% block page_content %}
+<head>
+    <script type="text/javascript" src="{% static "fusioncharts/fusioncharts.js" %}"></script>
+    <script type="text/javascript" src="{% static "fusioncharts/fusioncharts.charts.js" %}"></script>
+    <script type="text/javascript" src="{% static "fusioncharts/themes/fusioncharts.theme.fusion.js" %}"></script>
+
+</head>
+                                {% include "pharmacy_app/partials/modals/filter_item_list.html" %}
+
+            <div class="tab-pane" id="">
+
+
+            <div class="tab-pane active" id="lab-dashboard-tab">
+
+                    <div class="row" style="padding-left: 15px;width: 1200px;">
+
+                        <div class="" id="dispensary-supplied-drug-table-id" >
+                            <div class="card"  >
+                                    <div class="card-head">
+                                        <header><small>Recent Requests</small></header>
+                                    </div>
+
+                                    <div id="drug_price_tab" class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 550px;width: 1200px;">
+                                             <div class="row">
+                                                 <div class="col">
+                                                     <div class="text-center"><h5><b>{{pending_test_count}}</b></h5></div>
+                                                     <div ><h5><b style="padding-left: 232px;">Pending</b></h5></div>
+                                                 </div>
+                                                 <div class="col">
+                                                     <div><h5><b class="text-center" style="padding-right: 10px;">{{completed_test_count}}</b></h5></div>
+                                                     <div><h5><b style="padding-left: 0px;">Completed</b></h5></div>
+                                                 </div>
+                                                 <small style="padding-left: 15px;">
+
+                                                    <a data-toggle='modal' data-target='#filterItemList'>
+                                                        <i class="fa fa-filter"></i>
+                                                    </a>
+                                                </small>
+                                                 <small>
+                                                    <select hx-get="?id=PatientAlphabet" hx-trigger='click'  hx-swap='innerHTML' hx-target='#drug_price_tab' hx-include="[name='last_x_days']"   name="last_x_days" id="">
+                                                        <option value="7" id="">Last 7 Days</option>  
+                                                        <option value=30>Last 30 Days</option>   
+                                                        <option value=90>Last 90 Days</option>   
+                                                        <option value=0>All Time</option>   
+                                                        
+                                                    </select>
+                                                </small>
+
+                                             </div><hr>
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 1200px;">
+                                            
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="gradeX odd">
+                                                    <th class= "text-center"><small>Drug</small></th>
+                                                    <th class= "text-center"><small>Quantity</small></th>
+                                                    <th class= "text-center"><small>Dispensed</small></th>
+                                                    <th class= "text-center"><small>Registered On</small></th>
+                                                    <th class= "text-center"><small>Measurement Unit</small></th>
+                                                </tr>
+                                            </thead>
+                        <tbody>
+                            {% for billed in billed_list %}
+                            {% for info in billed.item_info.all %}
+                            {% if info.item.drug %}
+                                <tr style="height: 40px;">
+                                    <td class= "text-center" style="width:300px"><small> {{ info.item.drug }} </small></td>
+                                    <td class= "text-center" style="width:300px"><small> {{ info.quantity }} </small></td>
+                                    <td class= "text-center" style="width:300px"><small> <i class="fa fa-check green"></i> </small></td>
+                                    <td class= "text-center" style="width:300px"><small> {{ billed.registered_on }} </small></td>
+                                    <td class= "text-center" style="width:300px"><small> {{ info.item.measurement_unit }} </small></td>
+                                </tr>
+                            {% endif %}
+                            {% endfor %}
+                            {% endfor %}
+                        </tbody>
+                        
+                    </table>
+
+                                    </div>
+
+                            </div>
+                        </div>
+                        <div style="margin: 10px;"></div>
+                    </div>
+                </div>
+
+
+    </div>
+
+
+<script type="text/javascript">
+    
+        function searchConsultation() {
+               document.getElementById('search-consultation-id').style.display = 'block';          
+                showingModal = true;
+            }
+
+        function closeSearchConsultationDiv() {
+               document.getElementById('search-consultation-id').style.display = 'none';          
+               
+                showingModal = true;
+            }
+
+
+</script>
+{% endblock %}

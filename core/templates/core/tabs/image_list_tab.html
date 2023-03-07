@@ -7,8 +7,10 @@
                             <div class="card card-head" style="width: 1009px;">
 
                                 <div class="row">
-                                            <small style="padding-left: 50px;"> <span><a href="" data-toggle="modal" data-target="#addImageModal{{patient.id}}"> Add Image</a></span> </small> 
-                                           |<small style=""> <span><a href data-toggle='modal' data-target='#filterByDateModal'><i class="fa fa-filter"></i></a></span> </small>| 
+                                        {% if user.employee.designation.permission.medical.write_document %}
+                                            <small style="padding-left: 50px;"> <span><a href="" data-toggle="modal" data-target="#addImageModal{{patient.id}}"> Add Image</a></span> </small>
+                                        {% endif %}
+                                           <small style="padding-left: 20px"> <span><a href data-toggle='modal' data-target='#filterByDateModal'><i class="fa fa-filter"></i></a></span> </small>| 
                                            <small style="padding-left: 20px;" onclick="searchDocument()"> <i class="fa fa-search"></i><label style="padding-left: 10px;">Search</label></small>
                                             <small style="padding-left: 550px;">                           
                                                 <i class="fa fa-print"></i>
@@ -19,6 +21,8 @@
                             </div>
                             </div>
                                     <div class="card card-box" style="overflow-y:scroll;overflow-x:scroll;background-color: white; width: 1009px;height: 400px;">
+                                    {% if user.employee.designation.permission.medical.view_document %}
+
                                         <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 1009px;">
                                             <thead style="background-color: lightgrey;">
                                                 <tr class="">
@@ -68,6 +72,7 @@
                                                 {% endfor %}
                                             </tbody>
                                         </table>
+                                    {% endif %}
 
                                     </div>
                         </div>

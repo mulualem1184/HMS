@@ -12,7 +12,8 @@ from .views import (AddDepartment, AddDesignation, AddEmployee,
                     RemoveDesignation, RemoveDocument, RemoveEmployee,
                     RemoveWorkShift, RequestLeave, Schedule, ShiftReport,
                     ToggleActiveStatus, UpdateAttendance, UpdateDepartmentHead,
-                    ViewLeaveRequest)
+                    ViewLeaveRequest, AssignPrevilages,AssignWritePrevilages,
+                    )
 
 app_name = 'staff'
 urlpatterns = [
@@ -53,4 +54,7 @@ urlpatterns = [
     path('close-att', CloseAttendance.as_view(), name='finish_work'),
     path('schedule', Schedule.as_view(), name='schedule'),
     path('dashboard', Dashboard.as_view(), name='dashboard'),
+    path('assign_previlages/<int:designation_id>', AssignPrevilages.as_view(), name='assign_previlages'),
+    path('assign_write_previlages/<int:designation_id>', AssignWritePrevilages.as_view(), name='assign_write_previlages'),
+
 ]

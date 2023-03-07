@@ -6,6 +6,7 @@
                                    <!-- <button  class="btn btn-circle" data-toggle="modal" data-target="#createBuildingModal">
                                     </button> -->
                                 <div class="row">
+                                    {% if user.employee.designation.permission.medical.write_treatment_plan %}
                                     <a data-toggle="modal" data-target="#treatmentPlanForm">
                                     <div class="row" style="padding-left:30px;">
                                         <div>
@@ -16,7 +17,7 @@
                                         </div>
                                     </div>
                                     </a>
-
+                                    {% endif %}
                                 </div>
                                <div style="padding-left:50px;" onclick="searchPlan()">
                                     
@@ -92,6 +93,7 @@
 
                         <div class="col-md-12 " id="treatment-plan-table-id">
                              <div class="card-body" style="overflow-y:scroll;overflow-x:scroll;height: 500px;width: 900px;">
+                            {% if user.employee.designation.permission.medical.view_treatment_plan %}
 
                                                 <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;">
                                 <thead style="background-color: lightgrey;">
@@ -117,6 +119,7 @@
 
                                         <tr class="" style="height:40px;">
                                             <td style="width:200px;" class="text-center" ><a href="{% url 'core:activities' plan.patient.id %}"> <small>{{ plan.patient}} </small></a></td>
+                                    {% if user.employee.designation.permission.medical.view_treatment_plan_action %}
                                         {% if plan.vital_sign_options.temperature %}
                                             <td style="width:200px;" class="text-center"><small><a href="{% url 'temperature_plan_progress' plan.id %}"> {{plan.registered_on}}</a></small> </td>
                                         {% elif plan.vital_sign_options.blood_pressure %}
@@ -128,16 +131,23 @@
                                         {% else %}
                                             <td style="width:200px;" class="text-center"><small><a href="{% url 'treatment_plan_progress' plan.id %}"> {{plan.registered_on}}</a></small> </td>
                                         {% endif %}
+                                    {% else %}
+                                            <td style="width:200px;" class="text-center"><small> {{plan.registered_on}}</small> </td>
+
+                                    {% endif %}
                                             <td style="width:100px;" class="text-center"><small> <a href="" data-toggle='modal' data-target= '#viewTreatmentPlanModal{{plan.id}}' ><i class="fa fa-eye"></i></a>  </small> </td>
                                             <td style="width:100px;" class="text-center"><small> <a href="" data-toggle="modal" data-target="#editTreatmentPlanModal{{plan.id}}"  ><i class="fa fa-edit"></i></a></small></td>
                                             <td style="width:100px;" class="text-center"><small>  <a href="" data-target="#deleteTreatmentPlanModal{{plan.id}}" data-toggle='modal'  ><i class="fa fa-trash"></i></a></small></td>
+                                    {% if user.employee.designation.permission.medical.view_treatment_plan_action %}
                                             <td style="width:200px;" class="text-center"><small><a href="" data-toggle='modal' data-target= '#treatmentPlanActionModal{{plan.id}}' > Action</a></small> </td>
+                                    {% endif %}
                                             <!--<td style="width:200px;" class="text-center"><small>{{plan.status}}  <a href="" data-toggle='modal' data-target= '#changePlanStatusModal{{plan.id}}' > <i class="fa fa-edit"></i></a></small></td>-->
 
                                         </tr>
                                     {% endfor %}
                                 </tbody>
                             </table>
+                        {% endif %}
                         </div>
                     </div>
 

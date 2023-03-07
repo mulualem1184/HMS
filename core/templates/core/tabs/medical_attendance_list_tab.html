@@ -11,8 +11,11 @@
                                                <!-- <button  class="btn btn-circle" data-toggle="modal" data-target="#createBuildingModal">
                                                 </button> -->
                                             <div class="row">
+                                                {% if user.employee.designation.permission.medical.write_medical_attendance %}
+
                                                         <small style="padding-left: 50px;"><span><a href="" data-toggle="modal" data-target="#addMedicalAttendanceModal{{patient.id}}">Add Attendance</a></span></small> 
-                                                       |<small style=""> <span><a href data-toggle='modal' data-target='#filterByDateModal'><i class="fa fa-filter"></i></a></span> </small>| 
+                                                {% endif %}
+                                                       <small style="padding-left: 20px;"> <span><a href data-toggle='modal' data-target='#filterByDateModal'><i class="fa fa-filter"></i></a></span> </small> 
                                                        <small style="padding-left: 20px;" onclick="searchMedicalAttendance()"> <i class="fa fa-search"></i><label style="padding-left: 10px;">Search</label></small>
                                                         <small style="padding-left: 550px;">                           
                                                             <i class="fa fa-print"></i>

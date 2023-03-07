@@ -1,0 +1,15 @@
+<div class="card card-body" style="padding-left: 20px;">
+     <div><small><b>Other Previlages</b></small></div>
+    <div class="row" style="padding-left: 30px;">
+
+         {% for field in other_form %}                                 
+         <div class="row" style="width: 230px;">
+            <div><small>{{field}}</small></div>
+            <div style="margin-left: 10px;">
+               <small> {{field.label}}</small>
+            </div>
+         </div>
+         {% endfor %}
+    </div>
+</div>
+

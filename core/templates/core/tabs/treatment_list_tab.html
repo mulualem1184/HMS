@@ -9,9 +9,11 @@
                                         <div  >
 
                                             <div class="row">
-                                                        <small style="padding-left: 50px;"> <span><a href="" data-toggle="modal" data-target="#addTreatmentModal{{patient.id}}">Add Treatment</a></span></span> </small> |
+                                                {% if user.employee.designation.permission.medical.write_treatment %}
 
-                                                       <small style=""> <span><a href data-toggle='modal' data-target='#filterByDateModal'><i class="fa fa-filter"></i></a></span> </small>| 
+                                                        <small style="padding-left: 50px;"> <span><a href="" data-toggle="modal" data-target="#addTreatmentModal{{patient.id}}">Add Treatment</a></span></span> </small> 
+                                                {% endif %}
+                                                       <small style="padding-left: 20px;"> <span><a href data-toggle='modal' data-target='#filterByDateModal'><i class="fa fa-filter"></i></a></span> </small>
                                                        <small style="padding-left: 20px;" onclick="searchTreatment()"> <i class="fa fa-search"></i><label style="padding-left: 10px;">Search</label></small>
                                                         <small style="padding-left: 550px;">                           
                                                             <i class="fa fa-print"></i>
@@ -41,6 +43,7 @@
                         </div>
 
                             <div class="card card-box" style="overflow-y:scroll;overflow-x:scroll;background-color: white; width: 1009px;height: 400px;">
+                                {% if user.employee.designation.permission.medical.view_treatment %}
                                 <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 900px;">
                                     <thead style="background-color: lightgrey;">
                                         <tr class="">
@@ -84,7 +87,7 @@
                                         {% endfor %}
                                     </tbody>
                                 </table>
-
+                                {% endif %}
                             </div>
 
                         </div>

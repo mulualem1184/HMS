@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{%  load custom_dict %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+    <style>
+        .quick-launch-container {
+            display: inline-block;
+            margin-left: 5px;
+            padding-left: 5px;
+            margin-right: 7px;
+            border: black;
+            border-width: 10px;
+        }
+        .quick-launch-label {
+            display: block;
+            color: black;
+            font-weight: bold;
+        }
+        fieldset {
+            padding-bottom: 10px;
+            width: 150px; 
+            border: 2px solid; 
+            border-radius: 5px; 
+            border-color: #0a7e37;
+        }
+        legend {
+            color: black;
+            width: max-content;
+            font-size: 14px;
+        }
+        .add-allergy {
+            position: absolute;
+            bottom: 0;
+            right: 3px;
+        }
+    </style>
+
+
+{% endblock %}
+{% block title %} Permission {% endblock %}
+
+{% block page_content %}
+                    <form method="POST" action="{% url 'staff:assign_write_previlages' designation.id %}">
+                {% csrf_token %}
+
+                <div class="card  col-md-12" style="height: 600px;">
+                    <div class="card-head">
+                        <div class="row">
+                            Check From Below
+                            <button type="submit" class="border-0 btn"><b> <i class="fa fa-plus"></i> <a ><small>Assign</small></a></b></button>
+                        </div>
+                    </div>
+                    <div class="card-body" style="overflow-x:scroll;padding-left: 50px;">
+
+                        {% include 'partials/medical_write_permission.html' %}
+                        {% include 'partials/ward_permission.html' %}
+                        {% include 'partials/laboratory_write_permission.html' %}
+                        {% include 'partials/setting_permission.html' %}
+                        {% include 'partials/billing_write_permission.html' %}
+                        {% include 'partials/pharmacy_permission.html' %}
+                        {% include 'partials/other_write_permission.html' %}
+
+                    </div>
+                
+                </div> 
+</form>
+<script type="text/javascript">
+    
+        function searchConsultation() {
+               document.getElementById('search-consultation-id').style.display = 'block';          
+                showingModal = true;
+            }
+
+        function closeSearchConsultationDiv() {
+               document.getElementById('search-consultation-id').style.display = 'none';          
+               
+                showingModal = true;
+            }
+
+
+</script>
+{% endblock %}

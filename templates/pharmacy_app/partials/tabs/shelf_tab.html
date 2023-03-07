@@ -1,0 +1,83 @@
+                <div class="tab-pane {% if active_tab == 'shelf_tab' %} active {% else %}  {% endif %}" id="shelf-tab">
+
+                        <div class=" card col-md-12 " >
+                        <div class="card-head " >
+                                   <!-- <button  class="btn btn-circle" data-toggle="modal" data-target="#createBuildingModal">
+                                    </button> -->
+                                <div class="row">
+                                    <a data-toggle="modal" data-target="#createShelfModal">
+                                    <div class="row" style="padding-left:30px;">
+                                        <div>
+                                        <i class="fa fa-plus fa-1x"></i> 
+                                         </div>
+                                        <div style="padding-left:7px;padding-right: 8px;">
+                                            <label> New </label>
+                                        </div>
+                                    </div>
+                                    </a>
+
+                                </div>
+                                           <div style="padding-left:50px;"  onclick="searchRoom()">
+                                                
+                                                    <i class="fa fa-search" ></i>
+                                                    <label><small>Search</small></label>
+                                                 
+                                            </div>
+
+                                   <div class="pull-right">
+                                        <a>
+                                            <i class="fa fa-print"></i>
+                                            <label><small>Print/Export</small></label>
+                                        </a> 
+                                    </div>
+
+                        </div>
+                        </div>
+
+                        <div class="card card-box col-md-8" id="search-room-id" style="display:none;">
+                           <div class="row" style="padding-bottom: 10px;">
+                               <div style="padding-right:10px;">
+                                    <label><small>Look For</small></label>
+                               </div>
+                               <form method="GET">
+                                   <div>
+                                        <input type="text" name="search-room" id="search-room" class="col-md-6"> 
+                                        <small><button type="submit">Find Now</button></small> 
+
+                                   </div>
+                               </form>
+                               <div class="pull-right">
+                                    <a onclick="closeSearchDiv()"> <i class="fa fa-times"></i></a> 
+                               </div>
+
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;">
+                                <thead>
+                                    <tr class="" style="background-color: lightgrey;">
+                                        <th class="text-center"><small> Shelf</small></th>
+                                        <th class="text-center"><small> Stock</small></th>
+                                        <th class="text-center"><small> Edit </small></th>
+                                        <th class="text-center"><small> Delete </small></th>
+         
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for shelf in shelf_list %}
+                                    {% if shelf.active == True %}
+
+                                        <tr class="" style="height:40px;">
+                                            <td style="width:300px;" class="text-center"> <small>{{ shelf.name}} </small></td>
+                                            <td style="width:300px;" class="text-center"> <small>{{ shelf.stock}} </small></td>
+                                            <td style="width:300px;" class="text-center"><small> <a href="" data-toggle="modal" data-target="#editWardModal{{ward.id}}"  ><i class="fa fa-edit"></i></a></small></td>
+                                            <td style="width:300px;" class="text-center"><small>  <a href="" data-target="#deleteRoomModal{{ward.id}}" data-toggle='modal'  ><i class="fa fa-trash"></i></a></small></td>
+                                           
+                                        </tr>
+                                    {% endif %}
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                </div>

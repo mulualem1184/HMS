@@ -1,7 +1,10 @@
 from typing import Any
 from django.forms import ModelForm
 from django import forms
-from .models import Attendance, Department, Designation, Employee, EmployeeDocument, StaffLeave, WorkShift, StaffTeam
+from .models import (Attendance, Department, Designation, Employee, EmployeeDocument, 
+                    StaffLeave, WorkShift, StaffTeam, MedicalPermission, ComponentPermission,
+                    BillingPermission,SettingPermission,LaboratoryPermission, PharmacyPermission,
+                    WardPermission,OtherPermission)
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -246,3 +249,264 @@ class CreateStaffTeamForm(forms.ModelForm):
                 }),
 
             }
+
+
+class MedicalViewPermissionForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        designation_id = kwargs.pop('designation_id')
+        designation = Designation.objects.get(id=designation_id)
+        super(MedicalViewPermissionForm, self).__init__(*args, **kwargs)
+        for f in self.fields:
+            try:
+                has = hasattr(designation.permission.medical,f)
+                value = getattr(designation.permission.medical,f)
+                self.fields[f].initial = value
+
+            except :
+                pass
+            """
+            if hasattr(designation.permission.medical,f):
+                value = getattr(designation.permission.medical,f)
+                self.fields[f].initial = value
+            """
+    class Meta:
+        model = MedicalPermission
+        fields = [  'view_consultation','view_clinical_finding',
+                    'view_treatment','view_allergy',
+                    'view_paraclinical_finding','view_prescription',
+                    'view_diagnosis','view_surgery','view_document',
+                    'view_treatment_plan','view_treatment_plan_action',
+                    'view_medical_attendance','view_medical_certificate'
+        ]
+
+class MedicalWritePermissionForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        designation_id = kwargs.pop('designation_id')
+        designation = Designation.objects.get(id=designation_id)
+        super(MedicalWritePermissionForm, self).__init__(*args, **kwargs)
+        for f in self.fields:
+            try:
+                has = hasattr(designation.permission.medical,f)
+                value = getattr(designation.permission.medical,f)
+                self.fields[f].initial = value
+
+            except :
+                pass
+            """
+            if hasattr(designation.permission.medical,f):
+                value = getattr(designation.permission.medical,f)
+                self.fields[f].initial = value
+            """
+    class Meta:
+        model = MedicalPermission
+        fields = ['write_consultation','write_clinical_finding','write_treatment',
+                    'write_allergy','write_paraclinical_finding','write_prescription',
+                    'write_diagnosis','write_surgery','write_document',
+                    'write_treatment_plan','write_treatment_plan_action',
+                    'write_medical_certificate','write_medical_attendance'
+        ]
+
+
+
+
+
+class EditMedicalPermissionForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        designation_id = kwargs.pop('designation_id')
+        designation = Designation.objects.get(id=designation_id)
+        super(EditMedicalPermissionForm, self).__init__(*args, **kwargs)
+        for f in self.fields:
+            if hasattr(designation.permission.medical,f):
+                value = getattr(designation.permission.medical,f)
+                self.fields[f].initial = value
+
+
+    class Meta:
+        model = MedicalPermission
+        fields = [ 'write_consultation', 'view_consultation','write_clinical_finding','view_clinical_finding',
+                    'write_treatment','view_treatment','write_allergy','view_allergy','write_paraclinical_finding',
+                    'view_paraclinical_finding','write_prescription','view_prescription','write_diagnosis',
+                    'view_diagnosis','write_surgery','view_surgery','write_document','view_document','write_treatment_plan',
+                    'view_treatment_plan','write_treatment_plan_action','view_treatment_plan_action'
+        ]
+
+
+class ComponentPermissionForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        designation_id = kwargs.pop('designation_id')
+        designation = Designation.objects.get(id=designation_id)
+        super(ComponentPermissionForm, self).__init__(*args, **kwargs)
+        for f in self.fields:
+            try:
+                has = hasattr(designation.permission.component,f)
+                value = getattr(designation.permission.component,f)
+                self.fields[f].initial = value
+            except :
+                pass
+
+    class Meta:
+        model = ComponentPermission
+        fields = [ 'view_patient_record', 'view_patient_chart','view_ward','view_laboratory',
+                    'view_lab_dashboard','view_billing','view_billing_dashboard','view_cashier_reconcilation',
+                    'view_pharmacy','view_staff'
+        ]
+
+
+class LaboratoryViewPermissionForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        designation_id = kwargs.pop('designation_id')
+        designation = Designation.objects.get(id=designation_id)
+        super(LaboratoryViewPermissionForm, self).__init__(*args, **kwargs)
+        for f in self.fields:
+            try:
+                has = hasattr(designation.permission.laboratory,f)
+                value = getattr(designation.permission.laboratory,f)
+                self.fields[f].initial = value
+            except :
+                pass
+
+    class Meta:
+        model = LaboratoryPermission
+        fields = [ 'view_lab_request', 'view_lab_specimen','view_lab_result']
+
+class LaboratoryWritePermissionForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        designation_id = kwargs.pop('designation_id')
+        designation = Designation.objects.get(id=designation_id)
+        super(LaboratoryWritePermissionForm, self).__init__(*args, **kwargs)
+        for f in self.fields:
+            try:
+                has = hasattr(designation.permission.laboratory,f)
+                value = getattr(designation.permission.laboratory,f)
+                self.fields[f].initial = value
+            except:
+                pass
+
+    class Meta:
+        model = LaboratoryPermission
+        fields = [ 'write_lab_request', 'write_lab_specimen','write_lab_result']
+
+class SettingPermissionForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        designation_id = kwargs.pop('designation_id')
+        designation = Designation.objects.get(id=designation_id)
+        super(SettingPermissionForm, self).__init__(*args, **kwargs)
+        for f in self.fields:
+            try:
+                has = hasattr(designation.permission.setting,f)
+                value = getattr(designation.permission.setting,f)
+                self.fields[f].initial = value
+            except :
+                pass
+
+    class Meta:
+        model = SettingPermission
+        fields = [ 'write_lab_test_type','write_item','write_ward_structure','write_pharmacy_structure']
+
+class BillingWritePermissionForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        designation_id = kwargs.pop('designation_id')
+        designation = Designation.objects.get(id=designation_id)
+        super(BillingWritePermissionForm, self).__init__(*args, **kwargs)
+        for f in self.fields:
+            try:
+                has = hasattr(designation.permission.billing,f)
+                value = getattr(designation.permission.billing,f)
+                self.fields[f].initial = value
+            except :
+                pass
+
+    class Meta:
+        model = BillingPermission
+        fields = [ 'write_invoice','write_receipt','write_payment']
+
+class BillingViewPermissionForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        designation_id = kwargs.pop('designation_id')
+        designation = Designation.objects.get(id=designation_id)
+        super(BillingViewPermissionForm, self).__init__(*args, **kwargs)
+        for f in self.fields:
+            try:
+                has = hasattr(designation.permission.billing,f)
+                value = getattr(designation.permission.billing,f)
+                self.fields[f].initial = value
+            except :
+                pass
+
+    class Meta:
+        model = BillingPermission
+        fields = [ 'view_invoice','view_receipt','view_payment']
+
+
+class PharmacyPermissionForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        designation_id = kwargs.pop('designation_id')
+        designation = Designation.objects.get(id=designation_id)
+        super(PharmacyPermissionForm, self).__init__(*args, **kwargs)
+        for f in self.fields:
+            try:
+                has = hasattr(designation.permission.pharmacy,f)
+                value = getattr(designation.permission.pharmacy,f)
+                self.fields[f].initial = value
+            except :
+                pass
+
+    class Meta:
+        model = PharmacyPermission
+        fields = [ 'write_drug_transfer_request','write_first_transfer_request_approval',
+                    'write_second_transfer_request_approval','write_relocate_item','write_allocate_item'
+        ]
+
+class WardPermissionForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        designation_id = kwargs.pop('designation_id')
+        designation = Designation.objects.get(id=designation_id)
+        super(WardPermissionForm, self).__init__(*args, **kwargs)
+        for f in self.fields:
+            try:
+                has = hasattr(designation.permission.ward,f)
+                value = getattr(designation.permission.ward,f)
+                self.fields[f].initial = value
+            except :
+                pass
+
+    class Meta:
+        model = WardPermission
+        fields = [ 'write_ward_admission','view_ward_admission',]
+
+class OtherWritePermissionForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        designation_id = kwargs.pop('designation_id')
+        designation = Designation.objects.get(id=designation_id)
+        super(OtherWritePermissionForm, self).__init__(*args, **kwargs)
+        for f in self.fields:
+            try:
+                has = hasattr(designation.permission.other,f)
+                value = getattr(designation.permission.other,f)
+                self.fields[f].initial = value
+            except :
+                pass
+
+    class Meta:
+        model = OtherPermission
+        fields = [ 'write_checkin','write_resource',
+                    'write_material'        ]
+
+class OtherViewPermissionForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        designation_id = kwargs.pop('designation_id')
+        designation = Designation.objects.get(id=designation_id)
+        super(OtherViewPermissionForm, self).__init__(*args, **kwargs)
+        for f in self.fields:
+            try:
+                has = hasattr(designation.permission.other,f)
+                value = getattr(designation.permission.other,f)
+                self.fields[f].initial = value
+            except :
+                pass
+
+    class Meta:
+        model = OtherPermission
+        fields = [ 'view_checkin','view_resource',
+                    'view_material'
+        ]

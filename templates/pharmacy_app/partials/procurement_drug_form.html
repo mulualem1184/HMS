@@ -22,7 +22,7 @@
         </div>
       
             </form>
-      <button onclick="toggleServiceForm()" id='button-{{row}}' class="btn btn-primary btn-circle pull-right" hx-post="{% url 'procurement_detail' procurement_pk  row|add:1 %}" hx-trigger='click' hx-target='#drug-request-create' hx-include="#form-id-id" hx-swap='beforeend'>Add</button>
+      <button onclick="toggleServiceForm()" id='button-{{row}}' class="btn pull-right" hx-post="{% url 'procurement_detail' procurement_pk  row|add:1 %}" hx-trigger='click' hx-target='#drug-request-create' hx-include="#form-id-id" hx-swap='beforeend'>Add</button>
       
 <script type="text/javascript">
         function toggleServiceForm (){

@@ -1,0 +1,197 @@
+{% extends "base.html" %}
+{%  load custom_dict %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+    <style>
+        .quick-launch-container {
+            display: inline-block;
+            margin-left: 5px;
+            padding-left: 5px;
+            margin-right: 7px;
+            border: black;
+            border-width: 10px;
+        }
+        .quick-launch-label {
+            display: block;
+            color: black;
+            font-weight: bold;
+        }
+        fieldset {
+            padding-bottom: 10px;
+            width: 150px; 
+            border: 2px solid; 
+            border-radius: 5px; 
+            border-color: #0a7e37;
+        }
+        legend {
+            color: black;
+            width: max-content;
+            font-size: 14px;
+        }
+        .add-allergy {
+            position: absolute;
+            bottom: 0;
+            right: 3px;
+        }
+    </style>
+
+
+{% endblock %}
+{% block title %} Transfer Requests {% endblock %}
+{% block page_content %}
+{% include "pharmacy_app/partials/modals/choose_stock.html" %}
+
+            <div class="tab-pane" id="consultation-list-tab">
+                    <div class="row">
+
+                        <div class="col-md-12" id="dispensary-supplied-drug-table-id" >
+                            <div class="card" style="width: 1249px;padding-right: 30px;">
+                            <div class="card-head" >
+                                   <!-- <button  class="btn btn-circle" data-toggle="modal" data-target="#createBuildingModal">
+                                    </button> -->
+                                <div class="row">
+                                        {% if user.employee.designation.permission.pharmacy.write_transfer_request %}
+                                            <small style="padding-left: 50px;"> <span><a href="" data-toggle='modal' data-target='#chooseStockModal'>New</a></span> </small> 
+                                        {% endif %}
+                                           <small style="padding-left: 20pc;"> <span><a href data-toggle='modal' data-target='#filterByDateModal'></a></span> </small> 
+                                           <small style="padding-left: 20px;" onclick="searchConsultation()"> <i class="fa fa-search"></i><label style="padding-left: 10px;">Search</label></small>
+                                           <small style="padding-left: 20px;">
+                                                <select hx-get="{% url 'invoices' %}?id=PatientAlphabet" hx-trigger='click'  hx-swap='innerHTML' hx-target='#drug_price_tab' hx-include="[name='last_x_days']"   name="last_x_days" id="">
+                                                    <option value=90>Last 90 Days</option>   
+                                                    <option value=1>Last 7 Days</option>  
+                                                    <option value=30>Last 30 Days</option>   
+                                                    <option value=0>All Time</option>                                                      
+                                                </select>
+
+                                            </small>
+                                            <small style="padding-left: 0px;" class="add-allergy">                           
+                                                <i class="fa fa-print"></i>
+                                                <label>Print/Export</label>
+                                            </small>
+
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="card card-box col-md-8" id="search-consultation-id" style="display:none;">
+                           <div class="row" style="padding-bottom: 10px;">
+                               <div style="padding-right:10px;">
+                                    <label><small>Look For</small></label>
+                               </div>
+                               <form method="GET" id="search-consultation-form-id">
+                                   <div>
+                                        <input type="text" list="patient_data_list" name="search-consultation" id="search-consultation" class="col-md-6"> 
+                                        <small><button type="submit" >Find Now</button></small> 
+
+                                   </div>
+                               </form>
+                               <div class="pull-right">
+                                    <a onclick="closeSearchConsultationDiv()"> <i class="fa fa-times"></i></a> 
+                               </div>
+
+                            </div>
+                        </div>
+
+                            <div id="drug_price_tab">
+                                    <div class="card card-box" style="overflow-y:scroll;overflow-x:scroll;background-color: white; width: 1250px;height: 600px;">
+                                        <table id=""  class=" ml-table-bordered" style=" border: 10px; border-color: black;width: 1250px;">
+                                            
+                                            <thead style="background-color: lightgrey;">
+                                                <tr class="gradeX odd">
+                                                    <th class= "text-center"><small>Date</small></th>
+                                                    <th class= "text-center"><small>Source Location</small></th>
+                                                    <th class= "text-center"><small>Destination Location</small></th>
+                                                    <th class= "text-center"><small>First Approval</small></th>
+                                                    <th class= "text-center"><small>Second Approval</small></th>
+
+                                                    <th class= "text-center"><small>Created By</small></th>
+                                                    <th class= "text-center"><small>Stock Management</small></th>
+
+                                                    <th class= "text-center"><small>Delete</small></th>
+
+                                                </tr>
+                                            </thead>
+                        <tbody>
+                            {% for request in requests %}
+                                {% include "pharmacy_app/partials/modals/request_first_approval.html" %}
+                                {% include "pharmacy_app/partials/modals/request_second_approval.html" %}
+
+                                <tr style="height: 40px;">
+                                    <td class= "text-center" style="width:100px"><small><a href="" > {{ request.registered_on }}</a></small></td>
+                                    <td class= "text-center" style="width:100px"><small> {{ request.source }}</small></td>
+                                    <td class= "text-center" style="width:100px"><small> {{ request.destination }}</small></td>
+                                    <td class= "text-center" style="width:100px">
+                                        <small>                                    
+                                            {% if request.status == '2' %} 
+                                                <i class="fa fa-check green"></i>
+                                            {% elif request.status == '3' %} 
+                                                <i class="fa fa-check green"></i>
+                                            {% else %}
+                                            {% if user.employee.designation.permission.pharmacy.write_first_transfer_request_approval %}
+                                                <a href="" data-toggle='modal' data-target="#requestFirstApprovalModal{{request.id}}">Approve</a>
+                                            {% else %}
+                                                <i class="fa fa-times red"></i>
+                                            {% endif %}
+                                            {% endif %}
+                                        </small>
+                                    </td>
+                                    <td class= "text-center" style="width:100px">
+                                        <small>                                    
+
+                                            {% if request.status == '2' %} 
+                                            {% if user.employee.designation.permission.pharmacy.write_second_transfer_request_approval %}
+                                                <a href="" data-toggle='modal' data-target="#requestSecondApprovalModal{{request.id}}">Approve</a>
+                                            {% else %}
+                                                <i class="fa fa-times red"></i>
+                                            {% endif %}
+                                            {% elif request.status == '3' %} 
+                                                <i class="fa fa-check green"></i>
+                                            {% else %}
+                                                <i class="fa fa-times red"></i>
+                                            {% endif %}
+                                        </small>
+                                    </td>
+
+                                    <td class= "text-center" style="width:100px"><small> {{ request.registered_by }} </small></td>
+                                {% if user.employee.designation.permission.pharmacy.write_relocate_item %}
+                                    <td class= "text-center" style="width:100px"><small><a href="{% url 'stock_transfer_management' request.id %}" >Stock Management</a></small></td>
+                                    <td class= "text-center" style="width:100px"><small> <a href=""><i class="fa fa-trash"></i> </a></small></td>
+                                {% else %}
+                                    <td class= "text-center" style="width:100px"></td>                                
+                                    <td class= "text-center" style="width:100px"></td>                                
+                                {% endif %}
+                                
+
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+              
+                                    </div>
+                    </div>
+
+                        </div>
+                    </div>
+            
+        </div>
+
+
+<script type="text/javascript">
+    
+        function searchConsultation() {
+               document.getElementById('search-consultation-id').style.display = 'block';          
+                showingModal = true;
+            }
+
+        function closeSearchConsultationDiv() {
+               document.getElementById('search-consultation-id').style.display = 'none';          
+               
+                showingModal = true;
+            }
+
+
+</script>
+{% endblock %}
+

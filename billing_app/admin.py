@@ -27,6 +27,12 @@ admin.site.register(ItemPrice)
 admin.site.register(ItemCategory)
 admin.site.register(InvoiceReconcilation)
 admin.site.register(BillableItem)
+admin.site.register(ShelfItem)
+admin.site.register(TransferRequest)
+admin.site.register(ItemTransferInfo)
+admin.site.register(ItemRelocationInfo)
+admin.site.register(ItemRelocationTemp)
+admin.site.register(InventoryThreshold)
 
 
 

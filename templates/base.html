@@ -309,8 +309,7 @@
 	                                </div>
 	                            </div>
 	                        </li>
-
-                            {% if user.employee.designation.staff_code == '88888' %}
+                            {% if user.employee.designation.permission.component.view_patient_record %}
                                 <li class="nav-item ">
                                     <a href="#" class="nav-link nav-toggle">
                                         <i class="fa fa-medkit"></i>
@@ -325,13 +324,14 @@
                                                 <span class="title"><small> Home</small></span>
                                             </a>
                                         </li>
+                                        {% if user.employee.designation.permission.component.view_patient_chart %}
                                         <li class="nav-item {% if patient_dashboard %} active {% endif %} ">
-
                                             <a href="{% url 'core:patient_list' 'patient_dashboard' %}" class="nav-link ">
                                                 <i class="fa fa-user"></i>                                                
                                                 <span class="title"><small>Patient Chart</small></span>
                                             </a>
                                         </li>
+                                        {% endif %}
                                         <li class="nav-item  {% if activities_tab %} active {% endif %}">
 
                                             <a href="{% url 'core:patient_list' 'activities' %}" class="nav-link ">
@@ -354,6 +354,7 @@
                                                 <span class="title"><small> Patients</small></span>
                                             </a>
                                         </li>
+                                        {% if user.employee.designation.permission.component.view_ward %}
                                         <li class="nav-item  {% if inpatients_tab %} active {% endif %}">
 
                                             <a href="{% url 'whole_ward_view' %}" class="nav-link {% if inpatients_tab %} active {% endif %}">
@@ -367,6 +368,7 @@
                                                 <span class="title"><small> Beds Calendar</small></span>
                                             </a>
                                         </li>
+                                        {% endif %}
                                         <li class="nav-item  ">
                                             <a href="{% url 'core:patient_list' 'checkins' %}" class="nav-link ">
                                                 <span class="title"><small> Checkins</small></span>
@@ -380,7 +382,9 @@
 
                                     </ul>
                                 </li>
+                                {% endif %}
 
+                            {% if user.employee.designation.permission.component.view_laboratory %}                                
                                 <li class="nav-item ">
                                     <a href="#" class="nav-link nav-toggle">
                                         <i class="fa fa-medkit"></i>
@@ -388,6 +392,8 @@
                                         <span class="arrow"></span>
                                     </a>
                                     <ul class="sub-menu"  {% if lab_submenu %} style="display: block;" {% endif %}>
+                                    {% if user.employee.designation.permission.component.view_lab_dashboard %}
+                                        
                                         <li class="nav-item">
                                                 <div class="col-md-1">
                                                 </div>
@@ -395,7 +401,7 @@
                                                 <span class="title"><small> Lab Dashboard</small></span>
                                             </a>
                                         </li>
-
+                                    {% endif %}
                                         <li class="nav-item">
                                                 <div class="col-md-1">
                                                 </div>
@@ -420,6 +426,9 @@
 
                                     </ul>
                                 </li>
+                                {% endif %}
+
+                            {% if user.employee.designation.permission.component.view_billing %}
                                 <li class="nav-item ">
                                     <a href="#" class="nav-link nav-toggle">
                                         <i class="fa fa-medkit"></i>
@@ -427,6 +436,7 @@
                                         <span class="arrow"></span>
                                     </a>
                                     <ul class="sub-menu"  {% if lab_submenu %} style="display: block;" {% endif %}>
+                                        {% if user.employee.designation.permission.component.view_billing_dashboard %}
                                         <li class="nav-item">
                                                 <div class="col-md-1">
                                                 </div>
@@ -434,7 +444,7 @@
                                                 <span class="title"><small> Dashboard</small></span>
                                             </a>
                                         </li>
-
+                                        {% endif %}
                                         <li class="nav-item">
                                                 <div class="col-md-1">
                                                 </div>
@@ -480,15 +490,18 @@
                                                 <span class="title"><small> Patient Billing </small></span>
                                             </a>
                                         </li>
+
+                                        {% if user.employee.designation.permission.component.view_cashier_reconcilation %}
                                         <li class="nav-item  ">
                                             <a href="{% url 'cashier_list'  %}" class="nav-link ">
                                                 <span class="title"><small> Reconcilations </small></span>
                                             </a>
                                         </li>
-
+                                        {% endif %}
                                     </ul>
                                 </li>
-
+                                {% endif %}
+                                {% if user.employee.designation.permission.component.view_staff %}
                                 <li class="nav-item {% if active_link == 'staff' %} open {% endif %}">
                                     <a href="#" class="nav-link nav-toggle">
                                         <i class="fa fa-medkit"></i>
@@ -553,47 +566,66 @@
                                         </li>
                                     </ul>
                                 </li>
+                                {% endif %}
+                        {% if user.employee.designation.permission.component.view_pharmacy %}
+                                                    
                             <li class="nav-item {% if active_link == 'outpatient' %} open {% endif %}">
                                 <a href="#" class="nav-link nav-toggle">
                                     <i class="fa fa-medkit"></i>
-                                    <span class="title">Pharmacy</span>
+                                    <span class="title"><small>Pharmacy</small></span>
                                     <span class="arrow"></span>
                                 </a>
-                                <ul class="sub-menu {% if active_link == "lab" %} style="display: block;" {% endif %}">
-                                    
+                                <ul class="sub-menu ">
+
+                                    <li class="nav-item">
+                                        <a href="{% url 'transfer_request' %}" class="nav-link ">
+                                            <span class="title"><small>Transfer Requests</small></span>
+                                        </a>
+                                    </li>                                    
+                                    <li class="nav-item">
+                                        <a href="{% url 'pharmacy_inventory' %}" class="nav-link ">
+                                            <span class="title"><small>Inventory</small></span>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{% url 'inventory_structures' %}" class="nav-link ">
+                                            <span class="title"><small>Pharmacy Structure</small></span>
+                                        </a>
+                                    </li>
                                     <li class="nav-item">
                                         <a href="{% url 'pharmacy_settings' %}" class="nav-link ">
-                                            <span class="title">Record Info</span>
+                                            <span class="title"><small>Record Info</small></span>
                                         </a>
                                     </li>
                                     <li class="nav-item  ">
                                         <a href="{% url 'procurement'  %}" class="nav-link ">
-                                            <span class="title">Procurement</span>
+                                            <span class="title"><small>Procurement</small></span>
                                         </a>
                                     </li>
                                     <li class="nav-item  ">
                                         <a href="{% url 'pharmacy_report1'  %}" class="nav-link ">
-                                            <span class="title">Reports</span>
+                                            <span class="title"><small>Reports</small></span>
                                         </a>
                                     </li>
                                     <li class="nav-item  ">
                                         <a href="{% url 'dispensary_list'  %}" class="nav-link ">
-                                            <span class="title">Dispensary List</span>
+                                            <span class="title"><small>Dispensary List</small></span>
                                         </a>
                                     </li>
+
+                                    <!--
                                     <li class="nav-item  ">
                                         <a href="{% url 'drug_request_first_approval'  %}" class="nav-link ">
                                             <span class="title">Requests</span>
                                         </a>
                                     </li>
+                                    -->
 
 
 
                                 </ul>
                             </li>
-
-                            {% else %}
-                            {% endif %}
+                        {% endif %}
 
 
 

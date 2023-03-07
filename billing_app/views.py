@@ -13,6 +13,8 @@ from datetime import timedelta
 from django.forms.models import modelformset_factory
 from django.views import View
 from dateutil.tz import UTC
+from collections import OrderedDict
+from pharmacy_app.fusioncharts import FusionCharts
 
 # Create your views here.
 def ServiceFormPage(request):
@@ -446,7 +448,7 @@ def PartialReconcilation(request, debt_id):
 				reconcilation.finance_employee = Employee.objects.get(user_profile=request.user)
 				reconcilation.debt = debt
 
-			if debt.cash_debt - amount > -1:
+			if debt.cash_debt - amount > 1:
 				if reconcilation.remaining_amount:
 					if reconcilation.remaining_amount - amount <0:
 						messages.error(request,"Paid Amount Cannot Exceed Debt!")
@@ -482,7 +484,7 @@ class Invoices(View):
 
 	def get(self, *args, **kwargs):
 
-		invoices = Invoice.objects.filter(active=True,estimate=False,receipt=False)[::-1]
+		invoices = Invoice.objects.filter(active=True,estimate=False,receipt=False)[::1]
 
 
 		if self.request.htmx:
@@ -506,7 +508,7 @@ class Invoices(View):
 			else:
 				last_x_day = today - timedelta(days=int(value))
 				invoices = invoices.filter(registered_on__range=[last_x_day,today],active=True)
-			invoices = invoices[::-1]
+			invoices = invoices[::1]
 			context2 = {
 						'invoices':invoices,
 						'invoice_form':InvoiceForm(),
@@ -526,7 +528,7 @@ class Payments(View):
 
 	def get(self, *args, **kwargs):
 
-		payments = Payment.objects.all()[::-1]
+		payments = Payment.objects.all()[::1]
 		invoices = Invoice.objects.all()
 		if self.request.htmx:
 			value = self.request.GET.get('last_x_days')
@@ -928,7 +930,7 @@ class SaveInvoice(View):
 	def post(self, *args, **kwargs):
 		patient_id = kwargs['patient_id']
 		patient = Patient.objects.get(id=patient_id)
-		due_date = datetime.strptime(self.request.POST.get('due_date') or str(datetime.now().date()),  '%Y-%m-%d')
+		due_date = datetime.strptime(self.request.POST.get('due_date') or str(datetime.now().date()),  '%Y%m%d')
 		item_sale_list = self.request.POST.getlist('item_sales')
 		for item_sale in item_sale_list:
 			print(item_sale,'\n')		
@@ -992,7 +994,7 @@ class SaveEstimate(View):
 class Items(View):
 
 	def get(self, *args, **kwargs):
-		search_consultation = self.request.GET.get('search-consultation',None)
+		search_consultation = self.request.GET.get('searchconsultation',None)
 
 		items = Item.objects.all()
 		item_form = CreateItemForm()
@@ -1172,13 +1174,29 @@ class CreateDrug(View):
 class BillingDashboard(View):
 
 	def get(self, *args, **kwargs):
-		day = datetime.now()
-		this_month = datetime.now().month
-		last_month = (datetime.now() -timedelta(days=30)).month
+		chartConfig = OrderedDict()
+		chartConfig["caption"] = "Drugs Sold Today"
+		chartConfig["subCaption"] = "In Birr"
+		chartConfig["xAxisName"] = "Country"
+		chartConfig["yAxisName"] = "Reserves (MMbbl)"
+		chartConfig["numberSuffix"] = " Birr"
+		chartConfig["theme"] = "fusion"
+		chartConfig["numVisiblePlot"] = "8",
+		chartConfig["flatScrollBars"] = "1",
+		chartConfig["scrollheight"] = "1",
+		chartConfig["type"] = "pie2d",
 
+		dataSource["chart"] = chartConfig
+		dataSource["data"] = []
+
+		day = datetime.now()
+		this_month = (datetime.now() - timedelta(days=60)).month  
+		last_month = (datetime.now() - timedelta(days=90)).month
+		print(this_month)
+		print(last_month)
 		
 		
-		before_date = day - timedelta(days=7)
+		before_date = day - timedelta(days=100)
 		patient_array = []
 		billable_patients = BillableItem.objects.filter(registered_on__range=[before_date,day],active=True)
 		billable_patients1 = []
@@ -1205,7 +1223,8 @@ class BillingDashboard(View):
 		debit = 0
 		for invoice in invoices:
 			if invoice.registered_on.month == 12:
-				month_str = str(invoice.registered_on.year) + " - " + str(invoice.registered_on.month)
+				print('come here')
+				month_str = str(invoice.registered_on.year) + "  " + str(invoice.registered_on.month)
 				if month_str in month_array:
 					print('k')
 				else:
@@ -1256,7 +1275,7 @@ class PatientBilling(View):
 		patient_id = kwargs['patient_id']
 		patient = Patient.objects.get(id=patient_id)
 		this_month = datetime.now().month
-		last_month = (datetime.now() -timedelta(days=30)).month
+		last_month = (datetime.now() - timedelta(days=30)).month
 
 		day = datetime.now()
 		

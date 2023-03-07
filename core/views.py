@@ -1012,20 +1012,20 @@ def PatientDashboard(request, patient_id):
 
 	surgery_form = PatientSurgeryForm()
 	search_consultation = request.GET.get('search-consultation',None)
-	consultation_list = PatientConsultation.objects.filter(registered_on__range=[start_date1,end_date1],active=True)
-	clinical_finding_list = PatientClinicalFinding.objects.filter(registered_on__range=[start_date1,end_date1])
-	para_clinical_finding_list = PatientParaclinicalFinding.objects.filter(registered_on__range=[start_date1,end_date1])
-	demo_value_list = PatientDemoValues.objects.filter(registered_on__range=[start_date1,end_date1])
+	consultation_list = PatientConsultation.objects.filter(registered_on__range=[start_date1,end_date1],active=True,patient=patient)
+	clinical_finding_list = PatientClinicalFinding.objects.filter(registered_on__range=[start_date1,end_date1],patient=patient)
+	para_clinical_finding_list = PatientParaclinicalFinding.objects.filter(registered_on__range=[start_date1,end_date1],patient=patient)
+	demo_value_list = PatientDemoValues.objects.filter(registered_on__range=[start_date1,end_date1],patient=patient)
 	treatment_plan_list = IPDTreatmentPlan.objects.filter(patient=patient,registered_on__range=[start_date1,end_date1])
 
 	search_prescription = request.GET.get('search-prescription',None)
 	search_timeline = request.GET.get('search-timeline',None)
 	search_activities = request.GET.get('search-activities',None)
 
-	surgery_list = PatientSurgery.objects.filter(registered_on__range=[start_date1,end_date1])
-	image_list = PatientImage.objects.filter(registered_on__range=[start_date1,end_date1],active=True)
-	file_list = PatientFile.objects.filter(registered_on__range=[start_date1,end_date1],active=True)
-	treatment_list = PatientTreatment.objects.filter(registered_on__range=[start_date1,end_date1],active=True)
+	surgery_list = PatientSurgery.objects.filter(registered_on__range=[start_date1,end_date1],patient=patient)
+	image_list = PatientImage.objects.filter(registered_on__range=[start_date1,end_date1],active=True,patient=patient)
+	file_list = PatientFile.objects.filter(registered_on__range=[start_date1,end_date1],active=True,patient=patient)
+	treatment_list = PatientTreatment.objects.filter(registered_on__range=[start_date1,end_date1],active=True,patient=patient)
 
 	print('\n','\n','ssesees: ',search_consultation,'\n')
 	if search_consultation == None:
@@ -1082,11 +1082,7 @@ def PatientDashboard(request, patient_id):
 	info_form2 = PrescriptionInfoForm()
 	patient_treatment_form = PatientTreatmentForm()
 
-	"""
-	qr = Image.objects.none()
-	ImageFormset = modelformset_factory(Image, form=ImageForm, extra=5)
-	image_formset = ImageFormset(request.POST or None, queryset=qr)
-	"""
+
 	patient_dashboard = True
 	records_submenu = True
 	today3 = datetime.datetime.now() - datetime.timedelta(days=300)

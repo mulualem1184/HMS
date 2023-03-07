@@ -28,7 +28,13 @@ from django.http import HttpResponse, Http404
 from django.shortcuts import redirect, render, get_object_or_404
 from collections import OrderedDict
 from .fusioncharts import FusionCharts
+from datetime import timedelta
 
+from dateutil.tz import UTC
+from billing_app.models import *
+from billing_app.forms import *
+from core.models import Stock
+from core.forms import CreateStockForm, CreateStockShelfForm
 def render_to_pdf(template_src, context_dict={}):
 	template = get_template(template_src)
 	html  = template.render(context_dict)
@@ -2948,10 +2954,14 @@ def PharmacyReport1(request):
 				threshold = InventoryThreshold.objects.filter().last()
 			#print('ddddddddddd',total_quantity, 'ccccccccccccc',threshold.threshold)
 			#if drug quantity in shelf and dispensary is less than its threshold it is in low stock level
-			if total_quantity < threshold.threshold:
-				alert_array.append(threshold.threshold - total_quantity)
-				alert_drug_array.append(drug)
-				alert_zip = zip(alert_drug_array, alert_array)
+			try:
+				if total_quantity < threshold.threshold:
+					alert_array.append(threshold.threshold - total_quantity)
+					alert_drug_array.append(drug)
+					alert_zip = zip(alert_drug_array, alert_array)
+				
+			except Exception as e:
+				pass
 
 	#for a,b in inventory_zip:
 	#	print('aaaaa',a)
@@ -3088,7 +3098,7 @@ def PharmacyReport1(request):
 	
 	sale_amount = 0
 	sale_sum = 0
-	today = datetime.now()
+	today = datetime.datetime.now()
 	today_sale = DrugDispensed.objects.filter(registered_on__day=today.day, bill_no__isnull=False,bill_no__selling_price__isnull=False)
 	for sale in today_sale:
 		sale_amount = sale_amount + sale.bill_no.quantity
@@ -3456,3 +3466,601 @@ class PharmacyReportChartData1(APIView):
 				'total_quantity_array':total_quantity_array,
 				}
 		return Response(data)
+
+
+class PatientBilling(View):
+
+	def get(self, *args, **kwargs):
+		patient_id = kwargs['patient_id']
+		patient = Patient.objects.get(id=patient_id)
+		this_month = datetime.now().month
+		last_month = (datetime.now() -timedelta(days=30)).month
+
+		day = datetime.now()
+		
+		before_date = day - timedelta(days=7)
+
+		billable_patients = BillableItem.objects.filter(registered_on__range=[before_date,day],active=True)
+		invoices = Invoice.objects.filter(registered_on__range=[before_date,day],patient=patient)
+		payments = Payment.objects.filter(registered_on__range=[before_date,day],patient=patient)
+		receipts = Invoice.objects.filter(registered_on__range=[before_date,day],receipt=True,patient=patient)
+		paid_invoice = invoices.filter(paid=True).count()
+		not_paid_invoice = invoices.filter(paid=False).count()
+		payment_count = receipts.count() + payments.count()
+
+		month_array = []
+		credit_array = []
+		debit_array = []
+		balance_array = []
+
+		credit = 0
+		debit = 0
+		for invoice in invoices:
+			if invoice.registered_on.month == this_month:
+				month_str = str(invoice.registered_on.year) + " - " + str(invoice.registered_on.month)
+				if month_str in month_array:
+					print('k')
+				else:
+					credit = 0
+					month_array.append(month_str)
+					invoice_list = Invoice.objects.filter(registered_on__month=this_month,patient=patient)
+					for invoice in invoice_list:
+						credit += invoice.total_amount
+					credit_array.append(credit)
+					debit = 0
+					payment_list = Payment.objects.filter(registered_on__month=this_month,patient=patient)
+					for payment in payment_list:
+						debit += payment.amount_paid
+					debit_array.append(debit)
+					balance_array.append(debit - credit) 
+
+		sold_items = ItemSaleInfo.objects.filter(active=True)
+		item_count = sold_items.values('item').distinct().count()
+
+		balance_zip = zip(month_array,debit_array,credit_array,balance_array)
+
+		lab_items = Item.objects.filter(medical_type='6')
+		type_array = []
+		for lab in lab_items:
+			if lab.lab_test in type_array:
+				print('')
+			else:
+				type_array.append(lab.lab_test)
+		order_list = Order.objects.all()
+		unpaid_orders_array = []
+		for order in order_list:
+			unpaid_orders = order.test_set.filter(paid=False)
+			if unpaid_orders:
+				for u in unpaid_orders:
+					#print(u,'\n')
+					if u.order not in unpaid_orders_array:
+						unpaid_orders_array.append(u.order)
+
+		context = {'billable_items': billable_patients,
+					'invoices':invoices,
+					'payments':payments,
+					'receipts':receipts,
+					'paid_invoice':paid_invoice,
+					'not_paid_invoice':not_paid_invoice,
+					'payment_count':payment_count,
+					'patient':patient,
+					'payment_form':PaymentForm(),
+					'invoice_form':InvoiceForm(),
+					'prepayment_form':PrePaymentForm(),
+					'balance_zip':balance_zip,
+					'debit':debit,
+					'credit':credit,
+					'balance':debit - credit,
+					'sold_items':sold_items,
+					'item_count':item_count,
+					'unpaid_orders_array':unpaid_orders_array,
+					'type_array':type_array,
+
+					}
+
+		return render(self.request, 'billing_app/patient_billing.html',context)
+
+class PrepareBillableItem(View):
+	def post(self, *args, **kwargs):
+		patient_id = kwargs['patient_id']
+		patient = Patient.objects.get(id=patient_id)
+		item_list = self.request.POST.getlist('items')
+		item_ids = [int(id) for id in self.request.POST.getlist('items')]
+		item_list = []
+		for invoice_id in item_ids:
+			item_list.append(BillableItem.objects.get(id=invoice_id))
+
+		for item in item_list:
+			print(item,'\n')
+			print(item.item,'\n')
+			item_sale_info = ItemSaleInfo()
+			item_sale_info.item = item.item
+			item_sale_info.quantity = 1
+			item_sale_info.temp_active = True
+			item_sale_info.active = True
+			item.active=False
+			item.save()
+			item_sale_info.save()
+		return redirect('edit_invoice', patient_id)
+
+
+class BilledDrugList(View):
+
+	def get(self, *args, **kwargs):
+
+		day = datetime.datetime.now()
+		
+		before_date = day - timedelta(days=60)
+
+		billed_list = Invoice.objects.filter(registered_on__range=[before_date,day],active=True)
+		drugs = []
+		quantities = []
+		total_items = 0
+		
+		for invoice in billed_list:
+			print(invoice,'jojojjo','\n')
+			for item in invoice.item_info.all():
+				if item.item.drug:
+					drugs.append(item.item)
+					quantities.append(item.quantity)
+					if item.item.drug in drugs:
+						pass
+					else:
+						total_items += 1
+		
+		#billed_list = zip(drugs,quantities)
+		context = {'billed_list': billed_list,
+					'total_items':total_items,
+					'item_list':Item.objects.all()
+		}
+		return render(self.request, 'pharmacy_app/billed_drugs_list.html',context)
+
+
+class DispensedList(View):
+	def get(self, *args, **kwargs):
+
+		day = datetime.datetime.now()
+		
+		before_date = day - timedelta(days=60)
+
+		dispensed_list = Invoice.objects.filter(registered_on__range=[before_date,day],active=True,paid=True)
+		billed_list = []
+		drugs = []
+		quantities = []
+		total_items = 0
+		for invoice in dispensed_list:
+			print(invoice,'jojojjo','\n')
+			if invoice.unpaid_amount > 0:
+				billed_list.append(invoice)
+			for info in invoice.item_info.all():
+				if info.item.drug:
+					drugs.append(info.item)
+					quantities.append(info.quantity)
+					if info.item.drug in drugs:
+						pass
+					else:
+						total_items += 1
+		#billed_list = zip(drugs,quantities)
+
+		context = {'billed_list': dispensed_list,
+					'total_items':total_items,
+					'item_list':Item.objects.all()
+		}
+		return render(self.request, 'pharmacy_app/dispensed_drugs_list.html',context)
+
+
+
+class PatientDrugs(View):
+	def get(self, *args, **kwargs):
+		patient_id = kwargs['patient_id']
+		patient = Patient.objects.get(id=patient_id)
+
+		day = datetime.datetime.now()
+		
+		before_date = day - timedelta(days=7)
+		billable_items = BillableItem.objects.filter(registered_on__range=[before_date,day],active=True)
+
+		dispensed_list = Invoice.objects.filter(registered_on__range=[before_date,day],active=True,paid=True)
+		drugs = []
+		quantities = []
+		total_items = 0
+		for invoice in dispensed_list:
+			for info in invoice.item_info.all():
+				if info.item.drug:
+					drugs.append(info.item)
+					quantities.append(item.quantity)
+					if info.item.drug in drugs:
+						pass
+					else:
+						total_items += 1
+		billed_list = zip(drugs,quantities)
+		context = {'billable_items': billable_items,
+					'dispensed_list':dispensed_list,
+		}
+		return render(self.request, 'pharmacy_app/patient_drugs.html',context)
+
+
+class PharmacyInventory(View):
+
+	def get(self, *args, **kwargs):
+	# Chart data is passed to the `dataSource` parameter, like a dictionary in the form of key-value pairs.
+		dataSource = OrderedDict()
+		supply_chart = OrderedDict()
+		dispensary_supply_chart = OrderedDict()
+
+	# The `chartConfig` dict contains key-value pairs of data for chart attribute
+		chartConfig = OrderedDict()
+		chartConfig["caption"] = "Total Drugs"
+		chartConfig["subCaption"] = "In Birr"
+		chartConfig["xAxisName"] = "Country"
+		chartConfig["yAxisName"] = "Reserves (MMbbl)"
+		chartConfig["numberSuffix"] = " Unit"
+		chartConfig["theme"] = "fusion"
+		chartConfig["numVisiblePlot"] = "8",
+		chartConfig["flatScrollBars"] = "1",
+		chartConfig["scrollheight"] = "1",
+		chartConfig["type"] = "pie2d",
+
+		dataSource["chart"] = chartConfig
+		dataSource["data"] = []
+
+		shelf_item = ShelfItem.objects.filter(active=True) 
+		shelf_list = StockShelf.objects.filter(active=True) 
+
+		filtered_stock_id = int(self.request.GET.get('stock_id','0')) or None
+		if filtered_stock_id == None or '0':
+			stock = None
+		else:
+			stock = Stock.objects.get(id=filtered_stock_id)
+		print('stocj: ',filtered_stock_id)
+		print('stockkk',stock)
+		items = []
+		quantities = []
+		low_quantities = []
+		low_items = []
+		thresholds = []
+		for item in Item.objects.filter(drug__isnull=False):
+			items.append(item)
+			quantities.append(ShelfItem.objects.first().item_stock_amount(item,stock))
+			try:
+				threshold = InventoryThreshold.objects.filter(item=item).last()
+				if threshold.threshold > ShelfItem.objects.first().item_stock_amount(item,stock):
+					low_items.append(item)					 
+					low_quantities.append(ShelfItem.objects.first().item_stock_amount(item,stock))					 
+					thresholds.append(threshold)
+			except Exception as e:
+				pass
+			print('item: ',item,'quantity: ',ShelfItem.objects.first().item_stock_amount(item,stock))
+			dataSource["data"].append({"label": str(item), "value": ShelfItem.objects.first().item_stock_amount(item,stock)})
+		stock_form = CreateStockShelfForm()
+		stock_zip = zip(items,quantities)
+		threshold_zip = zip(low_items,low_quantities,thresholds)
+
+		inventory_chart = FusionCharts("pie2d", "invChart", "500", "600", "inventory_chart_container", "json", dataSource)
+
+		context = {'stock_zip': stock_zip,
+					'inventory_chart':inventory_chart.render(),
+					'stock_list':Stock.objects.filter(active=True),		
+					'threshold_zip':threshold_zip
+		}
+		return render(self.request, 'pharmacy_app/pharmacy_inventory.html',context)
+
+class InventoryStructures(View):
+
+	def get(self, *args, **kwargs):
+
+		stock_list = Stock.objects.filter(active=True) 
+		shelf_list = StockShelf.objects.filter(active=True) 
+		threshold_list = InventoryThreshold.objects.all()
+		create_stock_form = CreateStockForm()
+		create_shelf_form = CreateStockShelfForm()
+		threshold_form = ItemThresholdForm()
+
+		context = {'stock_list': stock_list,
+					'shelf_list':shelf_list,
+					'create_stock_form':CreateStockForm,
+					'create_shelf_form':CreateStockShelfForm,
+					'threshold_list':threshold_list,
+					'threshold_form':threshold_form,
+		}
+		return render(self.request, 'pharmacy_app/inventory_structures.html',context)
+
+
+
+def CreateStock(request):
+	if request.method == 'POST':
+		stock_form = CreateStockForm(request.POST)
+		if stock_form.is_valid():
+			stock = stock_form.save(commit=False)
+			stock.registered_on = datetime.datetime.now()
+			stock.registered_by = Employee.objects.get(user_profile=request.user)
+			stock.active=True
+			stock.save()
+			messages.success(request, 'Successful!')
+			return redirect('inventory_structures')
+		else:
+			messages.error(request,str(stock_form.errors))
+			return redirect('inventory_structures')
+
+def CreateStockShelf(request):
+	if request.method == 'POST':
+		shelf_form = CreateStockShelfForm(request.POST)
+		if shelf_form.is_valid():
+			shelf = shelf_form.save(commit=False)
+			shelf.registered_on = datetime.datetime.now()
+			shelf.registered_by = Employee.objects.get(user_profile=request.user)
+			shelf.active=True
+			shelf.save()
+			messages.success(request, 'Successful!')
+			return redirect('inventory_structures')
+		else:
+			messages.error(request,str(shelf_form.errors))
+			return redirect('inventory_structures')
+
+class TransferRequests(View):
+
+	def get(self, *args, **kwargs):
+
+		requests = TransferRequest.objects.filter(active=True)
+
+		context = {'requests':requests,
+					'stock_form':StockForm()
+		}
+
+		return render(self.request, 'pharmacy_app/transfer_request.html',context)
+
+	def post(self, *args, **kwargs):
+
+		stock_form = StockForm(self.request.POST)
+		if stock_form.is_valid():
+			stock = stock_form.save(commit=False)
+			return redirect('transfer_request_form',stock.source.id)
+		else:
+			messages.error(request,str(stock_form.errors))
+			return redirect('transfer_request')
+
+class TransferRequestForm(View):
+
+	def get(self, *args, **kwargs):
+
+		stock_id = kwargs['stock_id']
+		stock = Stock.objects.get(id=stock_id)
+		item_list = ShelfItem.objects.filter(shelf__stock=stock)
+		items = []
+		quantities = []
+		for item in item_list:
+			items.append(item.item)
+			quantities.append(ShelfItem.objects.first().item_stock_amount(item.item,None))
+			print('item: ',item,'quantity: ',ShelfItem.objects.first().item_stock_amount(item.item,None))
+		stock_zip = zip(items,quantities)
+		transfer_form = ItemTransferInfoForm()
+		transfer_form.fields["item"].queryset = Item.objects.filter(drug__isnull=False)
+		context = {
+					'stock_form':DestinationStockForm(),
+					'transfer_form':transfer_form,
+					'stock_zip':stock_zip,
+					'item_list':ItemTransferInfo.objects.filter(stock=stock,active=True),
+					'stock':stock,
+		}
+
+		return render(self.request, 'pharmacy_app/transfer_request_form.html',context)
+
+
+class AddTransferItemForm(View):
+	def post(self, *args, **kwargs):
+		stock_id = kwargs['stock_id']
+		stock = Stock.objects.get(id=stock_id)
+
+		transfer_form = ItemTransferInfoForm(self.request.POST)
+		if transfer_form.is_valid():
+			transfer_info = transfer_form.save(commit=False)
+			if ShelfItem.objects.last().item_one_stock_amount(transfer_info.item,transfer_info.quantity,stock):
+				transfer_info.active=True
+				transfer_info.stock=stock
+				transfer_info.save()
+				messages.success(self.request,'Item Added To Request')
+				return redirect('transfer_request_form', stock_id)
+			else:
+				messages.error(self.request,'Stock Capacity Error')
+				return redirect('transfer_request_form', stock_id)
+		else:
+			messages.error(self.request,str(transfer_form.errors))
+			return redirect('transfer_request_form',stock_id)
+
+class SaveTransferRequest(View):
+	def post(self, *args, **kwargs):
+		stock_id = kwargs['stock_id']
+		stock = Stock.objects.get(id=stock_id)
+		transfer_infos = ItemTransferInfo.objects.filter(active=True)
+		stock_form = DestinationStockForm(self.request.POST)
+		if stock_form.is_valid():
+			stock_form = stock_form.save(commit=False)
+			request = TransferRequest()
+			request.source = stock 
+			request.destination = stock_form.destination 
+			request.active = True
+			request.registered_on = datetime.datetime.now()
+			request.registered_by = Employee.objects.get(user_profile=self.request.user)
+			request.status = '1'
+			request.save()
+			for info in transfer_infos:
+				info.active=False
+				request.item_info.add(info)
+				info.save()
+			request.save()			
+			messages.success(self.request,'Successfuly Saved!')
+			return redirect('transfer_request')
+		else:
+			messages.error(self.request,str(stock_form.errors))
+			return redirect('transfer_request_form',stock_id)
+
+class TransferRequestFirstApproval(View):
+	def get(self, *args, **kwargs):
+		request_id = kwargs['request_id']
+		request = TransferRequest.objects.get(id=request_id)
+		request.status = '2'
+		request.save()
+		messages.success(self.request,'First Approval Successfuly Saved!')
+		return redirect('transfer_request')
+
+class TransferRequestSecondApproval(View):
+	def get(self, *args, **kwargs):
+		request_id = kwargs['request_id']
+		request = TransferRequest.objects.get(id=request_id)
+		request.status = '3'
+		request.save()
+		messages.success(self.request,'First Approval Successfuly Saved!')
+		return redirect('transfer_request')
+
+class StockTransferManagement(View):
+
+	def get(self, *args, **kwargs):
+
+		request_id = kwargs['request_id']
+		request = TransferRequest.objects.get(id=request_id)
+		item_list = ItemRelocationInfo.objects.filter(active=True)
+		requested_list = request.item_info.filter()
+
+		relocate_form = ItemRelocationInfoForm()
+		item_ids = request.return_items
+		items = Item.objects.filter(id__in=item_ids)
+		relocate_form.fields["item"].queryset = items
+		context = {
+					'item_list':item_list,
+					'stock':request.source,
+					'request':request,
+					'requested_list':requested_list,
+					'relocate_form':relocate_form,
+		}
+
+		return render(self.request, 'pharmacy_app/stock_transfer_management.html',context)
+
+	def post(self, *args, **kwargs):
+		request_id = kwargs['request_id']
+		request = TransferRequest.objects.get(id=request_id)
+		relocate_form = ItemRelocationInfoForm(self.request.POST)
+		if relocate_form.is_valid():
+			relocate = relocate_form.save(commit=False)
+			relocation = ItemRelocationTemp()
+			if relocation.check_requested_item(request,relocate.item,relocate.quantity):
+				if request.is_item_available(relocate.item,relocate.quantity,relocate.shelf):
+					relocate.active = True
+					relocate.save()
+					messages.success(self.request, "Successful!!")
+					return redirect('stock_transfer_management',request.id)
+				else:
+					#messages.error(self.request, str(relocate.quantity) + " "  str(relocate.item) + " " + " Not available In  " + str(relocate.shelf))
+					messages.error(self.request, "Item Not Available!")
+					return redirect('stock_transfer_management',request.id)
+			else:
+				messages.error(self.request, "Item Exceeded Requested List !")
+				return redirect('stock_transfer_management',request.id)
+		else:
+			messages.error(self.request,str(relocate_form.errors))
+			return redirect('stock_transfer_management',request.id)
+
+class SaveItemRelocation(View):
+	def post(self, *args, **kwargs):
+		request_id = kwargs['request_id']
+		request = TransferRequest.objects.get(id=request_id)
+		relocation_infos = ItemRelocationInfo.objects.filter(active=True)
+		relocation = ItemRelocationTemp()
+		relocation.request = request 
+		relocation.request.active=False
+		relocation.active = True
+		relocation.registered_on = datetime.datetime.now()
+		relocation.registered_by = Employee.objects.get(user_profile=self.request.user)
+		"""
+		for info in relocation_infos:
+			#info.active = False
+			shelf_item = ShelfItem.objects.get(item=item.shelf,shelf=info.shelf,active=True)
+			shelf_item.quantity = info.quantity
+			shelf_item.save()
+		"""
+		relocation.request.save()
+		relocation.save()
+		for info in relocation_infos:
+			info.active = False
+			shelf_item = ShelfItem.objects.filter(item=info.item,shelf=info.shelf,active=True).last()
+			shelf_item.quantity = shelf_item.quantity - info.quantity
+			shelf_item.save()
+			relocation.item_info.add(info)
+			info.save()
+		relocation.save()			
+		messages.success(self.request,'Successfuly Saved!')
+		return redirect('transfer_request')
+
+class StockAllocation(View):
+
+	def get(self, *args, **kwargs):
+
+		relocation_id = kwargs['relocation_id']
+		relocation = ItemRelocationTemp.objects.get(id=relocation_id)
+
+		item_list = ItemAllocation.objects.filter(active=True)
+
+		relocated_list = relocation.item_info.filter(active=True)
+
+		allocate_form = ItemRelocationInfoForm()
+		item_ids = relocation.return_items
+		
+		items = Item.objects.filter(id__in=item_ids)
+		allocate_form.fields["item"].queryset = items
+
+		context = {
+					'item_list':item_list,
+					'stock':relocation.request.destination,
+					'relocated_list':relocated_list,
+					'allocate_form':allocate_form,
+		}
+
+		return render(self.request, 'pharmacy_app/stock_allocation.html',context)
+
+	def post(self, *args, **kwargs):
+		relocate_form = ItemRelocationInfoForm(self.request.POST)
+		if relocate_form.is_valid():
+			relocate = relocate_form.save(commit=False)
+			if request.is_item_available(relocate.item,relocate.quantity,relocate.shelf):
+				relocate.active = True
+				relocate.save()
+			else:
+				#messages.error(self.request, str(relocate.quantity) + " "  str(relocate.item) + " " + " Not available In  " + str(relocate.shelf))
+				messages.error(self.request, "Item Not Available!")
+				return redirect('stock_transfer_management',request.id)
+		else:
+			messages.error(self.request,str(relocate_form.errors))
+			return redirect('stock_transfer_management',request.id)
+
+class SaveThreshold(View):
+
+    def post(self, *args, **kwargs):
+
+        threshold_form =ThresholdForm(self.request.POST)
+        if threshold.is_valid():
+            threshold = threshold.save(commit=False)            
+            threshold.registered_on = datetime.datetime.now()
+            threshold.save()
+            messages.success(self.request, "Specimen info edited successfully!")
+            return redirect('inventory_structures')
+        else:
+            print('Specimen Form Errors:', threshold_form.errors)
+            messages.error(self.request, threshold_form.errors)
+            return redirect('inventory_structures')
+
+"""
+def EditIPDBuilding(request, building_id):
+	if request.method == 'POST':
+		name = str(request.POST.get('unit_name')) or 'None'
+		building = HospitalUnit.objects.get(id=building_id)
+		building.unit_name = name
+		building.save()
+		messages.success(request, 'Successful!')
+		return redirect('ipd_structure')
+
+def DeleteIPDBuilding(request, building_id):
+	building = HospitalUnit.objects.get(id=building_id)
+	building.active = False
+	building.save()
+	messages.success(request, 'Successfuly Deleted!')
+	return redirect('ipd_structure')
+"""

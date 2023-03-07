@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% load static %}
+{% block style %}
+    <!-- data tables -->
+    <link href="../assets/plugins/morris/morris.css" rel="stylesheet" type="text/css" />
+    <link href="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.css' %}" rel="stylesheet" type="text/css"/>
+
+    <style>
+        .quick-launch-container {
+            display: inline-block;
+            margin-left: 5px;
+            padding-left: 5px;
+            margin-right: 7px;
+            border: black;
+            border-width: 10px;
+        }
+        .quick-launch-label {
+            display: block;
+            color: black;
+            font-weight: bold;
+        }
+        fieldset {
+            padding-bottom: 10px;
+            width: 150px; 
+            border: 2px solid; 
+            border-radius: 5px; 
+            border-color: #0a7e37;
+        }
+        legend {
+            color: black;
+            width: max-content;
+        }
+    </style>
+
+{% endblock %}
+{% block title %} IPD Structure {% endblock %}
+
+{% block page_content %}
+
+{% include "pharmacy_app/partials/modals/create_stock_form.html" %}
+{% include "pharmacy_app/partials/modals/create_shelf_form.html" %}
+{% include "pharmacy_app/partials/modals/create_threshold.html" %}
+
+    <div class="row">
+        <div style="padding-left:18px;"></div>
+        <div class="card card-box border border-left-0 col-md-9" >
+
+    <div class="row">    
+
+        <div class="col-md-2" style="height:600px;">
+                                            <ul class="nav nav-tabs tabs-left">
+                  <li class="nav-item"><a class="nav-link {% if active_tab == 'stock_tab' %} active {% else %}  {% endif %}" href="#stock-tab"
+                    data-toggle="tab"><small>Stock</a></small></li>
+
+                  <li class="nav-item"><a class="nav-link {% if active_tab == 'shelf_tab' %} active {% else %}  {% endif %}"
+                    href="#shelf-tab" data-toggle="tab"><small> Shelf </small></a></li>
+                  <li class="nav-item"><a class="nav-link {% if active_tab == 'threshold_tab' %} active {% else %}  {% endif %}" href="#threshold-tab"
+                    data-toggle="tab"><small>Drug Threshold</a></small></li>
+
+                                            </ul>
+        </div>
+
+
+        <div class="col-md-10 border" style="background-color:white;height:590px;" >
+
+            <div class="tab-content">
+
+                {% include "pharmacy_app/partials/tabs/stock_tab.html" %}
+
+                {% include "pharmacy_app/partials/tabs/shelf_tab.html" %}
+
+                {% include "pharmacy_app/partials/tabs/threshold_tab.html" %}
+                
+            
+        </div>
+
+
+
+
+</div>
+
+
+<!--tabs-->
+</div>
+</div>
+</div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+    <script>
+        function searchBuilding() {
+               document.getElementById('search-building-id').style.display = 'block';          
+
+                showingModal = true;
+            }
+
+        function searchRoom() {
+               document.getElementById('search-room-id').style.display = 'block';          
+
+                showingModal = true;
+            }
+
+        function searchBed() {
+               document.getElementById('search-bed-id').style.display = 'block';          
+
+                showingModal = true;
+            }
+
+        function searchWardCategory() {
+               document.getElementById('search-ward-category-id').style.display = 'block';          
+
+                showingModal = true;
+            }
+
+        function closeSearchDiv() {
+               document.getElementById('search-building-id').style.display = 'none';          
+               document.getElementById('search-room-id').style.display = 'none';          
+               document.getElementById('search-bed-id').style.display = 'none';          
+
+                showingModal = true;
+            }
+
+        function showHistoryModal(id) {
+                console.log('mouse hovered')
+               document.getElementById('admit-patient-id'+id).style.display = 'block';          
+
+                showingModal = true;
+            }
+
+
+        function hideHistoryModal(id) {
+                console.log('mouse outed')
+               document.getElementById('admit-patient-id'+id).style.display = 'none';          
+        }
+    </script>
+    <script src="{% static 'plugins/datatables/jquery.dataTables.min.js' %}" ></script>
+    <script src="{% static 'plugins/datatables/plugins/bootstrap/dataTables.bootstrap4.min.js' %}" ></script>
+    <script src="{% static 'js/pages/table/table_data.js' %}"></script>
+
+{% endblock %}

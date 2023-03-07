@@ -5,8 +5,11 @@
                             <div class="card-head" style="width: 923px;">
 
                                 <div class="row">
-                                            <small style="padding-left: 50px;"> <span><a href="{% url 'core:add_patient_consultation' patient.id %}">Add Consultation</a></span> </small> 
-                                           |<small style=""> <span><a href data-toggle='modal' data-target='#filterByDateModal'><i class="fa fa-filter"></i></a></span> </small>| 
+                                        {% if user.employee.designation.permission.medical.write_consultation %}
+
+                                            <small style="padding-left: 50px;"> <span><a href="{% url 'core:add_patient_consultation' patient.id %}">Add Consultation</a></span> </small>| 
+                                        {% endif %}
+                                           <small style=""> <span><a href data-toggle='modal' data-target='#filterByDateModal'><i class="fa fa-filter"></i></a></span> </small>| 
                                            <small style="padding-left: 20px;" onclick="searchTimeline()"> <i class="fa fa-search"></i><label style="padding-left: 10px;">Search</label></small>
                                             <small style="padding-left: 550px;">                           
                                                 <i class="fa fa-print"></i>

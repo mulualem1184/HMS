@@ -19,7 +19,6 @@
             </div>
             
             <div class="card-body " id="bar-parent1">
-                                            {% if user.employee.designation.staff_code == '145' %}
 
                                                     <div class="btn-group btn-group-circle">
                                     <button type="button" class="btn btn-primary">By Batch</button>
@@ -33,7 +32,6 @@
                                         
                                     </ul>
                                     </div>
-                                            {% endif %}        
             <hr>        
                     <table class="mdl-data-table ml-table-bordered mdl-js-data-table mdl-data-table is-upgraded" id="example4">
                         <thead>
@@ -61,16 +59,13 @@
                     </table>
                     {% endblock %}
                     <hr>
-                                            {% if user.employee.designation.staff_code == '145' %}
 
-             <a href="{% url 'stock_supply_form' procurement_pk %}" class="btn btn-primary"> Supply Stock</a>
-             {% endif %}
+             <a href="{% url 'stock_supply_form' procurement_pk %}" class="btn"> Supply Stock</a>
             </div>
         </div>
     </div>
 
                         
-                                            {% if user.employee.designation.staff_code == '22' %}
 
                  <table class="mdl-data-table ml-table-bordered  " id="example4">
                     <thead>
@@ -92,9 +87,8 @@
 
                 </table>
                 <div style="padding-top: 12px;">
-                <a href="{% url 'procurement_detail' procurement_pk 1 %}" class="btn btn-primary btn-circle">Save</a>
+                <a href="{% url 'procurement_detail' procurement_pk 1 %}" class="btn ">Save</a>
                 </div>
-                {% endif %}
     {% block scripts %}
     <script >
     function toggleNoteForm (){

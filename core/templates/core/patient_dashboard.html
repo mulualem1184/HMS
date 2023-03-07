@@ -58,6 +58,7 @@
         <div class="">
             <div class="card-head  border-bottom-0" style="background-color: #eef1f5; padding-bottom: 10px;padding-left: 0px;width: 1228px;">
                 <div class="row">
+                    {% if user.employee.designation.permission.component.view_patient_chart == True %}
                         <div style="padding-left: 20px;">
                                 {{patient.full_name}}                             
                             <a href="{% url 'core:edit_patient' patient.id %}"> <i class="fa fa-edit"></i> </a>
@@ -66,6 +67,7 @@
                                 <a style="padding-left: 20px;" href="{% url 'discharge_summary_form' patient.id %}"> Discharge </a>
                             {% endif %}
                         </div>
+                    {% endif %}
                         <div>
                         </div>                    
                 </div>

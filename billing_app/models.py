@@ -10,6 +10,7 @@ from django.db.models import Sum
 
 #from pharmacy_app.models import DrugPrescription
 
+
 class PatientInsuranceDetail(models.Model):
 	insurance = models.ForeignKey(to=PatientInsurance, on_delete=models.SET_NULL, null=True, blank=True)
 	patient = models.ForeignKey(to=Patient, on_delete=models.SET_NULL, null=True, blank=True)
@@ -358,6 +359,7 @@ class ItemSaleInfo(models.Model):
 class BillableItem(models.Model):
 	item = models.ForeignKey(to=Item, on_delete=models.SET_NULL, null=True)
 	patient = models.ForeignKey(to=Patient, on_delete=models.SET_NULL, null=True)
+	billed = models.BooleanField(default=False)
 	active = models.BooleanField(default=False)
 	registered_on = models.DateTimeField(null=True)
 
@@ -467,3 +469,221 @@ class InvoiceReconcilation(models.Model):
 	active = models.BooleanField(default=False)
 	registered_by = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
 	registered_on = models.DateTimeField(null=True)
+
+class ShelfItem(models.Model):
+	shelf = models.ForeignKey(to=StockShelf, on_delete=models.SET_NULL, null=True)
+	item = models.ForeignKey(to=Item, on_delete=models.SET_NULL, null=True)
+	quantity = models.IntegerField(null=True)
+	active = models.BooleanField(default=False)
+	registered_on = models.DateTimeField(null=True)
+	relocated_at = models.DateTimeField(null=True,blank=True)
+
+	def item_stock_amount(self,item,stock):
+		if stock == None:
+			items = ShelfItem.objects.filter(active=True,item=item)
+		else:
+			items = ShelfItem.objects.filter(active=True,item=item,shelf__stock=stock)
+		amount_dict = items.aggregate(Sum('quantity'))
+		amount = amount_dict['quantity__sum']
+		
+		if amount:
+			return amount
+		else:
+			return 0
+
+	def item_one_stock_amount(self,item,quantity,stock):
+		items = ShelfItem.objects.filter(active=True,item=item,shelf__stock=stock)
+		amount_dict = items.aggregate(Sum('quantity'))
+		amount = amount_dict['quantity__sum']
+		if amount:
+			pass
+		else:
+			return False
+		if amount > quantity:
+			return amount
+		elif amount == quantity:
+			return amount
+
+		else:
+			return False
+
+class InventoryThreshold(models.Model):
+	item = models.ForeignKey(Item,  on_delete= models.SET_NULL, null=True)
+	threshold = models.IntegerField(null=True)
+	registered_by = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
+	registered_on = models.DateTimeField(null=True)
+
+
+
+class ItemTransferInfo(models.Model):
+	item = models.ForeignKey(to=Item, on_delete=models.SET_NULL, null=True)
+	quantity = models.IntegerField(null=True, blank=True)
+	stock = models.ForeignKey(to=Stock, on_delete=models.SET_NULL, null=True)
+	active = models.BooleanField(default=False)
+
+class TransferRequest(models.Model):
+	status = {('1','Pending'),
+			('2','Approved Once'),
+			('3','Approved Twice'),
+			('4','Rejected'),
+	}
+
+	source = models.ForeignKey(to=Stock, on_delete=models.SET_NULL, null=True, related_name='source_stock')
+	destination = models.ForeignKey(to=Stock, on_delete=models.SET_NULL, null=True, related_name='destination_stock')
+	item_info = models.ManyToManyField(ItemTransferInfo,null=True,blank=True)
+	active = models.BooleanField(default=False)
+	status = models.CharField(max_length=500, choices=status, null=True)
+	registered_by = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
+	registered_on = models.DateTimeField(null=True)
+
+	def item_stock_amount(self,item,shelf):
+		items = ShelfItem.objects.filter(active=True,item=item,)
+		amount_dict = items.aggregate(Sum('quantity'))
+		amount = amount_dict['quantity__sum']
+		
+		if amount:
+			return amount
+		else:
+			return 0
+	
+	def is_item_available(self,item,quantity,shelf):
+		shelf_items = ShelfItem.objects.filter(active=True,item=item,shelf=shelf)
+		amount_dict = shelf_items.aggregate(Sum('quantity'))
+		amount = amount_dict['quantity__sum']
+		print('Shelf Amount:',amount)
+		if amount + 1 > quantity:
+			return True 
+		else:
+			return False
+
+	@property	
+	def return_items(self):
+		infos = self.item_info.all()
+		items = []
+		for info in infos:
+			if info.item in items:
+				pass
+			else:
+				items.append(info.item.id)
+		return items
+
+
+class ItemRelocationInfo(models.Model):
+	item = models.ForeignKey(to=Item, on_delete=models.SET_NULL, null=True)
+	quantity = models.IntegerField(null=True, blank=True)
+	shelf = models.ForeignKey(to=StockShelf, on_delete=models.SET_NULL, null=True)
+	active = models.BooleanField(default=False)
+
+class ItemRelocationTemp(models.Model):
+
+	request = models.ForeignKey(to=TransferRequest, on_delete=models.SET_NULL, null=True)
+	item_info = models.ManyToManyField(ItemRelocationInfo,null=True,blank=True)
+	active = models.BooleanField(default=False)
+	registered_by = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
+	registered_on = models.DateTimeField(null=True)
+
+	def check_item(self,item,quantity):
+		items = self.item_info.filter(active=True,item=item)
+		if item in items:
+			amount_dict = items.aggregate(Sum('quantity'))
+			amount = amount_dict['quantity__sum']
+			if quantity + 1 > amount:
+				return True 
+			else:
+				return False
+		else:
+			return False
+
+	def check_requested_item(self,request,item,quantity):
+		item_infos = request.item_info.filter(item=item)
+		items = request.return_items
+		for item in items:
+			print('Item: ', item)		
+		if item in items:
+			amount_dict = item_infos.aggregate(Sum('quantity'))
+			amount = amount_dict['quantity__sum']
+			print('Amount:',amount)
+			print('Qmount:',quantity)
+
+			if amount + 1 > quantity:
+				return True 
+			else:
+				return False
+		else:
+			return False
+
+	@property	
+	def return_items(self):
+		infos = self.item_info.filter(active=True)
+		items = []
+		for info in infos:
+			if info.item in items:
+				pass
+			else:
+				items.append(info.item.id)
+		return items
+
+class AllocatedItemInfo(models.Model):
+	item = models.ForeignKey(to=Item, on_delete=models.SET_NULL, null=True)
+	quantity = models.IntegerField(null=True, blank=True)
+	shelf = models.ForeignKey(to=StockShelf, on_delete=models.SET_NULL, null=True)
+
+class ItemAllocation(models.Model):
+	relocated = models.ForeignKey(to=ItemRelocationTemp, on_delete=models.SET_NULL, null=True)
+	item_info = models.ManyToManyField(ItemRelocationInfo,null=True,blank=True)
+	active = models.BooleanField(default=False)
+	registered_by = models.ForeignKey(Employee,  on_delete= models.SET_NULL, null=True, blank=True)
+	registered_on = models.DateTimeField(null=True)
+
+	def remaining_item_amount(self,item):
+		allocated_items = self.item_info.filter(active=True,item=item)
+		relocated_items = self.relocated.item_info.filter(item=item)
+		relocated_amount_dict =relocated_items.aggregate(Sum('quantity'))
+		allocated_amount_dict =allocated_items.aggregate(Sum('quantity'))
+		relocated_amount = relocated_amount_dict['quantity__sum']
+		allocated_amount = allocated_amount_dict['quantity__sum']
+		return relocated_amount - allocated_amount
+
+
+"""
+class InventoryLocation(models.Model):
+	name = models.CharField(max_length=100, null=True)
+	stock = models.ForeignKey(InStock, on_delete= models.SET_NULL,null=True)
+
+	def __str__(self):
+		return  self.dispensary_name
+
+class Shelf(models.Model):
+	shelf_no = models.CharField(null=True, max_length=1000)
+	location = models.ForeignKey(Location, on_delete=models.SET_NULL, null=True)
+	def __str__(self):
+		shelf_no_string = str(self.shelf_no)
+		return "Shelf " + shelf_no_string
+
+class Slot(models.Model):
+#	drug = models.ForeignKey(Dosage, on_delete= models.SET_NULL, null=True)	
+#	product = models.ForeignKey(OtherProducts, on_delete= models.SET_NULL, null=True)
+#	quantity = models.IntegerField(null=True)	
+	slot_no = models.IntegerField(null=True)
+	shelf_no = models.ForeignKey(DispensaryShelf, on_delete=models.SET_NULL, null=True)
+	def __str__(self):
+		slot_no_string = str(self.slot_no)
+		shelf_no_string = str(self.shelf_no)
+		return shelf_no_string + " Slot " + slot_no_string
+	def get_total_amount(self):
+		total_quantity = DispensarySlot.objects.aggregate(Sum('quantity'))
+
+class InventoryItem(models.Model):
+	slot_no = models.ForeignKey(DispensarySlot, on_delete=models.SET_NULL, null=True)
+	item = models.ForeignKey(Item, on_delete= models.SET_NULL, null=True)	
+	quantity = models.IntegerField(null=True)	
+
+	def __str__(self):
+		drug_string = str(self.drug)
+		return drug_string 
+
+
+class RelocationTemp(models.Model):
+	item = models.ForeignKey(Item, on_delete= models.SET_NULL, null=True)	
+	quantity = models.IntegerField(null=True)	
+"""

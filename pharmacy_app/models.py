@@ -365,10 +365,11 @@ class Pharmacy(models.Model):
 #	drug = models.ForeignKey(Dosage, on_delete= models.SET_NULL, null=True)	
 #	quantity = models.IntegerField()
 	
+"""
+
 class InventoryThreshold(models.Model):
 	drug = models.ForeignKey(Dosage,  on_delete= models.SET_NULL, null=True)
 	threshold = models.IntegerField(null=True)
-"""
 class Doctor(models.Model):
 	name = models.ForeignKey(User, on_delete= models.SET_NULL, null=True)
 

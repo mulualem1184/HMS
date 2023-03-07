@@ -9,6 +9,7 @@ from django.contrib.admin.widgets import RelatedFieldWidgetWrapper
 from django.contrib.admin.widgets import AdminDateWidget
 from functools import partial
 from inpatient_app.models import IPDTreatmentPlan
+from billing_app.models import InventoryThreshold
 #import autocomplete_light
 
 from django.forms.models import(
@@ -841,7 +842,7 @@ class PatientForm(forms.ModelForm):
 			'class' : 'select2 form-control',
 				}),
 			}
-
+"""
 class ThresholdForm(forms.ModelForm):
 	class Meta:
 		model = InventoryThreshold
@@ -854,7 +855,7 @@ class ThresholdForm(forms.ModelForm):
 			'class' : 'forms form-control',
 				}),
 			}
-
+"""
 
 
 	
@@ -911,5 +912,17 @@ class DrugRequestForm(forms.ModelForm):
 			'quantity': forms.NumberInput(attrs={
 			'class' : 'forms form-control',
 				}),
+			}
 
+class ItemThresholdForm(forms.ModelForm):
+	class Meta:
+		model = InventoryThreshold
+		fields = ['item','threshold']
+		widgets = {			
+			'item': forms.Select(attrs={
+			'class' : 'select2 form-control',
+				}),
+			'threshold': forms.NumberInput(attrs={
+			'class' : 'forms form-control',
+				}),
 			}
